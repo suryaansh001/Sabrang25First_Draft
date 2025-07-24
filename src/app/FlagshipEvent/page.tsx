@@ -2,6 +2,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import PixelCard from './PixelCard';
 import Image from 'next/image';
+import { PixelationContext } from './PixelCard';
 
 interface Event {
   id: number;
@@ -111,17 +112,23 @@ const FlagshipEvent: React.FC = () => {
                   className="object-cover transition-filter duration-300"
                   style={{ filter: hoveredCardId === event.id ? 'brightness(100%)' : 'brightness(30%)' }}
                 />
+                <PixelationContext.Consumer>
+                  {isPixelated => (
+                    isPixelated && (
+                      <div className="absolute bottom-0 w-full p-4 bg-gradient-to-t from-black via-black/70 to-transparent flex flex-col justify-end text-white z-10">
+                        <div className="bg-black/50 p-2 rounded-lg">
+                          <h3 className="text-xl font-semibold cosmic-text">{event.title}</h3>
+                          <p className="text-gray-300">{event.date}</p>
+                          <p className="text-gray-200 mt-2">{event.description}</p>
+                        </div>
+                        <button className="mt-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded hover:from-blue-600 hover:to-purple-600 hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300">
+                          Learn More
+                        </button>
+                      </div>
+                    )
+                  )}
+                </PixelationContext.Consumer>
               </PixelCard>
-              <div className="absolute bottom-0 w-full p-4 bg-gradient-to-t from-black via-black/70 to-transparent flex flex-col justify-end text-white z-10">
-                <div className="bg-black/50 p-2 rounded-lg">
-                  <h3 className="text-xl font-semibold cosmic-text">{event.title}</h3>
-                  <p className="text-gray-300">{event.date}</p>
-                  <p className="text-gray-200 mt-2">{event.description}</p>
-                </div>
-                <button className="mt-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded hover:from-blue-600 hover:to-purple-600 hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300">
-                  Learn More
-                </button>
-              </div>
             </div>
           ))}
         </div>

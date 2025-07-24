@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import ProtectedRoute from '../../../../components/ProtectedRoute';
 import createApiUrl from '../../../lib/api';
 
 interface User {
@@ -208,10 +207,4 @@ function UsersManagement() {
 }
 
 // Wrap with admin protection
-export default function ProtectedUsersManagement() {
-  return (
-    <ProtectedRoute requireAdmin={true}>
-      <UsersManagement />
-    </ProtectedRoute>
-  );
-}
+export default UsersManagement;

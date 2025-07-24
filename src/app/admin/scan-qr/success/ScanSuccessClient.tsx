@@ -81,7 +81,7 @@ export default function ScanSuccessClient() {
 
     // Redirect after 5 seconds
     const timeout = setTimeout(() => {
-      router.push("/admin_dashboard/scan-qr?scan=1");
+      router.push("/admin/scan-qr?scan=1");
     }, 5000);
 
     return () => clearTimeout(timeout);

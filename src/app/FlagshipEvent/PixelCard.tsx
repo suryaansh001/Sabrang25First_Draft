@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, createContext } from "react";
 import { JSX } from "react";
 
 class Pixel {
@@ -171,6 +171,8 @@ interface VariantConfig {
   noFocus: boolean;
 }
 
+export const PixelationContext = createContext(false);
+
 export default function PixelCard({
   variant = "default",
   gap,
@@ -188,6 +190,7 @@ export default function PixelCard({
   );
   const timePreviousRef = useRef(performance.now());
   const reducedMotionRef = useRef(false);
+  const [isPixelated, setIsPixelated] = useState(false);
 
   const variantCfg: VariantConfig = VARIANTS[variant] || VARIANTS.default;
   const finalGap = gap ?? variantCfg.gap;
@@ -268,6 +271,11 @@ export default function PixelCard({
     if (animationRef.current !== null) {
       cancelAnimationFrame(animationRef.current);
     }
+    if (name === "disappear") {
+      setIsPixelated(true);
+    } else if (name === "appear") {
+      setIsPixelated(false);
+    }
     animationRef.current = requestAnimationFrame(() => doAnimate(name));
   };
 
@@ -313,10 +321,12 @@ export default function PixelCard({
       onBlur={finalNoFocus ? undefined : onBlur}
       tabIndex={finalNoFocus ? -1 : 0}
     >
-      <div className="absolute inset-0 z-[1]">
-        {children}
-      </div>
-      <canvas className="absolute inset-0 block z-[2]" ref={canvasRef} />
+      <PixelationContext.Provider value={isPixelated}>
+        <div className="absolute inset-0 z-[1] pointer-events-none">
+          {children}
+        </div>
+      </PixelationContext.Provider>
+      <canvas className="absolute inset-0 block z-10" ref={canvasRef} />
     </div>
   );
 } 
