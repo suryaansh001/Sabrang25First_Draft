@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import createApiUrl from "../../../../lib/api";
 
 interface UserData {
   _id: string;
@@ -55,7 +56,7 @@ export default function ScanSuccessClient() {
 
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/admin/verify/${userId}`, {
+        const response = await fetch(createApiUrl(`/admin/verify/${userId}`), {
           credentials: 'include'
         });
         if (!response.ok) {
@@ -104,7 +105,7 @@ export default function ScanSuccessClient() {
     
     setAllowingEntry(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/admin/allow-entry/${userId}`, {
+      const response = await fetch(createApiUrl(`/admin/allow-entry/${userId}`), {
         method: 'POST',
         credentials: 'include'
       });

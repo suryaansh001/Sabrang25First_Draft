@@ -1,6 +1,7 @@
 'use client'
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import createApiUrl from '../../lib/api';
 
 const Signup = () => {
   const [username, setUsername] = useState('');
@@ -68,7 +69,7 @@ const Signup = () => {
     try {
       setIsLoading(true);
       
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/signup`, {
+      const response = await fetch(createApiUrl('/signup'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

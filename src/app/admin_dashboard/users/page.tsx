@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import ProtectedRoute from '../../../../components/ProtectedRoute';
+import createApiUrl from '../../../lib/api';
 
 interface User {
   _id: string;
@@ -26,7 +27,7 @@ function UsersManagement() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/admin/users`, {
+      const response = await fetch(createApiUrl('/admin/users'), {
         credentials: 'include'
       });
 

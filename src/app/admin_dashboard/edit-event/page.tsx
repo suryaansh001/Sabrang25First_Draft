@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { FiEdit, FiExternalLink, FiX, FiSave } from "react-icons/fi";
+import createApiUrl from "../../../lib/api";
 
 interface Event {
   _id: string;
@@ -22,7 +23,7 @@ export default function EditEvent() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/admin/events`, {
+        const response = await fetch(createApiUrl('/admin/events'), {
           credentials: 'include' // Include cookies for authentication
         });
         const data = await response.json();
@@ -52,7 +53,7 @@ export default function EditEvent() {
     setError(null);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/admin/update`, {
+      const response = await fetch(createApiUrl('/admin/update'), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

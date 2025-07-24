@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import createApiUrl from '../src/lib/api';
 
 interface User {
   _id: string;
@@ -26,7 +27,7 @@ export default function ProtectedRoute({ children, requireAdmin = false }: Prote
 
   const checkAuth = async () => {
     try {
-      const response = await fetch('https://surprising-balance-production.up.railway.app/api/user', {
+      const response = await fetch(createApiUrl('/api/user'), {
         credentials: 'include'
       });
 
