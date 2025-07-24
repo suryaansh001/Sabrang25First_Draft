@@ -99,7 +99,7 @@ const Navbar: React.FC = () => {
               <>
                 <a href="/dashboard" className="text-white font-medium hover:text-yellow-300 transition">Dashboard</a>
                 {isAdmin && (
-                  <a href="/admin" className="text-white font-medium hover:text-yellow-300 transition">Admin</a>
+                  <a href="/admin_dashboard" className="text-white font-medium hover:text-yellow-300 transition">Admin</a>
                 )}
               </>
             )}
@@ -131,7 +131,7 @@ const Navbar: React.FC = () => {
               <>
                 <a href="/dashboard" className="block text-white py-2 hover:text-yellow-300">Dashboard</a>
                 {isAdmin && (
-                  <a href="/admin" className="block text-white py-2 hover:text-yellow-300">Admin</a>
+                  <a href="/admin_dashboard" className="block text-white py-2 hover:text-yellow-300">Admin</a>
                 )}
                 <button 
                   onClick={handleLogout}

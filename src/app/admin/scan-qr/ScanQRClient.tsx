@@ -38,7 +38,7 @@ export default function ScanQR() {
             { fps: 10, qrbox: 250 },
             (decodedText: string) => {
               html5QrCodeRef.current.stop().catch(() => {});
-              router.push(`/admin/scan-qr/success?data=${encodeURIComponent(decodedText)}`);
+              router.push(`/admin_dashboard/scan-qr/success?data=${encodeURIComponent(decodedText)}`);
             },
             (error: any) => {
               // Optionally handle scan errors
@@ -80,7 +80,7 @@ export default function ScanQR() {
             <>
               <div ref={scannerRef} id="qr-scanner" className="w-full aspect-square bg-black rounded-lg border border-white/20 flex items-center justify-center" />
               <button
-                onClick={() => { setScanning(false); router.push('/admin'); }}
+                onClick={() => { setScanning(false); router.push('/admin_dashboard'); }}
                 className="w-full mt-4 py-3 px-6 rounded-full text-lg font-bold transition duration-300 ease-in-out transform hover:scale-105 shadow-lg bg-gradient-to-r from-rose-400 to-fuchsia-400 hover:from-rose-500 hover:to-fuchsia-500 text-white"
               >
                 Exit
