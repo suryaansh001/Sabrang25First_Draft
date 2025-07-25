@@ -30,22 +30,22 @@ export default function EventCard({ event, outline }: EventProps) {
         <CardSpotlight className="h-[32rem] bg-black rounded-xl p-6 relative z-10 flex flex-col overflow-hidden">
           <h2 className="text-3xl font-extrabold text-white mb-2 font-['Playfair_Display']">{event.title}</h2>
           <p className="text-lg font-normal text-white mb-4 font-['Playfair_Display']">{event.description}</p>
-          <img
-            src={event.image}
-            height="1000"
-            width="1000"
+              <img
+                src={event.image}
+                height="1000"
+                width="1000"
             className="h-60 w-full object-cover rounded-xl mb-4"
-            alt={event.title}
-          />
-          <div className="flex justify-between items-center mt-10">
+                alt={event.title}
+              />
+            <div className="flex justify-between items-center mt-10">
             <span className="text-base font-bold text-white font-['Playfair_Display']">{event.date} →</span>
             <a
-              href="/Signup"
-              className="px-6 py-2 rounded-xl bg-white text-black text-base font-bold font-['Playfair_Display'] shadow"
-            >
-              {event.registration || "Register Now"}
+                href="/Signup"
+                className="px-6 py-2 rounded-xl bg-white text-black text-base font-bold font-['Playfair_Display'] shadow"
+              >
+                {event.registration || "Register Now"}
             </a>
-          </div>
+            </div>
         </CardSpotlight>
       </div>
       <style jsx>{`

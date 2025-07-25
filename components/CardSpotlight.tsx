@@ -2,20 +2,21 @@
 
 import { motion, useMotionValue, useMotionTemplate } from "framer-motion";
 import React, { MouseEvent as ReactMouseEvent, useState } from "react";
-// import { CanvasRevealEffect } from "@/components/ui/canvas-reveal-effect";
-// For now, comment out CanvasRevealEffect until we confirm its presence or add a placeholder.
 import { cn } from "./lib/utils";
+import { CanvasRevealEffect } from "./CanvasRevealEffect";
 
 export const CardSpotlight = ({
   children,
   radius = 350,
   color = "#262626",
   className,
+  showCanvasEffect = false,
   ...props
 }: {
   radius?: number;
   color?: string;
   children: React.ReactNode;
+  showCanvasEffect?: boolean;
 } & React.HTMLAttributes<HTMLDivElement>) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -44,8 +45,19 @@ export const CardSpotlight = ({
       onMouseLeave={handleMouseLeave}
       {...props}
     >
+      {showCanvasEffect && isHovering && (
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <CanvasRevealEffect
+            animationSpeed={5}
+            containerClassName="bg-transparent absolute inset-0 pointer-events-none"
+            colors={[[59, 130, 246], [139, 92, 246]]}
+            dotSize={3}
+          />
+        </div>
+      )}
+      {/* Spotlight mask effect only */}
       <motion.div
-        className="pointer-events-none absolute z-0 -inset-px rounded-md opacity-0 transition duration-300 group-hover/spotlight:opacity-100"
+        className="pointer-events-none absolute z-10 -inset-px rounded-md opacity-0 transition duration-300 group-hover/spotlight:opacity-100"
         style={{
           backgroundColor: color,
           maskImage: useMotionTemplate`
@@ -56,17 +68,8 @@ export const CardSpotlight = ({
             )
           `,
         }}
-      >
-        {/* {isHovering && (
-          <CanvasRevealEffect
-            animationSpeed={5}
-            containerClassName="bg-transparent absolute inset-0 pointer-events-none"
-            colors={[[59, 130, 246],[139, 92, 246]]}
-            dotSize={3}
-          />
-        )} */}
-      </motion.div>
-      {children}
+      />
+      <div className="relative z-20">{children}</div>
     </div>
   );
 }; 
