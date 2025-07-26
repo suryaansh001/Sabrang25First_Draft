@@ -67,9 +67,27 @@ const categories = {
 };
 
 // Minimal ParticleCard implementation
-const ParticleCard = ({ children, className = '', ...props }: any) => {
+const ParticleCard = ({
+  children,
+  className = '',
+  particleCount,
+  glowColor,
+  enableTilt,
+  clickEffect,
+  enableMagnetism,
+  disableAnimations,
+  ...rest
+}: any) => {
+  // Pass custom props as data- attributes
+  const dataAttrs: any = {};
+  if (particleCount !== undefined) dataAttrs['data-particle-count'] = particleCount;
+  if (glowColor !== undefined) dataAttrs['data-glow-color'] = glowColor;
+  if (enableTilt !== undefined) dataAttrs['data-enable-tilt'] = enableTilt;
+  if (clickEffect !== undefined) dataAttrs['data-click-effect'] = clickEffect;
+  if (enableMagnetism !== undefined) dataAttrs['data-enable-magnetism'] = enableMagnetism;
+  if (disableAnimations !== undefined) dataAttrs['data-disable-animations'] = disableAnimations;
   return (
-    <div className={`particle-container ${className}`} {...props}>
+    <div className={`particle-container ${className}`} {...dataAttrs} {...rest}>
       {children}
     </div>
   );
