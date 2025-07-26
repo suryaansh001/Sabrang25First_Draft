@@ -119,7 +119,7 @@ export default function Sponsors() {
             <div ref={gridRef} className="card-grid">
               {sponsors.map((sponsor, i) => (
                 <ParticleCard
-                  key={sponsor.id}
+                      key={sponsor.id}
                   className={`card card--border-glow`}
                   particleCount={12}
                   glowColor="132, 0, 255"
@@ -132,14 +132,14 @@ export default function Sponsors() {
                     <div className="flex items-center justify-center mb-4">
                       <div className="rounded-full bg-white/90 shadow-lg flex items-center justify-center w-20 h-20 border-2 border-white/80">
                         <img src={sponsor.image} alt={sponsor.name} className="object-contain rounded-full w-16 h-16" />
-                      </div>
-                    </div>
+                          </div>
+                        </div>
                     <h2 className="card__title font-extrabold text-lg text-white text-center mb-1" style={{ color: '#ffe066', textShadow: '0 2px 8px #232946' }}>{sponsor.name}</h2>
                     <p className="card__description text-white/90 text-center mb-2">{sponsor.description}</p>
                   </div>
                 </ParticleCard>
-              ))}
-            </div>
+                  ))}
+              </div>
           </div>
 
           <motion.div
