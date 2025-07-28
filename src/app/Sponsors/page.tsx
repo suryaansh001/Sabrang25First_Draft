@@ -1,55 +1,58 @@
 "use client";
-import React from 'react';
+import React, { useRef, useEffect, useCallback, useState } from "react";
 import { motion } from 'framer-motion';
-import { PinContainer } from '../../../components/PinContainer';
+import { CardSpotlight } from '../../../components/CardSpotlight';
+import { cn } from '../../../components/lib/utils';
+import { gsap } from "gsap";
+import "./MagicBento.css";
 
 
 const sponsors = [
   {
     id: "gold-1",
-    name: "Gold Sponsor 1",
+    name: "Sponsor",
     image: "/images/building-6011756_1280.jpg",
     description: "Our premium partner supporting excellence",
     category: "gold"
   },
   {
     id: "gold-2",
-    name: "Gold Sponsor 2",
+    name: "Sponsor",
     image: "/images/building-6011756_1280.jpg",
     description: "lingaguli guli gli ga",
     category: "gold"
   },
   {
     id: "gold-3",
-    name: "Gold Sponsor 3",
+    name: "Sponsor",
     image: "/images/building-6011756_1280.jpg",
     description: "lorem ispum",
     category: "gold"
   },
   {
     id: "silver-1",
-    name: "Silver Sponsor 1",
+    name: "Sponsor",
     image: "/images/building-6011756_1280.jpg",
     description: "Dedicated to fostering innovation",
     category: "silver"
   },
   {
     id: "silver-2",
-    name: "Silver Sponsor 2",
+    name: "Sponsor",
     image: "/images/building-6011756_1280.jpg",
     description: "Dedicated to fostering innovation",
     category: "silver"
   },
   {
     id: "silver-3",
-    name: "Silver Sponsor 3",
+    name: "Sponsor",
     image: "/images/building-6011756_1280.jpg",
     description: "Dedicated to fostering innovation",
     category: "silver"
   },
   {
     id: "bronze-1",
-    name: "Bronze Sponsor",
+    name: "Sponsor",
     image: "/images/building-6011756_1280.jpg",
     description: "Supporting cultural growth",
     category: "bronze"
@@ -63,11 +66,43 @@ const categories = {
   bronze: "Bronze Sponsors"
 };
 
+// Minimal ParticleCard implementation
+const ParticleCard = ({
+  children,
+  className = '',
+  particleCount,
+  glowColor,
+  enableTilt,
+  clickEffect,
+  enableMagnetism,
+  disableAnimations,
+  ...rest
+}: any) => {
+  // Pass custom props as data- attributes
+  const dataAttrs: any = {};
+  if (particleCount !== undefined) dataAttrs['data-particle-count'] = particleCount;
+  if (glowColor !== undefined) dataAttrs['data-glow-color'] = glowColor;
+  if (enableTilt !== undefined) dataAttrs['data-enable-tilt'] = enableTilt;
+  if (clickEffect !== undefined) dataAttrs['data-click-effect'] = clickEffect;
+  if (enableMagnetism !== undefined) dataAttrs['data-enable-magnetism'] = enableMagnetism;
+  if (disableAnimations !== undefined) dataAttrs['data-disable-animations'] = disableAnimations;
+  return (
+    <div className={`particle-container ${className}`} {...dataAttrs} {...rest}>
+      {children}
+    </div>
+  );
+};
+
+// Minimal GlobalSpotlight implementation (accepts any props)
+const GlobalSpotlight = (props: any) => null;
+
 export default function Sponsors() {
+  // Track hover state for each card by sponsor id
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const gridRef = useRef(null);
+
   return (
     <div className="min-h-screen text-white">
-   
-      
       <main className="pt-24 pb-16 px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -79,56 +114,33 @@ export default function Sponsors() {
             Our Sponsors
           </h1>
 
-          {Object.entries(categories).map(([category, title]) => (
-            <section key={category} className="mb-20">
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className="text-3xl font-semibold mb-8 text-center"
-              >
-                {title}
-              </motion.h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {sponsors
-                  .filter(sponsor => sponsor.category === category)
-                  .map((sponsor, index) => (
-                    <motion.div
+          <div className="relative py-12 bento-section" style={{ background: "#060010" }}>
+            <GlobalSpotlight gridRef={gridRef} glowColor="132, 0, 255" spotlightRadius={300} />
+            <div ref={gridRef} className="card-grid">
+              {sponsors.map((sponsor, i) => (
+                <ParticleCard
                       key={sponsor.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.2, duration: 0.8 }}
-                    >
-                      <PinContainer
-                        title={sponsor.name}
-                        href={`/sponsors/${sponsor.id}`}
-                      >
-                        <div className="flex basis-full flex-col p-4 tracking-tight text-slate-100/50 w-[20rem] h-[20rem]">
-                          <h3 className="!pb-2 !m-0 font-bold text-base text-slate-100">
-                            {sponsor.name}
-                          </h3>
-                          <div className="text-base !m-0 !p-0 font-normal">
-                            <span className="text-slate-500 ">
-                              {sponsor.description}
-                            </span>
-                          </div>
-                          <div className="flex flex-1 w-full rounded-lg mt-4 bg-gradient-to-br from-violet-500 via-purple-500 to-blue-500">
-                            <img
-                              src={sponsor.image}
-                              alt={sponsor.name}
-                              className="h-full w-full object-cover rounded-lg"
-                            />
+                  className={`card card--border-glow`}
+                  particleCount={12}
+                  glowColor="132, 0, 255"
+                  enableTilt={true}
+                  clickEffect={true}
+                  enableMagnetism={true}
+                >
+                  {/* Remove the card__header and label */}
+                  <div className="card__content">
+                    <div className="flex items-center justify-center mb-4">
+                      <div className="rounded-full bg-white/90 shadow-lg flex items-center justify-center w-20 h-20 border-2 border-white/80">
+                        <img src={sponsor.image} alt={sponsor.name} className="object-contain rounded-full w-16 h-16" />
                           </div>
                         </div>
-                      </PinContainer>
-                    </motion.div>
+                    <h2 className="card__title font-extrabold text-lg text-white text-center mb-1" style={{ color: '#ffe066', textShadow: '0 2px 8px #232946' }}>{sponsor.name}</h2>
+                    <p className="card__description text-white/90 text-center mb-2">{sponsor.description}</p>
+                  </div>
+                </ParticleCard>
                   ))}
               </div>
-            </section>
-          ))}
+          </div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -141,8 +153,6 @@ export default function Sponsors() {
           </motion.div>
         </motion.div>
       </main>
-
-    
     </div>
   );
 }

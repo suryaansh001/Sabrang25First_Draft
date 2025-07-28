@@ -99,6 +99,7 @@ export default function TiltedCard({
       onMouseMove={handleMouse}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      data-no-splash="true"
     >
       {showMobileWarning && (
         <div className="absolute top-4 text-center text-sm block sm:hidden">

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@react-three/fiber": "^9.2.0",
     "@types/styled-components": "^5.1.34",
     "bootstrap": "^5.3.6",
     "clsx": "^2.1.1",
@@ -29,6 +30,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.178.1",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.5",
     "tailwindcss": "^4.1.10",

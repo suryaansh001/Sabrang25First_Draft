@@ -73,7 +73,7 @@ const AuthNavbar: React.FC = () => {
       return (
         <div className="hidden md:flex items-center space-x-4 mr-14">
           {user.isAdmin && (
-            <Link href="/admin_dashboard">
+            <Link href="/admin">
               <button className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full transition">
                 Admin
               </button>
@@ -107,7 +107,7 @@ const AuthNavbar: React.FC = () => {
       return (
         <>
           {user.isAdmin && (
-            <Link href="/admin_dashboard" className="block mt-3 bg-gradient-to-r from-red-500 to-red-600 text-white text-center py-2 rounded-full">
+            <Link href="/admin" className="block mt-3 bg-gradient-to-r from-red-500 to-red-600 text-white text-center py-2 rounded-full">
               Admin Dashboard
             </Link>
           )}
