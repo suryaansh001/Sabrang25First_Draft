@@ -79,20 +79,24 @@ export default function Page() {
 
        
 
-        {/* FAQ */}
-        <section className="min-h-screen">
-          <FAQ />
-        </section>
+       
 
         {/* Sponnsorship page */}
         <section className="min-h-scren">
           <Sponsors />
         </section>
 
+ {/* FAQ */}
+        <section className="min-h-screen">
+          <FAQ />
+        </section> 
+        
         {/* Contact Section */}
         <section className="min-h-screen">
           <Contact />
         </section>
+
+        
       </div>
 
      

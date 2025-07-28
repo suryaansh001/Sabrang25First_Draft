@@ -58,7 +58,7 @@ const Contact = () => {
         <div className="flex justify-end w-full md:w-1/3">
           <ProfileCard
             name="Chetesh Sharma"
-            title="Support Lead"
+            title="Organising Head"
             handle="chetsh"
             
             contactText="Message Me"
