@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
-import { CardSpotlight } from "../../../components/CardSpotlight";
-import { cn } from "../../../components/lib/utils";
+import { cn } from '../../../components/lib/utils';
+import { CardSpotlight } from '../../../components/CardSpotlight';
 
 interface EventProps {
   event: {
@@ -27,7 +26,7 @@ export default function EventCard({ event, outline, variant = 'default' }: Event
   else borderClass += ' border-transparent';
 
   return (
-    <div className={cn('relative p-2 rounded-2xl group metallic-border')}> 
+    <div className={cn('relative p-2 rounded-2xl group metallic-border')} data-no-splash="true"> 
       <div className={cn('w-96 rounded-xl', borderClass)}>
         <CardSpotlight
           className={cn(
@@ -40,7 +39,7 @@ export default function EventCard({ event, outline, variant = 'default' }: Event
           {/* Event Image */}
           <div className="relative h-48 w-full rounded-xl overflow-hidden mb-4">
             <img
-              src="/images/building-6011756_1280.jpg"
+              src={event.image || "/images/building-6011756_1280.jpg"}
               alt={event.title}
               className="w-full h-full object-cover"
             />
@@ -66,7 +65,7 @@ export default function EventCard({ event, outline, variant = 'default' }: Event
               href="/Signup"
               className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-semibold shadow-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
             >
-              Register Now
+              {event.registration || "Register Now"}
             </a>
           </div>
         </CardSpotlight>

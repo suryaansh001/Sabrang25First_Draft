@@ -43,6 +43,7 @@ export const CardSpotlight = ({
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      data-no-splash="true"
       {...props}
     >
       {showCanvasEffect && isHovering && (

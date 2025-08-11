@@ -10,9 +10,9 @@ interface ButtonProps {
 
 const Button: React.FC<ButtonProps> = ({ text, href, className }) => {
   return (
-    <StyledWrapper className={className}>
+    <StyledWrapper className={className} data-no-splash="true">
       <Link href={href} passHref>
-        <button className="button">
+        <button className="button" data-no-splash="true">
           <div className="blob1" />
           <div className="blob2" />
           <div className="inner">{text}</div>

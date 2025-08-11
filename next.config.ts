@@ -1,8 +1,13 @@
 // next.config.js
 const nextConfig = {
   images: {
-    domains: ['localhost'], // Only hostname without port
     remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/images/**',
+      },
       {
         protocol: 'http',
         hostname: 'localhost',

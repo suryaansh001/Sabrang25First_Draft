@@ -79,7 +79,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen text-white font-sans flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-10">
-      <div className="max-w-md w-full space-y-6 p-8 rounded-lg shadow-md border border-neutral-700 bg-neutral-900/80">
+      <div className="max-w-md w-full space-y-6 p-8 rounded-lg shadow-md border border-neutral-700 bg-neutral-900/80" data-no-splash="true">
         <div className="text-center">
           <div className="text-white text-3xl font-bold mb-4">
             Sabrang
@@ -96,7 +96,7 @@ const Login = () => {
           </div>
         )}
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit} data-no-splash="true">
           {/* Existing form fields remain the same */}
           <div className="space-y-4">
             <div>

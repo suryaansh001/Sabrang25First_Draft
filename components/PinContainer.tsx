@@ -36,6 +36,7 @@ export const PinContainer = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       href={href || "/"}
+      data-no-splash="true"
     >
       <div
         style={{

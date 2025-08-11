@@ -22,6 +22,7 @@ interface SplashCursorProps {
   COLOR_UPDATE_SPEED?: number;
   BACK_COLOR?: ColorRGB;
   TRANSPARENT?: boolean;
+  excludeSelectors?: string[];
 }
 
 interface Pointer {
@@ -66,9 +67,54 @@ export default function SplashCursor({
   SHADING = true,
   COLOR_UPDATE_SPEED = 10,
   BACK_COLOR = { r: 0.5, g: 0, b: 0 },
-  TRANSPARENT = true
+  TRANSPARENT = true,
+  excludeSelectors = ['.no-splash', '[data-no-splash]', '.profile-card', '.team-card', 'button', '.button', '.btn', 'input', 'textarea', 'select', 'form', '.form', 'a[href]', '.pc-card-wrapper', '.pc-card', '.pc-inside', '.pc-content', '.pc-contact-btn', '.pc-user-info']
 }: SplashCursorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Function to check if mouse is over excluded elements
+  const isOverExcludedElement = (clientX: number, clientY: number): boolean => {
+    try {
+      const elements = document.elementsFromPoint(clientX, clientY);
+      
+      // Check if any element or its parents match exclusion selectors
+      for (const element of elements) {
+        for (const selector of excludeSelectors) {
+          try {
+            // Check if element itself matches
+            if (element.matches(selector)) {
+              // console.log('Excluded element found:', element, 'with selector:', selector);
+              return true;
+            }
+            // Check if any parent matches
+            if (element.closest(selector)) {
+              // console.log('Excluded parent found:', element.closest(selector), 'with selector:', selector);
+              return true;
+            }
+            // Special check for data attributes
+            if (selector.includes('[data-no-splash]') && element.hasAttribute('data-no-splash')) {
+              // console.log('Excluded by data attribute:', element);
+              return true;
+            }
+            // Check for profile card specific classes
+            if (element.classList.contains('pc-card-wrapper') || 
+                element.classList.contains('profile-card') ||
+                element.closest('.pc-card-wrapper') ||
+                element.closest('.profile-card')) {
+              // console.log('Excluded profile card:', element);
+              return true;
+            }
+          } catch (e) {
+            // Skip invalid selectors
+            continue;
+          }
+        }
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -1418,6 +1464,8 @@ export default function SplashCursor({
     }
 
     window.addEventListener("mousedown", (e) => {
+      if (isOverExcludedElement(e.clientX, e.clientY)) return;
+      
       const pointer = pointers[0];
       const posX = scaleByPixelRatio(e.clientX);
       const posY = scaleByPixelRatio(e.clientY);
@@ -1426,6 +1474,8 @@ export default function SplashCursor({
     });
 
     function handleFirstMouseMove(e: MouseEvent) {
+      if (isOverExcludedElement(e.clientX, e.clientY)) return;
+      
       const pointer = pointers[0];
       const posX = scaleByPixelRatio(e.clientX);
       const posY = scaleByPixelRatio(e.clientY);
@@ -1437,6 +1487,8 @@ export default function SplashCursor({
     document.body.addEventListener("mousemove", handleFirstMouseMove);
 
     window.addEventListener("mousemove", (e) => {
+      if (isOverExcludedElement(e.clientX, e.clientY)) return;
+      
       const pointer = pointers[0];
       const posX = scaleByPixelRatio(e.clientX);
       const posY = scaleByPixelRatio(e.clientY);
@@ -1448,6 +1500,8 @@ export default function SplashCursor({
       const touches = e.targetTouches;
       const pointer = pointers[0];
       for (let i = 0; i < touches.length; i++) {
+        if (isOverExcludedElement(touches[i].clientX, touches[i].clientY)) continue;
+        
         const posX = scaleByPixelRatio(touches[i].clientX);
         const posY = scaleByPixelRatio(touches[i].clientY);
         updateFrame();
@@ -1463,6 +1517,8 @@ export default function SplashCursor({
         const touches = e.targetTouches;
         const pointer = pointers[0];
         for (let i = 0; i < touches.length; i++) {
+          if (isOverExcludedElement(touches[i].clientX, touches[i].clientY)) continue;
+          
           const posX = scaleByPixelRatio(touches[i].clientX);
           const posY = scaleByPixelRatio(touches[i].clientY);
           updatePointerDownData(pointer, touches[i].identifier, posX, posY);
@@ -1477,6 +1533,8 @@ export default function SplashCursor({
         const touches = e.targetTouches;
         const pointer = pointers[0];
         for (let i = 0; i < touches.length; i++) {
+          if (isOverExcludedElement(touches[i].clientX, touches[i].clientY)) continue;
+          
           const posX = scaleByPixelRatio(touches[i].clientX);
           const posY = scaleByPixelRatio(touches[i].clientY);
           updatePointerMoveData(pointer, posX, posY, pointer.color);
