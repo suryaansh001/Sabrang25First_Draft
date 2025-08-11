@@ -48,7 +48,7 @@ const Background: React.FC = () => {
 
   return (
     <>
-      <div ref={containerRef} className="stars" />
+      <div ref={containerRef} className="stars" style={{ zIndex: 0 }} />
       <div className="carnival-light" style={{ top: '20%', left: '10%' }} />
       <div className="carnival-light" style={{ top: '60%', right: '15%' }} />
       <div className="carnival-light" style={{ bottom: '30%', left: '30%' }} />
