@@ -10,6 +10,9 @@ import SplashCursor from '../../components/SplashCursor'
 export const metadata: Metadata = {
   title: "Sabrang",
   description: "A cosmic carnival themed website",
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
