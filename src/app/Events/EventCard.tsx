@@ -24,6 +24,10 @@ export default function EventCard({ event, outline, variant = 'default' }: Event
   if (outline === 'gold') borderClass += ' border-yellow-400';
   else if (outline === 'silver') borderClass += ' border-gray-300';
   else borderClass += ' border-transparent';
+  let borderClass = 'border-t-2';
+  if (outline === 'gold') borderClass += ' border-yellow-400';
+  else if (outline === 'silver') borderClass += ' border-gray-300';
+  else borderClass += ' border-transparent';
 
   return (
     <div className={cn('relative p-2 rounded-2xl group metallic-border')} data-no-splash="true"> 
@@ -79,6 +83,7 @@ export default function EventCard({ event, outline, variant = 'default' }: Event
           position: relative;
         }
         .metallic-border::before {
+          display: none;
           display: none;
         }
       `}</style>

@@ -89,10 +89,17 @@ export default function Page() {
           <Sponsors />
         </section>
 
+ {/* FAQ */}
+        <section className="min-h-screen">
+          <FAQ />
+        </section> 
+        
         {/* Contact Section */}
         <section className="min-h-screen">
           <Contact />
         </section>
+
+        
       </div>
     </div>
   );

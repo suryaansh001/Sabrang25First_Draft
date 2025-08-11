@@ -84,7 +84,7 @@ const Navbar: React.FC = () => {
 
       {/* Center: Main Navbar Links */}
       <div className="flex items-center justify-center flex-1">
-        <div className="flex items-center justify-between md:w-fit md:px-6 md:py-3 md:bg-white/10 md:backdrop-blur-md md:border md:border-white/20 text-white md:rounded-full md:shadow-lg">
+        <div className="flex items-center justify-between md:w-fit md:px-6 md:py-3 md:bg-white/10 md:backdrop-blur-md md:border md:border-white/20 text-white md:rounded-full md:shadow-lg" data-no-splash="true">
           {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center space-x-6">
             <a href="/" className="text-white font-medium hover:text-yellow-300 transition">Home</a>
@@ -99,6 +99,7 @@ const Navbar: React.FC = () => {
               <>
                 <a href="/dashboard" className="text-white font-medium hover:text-yellow-300 transition">Dashboard</a>
                 {isAdmin && (
+                  <a href="/admin" className="text-white font-medium hover:text-yellow-300 transition">Admin</a>
                   <a href="/admin" className="text-white font-medium hover:text-yellow-300 transition">Admin</a>
                 )}
               </>
@@ -131,6 +132,7 @@ const Navbar: React.FC = () => {
               <>
                 <a href="/dashboard" className="block text-white py-2 hover:text-yellow-300">Dashboard</a>
                 {isAdmin && (
+                  <a href="/admin" className="block text-white py-2 hover:text-yellow-300">Admin</a>
                   <a href="/admin" className="block text-white py-2 hover:text-yellow-300">Admin</a>
                 )}
                 <button 
