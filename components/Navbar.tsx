@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Logo from '../public/images/Logo.svg';
 import Link from 'next/link';
-import Button from './Button';
+// Replaced old Button with custom gradient-pill buttons inline
 import createApiUrl from '../src/lib/api';
 
 const Navbar: React.FC = () => {
@@ -75,7 +75,7 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="w-full fixed top-4 z-50 flex items-center justify-between pl-4 pr-4 sm:pl-25 sm:pr-0" data-no-splash="true">
+    <nav className="w-full fixed top-0 z-50 flex items-center justify-between pl-4 pr-4 sm:pl-25 sm:pr-0">
       {/* Left: Logo */}
       <div className="flex items-center ml-4 sm:ml-14">
         <Link href="/" className="mr-4"></Link>
@@ -142,8 +142,12 @@ const Navbar: React.FC = () => {
               </>
             ) : (
               <>
-                <a href="/Login" className="block mt-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-center py-2 rounded-full">Login</a>
-                <a href="/Signup" className="block mt-2 bg-gradient-to-r from-green-400 to-cyan-400 text-white text-center py-2 rounded-full">Register</a>
+                <a href="/Login" className="block mt-3 w-full">
+                  <span className="inline-flex w-full justify-center items-center gap-2 rounded-full px-5 py-2 border border-cyan-400/60 bg-black/50 text-white font-medium backdrop-blur-md shadow-[0_6px_20px_rgba(34,211,238,0.25)] hover:bg-black/60 hover:shadow-[0_8px_24px_rgba(34,211,238,0.35)] active:translate-y-px transition">Login</span>
+                </a>
+                <a href="/Signup" className="block mt-2 w-full">
+                  <span className="inline-flex w-full justify-center items-center gap-2 rounded-full px-5 py-2 bg-indigo-500 text-white font-semibold shadow-[0_6px_20px_rgba(99,102,241,0.35)] hover:bg-indigo-400 hover:shadow-[0_8px_26px_rgba(99,102,241,0.45)] active:translate-y-px focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 transition">Register</span>
+                </a>
               </>
             )}
           </div>
@@ -164,8 +168,19 @@ const Navbar: React.FC = () => {
           </div>
         ) : (
           <>
-            <Button text="Login" href="/Login" />
-            <Button text="Register" href="/Signup" />
+            <a href="/Login" className="inline-flex items-center gap-2 rounded-full px-5 py-2 border border-cyan-400/60 bg-black/50 text-white text-sm font-medium backdrop-blur-md shadow-[0_6px_20px_rgba(34,211,238,0.25)] hover:bg-black/60 hover:shadow-[0_8px_24px_rgba(34,211,238,0.35)] active:translate-y-px transition">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-90">
+                <path d="M10 17l5-5-5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M4 12h11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Login
+            </a>
+            <a href="/Signup" className="inline-flex items-center gap-2 rounded-full px-5 py-2 bg-indigo-500 text-white text-sm font-semibold shadow-[0_6px_20px_rgba(99,102,241,0.35)] hover:bg-indigo-400 hover:shadow-[0_8px_26px_rgba(99,102,241,0.45)] active:translate-y-px focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 transition">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-90">
+                <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Register
+            </a>
           </>
         )}
       </div>
