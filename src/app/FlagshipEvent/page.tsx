@@ -49,9 +49,9 @@ type Card = {
   src: string;
 };
 
-export function FocusCards({ cards }: { cards: Card[] }) {
+export function FlagshipEventCards({ cards }: { cards: Card[] }) {
   const [hovered, setHovered] = useState<number | null>(null);
-
+ 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-5xl mx-auto md:px-8 w-full">
       {cards.map((card, index) => (
@@ -95,7 +95,7 @@ const FlagshipEvent: React.FC = () => {
     <section className="min-h-screen py-20">
       <div className="w-[80%] mx-auto px-4 py-8 bg-white/5 backdrop-blur-md border border-white/5 rounded-lg shadow-md">
         <h2 className="text-4xl font-bold text-center cosmic-text mb-12">Flagship Events</h2>
-        <FocusCards cards={cards} />
+        <FlagshipEventCards cards={cards} />
       </div>
     </section>
   );
