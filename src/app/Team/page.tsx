@@ -4,8 +4,7 @@ import ChromaGrid from "./ChromaGrid";
 
 const TeamPage = () => {
   return (
-    <div className="min-h-screen text-white px-6 py-16 mt-20">
-      {/* <h1 className="text-4xl font-bold text-center mb-10">Meet the Team</h1> */}
+    <div className="min-h-screen text-white px-4 sm:px-6 py-8 sm:py-16 mt-16 sm:mt-20">
       <ChromaGrid />
     </div>
   );
