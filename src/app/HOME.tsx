@@ -1,20 +1,48 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import dynamic from 'next/dynamic';
 import { Play, Github, Linkedin, Home, Calendar, Users, CheckCircle, Info, Clock, Image, Mail } from 'lucide-react';
 import { FloatingDock } from '../../components/FloatingDock';
 
-// Simple fallback component for now
-const SplineComponent = () => (
-  <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-600 to-purple-700">
-    {/* Add some animated elements as fallback */}
-    <div className="absolute inset-0">
-      <div className="absolute top-1/4 left-1/2 w-96 h-96 bg-gradient-to-br from-blue-400/30 to-purple-500/40 rounded-full blur-3xl transform -translate-x-1/2 animate-pulse"></div>
-      <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-gradient-to-tl from-indigo-400/40 to-blue-600/30 rounded-full blur-2xl animate-pulse delay-1000"></div>
-      <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-gradient-to-r from-purple-400/30 to-pink-500/40 rounded-full blur-2xl animate-pulse delay-2000"></div>
-    </div>
-  </div>
+// Custom Spline component using runtime directly - React 19 compatible
+const SplineComponent = dynamic(() => 
+  import('@splinetool/runtime').then(({ Application }) => {
+    return Promise.resolve({
+      default: ({ scene }: { scene: string }) => {
+        const canvasRef = useRef<HTMLCanvasElement>(null);
+        
+        useEffect(() => {
+          if (canvasRef.current) {
+            const app = new Application(canvasRef.current);
+            app.load(scene).catch(console.error);
+            
+            return () => {
+              app.dispose();
+            };
+          }
+        }, [scene]);
+        
+        return <canvas ref={canvasRef} className="w-full h-full" />;
+      }
+    });
+  }).catch(() => {
+    // Fallback if runtime fails
+    return Promise.resolve({ 
+      default: () => (
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-600 to-purple-700">
+          <div className="absolute inset-0">
+            <div className="absolute top-1/4 left-1/2 w-96 h-96 bg-gradient-to-br from-blue-400/30 to-purple-500/40 rounded-full blur-3xl transform -translate-x-1/2 animate-pulse"></div>
+            <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-gradient-to-tl from-indigo-400/40 to-blue-600/30 rounded-full blur-2xl animate-pulse delay-1000"></div>
+            <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-gradient-to-r from-purple-400/30 to-pink-500/40 rounded-full blur-2xl animate-pulse delay-2000"></div>
+          </div>
+        </div>
+      )
+    });
+  }), {
+    ssr: false,
+    loading: () => <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-600 to-purple-700" />
+  }
 );
-
 
 export default function LayeredLandingPage() {
   const navigationItems = [
@@ -64,7 +92,7 @@ export default function LayeredLandingPage() {
       >
         {/* Spline background - positioned within right panel */}
         <div className="absolute inset-0 -z-10">
-          <SplineComponent />
+          <SplineComponent scene="https://prod.spline.design/3O0nwQNm6dcILIOA/scene.splinecode" />
         </div>
 
         {/* Background 3D Elements */}
@@ -79,8 +107,6 @@ export default function LayeredLandingPage() {
           <div className="flex items-center space-x-4 ml-12">
             {/* Navigation links moved to left panel as icons */}
           </div>
-          
-          
         </nav>
         
         {/* Main Content Area */}
@@ -205,4 +231,4 @@ export default function LayeredLandingPage() {
       
     </div>
   );
-};
+}
