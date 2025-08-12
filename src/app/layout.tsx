@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Background from "../../components/Background";
-import  Navbar  from "../../components/Navbar"
-import Footer from "../../components/Footer";
-import SplashCursor from '../../components/SplashCursor'
+import AppShell from "../../components/AppShell";
 
 
 
@@ -23,14 +20,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-  <SplashCursor />
-  <Background />
-  <div className="relative z-10">
-    <Navbar />
-    <main>{children}</main>
-  </div>
-  <Footer />
-</body>
+        <AppShell>{children}</AppShell>
+      </body>
     </html>
   );
 }

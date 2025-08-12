@@ -1,0 +1,26 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+import Background from "./Background";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+import SplashCursor from "./SplashCursor";
+import React from "react";
+
+export default function AppShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const hideChrome = pathname === "/" || pathname?.startsWith("/home");
+
+  return (
+    <>
+      <SplashCursor />
+      <Background />
+      <div className="relative z-10">
+        {!hideChrome && <Navbar />}
+        <main>{children}</main>
+      </div>
+      {!hideChrome && <Footer />}
+    </>
+  );
+}
+

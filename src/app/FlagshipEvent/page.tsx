@@ -35,6 +35,4 @@ const FlagshipEvent: React.FC = () => {
       </div>
     </section>
   );
-};
-
-export default FlagshipEvent;
+}
