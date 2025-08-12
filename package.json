@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@react-three/fiber": "^9.2.0",
-    "@splinetool/react-spline": "^2.2.6",
+    "@splinetool/react-spline": "^4.1.0",
     "@splinetool/runtime": "^1.10.45",
     "@tabler/icons-react": "^3.34.1",
     "@types/styled-components": "^5.1.34",

@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import { Play, Github, Linkedin, Home, Calendar, Users, CheckCircle, Info, Clock, Image, Mail } from 'lucide-react';
 import { FloatingDock } from '../../components/FloatingDock';
 
-const Spline = dynamic(() => import('@splinetool/react-spline').then(mod => ({ default: mod.default })), {
+const Spline = dynamic(() => import('@splinetool/react-spline'), {
   ssr: false,
   loading: () => <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-600 to-purple-700" />
 });
