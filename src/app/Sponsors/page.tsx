@@ -5,6 +5,7 @@ import { CardSpotlight } from '../../../components/CardSpotlight';
 import { cn } from '../../../components/lib/utils';
 import { gsap } from "gsap";
 import "./MagicBento.css";
+import SidebarDock from '../../../components/SidebarDock';
 
 
 const sponsors = [
@@ -101,9 +102,10 @@ export default function Sponsors() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const gridRef = useRef(null);
 
-  return (
+    return (
     <div className="min-h-screen text-white">
-      <main className="pt-24 pb-16 px-4">
+      <SidebarDock />
+      <main className="pt-24 pb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

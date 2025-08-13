@@ -6,7 +6,7 @@ import AppShell from "../../components/AppShell";
 
 export const metadata: Metadata = {
   title: "Sabrang",
-  description: "A cosmic carnival themed website",
+  description: "A modern event website",
   icons: {
     icon: '/favicon.ico',
   },

@@ -49,8 +49,8 @@ export default function LayeredLandingPage() {
     { title: 'Home', icon: <Home className="w-5 h-5" />, href: '/' },
     { title: 'Event', icon: <Calendar className="w-5 h-5" />, href: '/Events' },
     { title: 'Team', icon: <Users className="w-5 h-5" />, href: '/Team' },
-    { title: 'Sponsors', icon: <CheckCircle className="w-5 h-5" />, href: '/Sponsors' },
-    { title: 'About', icon: <Info className="w-5 h-5" />, href: '/Contact' },
+    { title: 'Sponsors', icon: <CheckCircle className="w-5 h-5" />, href: '/Contact' },
+    { title: 'About', icon: <Info className="w-5 h-5" />, href: '/About' },
     { title: 'Schedule', icon: <Clock className="w-5 h-5" />, href: '/FAQ' },
     { title: 'Event Gallery', icon: <Image className="w-5 h-5" />, href: '/Gallery' },
     { title: 'Contact', icon: <Mail className="w-5 h-5" />, href: '/Contact' },
@@ -93,6 +93,8 @@ export default function LayeredLandingPage() {
         {/* Spline background - positioned within right panel */}
         <div className="absolute inset-0 -z-10">
           <SplineComponent scene="https://prod.spline.design/3O0nwQNm6dcILIOA/scene.splinecode" />
+          {/* Black overlay on top of spline */}
+          <div className="absolute inset-0 bg-black/40" />
         </div>
 
         {/* Background 3D Elements */}
@@ -109,74 +111,17 @@ export default function LayeredLandingPage() {
           </div>
         </nav>
         
-        {/* Main Content Area */}
-        <div className="relative z-10">
-          <div className="grid grid-cols-2 gap-12 items-start">
-            
-            {/* Left Content */}
-            <div className="ml-4">
-              <h1 className="text-7xl font-extrabold text-white leading-tight mb-8 tracking-wide">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-300">
-                  Experience
-                </span><br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-indigo-600 drop-shadow-2xl">
-                  Color
-                </span><br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 drop-shadow-2xl">
-                  to Cosmos
-                </span>
-              </h1>
-              
-              <p className="text-white/90 text-xl mb-8 leading-relaxed font-medium tracking-wide">
-                Create, Customize and Enhance 3D Models<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-orange-400 to-red-500 font-semibold">
-                  Effortlessly
-                </span>
-              </p>
-            </div>
-            
-            {/* Right Content - Stats & Features */}
-            <div className="space-y-6 mt-4">
-              
-              {/* Sponsor Cards */}
-              <div className="bg-white/15 backdrop-blur-xl rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
-                <h4 className="text-white text-lg font-semibold mb-4">Sponsored by</h4>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">S1</span>
-                    </div>
-                    <span className="text-white/70 text-sm">TechCorp Solutions</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-400 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">S2</span>
-                    </div>
-                    <span className="text-white/70 text-sm">InnovateLabs</span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Second Sponsor Card */}
-              <div className="bg-white/15 backdrop-blur-xl rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
-                <h4 className="text-white text-lg font-semibold mb-4">Partners</h4>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-pink-400 to-red-400 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">P1</span>
-                    </div>
-                    <span className="text-white/70 text-sm">Creative Studios</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">P2</span>
-                    </div>
-                    <span className="text-white/70 text-sm">Design Hub</span>
-                  </div>
-                </div>
-              </div>
-              
-            </div>
+        {/* Main Content Area - Centered Sabrang 2025 */}
+        <div className="relative z-10 flex items-center justify-center h-full">
+          <div className="text-center">
+            <h1 className="text-8xl md:text-9xl font-extrabold text-white leading-tight tracking-wide">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-300">
+                SABRANG
+              </span><br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-indigo-600 drop-shadow-2xl">
+                2025
+              </span>
+            </h1>
           </div>
         </div>
         

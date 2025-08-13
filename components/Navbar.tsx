@@ -89,6 +89,7 @@ const Navbar: React.FC = () => {
           <div className="hidden md:flex items-center space-x-6">
             <a href="/" className="text-white font-medium hover:text-yellow-300 transition">Home</a>
             <a href="/Events" className="text-white font-medium hover:text-yellow-300 transition">Events</a>
+            <a href="/About" className="text-white font-medium hover:text-yellow-300 transition">About</a>
             <a href="/Gallery" className="text-white font-medium hover:text-yellow-300 transition">Gallery</a>
             <a href="/Team" className="text-white font-medium hover:text-yellow-300 transition">Team</a>
             <a href="/FAQ" className="text-white font-medium hover:text-yellow-300 transition">FAQ</a>
@@ -121,6 +122,7 @@ const Navbar: React.FC = () => {
           <div className="md:hidden absolute top-20 left-0 right-0 mx-auto w-11/12 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-xl px-4 py-4 shadow-lg z-40">
             <a href="/" className="block text-white py-2 hover:text-yellow-300">Home</a>
             <a href="/Events" className="block text-white py-2 hover:text-yellow-300">Events</a>
+            <a href="/About" className="block text-white py-2 hover:text-yellow-300">About</a>
             <a href="/Gallery" className="block text-white py-2 hover:text-yellow-300">Gallery</a>
             <a href="/Team" className="block text-white py-2 hover:text-yellow-300">Team</a>
             <a href="/FAQ" className="block text-white py-2 hover:text-yellow-300">FAQ</a>

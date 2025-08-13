@@ -1,6 +1,9 @@
 import React from 'react';
 import { InfiniteMovingCards } from '../../../components/infinite-moving-cards';
 import { InfiniteMovingImages } from '../../../components/infinite-moving-images';
+import SidebarDock from '../../../components/SidebarDock';
+import Logo from '../../../components/Logo';
+import Footer from '../../../components/Footer';
 
 const testimonials1 = [
   {
@@ -83,31 +86,39 @@ const images = [
 
 const Gallery = () => {
   return (
-    <div className="min-h-screen text-white font-sans flex flex-col items-center justify-center px-4 py-20">
-      <h1 className="text-5xl md:text-7xl font-extrabold mb-8 leading-tight drop-shadow-lg text-purple-400">
-        Gallery
-      </h1>
-      <p className="text-xl md:text-2xl text-gray-300 max-w-3xl text-center mb-16">
-        Relive the moments from Sabrang '25!
-      </p>
+    <div className="min-h-screen text-white font-sans relative">
+      <Logo />
+      <SidebarDock />
       
-      <div className="w-full space-y-4">
-        <InfiniteMovingImages
-          items={images}
-          direction="left"
-          speed="normal"
-          pauseOnHover={true}
-          className="mt-8 h-[300px]"
-        />
-        <InfiniteMovingImages
-          items={images}
-          direction="right"
-          speed="normal"
-          pauseOnHover={true}
-          className="mt-8 h-[300px]"
-        />
+      {/* Main Content Container */}
+      <div className="flex flex-col items-center justify-center px-4 py-20">
+        <h1 className="text-5xl md:text-7xl font-extrabold mb-8 leading-tight drop-shadow-lg text-purple-400 text-center">
+          Gallery
+        </h1>
+        <p className="text-xl md:text-2xl text-gray-300 max-w-3xl text-center mb-16">
+          Relive the moments from Sabrang '25!
+        </p>
+        
+        <div className="w-full space-y-4">
+          <InfiniteMovingImages
+            items={images}
+            direction="left"
+            speed="normal"
+            pauseOnHover={true}
+            className="mt-8 h-[300px]"
+          />
+          <InfiniteMovingImages
+            items={images}
+            direction="right"
+            speed="normal"
+            pauseOnHover={true}
+            className="mt-8 h-[300px]"
+          />
+        </div>
       </div>
       
+      {/* Footer outside main container */}
+      <Footer />
     </div>
   );
 };
