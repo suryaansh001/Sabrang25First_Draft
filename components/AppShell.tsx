@@ -9,7 +9,7 @@ import React from "react";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const hideChrome = pathname === "/" || pathname?.startsWith("/home") || pathname === "/Team";
+  const hideChrome = pathname === "/" || pathname?.startsWith("/home") || pathname === "/Team" || pathname === "/Gallery";
 
   return (
     <>
