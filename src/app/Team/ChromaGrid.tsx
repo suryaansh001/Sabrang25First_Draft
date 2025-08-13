@@ -64,6 +64,14 @@ export default function PeopleStrip() {
   // Double-card committees first, then single-card committees
   const doubleCardCommittees = committees.filter(c => c.cards === 2);
   const singleCardCommittees = committees.filter(c => c.cards === 1);
+  
+  // Special layout: 3 single cards beside Internal Arrangements
+  const specialSingleCards = singleCardCommittees.filter(c => 
+    ['Design', 'Media', 'Report'].includes(c.name)
+  );
+  const remainingSingleCards = singleCardCommittees.filter(c => 
+    !['Design', 'Media', 'Report'].includes(c.name)
+  );
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen px-2 sm:px-4 py-4 sm:py-8">
@@ -97,10 +105,82 @@ export default function PeopleStrip() {
 
       {/* Committee grid - responsive layout with double-card committees first */}
       <div className="w-full max-w-6xl px-2 sm:px-4 space-y-8">
-        {/* Double card committees - 1 per row on mobile (shown first) */}
+        {/* Double card committees with special single cards beside Internal Arrangements */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
           {doubleCardCommittees.map((committee, committeeIndex) => {
             const originalIndex = committees.findIndex(c => c.name === committee.name);
+            
+            // Special case for Internal Arrangements - add 3 single cards beside it
+            if (committee.name === "Internal Arrangements") {
+              return (
+                <div key={committeeIndex} className="col-span-1 sm:col-span-2 md:col-span-3">
+                  <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12 mb-8">
+                    {/* Internal Arrangements on the left */}
+                    <div className="flex flex-col items-center">
+                      <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent uppercase tracking-wide text-center" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
+                        {committee.name}
+                      </h3>
+                      
+                      {/* Internal Arrangements cards with V-shape */}
+                      <div className="flex overflow-hidden">
+                        {Array.from({ length: committee.cards }, (_, cardIndex) => {
+                          const personIndex = originalIndex * 3 + cardIndex;
+                          const person = people[personIndex % people.length];
+                          return (
+                            <div
+                              key={cardIndex}
+                              className={`relative w-[120px] sm:w-[130px] md:w-[150px] overflow-hidden aspect-[1/2.5] ${person.bg} ${
+                                cardIndex === 1 ? 'transform -translate-y-6 sm:-translate-y-8' : 'transform translate-y-6 sm:translate-y-8'
+                              }`}
+                            >
+                              <img
+                                src={person.img}
+                                alt={`${committee.name} Person ${cardIndex + 1}`}
+                                className="absolute bottom-0 left-0 w-full h-2/3 object-cover"
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    
+                    {/* 3 single cards beside Internal Arrangements */}
+                    <div className="flex flex-col sm:flex-row gap-6 sm:gap-8">
+                      {specialSingleCards.map((singleCommittee, singleIndex) => {
+                        const singleOriginalIndex = committees.findIndex(c => c.name === singleCommittee.name);
+                        return (
+                          <div key={singleIndex} className="flex flex-col items-center">
+                            <h4 className="text-lg sm:text-xl md:text-2xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent uppercase tracking-wide text-center" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
+                              {singleCommittee.name}
+                            </h4>
+                            <div className="flex overflow-hidden">
+                              {Array.from({ length: singleCommittee.cards }, (_, cardIndex) => {
+                                const personIndex = singleOriginalIndex * 3 + cardIndex;
+                                const person = people[personIndex % people.length];
+                                return (
+                                  <div
+                                    key={cardIndex}
+                                    className={`relative w-[110px] sm:w-[120px] md:w-[130px] overflow-hidden aspect-[1/2.5] ${person.bg}`}
+                                  >
+                                    <img
+                                      src={person.img}
+                                      alt={`${singleCommittee.name} Person ${cardIndex + 1}`}
+                                      className="absolute bottom-0 left-0 w-full h-2/3 object-cover"
+                                    />
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+            
+            // Regular double card committees
             return (
               <div key={committeeIndex} className="flex flex-col items-center">
                 {/* Committee subheading - responsive size */}
@@ -134,9 +214,9 @@ export default function PeopleStrip() {
           })}
         </div>
 
-        {/* Single card committees - 2 per row on mobile (shown second) with larger mobile size */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
-          {singleCardCommittees.map((committee, committeeIndex) => {
+        {/* Remaining single card committees - max 4 per row */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
+          {remainingSingleCards.map((committee, committeeIndex) => {
             const originalIndex = committees.findIndex(c => c.name === committee.name);
             return (
               <div key={committeeIndex} className="flex flex-col items-center">
@@ -145,7 +225,7 @@ export default function PeopleStrip() {
                   {committee.name}
                 </h3>
                 
-                {/* Single committee card - increased mobile size */}
+                {/* Single committee card - matching double card width */}
                 <div className="flex overflow-hidden">
                   {Array.from({ length: committee.cards }, (_, cardIndex) => {
                     const personIndex = originalIndex * 3 + cardIndex;
@@ -153,8 +233,7 @@ export default function PeopleStrip() {
                     return (
                       <div
                         key={cardIndex}
-                        className="relative w-[110px] sm:w-[120px] md:w-[130px] overflow-hidden aspect-[1/2.5] bg-gray-500"
-                        style={{ backgroundColor: person.bg.replace('bg-', '') }}
+                        className={`relative w-[120px] sm:w-[130px] md:w-[150px] overflow-hidden aspect-[1/2.5] ${person.bg}`}
                       >
                         <img
                           src={person.img}
