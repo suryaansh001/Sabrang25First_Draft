@@ -59,7 +59,7 @@ const TeamPage = () => {
   ];
 
   return (
-    <div className="min-h-screen text-white px-4 sm:px-6 py-8 sm:py-16 mt-16 sm:mt-20 relative">
+    <div className="min-h-screen text-white px-4 sm:px-6 py-8 sm:py-16 relative">
       <ChromaGrid />
       
       {/* Floating Dock positioned at left center */}

@@ -43,10 +43,10 @@ const ExpandedCard = ({
 
   const handleMouseLeave = () => {
     setIsExpanded(false);
-    // Allow animation to complete before hiding
+    // Faster response for shrinking animation
     setTimeout(() => {
       onClose();
-    }, 300);
+    }, 150);
   };
 
   const handleMouseEnter = () => {
@@ -58,8 +58,11 @@ const ExpandedCard = ({
     <>
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300"
-        style={{ opacity: isExpanded ? 1 : 0.6 }}
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-all duration-200"
+        style={{ 
+          opacity: isExpanded ? 1 : 0.6,
+          backdropFilter: isExpanded ? 'blur(8px)' : 'blur(4px)'
+        }}
       />
       
       {/* Growing Card - starts small and grows smoothly */}
@@ -73,7 +76,9 @@ const ExpandedCard = ({
           maxWidth: isExpanded ? '1200px' : 'none',
           height: isExpanded ? '80vh' : `${cardPosition.height}px`,
           zIndex: 50,
-          transition: 'all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+          transition: isExpanded 
+            ? 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)' 
+            : 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
           transform: isExpanded ? 'translate(-50%, -50%)' : 'none',
           transformOrigin: `${cardPosition.x + cardPosition.width/2}px ${cardPosition.y + cardPosition.height/2}px`,
           boxShadow: isExpanded ? '0 25px 50px -12px rgba(0, 0, 0, 0.25)' : '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
@@ -88,7 +93,7 @@ const ExpandedCard = ({
             setIsExpanded(false);
             setTimeout(() => {
               onClose();
-            }, 300);
+            }, 150);
           }}
           className="absolute top-4 right-4 z-10 bg-white/20 backdrop-blur-sm rounded-full p-2 hover:bg-white/30 transition-all duration-200 hover:scale-110"
           aria-label="Close expanded card"
@@ -746,13 +751,9 @@ export default function PeopleStrip() {
         .growing-card {
           will-change: transform, left, top, width, height;
           backface-visibility: hidden;
-          perspective: 1000px;
-          transform-style: preserve-3d;
-          /* Hardware acceleration */
+          /* Simplified transforms for better performance */
           transform: translateZ(0);
           -webkit-transform: translateZ(0);
-          /* Smooth transitions */
-          transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         
         .growing-card.expanded {
@@ -764,10 +765,9 @@ export default function PeopleStrip() {
           animation: pulse 2s ease-in-out infinite;
         }
         
-        /* Smooth transitions for all interactive elements */
-        * {
-          transition-property: transform, opacity, background-color, box-shadow;
-          transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        /* Optimized transitions for better performance */
+        .growing-card {
+          transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         
         /* Remove conflicting animations that might cause jank */
@@ -775,15 +775,9 @@ export default function PeopleStrip() {
           animation: none !important;
         }
         
-        /* Optimize transforms for better performance */
-        .growing-card {
-          transform: translateZ(0);
-          -webkit-transform: translateZ(0);
-        }
-        
         /* Smooth backdrop animation */
         .backdrop-blur-sm {
-          transition: backdrop-filter 0.3s ease-out;
+          transition: backdrop-filter 0.2s ease-out;
         }
         
         /* Additional performance optimizations */
@@ -801,6 +795,11 @@ export default function PeopleStrip() {
         img {
           image-rendering: -webkit-optimize-contrast;
           image-rendering: crisp-edges;
+        }
+        
+        /* Performance optimizations for shrinking animation */
+        .growing-card:not(.expanded) {
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
       `}</style>
     </div>

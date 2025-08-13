@@ -1,113 +1,102 @@
-import React from 'react';
-import { InfiniteMovingCards } from '../../../components/infinite-moving-cards';
-import { InfiniteMovingImages } from '../../../components/infinite-moving-images';
-
-const testimonials1 = [
-  {
-    quote: "Sabrang '25 was an unforgettable experience! The energy and creativity on display were absolutely amazing.",
-    name: "Sarah Johnson",
-    title: "Event Attendee"
-  },
-  {
-    quote: "The cultural performances were mesmerizing. Each act told a unique story that touched our hearts.",
-    name: "Michael Chen",
-    title: "Cultural Enthusiast"
-  },
-  {
-    quote: "The organization and execution of Sabrang '25 was flawless. A perfect blend of tradition and innovation.",
-    name: "Priya Sharma",
-    title: "Event Coordinator"
-  },
-  {
-    quote: "The atmosphere was electric! Every moment was filled with joy and celebration.",
-    name: "David Kumar",
-    title: "Student Participant"
-  },
-  {
-    quote: "Sabrang '25 brought together the best of art, music, and culture in one spectacular event.",
-    name: "Ananya Patel",
-    title: "Art Director"
-  }
-];
-
-const testimonials2 = [
-  {
-    quote: "The dance performances were absolutely breathtaking. Each movement told a story of its own.",
-    name: "Rahul Verma",
-    title: "Dance Enthusiast"
-  },
-  {
-    quote: "The music performances were soul-stirring. I've never experienced such beautiful melodies.",
-    name: "Meera Kapoor",
-    title: "Music Critic"
-  },
-  {
-    quote: "The art exhibition was a visual treat. The creativity and talent on display was inspiring.",
-    name: "Arjun Singh",
-    title: "Art Curator"
-  },
-  {
-    quote: "The food festival was a gastronomic delight. Each dish was a celebration of culture.",
-    name: "Zara Khan",
-    title: "Food Blogger"
-  },
-  {
-    quote: "The fashion show was a perfect blend of tradition and contemporary style.",
-    name: "Neha Gupta",
-    title: "Fashion Designer"
-  }
-];
-
-const images = [
-  {
-    image: '/images/building-6011756_1280.jpg',
-    alt: 'Building 1',
-  },
-  {
-    image: '/images/building-6011756_1280.jpg',
-    alt: 'Building 2',
-  },
-  {
-    image: '/images/building-6011756_1280.jpg',
-    alt: 'Building 3',
-  },
-  {
-    image: '/images/building-6011756_1280.jpg',
-    alt: 'Building 4',
-  },
-  {
-    image: '/images/building-6011756_1280.jpg',
-    alt: 'Building 5',
-  },
-];
+"use client";
+import React, { useState, useEffect } from 'react';
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 
 const Gallery = () => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  const images = [
+    '/images/gallery_sample/1.webp',
+    '/images/gallery_sample/2.webp',
+    '/images/gallery_sample/3.webp',
+    '/images/gallery_sample/4.webp',
+    '/images/gallery_sample/5.webp',
+  ];
+
+  // Auto-advance slides every 6 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        prevIndex === images.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 6000);
+
+    return () => clearInterval(interval);
+  }, [images.length]);
+
+  const goToNext = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const goToPrevious = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
+  };
+
+  const goToImage = (index: number) => {
+    setCurrentImageIndex(index);
+  };
+
   return (
-    <div className="min-h-screen text-white font-sans flex flex-col items-center justify-center px-4 py-20">
-      <h1 className="text-5xl md:text-7xl font-extrabold mb-8 leading-tight drop-shadow-lg text-purple-400">
-        Gallery
-      </h1>
-      <p className="text-xl md:text-2xl text-gray-300 max-w-3xl text-center mb-16">
-        Relive the moments from Sabrang '25!
-      </p>
-      
-      <div className="w-full space-y-4">
-        <InfiniteMovingImages
-          items={images}
-          direction="left"
-          speed="normal"
-          pauseOnHover={true}
-          className="mt-8 h-[300px]"
-        />
-        <InfiniteMovingImages
-          items={images}
-          direction="right"
-          speed="normal"
-          pauseOnHover={true}
-          className="mt-8 h-[300px]"
-        />
+    <div className="min-h-screen text-white font-sans relative overflow-hidden bg-gray-900">
+      {/* Main Image Display */}
+      <div className="relative w-full h-screen flex items-center justify-center p-8">
+        <div className="relative w-full max-w-4xl h-96 md:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
+          {images.map((image, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <img
+                src={image}
+                alt={`Gallery Image ${index + 1}`}
+                className="w-full h-full object-cover"
+              />
+              {/* Dark overlay for better text readability */}
+              <div className="absolute inset-0 bg-black/20" />
+            </div>
+          ))}
+        </div>
+        
+        {/* Image Counter */}
+        <div className="absolute top-8 right-8 bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full text-white text-sm font-semibold z-20">
+          {currentImageIndex + 1} / {images.length}
+        </div>
+
+        {/* Navigation Buttons */}
+        <div className="absolute bottom-8 right-8 flex space-x-2 z-20">
+          <button
+            onClick={goToPrevious}
+            className="bg-black/50 backdrop-blur-sm hover:bg-black/70 transition-all duration-300 p-2 rounded-full text-white group"
+            aria-label="Previous image"
+          >
+            <IconChevronLeft className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
+          </button>
+
+          <button
+            onClick={goToNext}
+            className="bg-black/50 backdrop-blur-sm hover:bg-black/70 transition-all duration-300 p-2 rounded-full text-white group"
+            aria-label="Next image"
+          >
+            <IconChevronRight className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
+          </button>
+        </div>
+
+        {/* Page Title */}
+        <div className="absolute top-8 left-8 z-20">
+          <h1 className="text-2xl md:text-4xl font-extrabold leading-tight drop-shadow-lg text-white">
+            Gallery
+          </h1>
+          <p className="text-sm md:text-lg text-gray-200 mt-1 drop-shadow-lg">
+            Relive the moments from Sabrang '25!
+          </p>
+        </div>
       </div>
-      
     </div>
   );
 };
