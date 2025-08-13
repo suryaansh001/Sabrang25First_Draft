@@ -82,6 +82,7 @@ const FloatingDockMobile = ({
       </AnimatePresence>
       <button
         onClick={() => setOpen(!open)}
+        title="Toggle navigation menu"
         className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-800"
       >
         <IconLayoutNavbarCollapse className="h-5 w-5 text-neutral-500 dark:text-neutral-400" />
@@ -97,92 +98,60 @@ const FloatingDockDesktop = ({
   items: { title: string; icon: React.ReactNode; href: string }[];
   className?: string;
 }) => {
-  let mouseY = useMotionValue(Infinity);
+  const [isHovered, setIsHovered] = useState(false);
+  
   return (
     <motion.div
-      onMouseMove={(e) => mouseY.set(e.pageY)}
-      onMouseLeave={() => mouseY.set(Infinity)}
+      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => setIsHovered(true)}
       className={cn(
-        "hidden md:flex flex-col items-start gap-4 rounded-2xl bg-gray-50/20 backdrop-blur-sm px-3 py-4 dark:bg-neutral-900/20",
+        "hidden md:flex flex-col items-start gap-4 rounded-2xl bg-gray-50/20 backdrop-blur-sm px-3 py-4 dark:bg-neutral-900/20 transition-all duration-300",
+        isHovered ? "pr-6" : "pr-3",
         className,
       )}
     >
       {items.map((item) => (
-        <IconContainer mouseY={mouseY} key={item.title} {...item} />
+        <IconContainer key={item.title} {...item} isHovered={isHovered} />
       ))}
     </motion.div>
   );
 };
 
 function IconContainer({
-  mouseY,
   title,
   icon,
   href,
+  isHovered,
 }: {
-  mouseY: MotionValue;
   title: string;
   icon: React.ReactNode;
   href: string;
+  isHovered: boolean;
 }) {
-  let ref = useRef<HTMLDivElement>(null);
-
-  let distance = useTransform(mouseY, (val) => {
-    let bounds = ref.current?.getBoundingClientRect() ?? { y: 0, height: 0 };
-
-    return val - bounds.y - bounds.height / 2;
-  });
-
-  let widthTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
-  let heightTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
-
-  let widthTransformIcon = useTransform(distance, [-150, 0, 150], [20, 40, 20]);
-  let heightTransformIcon = useTransform(
-    distance,
-    [-150, 0, 150],
-    [20, 40, 20],
-  );
-
-  let width = useSpring(widthTransform, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  });
-  let height = useSpring(heightTransform, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  });
-
-  let widthIcon = useSpring(widthTransformIcon, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  });
-  let heightIcon = useSpring(heightTransformIcon, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  });
 
   
 
   return (
-    <a href={href} className="group block w-full">
+    <a href={href} className="group block w-full" title={title}>
       <div className="flex items-center gap-3 w-full">
-        <motion.div
-          ref={ref}
-          style={{ width, height }}
-          className="relative flex aspect-square items-center justify-center rounded-full bg-white/20 backdrop-blur-sm border border-white/30 group-hover:bg-white/30 transition-colors"
-        >
-          <motion.div
-            style={{ width: widthIcon, height: heightIcon }}
-            className="flex items-center justify-center text-white"
-          >
+        <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm border border-white/30 group-hover:bg-white/30 transition-colors">
+          <div className="flex h-5 w-5 items-center justify-center text-white">
             {icon}
-          </motion.div>
-        </motion.div>
-        <span className="text-white/90 group-hover:text-white text-sm font-medium whitespace-nowrap">{title}</span>
+          </div>
+        </div>
+        <AnimatePresence>
+          {isHovered && (
+            <motion.span 
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ duration: 0.2 }}
+              className="text-white/90 group-hover:text-white text-sm font-medium whitespace-nowrap"
+            >
+              {title}
+            </motion.span>
+          )}
+        </AnimatePresence>
       </div>
     </a>
   );
