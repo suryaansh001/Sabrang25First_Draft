@@ -151,7 +151,25 @@ export default function Sponsors() {
             transition={{ duration: 0.8 }}
             className="text-center mt-16"
           >
-            
+            <div className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 rounded-3xl p-12 backdrop-blur-sm border border-white/10">
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                Interested in Becoming a Sponsor?
+              </h2>
+              <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                Join us in creating an extraordinary cosmic carnival experience while building meaningful connections with thousands of students and the educational community.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a 
+                  href="/Sponsors/why-sponsor-us"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 inline-block"
+                >
+                  Learn More About Sponsorship
+                </a>
+                <button className="border-2 border-purple-500 text-purple-400 px-8 py-4 rounded-full text-lg font-semibold hover:bg-purple-500 hover:text-white transition-all duration-300">
+                  Contact Us
+                </button>
+              </div>
+            </div>
           </motion.div>
         </motion.div>
       </main>

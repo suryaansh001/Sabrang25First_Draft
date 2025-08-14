@@ -1,9 +1,16 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
-import SidebarDock from '../../../components/SidebarDock';
-import Logo from '../../../components/Logo';
-import Footer from '../../../components/Footer';
+import { FloatingDock } from '../../../components/FloatingDock';
+import {
+  IconHome,
+  IconUsers,
+  IconPhoto,
+  IconCalendarEvent,
+  IconInfoCircle,
+  IconMail,
+  IconBrandGithub,
+} from '@tabler/icons-react';
 
 const Gallery = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -14,6 +21,51 @@ const Gallery = () => {
     '/images/gallery_sample/3.webp',
     '/images/gallery_sample/4.webp',
     '/images/gallery_sample/5.webp',
+  ];
+
+  const links = [
+    {
+      title: "Home",
+      icon: (
+        <IconHome className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+      ),
+      href: "/",
+    },
+    {
+      title: "Team",
+      icon: (
+        <IconUsers className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+      ),
+      href: "/Team",
+    },
+    {
+      title: "Events",
+      icon: (
+        <IconCalendarEvent className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+      ),
+      href: "/Events",
+    },
+    {
+      title: "Gallery",
+      icon: (
+        <IconPhoto className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+      ),
+      href: "/Gallery",
+    },
+    {
+      title: "FAQ",
+      icon: (
+        <IconInfoCircle className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+      ),
+      href: "/FAQ",
+    },
+    {
+      title: "Contact",
+      icon: (
+        <IconMail className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+      ),
+      href: "/Contact",
+    },
   ];
 
   // Auto-advance slides every 6 seconds
@@ -49,7 +101,7 @@ const Gallery = () => {
       <SidebarDock />
       
       {/* Main Image Display */}
-      <div className="relative w-full h-screen flex items-center justify-center p-8">
+      <div className="relative w-full h-screen flex items-center justify-center p-6">
         <div className="relative w-full max-w-4xl h-96 md:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
           {images.map((image, index) => (
             <div
@@ -104,8 +156,13 @@ const Gallery = () => {
         </div>
       </div>
       
-      {/* Footer outside main container */}
-      <Footer />
+      {/* Floating Dock positioned at left center */}
+      <div className="fixed left-8 top-1/2 transform -translate-y-1/2 z-50">
+        <FloatingDock
+          mobileClassName="translate-y-0"
+          items={links}
+        />
+      </div>
     </div>
   );
 };
