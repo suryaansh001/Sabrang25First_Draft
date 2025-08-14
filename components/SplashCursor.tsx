@@ -54,8 +54,8 @@ function pointerPrototype(): Pointer {
 }
 
 export default function SplashCursor({
-  SIM_RESOLUTION = 150,
-  DYE_RESOLUTION = 1440,
+  SIM_RESOLUTION = 128, // Reduced from 150
+  DYE_RESOLUTION = 1024, // Reduced from 1440
   CAPTURE_RESOLUTION = 512,
   DENSITY_DISSIPATION = 3.7,
   VELOCITY_DISSIPATION = 2,
@@ -83,30 +83,27 @@ export default function SplashCursor({
           try {
             // Check if element itself matches
             if (element.matches(selector)) {
-              // console.log('Excluded element found:', element, 'with selector:', selector);
               return true;
             }
             // Check if any parent matches
             if (element.closest(selector)) {
-              // console.log('Excluded parent found:', element.closest(selector), 'with selector:', selector);
               return true;
             }
             // Special check for data attributes
             if (selector.includes('[data-no-splash]') && element.hasAttribute('data-no-splash')) {
-              // console.log('Excluded by data attribute:', element);
               return true;
             }
             // Check for profile card specific classes
             if (element.classList.contains('pc-card-wrapper') || 
-                element.classList.contains('profile-card') ||
-                element.closest('.pc-card-wrapper') ||
-                element.closest('.profile-card')) {
-              // console.log('Excluded profile card:', element);
+                element.classList.contains('pc-card') || 
+                element.classList.contains('pc-inside') || 
+                element.classList.contains('pc-content') || 
+                element.classList.contains('pc-contact-btn') || 
+                element.classList.contains('pc-user-info')) {
               return true;
             }
           } catch (e) {
-            // Skip invalid selectors
-            continue;
+            // Ignore selector errors
           }
         }
       }

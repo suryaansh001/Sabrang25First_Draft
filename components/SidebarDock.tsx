@@ -10,7 +10,9 @@ import {
   Clock, 
   Image, 
   Mail,
-  Home
+  Home,
+  HelpCircle,
+  LayoutDashboard
 } from 'lucide-react';
 
 interface SidebarDockProps {
@@ -24,6 +26,7 @@ const navigationItems = [
   { title: 'Sponsors', icon: <CheckCircle className="w-5 h-5" />, href: '/Sponsors' },
   { title: 'About', icon: <Info className="w-5 h-5" />, href: '/About' },
   { title: 'Schedule', icon: <Clock className="w-5 h-5" />, href: '/FAQ' },
+  { title: 'FAQ', icon: <HelpCircle className="w-5 h-5" />, href: '/FAQ' },
   { title: 'Gallery', icon: <Image className="w-5 h-5" />, href: '/Gallery' },
   { title: 'Contact', icon: <Mail className="w-5 h-5" />, href: '/Contact' },
 ];
@@ -34,7 +37,7 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({ className = '' }) => {
 
   return (
     <motion.div
-      className={`fixed left-4 top-1/2 transform -translate-y-1/2 z-50 ${className}`}
+      className={`fixed left-4 top-[55%] transform -translate-y-1/2 z-50 ${className}`}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => {
         setIsExpanded(false);

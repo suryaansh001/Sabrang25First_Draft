@@ -17,15 +17,16 @@ const TeamPage = () => {
       />
       
       {/* Black Overlay for better text readability */}
-      <div className="fixed inset-0 -z-10 bg-black/40" />
+      <div className="fixed inset-0 -z-10 bg-black/60" />
       
       <Logo />
       <SidebarDock />
       
       {/* Main Content Container */}
-      <div className="px-6 py-16 mt-20 relative z-10">
-        <h1 className="text-4xl font-bold text-center mb-10">Meet the Team</h1>
-        <ChromaGrid />
+      <div className="relative z-10 pt-24 pb-16">
+        <div className="px-4 sm:px-6 py-8 sm:py-16">
+          <ChromaGrid />
+        </div>
       </div>
       
       {/* Footer outside main container */}
