@@ -133,6 +133,21 @@ export default function LayeredLandingPage() {
                   Effortlessly
                 </span>
               </p>
+              
+              {/* Sponsor CTA Button */}
+              <div className="mb-8">
+                <a 
+                  href="/Sponsors/why-sponsor-us"
+                  className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-lg font-semibold rounded-full hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                >
+                  <span className="mr-2">🌟</span>
+                  Become a Sponsor
+                  <span className="ml-2">→</span>
+                </a>
+                <p className="text-white/70 text-sm mt-3 ml-2">
+                  Join us in creating an extraordinary cosmic carnival experience
+                </p>
+              </div>
             </div>
             
             {/* Right Content - Stats & Features */}
