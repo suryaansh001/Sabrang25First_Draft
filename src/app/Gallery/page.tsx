@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { FloatingDock } from '../../../components/FloatingDock';
+import Logo from '../../../components/Logo';
+import SidebarDock from '../../../components/SidebarDock';
 import {
   IconHome,
   IconUsers,

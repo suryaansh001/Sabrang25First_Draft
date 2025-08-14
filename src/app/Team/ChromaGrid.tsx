@@ -190,7 +190,13 @@ export default function PeopleStrip() {
   const [hoveredPerson, setHoveredPerson] = useState<Person | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [cardPosition, setCardPosition] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  const [isClient, setIsClient] = useState(false);
   const cardRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+  // Prevent hydration mismatch by only rendering animations on client
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Function to close the expanded card
   const handleCloseExpandedCard = () => {
@@ -615,6 +621,20 @@ export default function PeopleStrip() {
       large: "w-[140px] sm:w-[170px] md:w-[200px]"
     };
 
+    // Use static styles on server, dynamic on client
+    const cardStyle = isClient ? {
+      willChange: 'transform',
+      transform: 'translateZ(0)',
+      WebkitTransform: 'translateZ(0)',
+      animationDelay: `${animationDelay}ms`,
+      ...style
+    } : {
+      willChange: 'transform',
+      transform: 'translateZ(0)',
+      WebkitTransform: 'translateZ(0)',
+      animationDelay: `${animationDelay}ms`
+    };
+
     return (
       <div
         ref={(el) => {
@@ -623,13 +643,7 @@ export default function PeopleStrip() {
         className={`relative ${sizeClasses[size]} ${className} ${transformClass} cursor-pointer transition-all duration-700 ease-out group hover:scale-110 hover:z-20`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        style={{
-          willChange: 'transform',
-          transform: 'translateZ(0)',
-          WebkitTransform: 'translateZ(0)',
-          animationDelay: `${animationDelay}ms`,
-          ...style
-        }}
+        style={cardStyle}
       >
         <img
           src={person.img}
@@ -658,6 +672,31 @@ export default function PeopleStrip() {
 
   // Render different layouts based on committee layout type
   const renderCommitteeLayout = (committee: any) => {
+    // Don't render animated layouts on server
+    if (!isClient) {
+      return (
+        <div key={committee.name} className="flex flex-col items-center mb-20 relative min-h-[350px]">
+          <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-20 rounded-full blur-3xl`}></div>
+          <h3 className={`text-2xl md:text-4xl font-black mb-10 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10`}>
+            {committee.name}
+          </h3>
+          <div className="relative flex justify-center items-center">
+            {committee.people.map((person: Person, idx: number) => (
+              <PersonCard
+                key={idx}
+                person={person}
+                cardId={`${committee.name}-${idx}`}
+                className="aspect-[1/2.5] overflow-hidden rounded-2xl"
+                animationDelay={idx * 400}
+                size="normal"
+              />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Client-side animated layouts
     switch (committee.layout) {
       case 'dna-helix':
         return (
