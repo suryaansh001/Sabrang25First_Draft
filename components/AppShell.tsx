@@ -5,21 +5,27 @@ import Background from "./Background";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import SplashCursor from "./SplashCursor";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const hideChrome = pathname === "/" || pathname?.startsWith("/home") || pathname === "/Team" || pathname === "/Gallery";
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const hideChrome = pathname === "/" || pathname?.startsWith("/home") || pathname === "/Team" || pathname === "/Gallery" || pathname === "/Sponsors/why-sponsor-us";
 
   return (
     <>
       <SplashCursor />
       <Background />
       <div className="relative z-10">
-        {!hideChrome && <Navbar />}
+        {mounted && !hideChrome && <Navbar />}
         <main>{children}</main>
       </div>
-      {!hideChrome && <Footer />}
+      {mounted && !hideChrome && <Footer />}
     </>
   );
 }
