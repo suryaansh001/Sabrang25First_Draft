@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import createApiUrl from '../../lib/api';
 
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -79,6 +80,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen text-white font-sans flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-10">
+
       <div className="max-w-md w-full space-y-6 p-8 rounded-lg shadow-md border border-neutral-700 bg-neutral-900/80" data-no-splash="true">
         <div className="text-center">
           <div className="text-white text-3xl font-bold mb-4">

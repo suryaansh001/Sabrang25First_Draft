@@ -1,158 +1,45 @@
-/**
- * Note: Use position fixed according to your needs
- * Desktop navbar is better positioned at the bottom
- * Mobile navbar is better positioned at bottom right.
- **/
+"use client";
 
-import { cn } from "./lib/utils";
-import { IconLayoutNavbarCollapse } from "@tabler/icons-react";
-import type React from "react";
-import {
-  AnimatePresence,
-  motion,
-  type MotionValue,
-  useMotionValue,
-  useSpring,
-  useTransform,
-} from "framer-motion";
+import React from "react";
 
-import { useRef, useState } from "react";
-
-export const FloatingDock = ({
-  items,
-  desktopClassName,
-  mobileClassName,
-}: {
-  items: { title: string; icon: React.ReactNode; href: string }[];
-  desktopClassName?: string;
-  mobileClassName?: string;
-}) => {
-  return (
-    <>
-      <FloatingDockDesktop items={items} className={desktopClassName} />
-      <FloatingDockMobile items={items} className={mobileClassName} />
-    </>
-  );
-};
-
-const FloatingDockMobile = ({
-  items,
-  className,
-}: {
-  items: { title: string; icon: React.ReactNode; href: string }[];
-  className?: string;
-}) => {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className={cn("relative block md:hidden", className)}>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            layoutId="nav"
-            className="absolute inset-x-0 bottom-full mb-2 flex flex-col gap-2"
-          >
-            {items.map((item, idx) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                exit={{
-                  opacity: 0,
-                  y: 10,
-                  transition: {
-                    delay: idx * 0.05,
-                  },
-                }}
-                transition={{ delay: (items.length - 1 - idx) * 0.05 }}
-              >
-                <a
-                  href={item.href}
-                  key={item.title}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900"
-                >
-                  <div className="h-4 w-4">{item.icon}</div>
-                </a>
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <button
-        onClick={() => setOpen(!open)}
-        title="Toggle navigation menu"
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-800"
-      >
-        <IconLayoutNavbarCollapse className="h-5 w-5 text-neutral-500 dark:text-neutral-400" />
-      </button>
-    </div>
-  );
-};
-
-const FloatingDockDesktop = ({
-  items,
-  className,
-}: {
-  items: { title: string; icon: React.ReactNode; href: string }[];
-  className?: string;
-}) => {
-  const [isHovered, setIsHovered] = useState(false);
-  
-  return (
-    <motion.div
-      onMouseLeave={() => setIsHovered(false)}
-      onMouseEnter={() => setIsHovered(true)}
-      className={cn(
-        "hidden md:flex flex-col items-start gap-4 rounded-2xl bg-gray-50/20 backdrop-blur-sm px-3 py-4 dark:bg-neutral-900/20 transition-all duration-300",
-        isHovered ? "pr-6" : "pr-3",
-        className,
-      )}
-    >
-      {items.map((item) => (
-        <IconContainer key={item.title} {...item} isHovered={isHovered} />
-      ))}
-    </motion.div>
-  );
-};
-
-function IconContainer({
-  title,
-  icon,
-  href,
-  isHovered,
-}: {
+export interface FloatingDockItem {
   title: string;
   icon: React.ReactNode;
   href: string;
-  isHovered: boolean;
+}
+
+export function FloatingDock({
+  items,
+  className = "",
+  mobileClassName = "",
+}: {
+  items: FloatingDockItem[];
+  className?: string;
+  mobileClassName?: string;
 }) {
-
-  
-
   return (
-    <a href={href} className="group block w-full" title={title}>
-      <div className="flex items-center gap-3 w-full">
-        <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm border border-white/30 group-hover:bg-white/30 transition-colors">
-          <div className="flex h-5 w-5 items-center justify-center text-white">
-            {icon}
-          </div>
-        </div>
-        <AnimatePresence>
-          {isHovered && (
-            <motion.span 
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              transition={{ duration: 0.2 }}
-              className="text-white/90 group-hover:text-white text-sm font-medium whitespace-nowrap"
-            >
-              {title}
-            </motion.span>
-          )}
-        </AnimatePresence>
-      </div>
-    </a>
+    <div
+      className={`flex flex-col items-center gap-3 rounded-2xl bg-black/40 backdrop-blur-md border border-white/20 px-3 py-4 shadow-2xl ${className} ${mobileClassName}`}
+    >
+      {items?.map((item) => (
+        <a
+          key={item.title}
+          href={item.href}
+          className="group relative flex items-center justify-center w-12 h-12 rounded-full bg-white/15 hover:bg-white/25 border border-white/30 text-white transition-colors"
+          aria-label={item.title}
+        >
+          <span className="flex items-center justify-center w-6 h-6">
+            {item.icon}
+          </span>
+          <span className="pointer-events-none absolute left-14 whitespace-nowrap rounded-md bg-black/70 px-2 py-1 text-xs opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+            {item.title}
+          </span>
+        </a>
+      ))}
+    </div>
   );
 }
+
+export default FloatingDock;
+
+

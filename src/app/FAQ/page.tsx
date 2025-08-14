@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import SidebarDock from '../../../components/SidebarDock';
+import Logo from '../../../components/Logo';
+import Footer from '../../../components/Footer';
 
 interface Star {
   id: number;
@@ -82,6 +85,8 @@ const FAQ = () => {
         scrollBehavior: 'smooth'
       }}
     >
+      <Logo />
+      <SidebarDock />
       {/* Cosmic Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 via-purple-950 via-pink-900 to-black">
         {/* Nebula Effect */}
@@ -127,16 +132,16 @@ const FAQ = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
-        {/* Glowing Title - Mobile responsive */}
-        <div className="text-center mb-6 sm:mb-8 relative">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-tight text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-pink-200 to-purple-200 drop-shadow-2xl animate-pulse px-2">
-            Frequently Asked Questions
-          </h1>
-          <div className="absolute inset-0 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-tight text-white opacity-20 blur-sm px-2">
-            Frequently Asked Questions
-          </div>
-        </div>
+      <div className="relative z-10 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
+                 {/* Glowing Title - Mobile responsive */}
+         <div className="text-center mb-6 sm:mb-8 relative">
+           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-tight text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-pink-200 to-purple-200 drop-shadow-2xl animate-pulse px-2 text-center">
+             Frequently Asked Questions
+           </h1>
+           <div className="absolute inset-0 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-tight text-white opacity-20 blur-sm px-2 text-center">
+             Frequently Asked Questions
+           </div>
+         </div>
 
         <p className="text-lg sm:text-xl md:text-2xl max-w-3xl text-center mb-8 sm:mb-12 text-blue-100 animate-fade-in px-4">
           🌟 Find answers to common questions about Sabrang '25 🌟
@@ -212,6 +217,9 @@ const FAQ = () => {
           </div>
         </div>
       </div>
+      
+      {/* Footer outside main container */}
+      <Footer />
 
       <style jsx>{`
         @keyframes fade-in {

@@ -1,55 +1,487 @@
 'use client';
-import { useMemo } from 'react';
-import EventCarousel from '../../../components/EventCarousel';
 
-const categories = [
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Calendar, MapPin, Clock, Users } from 'lucide-react';
+import SidebarDock from '../../../components/SidebarDock';
+import Logo from '../../../components/Logo';
+import Footer from '../../../components/Footer';
+
+interface Event {
+  id: number;
+  title: string;
+  date: string;
+  time: string;
+  shares: string;
+  image: string;
+  description: string;
+  venue: string;
+  price: string;
+  capacity: string;
+  genre: string;
+  details: string;
+  isFlagship: boolean;
+}
+
+const events: Event[] = [
   {
-    name: 'Cultural',
-    events: [
-      { title: 'Panache', image: '/images/building-6011756_1280.jpg', description: 'A grand fashion show showcasing creativity and style.', date: 'March 15, 2025', prize: '₹50,000', registration: 'Team of 4-6', video: '/video/853828-hd_1920_1080_25fps.mp4' },
-      { title: 'Band Jam', image: '/events/bandjam.jpg', description: 'Battle of the bands - rock, metal, and fusion.', date: 'March 16, 2025', prize: '₹40,000', registration: 'Team of 4-8', video: '/video/2421545-uhd_3840_2160_30fps.mp4' },
-      { title: 'Fashion Show', image: '/events/fashionshow.jpg', description: 'Showcase your unique style and creativity.', date: 'March 17, 2025', prize: '₹35,000', registration: 'Team of 3-5', video: '/video/854569-hd_1920_1080_25fps.mp4' },
-      { title: 'Street Play', image: '/events/streetplay.jpg', description: 'Express social issues through street theater.', date: 'March 18, 2025', prize: '₹30,000', registration: 'Team of 8-12', video: '/video/1528503-uhd_3840_2160_25fps.mp4' },
-      { title: 'Dance Battle', image: '/events/dancebattle.jpg', description: 'Show your moves in this electrifying dance competition.', date: 'March 19, 2025', prize: '₹25,000', registration: 'Solo/Duo', video: '/video/2018959-hd_1920_1080_30fps.mp4' },
-      { title: 'Nukkad Natak', image: '/events/nukkadnatak.jpg', description: 'Street play competition with social messages.', date: 'March 20, 2025', prize: '₹20,000', registration: 'Team of 6-10', video: '/video/853828-hd_1920_1080_25fps.mp4' },
-      { title: 'Solo Singing', image: '/events/solosinging.jpg', description: 'Showcase your vocal talent in this solo competition.', date: 'March 21, 2025', prize: '₹15,000', registration: 'Individual', video: '/video/2421545-uhd_3840_2160_30fps.mp4' },
-      { title: 'Group Dance', image: '/events/groupdance.jpg', description: 'Synchronized group dance performance.', date: 'March 22, 2025', prize: '₹20,000', registration: 'Team of 6-12', video: '/video/854569-hd_1920_1080_25fps.mp4' },
-    ],
+    id: 1,
+    title: "Panache - Fashion Show",
+    date: "25.12.2024",
+    time: "21:00",
+    shares: "156 Shares",
+    image: "/images/building-6011756_1280.jpg",
+    description: "Experience the most glamorous fashion showcase of the year featuring emerging designers and stunning runway presentations.",
+    venue: "Main Auditorium",
+    price: "$85",
+    capacity: "2,500 people",
+    genre: "Fashion Show",
+    details: "Join us for an unforgettable evening featuring the latest trends in fashion, exclusive designer collections, and celebrity appearances. The event includes runway shows, designer meet & greets, and exclusive merchandise opportunities.",
+    isFlagship: true
   },
   {
-    name: 'Technical',
-    events: [
-      { title: 'Hackathon', image: '/events/hackathon.jpg', description: '24-hour coding competition to solve real-world problems.', date: 'March 15, 2025', prize: '₹1,00,000', registration: 'Team of 2-4', video: '/video/1528503-uhd_3840_2160_25fps.mp4' },
-      { title: 'Tech Quiz', image: '/events/techquiz.jpg', description: 'Test your knowledge in technology and science.', date: 'March 16, 2025', prize: '₹50,000', registration: 'Team of 2', video: '/video/2018959-hd_1920_1080_30fps.mp4' },
-      { title: 'Robo Wars', image: '/events/robowars.jpg', description: 'Battle of the robots in an epic arena.', date: 'March 17, 2025', prize: '₹75,000', registration: 'Team of 3-4', video: '/video/853828-hd_1920_1080_25fps.mp4' },
-      { title: 'Circuit Design', image: '/events/circuitdesign.jpg', description: 'Design and implement innovative circuits.', date: 'March 18, 2025', prize: '₹40,000', registration: 'Team of 2-3', video: '/video/2421545-uhd_3840_2160_30fps.mp4' },
-      { title: 'Code Golf', image: '/events/codegolf.jpg', description: 'Write the shortest possible code to solve problems.', date: 'March 19, 2025', prize: '₹25,000', registration: 'Individual', video: '/video/854569-hd_1920_1080_25fps.mp4' },
-      { title: 'Robo Race', image: '/events/roborace.jpg', description: 'Race your autonomous robot through obstacles.', date: 'March 20, 2025', prize: '₹30,000', registration: 'Team of 2-3', video: '/video/1528503-uhd_3840_2160_25fps.mp4' },
-      { title: 'Web Dev', image: '/events/webdev.jpg', description: 'Build innovative web applications.', date: 'March 21, 2025', prize: '₹35,000', registration: 'Team of 2-3', video: '/video/2018959-hd_1920_1080_30fps.mp4' },
-      { title: 'App Dev', image: '/events/appdev.jpg', description: 'Create mobile applications for real-world problems.', date: 'March 22, 2025', prize: '₹40,000', registration: 'Team of 2-3', video: '/video/853828-hd_1920_1080_25fps.mp4' },
-    ],
+    id: 2,
+    title: "Hackathon - Code & Create",
+    date: "15.1.2025",
+    time: "19:30",
+    shares: "89 Shares",
+    image: "/images/building-6011756_1280.jpg",
+    description: "24-hour coding challenge where developers compete to create innovative solutions for real-world problems.",
+    venue: "Computer Science Lab",
+    price: "Free",
+    capacity: "500 people",
+    genre: "Tech Competition",
+    details: "Learn about the latest developments in technology and software development. Network with fellow developers and industry professionals. Prizes worth $10,000+ for winning teams.",
+    isFlagship: true
   },
   {
-    name: 'Management',
-    events: [
-      { title: 'Business Plan', image: '/events/businessplan.jpg', description: 'Present your innovative business ideas to industry experts.', date: 'March 15, 2025', prize: '₹60,000', registration: 'Team of 3-4', video: '/video/2421545-uhd_3840_2160_30fps.mp4' },
-      { title: 'Case Study', image: '/events/casestudy.jpg', description: 'Analyze and solve real business case studies.', date: 'March 16, 2025', prize: '₹45,000', registration: 'Team of 2-3', video: '/video/854569-hd_1920_1080_25fps.mp4' },
-      { title: 'Startup Pitch', image: '/events/startuppitch.jpg', description: 'Pitch your startup idea to potential investors.', date: 'March 17, 2025', prize: '₹55,000', registration: 'Team of 2-4', video: '/video/1528503-uhd_3840_2160_25fps.mp4' },
-      { title: 'Stock Trading', image: '/events/stocktrading.jpg', description: 'Virtual stock market trading competition.', date: 'March 18, 2025', prize: '₹40,000', registration: 'Individual', video: '/video/2018959-hd_1920_1080_30fps.mp4' },
-      { title: 'Stock Market', image: '/events/stockmarket.jpg', description: 'Learn and compete in stock market analysis.', date: 'March 19, 2025', prize: '₹25,000', registration: 'Team of 2', video: '/video/853828-hd_1920_1080_25fps.mp4' },
-      { title: 'Marketing', image: '/events/marketing.jpg', description: 'Create innovative marketing campaigns.', date: 'March 20, 2025', prize: '₹30,000', registration: 'Team of 3-4', video: '/video/2421545-uhd_3840_2160_30fps.mp4' },
-      { title: 'HR Challenge', image: '/events/hrchallenge.jpg', description: 'Solve real HR management challenges.', date: 'March 21, 2025', prize: '₹20,000', registration: 'Team of 2-3', video: '/video/854569-hd_1920_1080_25fps.mp4' },
-      { title: 'Business Quiz', image: '/events/businessquiz.jpg', description: 'Test your business and management knowledge.', date: 'March 22, 2025', prize: '₹25,000', registration: 'Team of 2', video: '/video/1528503-uhd_3840_2160_25fps.mp4' },
-    ],
+    id: 3,
+    title: "Business Plan Competition",
+    date: "10.2.2025",
+    time: "20:00",
+    shares: "234 Shares",
+    image: "/images/building-6011756_1280.jpg",
+    description: "Pitch your innovative business ideas to a panel of industry experts and investors.",
+    venue: "Business School Auditorium",
+    price: "$25",
+    capacity: "200 people",
+    genre: "Business",
+    details: "Discover the next generation of entrepreneurs and business leaders. This event features multiple rounds of pitching, mentorship sessions, and networking opportunities with investors.",
+    isFlagship: true
   },
+  {
+    id: 4,
+    title: "Band Jam - Musical Extravaganza",
+    date: "05.3.2025",
+    time: "22:00",
+    shares: "567 Shares",
+    image: "/images/building-6011756_1280.jpg",
+    description: "The biggest musical festival featuring college bands competing for the ultimate prize and recognition.",
+    venue: "Open Air Amphitheater",
+    price: "$120",
+    capacity: "50,000 people",
+    genre: "Music Festival",
+    details: "Three stages of non-stop music featuring college bands from across the country. VIP packages available with backstage access and exclusive merchandise.",
+    isFlagship: true
+  },
+  {
+    id: 5,
+    title: "Robo Wars - Battle of Bots",
+    date: "20.3.2025",
+    time: "18:00",
+    shares: "189 Shares",
+    image: "/images/building-6011756_1280.jpg",
+    description: "Witness epic robot battles as engineering students showcase their mechanical creations in intense combat.",
+    venue: "Engineering Workshop",
+    price: "$15",
+    capacity: "1,000 people",
+    genre: "Robotics",
+    details: "Experience the thrill of robot combat as teams battle it out with their custom-built machines. Features multiple weight categories and special awards for innovation.",
+    isFlagship: true
+  },
+  {
+    id: 6,
+    title: "Cultural Night",
+    date: "12.4.2025",
+    time: "19:00",
+    shares: "78 Shares",
+    image: "/images/building-6011756_1280.jpg",
+    description: "Celebrate diversity through dance, music, and cultural performances from around the world.",
+    venue: "Cultural Center",
+    price: "Free",
+    capacity: "800 people",
+    genre: "Cultural",
+    details: "A night of cultural exchange featuring traditional dances, folk music, and ethnic performances. Food stalls serving international cuisine.",
+    isFlagship: false
+  },
+  {
+    id: 7,
+    title: "Tech Talk Series",
+    date: "28.4.2025",
+    time: "16:00",
+    shares: "45 Shares",
+    image: "/images/building-6011756_1280.jpg",
+    description: "Interactive sessions with industry leaders sharing insights on emerging technologies and career guidance.",
+    venue: "Seminar Hall",
+    price: "Free",
+    capacity: "300 people",
+    genre: "Workshop",
+    details: "Learn from experts in AI, blockchain, cybersecurity, and more. Includes Q&A sessions and networking opportunities.",
+    isFlagship: false
+  },
+  {
+    id: 8,
+    title: "Sports Meet",
+    date: "05.5.2025",
+    time: "08:00",
+    shares: "123 Shares",
+    image: "/images/building-6011756_1280.jpg",
+    description: "Annual sports competition featuring athletics, team sports, and individual events.",
+    venue: "Sports Complex",
+    price: "Free",
+    capacity: "2,000 people",
+    genre: "Sports",
+    details: "Competitive sports events including track & field, football, basketball, and more. Medals and trophies for winners.",
+    isFlagship: false
+  }
 ];
 
 export default function EventsPage() {
-  const allEvents = useMemo(() => categories.flatMap((c) => c.events), []);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [showFlagshipOnly, setShowFlagshipOnly] = useState(false);
+
+  const handleCardClick = (event: Event) => {
+    setSelectedEvent(event);
+  };
+
+  const handleClose = () => {
+    setSelectedEvent(null);
+  };
+
+  // Filter events based on flagship toggle
+  const filteredEvents = showFlagshipOnly ? events.filter(event => event.isFlagship) : events;
 
   return (
-    <div className="relative min-h-screen text-white font-sans">
-      <EventCarousel events={allEvents} />
-    </div>
-  );
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Background Image */}
+      <div 
+        className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: 'url(/images/backgrounds/eventpage.webp)'
+        }}
+      />
+      
+      {/* Black Overlay */}
+      <div className="fixed inset-0 -z-10 bg-black/50" />
+      <Logo />
+      <SidebarDock />
+      <AnimatePresence mode="wait">
+        {!selectedEvent ? (
+          <motion.main
+            key="main"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.6, ease: "easeInOut" }}
+            className="px-6 py-12"
+          >
+            <div className="max-w-7xl mx-auto">
+                             {/* Title Section */}
+               <div className="mb-16 text-center">
+                 <motion.h1 
+                   initial={{ opacity: 0, x: -50 }}
+                   animate={{ opacity: 1, x: 0 }}
+                   transition={{ duration: 0.8, delay: 0.2 }}
+                   className="text-6xl md:text-8xl font-bold text-white mb-4"
+                 >
+                   Events
+                 </motion.h1>
+                 <motion.div 
+                   initial={{ width: 0 }}
+                   animate={{ width: "100px" }}
+                   transition={{ duration: 0.8, delay: 0.4 }}
+                   className="h-1 bg-gradient-to-r from-pink-400 to-purple-400 mb-8 mx-auto"
+                 />
+                 <motion.p 
+                   initial={{ opacity: 0, x: -50 }}
+                   animate={{ opacity: 1, x: 0 }}
+                   transition={{ duration: 0.8, delay: 0.6 }}
+                   className="text-gray-300 text-lg max-w-md mx-auto"
+                 >
+                   It is a long established fact that a reader will be distracted by
+                 </motion.p>
+                 <motion.button 
+                   initial={{ opacity: 0, x: -50 }}
+                   animate={{ opacity: 1, x: 0 }}
+                   transition={{ duration: 0.8, delay: 0.8 }}
+                   className="mt-6 px-6 py-3 border border-white text-white hover:bg-white hover:text-purple-900 transition-all duration-300 rounded"
+                 >
+                   TIMETABLE
+                 </motion.button>
+                
+                {/* Flagship Events Filter */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 1 }}
+                  className="mt-8 flex justify-center"
+                >
+                  <button
+                    onClick={() => setShowFlagshipOnly(!showFlagshipOnly)}
+                    className={`px-6 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105 ${
+                      showFlagshipOnly
+                        ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-black shadow-lg'
+                        : 'bg-white/20 text-white border border-white/30 hover:bg-white/30'
+                    }`}
+                  >
+                    {showFlagshipOnly ? '⭐ Show All Events' : '🎯 Show Flagship Events Only'}
+                  </button>
+                </motion.div>
+              </div>
+
+              {/* Events Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredEvents.map((event, index) => (
+                  <motion.div
+                    key={event.id}
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    className="group cursor-pointer"
+                    onClick={() => handleCardClick(event)}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div className="bg-black/40 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 hover:border-white/30 transition-all duration-300 relative">
+                      {/* Flagship Event Badge */}
+                      {event.isFlagship && (
+                        <div className="absolute top-3 left-3 z-10">
+                          <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold shadow-lg animate-pulse">
+                            ⭐ FLAGSHIP
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Enhanced border for flagship events */}
+                      {event.isFlagship && (
+                        <div className="absolute inset-0 rounded-lg border-2 border-gradient-to-r from-yellow-400 via-orange-500 to-red-500 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                      )}
+                      
+                      <div className={`relative h-48 ${event.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`}>
+                        <div className="absolute inset-0 bg-black/20" />
+                        <div className="absolute bottom-4 left-4 right-4">
+                          <p className="text-white text-sm opacity-80 mb-2">
+                            {event.date} / {event.shares}
+                          </p>
+                          <h3 className="text-white font-semibold text-lg leading-tight">
+                            {event.title}
+                          </h3>
+                        </div>
+                      </div>
+                      <div className="p-4">
+                        <div className="flex items-center justify-between text-gray-300 text-sm mb-2">
+                          <span>{event.time}</span>
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${
+                            event.isFlagship 
+                              ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-300 border border-yellow-500/30' 
+                              : 'bg-blue-500/20 text-blue-300'
+                          }`}>
+                            {event.genre}
+                          </span>
+                        </div>
+                        {/* Flagship event indicator */}
+                        {event.isFlagship && (
+                          <div className="flex items-center space-x-2 mb-2">
+                            <span className="text-yellow-400 text-xs font-bold">🎯 PREMIUM EVENT</span>
+                            <span className="text-yellow-400 text-xs">•</span>
+                            <span className="text-yellow-400 text-xs font-medium">High Priority</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.main>
+        ) : (
+                     <motion.div
+             key="detail"
+             initial={{ opacity: 0 }}
+             animate={{ opacity: 1 }}
+             exit={{ opacity: 0 }}
+             transition={{ duration: 0.4 }}
+             className="fixed inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 z-50 overflow-hidden"
+           >
+            <div className="flex h-full">
+              {/* Left Side - Event Card */}
+              <motion.div
+                initial={{ x: -100, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                className="w-1/2 p-8 flex items-center justify-center"
+              >
+                <div className="w-full max-w-md">
+                  <motion.div
+                    layoutId={`card-${selectedEvent.id}`}
+                    className={`${selectedEvent.isFlagship ? 'bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 border-yellow-500/50' : 'bg-black/40'} backdrop-blur-sm rounded-lg overflow-hidden border border-white/20`}
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                  >
+                    {/* Flagship Badge in Modal */}
+                    {selectedEvent.isFlagship && (
+                      <div className="absolute top-4 left-4 z-10">
+                        <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-pulse">
+                          ⭐ FLAGSHIP EVENT
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className={`relative h-64 ${selectedEvent.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`}>
+                      <div className="absolute inset-0 bg-black/20" />
+                      <div className="absolute bottom-4 left-4 right-4">
+                        <p className="text-white text-sm opacity-80 mb-2">
+                          {selectedEvent.date} / {selectedEvent.shares}
+                        </p>
+                        <h3 className="text-white font-semibold text-xl leading-tight">
+                          {selectedEvent.title}
+                        </h3>
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <div className="space-y-3">
+                        <div className="flex items-center text-gray-300">
+                          <Clock className="w-4 h-4 mr-2" />
+                          <span>{selectedEvent.time}</span>
+                        </div>
+                        <div className="flex items-center text-gray-300">
+                          <MapPin className="w-4 h-4 mr-2" />
+                          <span>{selectedEvent.venue}</span>
+                        </div>
+                        <div className="flex items-center text-gray-300">
+                          <Users className="w-4 h-4 mr-2" />
+                          <span>{selectedEvent.capacity}</span>
+                        </div>
+                        {/* Flagship Event Priority */}
+                        {selectedEvent.isFlagship && (
+                          <div className="flex items-center text-yellow-400 font-medium">
+                            <span className="mr-2">🎯</span>
+                            <span>High Priority Event</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              </motion.div>
+
+              {/* Right Side - Event Details */}
+              <motion.div
+                initial={{ x: 100, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+                className="w-1/2 p-8 overflow-y-auto"
+              >
+                <div className="max-w-lg">
+                  {/* Close Button */}
+                  <motion.button
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.4 }}
+                    onClick={handleClose}
+                    className="absolute top-8 right-8 w-12 h-12 bg-black/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-black/40 transition-colors border border-white/20"
+                  >
+                    <X className="w-6 h-6" />
+                  </motion.button>
+
+                  {/* Event Details Content */}
+                  <motion.div
+                    initial={{ y: 30, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.3, duration: 0.5 }}
+                  >
+                    <div className="mb-6">
+                      <span className="inline-block px-3 py-1 bg-pink-500/20 text-pink-300 rounded-full text-sm mb-4">
+                        {selectedEvent.genre}
+                      </span>
+                      <h2 className="text-4xl font-bold text-white mb-4">
+                        {selectedEvent.title}
+                      </h2>
+                      <p className="text-gray-300 text-lg leading-relaxed mb-6">
+                        {selectedEvent.description}
+                      </p>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div>
+                        <h3 className="text-xl font-semibold text-white mb-3">Event Details</h3>
+                        {/* Flagship Event Info */}
+                        {selectedEvent.isFlagship && (
+                          <div className="mb-4 p-3 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-lg">
+                            <div className="flex items-center space-x-2 text-yellow-300">
+                              <span className="text-lg">⭐</span>
+                              <span className="font-semibold">This is a Flagship Event</span>
+                            </div>
+                            <p className="text-yellow-200 text-sm mt-1">
+                              Flagship events are our most prestigious and high-priority events featuring top-tier content and exclusive experiences.
+                            </p>
+                          </div>
+                        )}
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between py-2 border-b border-white/10">
+                            <span className="text-gray-300">Date & Time</span>
+                            <span className="text-white">{selectedEvent.date} at {selectedEvent.time}</span>
+                          </div>
+                          <div className="flex items-center justify-between py-2 border-b border-white/10">
+                            <span className="text-gray-300">Venue</span>
+                            <span className="text-white">{selectedEvent.venue}</span>
+                          </div>
+                          <div className="flex items-center justify-between py-2 border-b border-white/10">
+                            <span className="text-gray-300">Price</span>
+                            <span className="text-white font-semibold">{selectedEvent.price}</span>
+                          </div>
+                          <div className="flex items-center justify-between py-2 border-b border-white/10">
+                            <span className="text-gray-300">Capacity</span>
+                            <span className="text-white">{selectedEvent.capacity}</span>
+                          </div>
+                          <div className="flex items-center justify-between py-2 border-b border-white/10">
+                            <span className="text-gray-300">Event Type</span>
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              selectedEvent.isFlagship 
+                                ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-300 border border-yellow-500/30' 
+                                : 'bg-blue-500/20 text-blue-300'
+                            }`}>
+                              {selectedEvent.isFlagship ? '⭐ Flagship' : 'Regular Event'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h3 className="text-xl font-semibold text-white mb-3">About This Event</h3>
+                        <p className="text-gray-300 leading-relaxed">
+                          {selectedEvent.details}
+                        </p>
+                      </div>
+
+                      <div className="flex space-x-4 pt-6">
+                        <button className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+                          BUY TICKETS
+                        </button>
+                        <button className="px-6 py-3 border border-white/30 text-white rounded-lg hover:bg-white/10 transition-all duration-300">
+                          SHARE
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+                 )}
+       </AnimatePresence>
+       <Footer />
+     </div>
+   );
 }

@@ -3,7 +3,6 @@
 import { motion, useMotionValue, useMotionTemplate } from "framer-motion";
 import React, { MouseEvent as ReactMouseEvent, useState } from "react";
 import { cn } from "./lib/utils";
-import { CanvasRevealEffect } from "./CanvasRevealEffect";
 
 export const CardSpotlight = ({
   children,
@@ -46,16 +45,6 @@ export const CardSpotlight = ({
       data-no-splash="true"
       {...props}
     >
-      {showCanvasEffect && isHovering && (
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <CanvasRevealEffect
-            animationSpeed={5}
-            containerClassName="bg-transparent absolute inset-0 pointer-events-none"
-            colors={[[59, 130, 246], [139, 92, 246]]}
-            dotSize={3}
-          />
-        </div>
-      )}
       {/* Spotlight mask effect only */}
       <motion.div
         className="pointer-events-none absolute z-10 -inset-px rounded-md opacity-0 transition duration-300 group-hover/spotlight:opacity-100"

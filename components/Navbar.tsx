@@ -86,13 +86,15 @@ const Navbar: React.FC = () => {
       <div className="flex items-center justify-center flex-1">
 		<div className="flex items-center justify-between md:w-fit md:px-6 md:py-3 md:bg-black/40 md:backdrop-blur-xl md:border md:border-white/10 text-white md:rounded-full md:shadow-[0_10px_40px_rgba(168,85,247,0.25)]" data-no-splash="true">
           {/* Desktop Nav Links */}
-			<div className="hidden md:flex items-center space-x-6">
-				<a href="/" className="text-white/90 font-medium transition relative hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-purple-400 hover:via-pink-400 hover:to-cyan-400 hover:drop-shadow-[0_0_10px_rgba(236,72,153,0.35)]">Home</a>
-				<a href="/Events" className="text-white/90 font-medium transition relative hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-purple-400 hover:via-pink-400 hover:to-cyan-400 hover:drop-shadow-[0_0_10px_rgba(236,72,153,0.35)]">Events</a>
-				<a href="/Gallery" className="text-white/90 font-medium transition relative hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-purple-400 hover:via-pink-400 hover:to-cyan-400 hover:drop-shadow-[0_0_10px_rgba(236,72,153,0.35)]">Gallery</a>
-				<a href="/Team" className="text-white/90 font-medium transition relative hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-purple-400 hover:via-pink-400 hover:to-cyan-400 hover:drop-shadow-[0_0_10px_rgba(236,72,153,0.35)]">Team</a>
-				<a href="/FAQ" className="text-white/90 font-medium transition relative hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-purple-400 hover:via-pink-400 hover:to-cyan-400 hover:drop-shadow-[0_0_10px_rgba(236,72,153,0.35)]">FAQ</a>
-				<a href="/Contact" className="text-white/90 font-medium transition relative hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-purple-400 hover:via-pink-400 hover:to-cyan-400 hover:drop-shadow-[0_0_10px_rgba(236,72,153,0.35)]">Contact</a>
+          <div className="hidden md:flex items-center space-x-6">
+            <a href="/" className="text-white font-medium hover:text-yellow-300 transition">Home</a>
+            <a href="/Events" className="text-white font-medium hover:text-yellow-300 transition">Events</a>
+            <a href="/About" className="text-white font-medium hover:text-yellow-300 transition">About</a>
+            <a href="/Gallery" className="text-white font-medium hover:text-yellow-300 transition">Gallery</a>
+            <a href="/Team" className="text-white font-medium hover:text-yellow-300 transition">Team</a>
+            <a href="/why-sponsor-us" className="text-white font-medium hover:text-yellow-300 transition">Why Sponsor Us</a>
+            <a href="/FAQ" className="text-white font-medium hover:text-yellow-300 transition">FAQ</a>
+            <a href="/Contact" className="text-white font-medium hover:text-yellow-300 transition">Contact</a>
             
             {/* Authenticated User Links */}
             {isAuthenticated && (
@@ -121,8 +123,10 @@ const Navbar: React.FC = () => {
 				<div className="md:hidden absolute top-20 left-0 right-0 mx-auto w-11/12 bg-black/40 backdrop-blur-xl border border-white/10 text-white rounded-2xl px-4 py-4 shadow-[0_10px_40px_rgba(168,85,247,0.25)] z-40">
             <a href="/" className="block text-white py-2 hover:text-yellow-300">Home</a>
             <a href="/Events" className="block text-white py-2 hover:text-yellow-300">Events</a>
+            <a href="/About" className="block text-white py-2 hover:text-yellow-300">About</a>
             <a href="/Gallery" className="block text-white py-2 hover:text-yellow-300">Gallery</a>
             <a href="/Team" className="block text-white py-2 hover:text-yellow-300">Team</a>
+            <a href="/why-sponsor-us" className="block text-white py-2 hover:text-yellow-300">Why Sponsor Us</a>
             <a href="/FAQ" className="block text-white py-2 hover:text-yellow-300">FAQ</a>
             <a href="/Contact" className="block text-white py-2 hover:text-yellow-300">Contact</a>
             

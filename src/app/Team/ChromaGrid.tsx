@@ -190,7 +190,13 @@ export default function PeopleStrip() {
   const [hoveredPerson, setHoveredPerson] = useState<Person | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [cardPosition, setCardPosition] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  const [isClient, setIsClient] = useState(false);
   const cardRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+  // Prevent hydration mismatch by only rendering animations on client
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Function to close the expanded card
   const handleCloseExpandedCard = () => {
@@ -472,43 +478,122 @@ export default function PeopleStrip() {
     }
   ];
 
-  // Committee definitions with name and number of cards required
-  const committees = [
-    { name: "Discipline", cards: 2 },           // Uses person4, person5
-    { name: "Design", cards: 1 },               // Uses person6
-    { name: "Decor", cards: 2 },                // Uses person7, person8
-    { name: "Media", cards: 1 },                // Uses person9
-    { name: "Report", cards: 1 },               // Uses person10
-    { name: "Photography", cards: 2 },          // Uses person11, person12
-    { name: "Cultural", cards: 2 },             // Uses person13, person14
-    { name: "Hospitality", cards: 1 },          // Uses person15
-    { name: "Stage & Venue", cards: 2 },        // Uses person16, person17
-    { name: "Registrations", cards: 2 },        // Uses person18, person19
-    { name: "Tech & Support", cards: 1 },       // Uses person20
-    { name: "Internal Arrangements", cards: 2 }, // Uses person21, person22
-    { name: "Transport", cards: 1 },            // Uses person23
-    { name: "Social Media", cards: 1 },         // Uses person24
-    { name: "Prize & Certificates", cards: 1 }  // Uses person25
+  // Committee data with ultra-creative layouts
+  const committeeData = [
+    {
+      name: "Discipline",
+      people: [people[3], people[4]],
+      layout: "dna-helix",
+      color: "from-red-500 via-orange-500 to-yellow-500"
+    },
+    {
+      name: "Design", 
+      people: [people[5]],
+      layout: "quantum-field",
+      color: "from-purple-500 via-pink-500 to-rose-500"
+    },
+    {
+      name: "Decor",
+      people: [people[6], people[7]],
+      layout: "fractal-tree",
+      color: "from-blue-500 via-cyan-500 to-teal-500"
+    },
+    {
+      name: "Media",
+      people: [people[8]],
+      layout: "neural-network",
+      color: "from-indigo-500 via-purple-500 to-pink-500"
+    },
+    {
+      name: "Report",
+      people: [people[9]],
+      layout: "holographic",
+      color: "from-green-500 via-emerald-500 to-cyan-500"
+    },
+    {
+      name: "Photography",
+      people: [people[10], people[11]],
+      layout: "time-vortex",
+      color: "from-yellow-500 via-orange-500 to-red-500"
+    },
+    {
+      name: "Cultural",
+      people: [people[12], people[13]],
+      layout: "cosmic-dance",
+      color: "from-pink-500 via-rose-500 to-red-500"
+    },
+    {
+      name: "Hospitality",
+      people: [people[14]],
+      layout: "energy-field",
+      color: "from-cyan-500 via-blue-500 to-indigo-500"
+    },
+    {
+      name: "Stage & Venue",
+      people: [people[15], people[16]],
+      layout: "magnetic-field",
+      color: "from-violet-500 via-purple-500 to-indigo-500"
+    },
+    {
+      name: "Registrations",
+      people: [people[17], people[18]],
+      layout: "particle-system",
+      color: "from-emerald-500 via-green-500 to-lime-500"
+    },
+    {
+      name: "Tech & Support",
+      people: [people[19]],
+      layout: "matrix-code",
+      color: "from-slate-500 via-gray-500 to-zinc-500"
+    },
+    {
+      name: "Internal Arrangements",
+      people: [people[20], people[21]],
+      layout: "galaxy-cluster",
+      color: "from-purple-600 via-blue-600 to-cyan-600"
+    },
+    {
+      name: "Transport",
+      people: [people[22]],
+      layout: "wormhole",
+      color: "from-orange-500 via-red-500 to-pink-500"
+    },
+    {
+      name: "Social Media",
+      people: [people[23]],
+      layout: "digital-rain",
+      color: "from-teal-500 via-cyan-500 to-blue-500"
+    },
+    {
+      name: "Prize & Certificates",
+      people: [people[24]],
+      layout: "crystal-lattice",
+      color: "from-amber-500 via-yellow-500 to-lime-500"
+    }
   ];
 
   // Organizing Heads section - uses first 3 people
   const totalCards = 3;
   const cards = Array.from({ length: totalCards }, (_, i) => people[i % people.length]);
 
-  // Separate committees by card count for better mobile layout
-  const doubleCardCommittees = committees.filter(c => c.cards === 2);
-  const singleCardCommittees = committees.filter(c => c.cards === 1);
-  
-  // Special layout: 3 single cards beside Internal Arrangements
-  const specialSingleCards = singleCardCommittees.filter(c => 
-    ['Design', 'Media', 'Report'].includes(c.name)
-  );
-  const remainingSingleCards = singleCardCommittees.filter(c => 
-    !['Design', 'Media', 'Report'].includes(c.name)
-  );
-
   // Person Card Component with Hover to Expand
-  const PersonCard = ({ person, className = "", transformClass = "", cardId }: { person: Person; className?: string; transformClass?: string; cardId: string }) => {
+  const PersonCard = ({ 
+    person, 
+    className = "", 
+    transformClass = "", 
+    cardId,
+    animationDelay = 0,
+    size = "normal",
+    style = {}
+  }: { 
+    person: Person; 
+    className?: string; 
+    transformClass?: string; 
+    cardId: string;
+    animationDelay?: number;
+    size?: "normal" | "small" | "large";
+    style?: React.CSSProperties;
+  }) => {
     const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
       console.log('Mouse enter on card:', person.name);
       const rect = e.currentTarget.getBoundingClientRect();
@@ -530,19 +615,35 @@ export default function PeopleStrip() {
       setHoveredPerson(null);
     };
 
+    const sizeClasses = {
+      small: "w-[100px] sm:w-[110px] md:w-[120px]",
+      normal: "w-[120px] sm:w-[150px] md:w-[180px]",
+      large: "w-[140px] sm:w-[170px] md:w-[200px]"
+    };
+
+    // Use static styles on server, dynamic on client
+    const cardStyle = isClient ? {
+      willChange: 'transform',
+      transform: 'translateZ(0)',
+      WebkitTransform: 'translateZ(0)',
+      animationDelay: `${animationDelay}ms`,
+      ...style
+    } : {
+      willChange: 'transform',
+      transform: 'translateZ(0)',
+      WebkitTransform: 'translateZ(0)',
+      animationDelay: `${animationDelay}ms`
+    };
+
     return (
       <div
         ref={(el) => {
           cardRefs.current[cardId] = el;
         }}
-        className={`relative ${className} ${transformClass} cursor-pointer transition-all duration-500 ease-out group hover:scale-105 hover:z-10`}
+        className={`relative ${sizeClasses[size]} ${className} ${transformClass} cursor-pointer transition-all duration-700 ease-out group hover:scale-110 hover:z-20`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        style={{
-          willChange: 'transform',
-          transform: 'translateZ(0)',
-          WebkitTransform: 'translateZ(0)'
-        }}
+        style={cardStyle}
       >
         <img
           src={person.img}
@@ -567,6 +668,475 @@ export default function PeopleStrip() {
         <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out rounded-lg" />
       </div>
     );
+  };
+
+  // Render different layouts based on committee layout type
+  const renderCommitteeLayout = (committee: any) => {
+    // Don't render animated layouts on server
+    if (!isClient) {
+      return (
+        <div key={committee.name} className="flex flex-col items-center mb-20 relative min-h-[350px]">
+          <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-20 rounded-full blur-3xl`}></div>
+          <h3 className={`text-2xl md:text-4xl font-black mb-10 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10`}>
+            {committee.name}
+          </h3>
+          <div className="relative flex justify-center items-center">
+            {committee.people.map((person: Person, idx: number) => (
+              <PersonCard
+                key={idx}
+                person={person}
+                cardId={`${committee.name}-${idx}`}
+                className="aspect-[1/2.5] overflow-hidden rounded-2xl"
+                animationDelay={idx * 400}
+                size="normal"
+              />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Client-side animated layouts
+    switch (committee.layout) {
+      case 'dna-helix':
+        return (
+          <div key={committee.name} className="flex flex-col items-center mb-20 relative min-h-[400px]">
+            <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-15 rounded-3xl blur-3xl animate-pulse`}></div>
+            <h3 className={`text-2xl md:text-4xl font-black mb-12 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest z-10 relative`}>
+              {committee.name}
+            </h3>
+            <div className="relative w-full flex justify-center items-center min-h-[300px]">
+              {committee.people.map((person: Person, idx: number) => {
+                const angle = (idx * Math.PI * 2) / committee.people.length + (Date.now() * 0.002);
+                const radius = 100 + Math.sin(Date.now() * 0.003) * 30;
+                const zOffset = Math.sin(Date.now() * 0.004 + idx * Math.PI) * 20;
+                return (
+                  <PersonCard
+                    key={idx}
+                    person={person}
+                    cardId={`${committee.name}-${idx}`}
+                    className="aspect-[1/2.5] overflow-hidden rounded-2xl absolute"
+                    style={{
+                      left: `calc(50% + ${Math.cos(angle) * radius}px)`,
+                      top: `calc(50% + ${Math.sin(angle) * radius + zOffset}px)`,
+                      transform: `translate(-50%, -50%) rotate(${Date.now() * 0.1 + idx * 180}deg)`,
+                      transition: 'all 0.4s ease-out',
+                      zIndex: Math.floor(zOffset) + 10
+                    }}
+                    animationDelay={idx * 300}
+                    size="normal"
+                  />
+                );
+              })}
+            </div>
+          </div>
+        );
+      case 'quantum-field':
+        return (
+          <div key={committee.name} className="flex flex-col items-center mb-20 relative min-h-[350px]">
+            <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-20 rounded-full blur-3xl animate-pulse`}></div>
+            <h3 className={`text-2xl md:text-4xl font-black mb-10 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10`}>
+              {committee.name}
+            </h3>
+            <div className="relative flex justify-center items-center">
+              {committee.people.map((person: Person, idx: number) => (
+                <PersonCard
+                  key={idx}
+                  person={person}
+                  cardId={`${committee.name}-${idx}`}
+                  className="aspect-[1/2.5] overflow-hidden rounded-2xl"
+                  style={{
+                    transform: `translateY(${Math.sin(Date.now() * 0.005 + idx * Math.PI) * 40}px) scale(${1 + Math.sin(Date.now() * 0.003) * 0.1})`,
+                    transition: 'all 0.5s ease-out',
+                    filter: `hue-rotate(${Date.now() * 0.01}deg)`
+                  }}
+                  animationDelay={idx * 400}
+                  size="large"
+                />
+              ))}
+            </div>
+          </div>
+        );
+      case 'fractal-tree':
+        return (
+          <div key={committee.name} className="flex flex-col items-center mb-20 relative min-h-[350px]">
+            <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-15 rounded-3xl blur-2xl`}></div>
+            <h3 className={`text-2xl md:text-4xl font-black mb-10 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10`}>
+              {committee.name}
+            </h3>
+            <div className="flex gap-12 items-end">
+              {committee.people.map((person: Person, idx: number) => (
+                <PersonCard
+                  key={idx}
+                  person={person}
+                  cardId={`${committee.name}-${idx}`}
+                  className="aspect-[1/2.5] overflow-hidden rounded-2xl"
+                  style={{
+                    transform: `translateY(${Math.sin(Date.now() * 0.006 + idx * 2) * 50}px) rotate(${Math.sin(Date.now() * 0.002 + idx) * 5}deg)`,
+                    transition: 'all 0.6s ease-out'
+                  }}
+                  animationDelay={idx * 200}
+                  size="normal"
+                />
+              ))}
+            </div>
+          </div>
+        );
+      case 'neural-network':
+        return (
+          <div key={committee.name} className="flex flex-col items-center mb-20 relative min-h-[300px]">
+            <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-25 rounded-full blur-3xl animate-spin`} style={{ animationDuration: '15s' }}></div>
+            <h3 className={`text-2xl md:text-4xl font-black mb-10 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10`}>
+              {committee.name}
+            </h3>
+            <div className="relative w-full flex justify-center items-center min-h-[200px]">
+              {committee.people.map((person: Person, idx: number) => (
+                <PersonCard
+                  key={idx}
+                  person={person}
+                  cardId={`${committee.name}-${idx}`}
+                  className="aspect-[1/2.5] overflow-hidden rounded-2xl absolute"
+                  style={{
+                    left: '50%',
+                    top: '50%',
+                    transform: `translate(-50%, -50%) rotate(${Date.now() * 0.03}deg) translateX(80px) rotate(-${Date.now() * 0.03}deg) scale(${1 + Math.sin(Date.now() * 0.004) * 0.2})`,
+                    transition: 'all 0.2s linear'
+                  }}
+                  animationDelay={idx * 150}
+                  size="normal"
+                />
+              ))}
+            </div>
+          </div>
+        );
+      case 'holographic':
+        return (
+          <div key={committee.name} className="flex flex-col items-center mb-20 relative min-h-[300px]">
+            <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-30 rounded-full blur-3xl animate-pulse`}></div>
+            <h3 className={`text-2xl md:text-4xl font-black mb-10 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10`}>
+              {committee.name}
+            </h3>
+            <div className="relative flex justify-center items-center">
+              {committee.people.map((person: Person, idx: number) => (
+                <PersonCard
+                  key={idx}
+                  person={person}
+                  cardId={`${committee.name}-${idx}`}
+                  className="aspect-[1/2.5] overflow-hidden rounded-2xl"
+                  style={{
+                    transform: `translateY(${Math.sin(Date.now() * 0.007 + idx * Math.PI) * 30}px) scale(${1 + Math.sin(Date.now() * 0.005) * 0.15})`,
+                    transition: 'all 0.4s ease-out',
+                    boxShadow: `0 0 30px ${committee.color.split('-')[1]}-500/50`
+                  }}
+                  animationDelay={idx * 500}
+                  size="large"
+                />
+              ))}
+            </div>
+          </div>
+        );
+      case 'time-vortex':
+        return (
+          <div key={committee.name} className="flex flex-col items-center mb-20 relative min-h-[400px]">
+            <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-20 rounded-full blur-3xl animate-spin`} style={{ animationDuration: '25s' }}></div>
+            <h3 className={`text-2xl md:text-4xl font-black mb-12 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10`}>
+              {committee.name}
+            </h3>
+            <div className="relative w-full flex justify-center items-center min-h-[250px]">
+              {committee.people.map((person: Person, idx: number) => {
+                const angle = (idx * Math.PI * 2) / committee.people.length + (Date.now() * 0.001);
+                const radius = 120 + Math.sin(Date.now() * 0.002) * 40;
+                return (
+                  <PersonCard
+                    key={idx}
+                    person={person}
+                    cardId={`${committee.name}-${idx}`}
+                    className="aspect-[1/2.5] overflow-hidden rounded-2xl absolute"
+                    style={{
+                      left: `calc(50% + ${Math.cos(angle) * radius}px)`,
+                      top: `calc(50% + ${Math.sin(angle) * radius}px)`,
+                      transform: `translate(-50%, -50%) rotate(${Date.now() * 0.08 + idx * 45}deg) scale(${1 + Math.sin(Date.now() * 0.003) * 0.1})`,
+                      transition: 'all 0.3s ease-out'
+                    }}
+                    animationDelay={idx * 250}
+                    size="normal"
+                  />
+                );
+              })}
+            </div>
+          </div>
+        );
+      case 'cosmic-dance':
+        return (
+          <div key={committee.name} className="flex flex-col items-center mb-20 relative min-h-[350px]">
+            <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-15 rounded-3xl blur-2xl animate-pulse`}></div>
+            <h3 className={`text-2xl md:text-4xl font-black mb-10 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10`}>
+              {committee.name}
+            </h3>
+            <div className="flex gap-10 items-center">
+              {committee.people.map((person: Person, idx: number) => (
+                <PersonCard
+                  key={idx}
+                  person={person}
+                  cardId={`${committee.name}-${idx}`}
+                  className="aspect-[1/2.5] overflow-hidden rounded-2xl"
+                  style={{
+                    transform: `translateY(${Math.sin(Date.now() * 0.008 + idx * 1.5) * 35}px) rotate(${Math.sin(Date.now() * 0.004 + idx) * 8}deg)`,
+                    transition: 'all 0.5s ease-out'
+                  }}
+                  animationDelay={idx * 300}
+                  size="normal"
+                />
+              ))}
+            </div>
+          </div>
+        );
+      case 'energy-field':
+        return (
+          <div key={committee.name} className="flex flex-col items-center mb-20 relative min-h-[300px]">
+            <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-25 rounded-full blur-3xl animate-pulse`}></div>
+            <h3 className={`text-2xl md:text-4xl font-black mb-8 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10`}>
+              {committee.name}
+            </h3>
+            <div className="relative flex justify-center items-center">
+              {committee.people.map((person: Person, idx: number) => (
+                <PersonCard
+                  key={idx}
+                  person={person}
+                  cardId={`${committee.name}-${idx}`}
+                  className="aspect-[1/2.5] overflow-hidden rounded-2xl"
+                  style={{
+                    transform: `scale(${1 + Math.sin(Date.now() * 0.006) * 0.2})`,
+                    transition: 'all 0.4s ease-out',
+                    filter: `brightness(${1 + Math.sin(Date.now() * 0.004) * 0.3})`
+                  }}
+                  animationDelay={idx * 400}
+                  size="large"
+                />
+              ))}
+            </div>
+          </div>
+        );
+      case 'magnetic-field':
+        return (
+          <div key={committee.name} className="flex flex-col items-center mb-20 relative min-h-[350px]">
+            <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-20 rounded-3xl blur-3xl animate-pulse`}></div>
+            <h3 className={`text-2xl md:text-4xl font-black mb-10 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10`}>
+              {committee.name}
+            </h3>
+            <div className="flex gap-8 items-end">
+              {committee.people.map((person: Person, idx: number) => (
+                <PersonCard
+                  key={idx}
+                  person={person}
+                  cardId={`${committee.name}-${idx}`}
+                  className="aspect-[1/2.5] overflow-hidden rounded-2xl"
+                  style={{
+                    transform: `translateY(${Math.sin(Date.now() * 0.009 + idx * 2) * 45}px) rotate(${Math.sin(Date.now() * 0.005 + idx) * 10}deg)`,
+                    transition: 'all 0.6s ease-out'
+                  }}
+                  animationDelay={idx * 200}
+                  size="normal"
+                />
+              ))}
+            </div>
+          </div>
+        );
+      case 'particle-system':
+        return (
+          <div key={committee.name} className="flex flex-col items-center mb-20 relative min-h-[400px]">
+            <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-15 rounded-3xl blur-3xl animate-pulse`}></div>
+            <h3 className={`text-2xl md:text-4xl font-black mb-12 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10`}>
+              {committee.name}
+            </h3>
+            <div className="relative w-full flex justify-center items-center min-h-[250px]">
+              {committee.people.map((person: Person, idx: number) => {
+                const angle = (idx * Math.PI * 2) / committee.people.length + (Date.now() * 0.0015);
+                const radius = 90 + Math.sin(Date.now() * 0.0025) * 25;
+                return (
+                  <PersonCard
+                    key={idx}
+                    person={person}
+                    cardId={`${committee.name}-${idx}`}
+                    className="aspect-[1/2.5] overflow-hidden rounded-2xl absolute"
+                    style={{
+                      left: `calc(50% + ${Math.cos(angle) * radius}px)`,
+                      top: `calc(50% + ${Math.sin(angle) * radius}px)`,
+                      transform: `translate(-50%, -50%) rotate(${Date.now() * 0.06 + idx * 60}deg) scale(${1 + Math.sin(Date.now() * 0.004) * 0.15})`,
+                      transition: 'all 0.4s ease-out'
+                    }}
+                    animationDelay={idx * 300}
+                    size="normal"
+                  />
+                );
+              })}
+            </div>
+          </div>
+        );
+      case 'matrix-code':
+        return (
+          <div key={committee.name} className="flex flex-col items-center mb-20 relative min-h-[300px]">
+            <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-30 rounded-full blur-3xl animate-pulse`}></div>
+            <h3 className={`text-2xl md:text-4xl font-black mb-8 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10`}>
+              {committee.name}
+            </h3>
+            <div className="relative flex justify-center items-center">
+              {committee.people.map((person: Person, idx: number) => (
+                <PersonCard
+                  key={idx}
+                  person={person}
+                  cardId={`${committee.name}-${idx}`}
+                  className="aspect-[1/2.5] overflow-hidden rounded-2xl"
+                  style={{
+                    transform: `translateY(${Math.sin(Date.now() * 0.01 + idx * Math.PI) * 25}px) scale(${1 + Math.sin(Date.now() * 0.007) * 0.1})`,
+                    transition: 'all 0.5s ease-out',
+                    filter: `contrast(${1 + Math.sin(Date.now() * 0.003) * 0.2})`
+                  }}
+                  animationDelay={idx * 600}
+                  size="large"
+                />
+              ))}
+            </div>
+          </div>
+        );
+      case 'galaxy-cluster':
+        return (
+          <div key={committee.name} className="flex flex-col items-center mb-20 relative min-h-[450px]">
+            <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-20 rounded-3xl blur-3xl animate-pulse`}></div>
+            <h3 className={`text-2xl md:text-4xl font-black mb-12 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10`}>
+              {committee.name}
+            </h3>
+            <div className="relative w-full flex justify-center items-center min-h-[300px]">
+              {committee.people.map((person: Person, idx: number) => {
+                const angle = (idx * Math.PI * 2) / committee.people.length + (Date.now() * 0.001);
+                const radius = 110 + Math.sin(Date.now() * 0.002) * 35;
+                const zOffset = Math.sin(Date.now() * 0.003 + idx * Math.PI) * 15;
+                return (
+                  <PersonCard
+                    key={idx}
+                    person={person}
+                    cardId={`${committee.name}-${idx}`}
+                    className="aspect-[1/2.5] overflow-hidden rounded-2xl absolute"
+                    style={{
+                      left: `calc(50% + ${Math.cos(angle) * radius}px)`,
+                      top: `calc(50% + ${Math.sin(angle) * radius + zOffset}px)`,
+                      transform: `translate(-50%, -50%) rotate(${Date.now() * 0.04 + idx * 90}deg) scale(${1 + Math.sin(Date.now() * 0.005) * 0.1})`,
+                      transition: 'all 0.5s ease-out',
+                      zIndex: Math.floor(zOffset) + 10
+                    }}
+                    animationDelay={idx * 400}
+                    size="normal"
+                  />
+                );
+              })}
+            </div>
+          </div>
+        );
+      case 'wormhole':
+        return (
+          <div key={committee.name} className="flex flex-col items-center mb-20 relative min-h-[350px]">
+            <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-25 rounded-full blur-3xl animate-spin`} style={{ animationDuration: '30s' }}></div>
+            <h3 className={`text-2xl md:text-4xl font-black mb-10 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10`}>
+              {committee.name}
+            </h3>
+            <div className="relative flex justify-center items-center">
+              {committee.people.map((person: Person, idx: number) => (
+                <PersonCard
+                  key={idx}
+                  person={person}
+                  cardId={`${committee.name}-${idx}`}
+                  className="aspect-[1/2.5] overflow-hidden rounded-2xl"
+                  style={{
+                    transform: `scale(${1 + Math.sin(Date.now() * 0.008) * 0.25}) rotate(${Date.now() * 0.02}deg)`,
+                    transition: 'all 0.6s ease-out',
+                    filter: `hue-rotate(${Date.now() * 0.015}deg)`
+                  }}
+                  animationDelay={idx * 500}
+                  size="large"
+                />
+              ))}
+            </div>
+          </div>
+        );
+      case 'digital-rain':
+        return (
+          <div key={committee.name} className="flex flex-col items-center mb-20 relative min-h-[300px]">
+            <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-20 rounded-full blur-3xl animate-pulse`}></div>
+            <h3 className={`text-2xl md:text-4xl font-black mb-8 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10`}>
+              {committee.name}
+            </h3>
+            <div className="relative flex justify-center items-center">
+              {committee.people.map((person: Person, idx: number) => (
+                <PersonCard
+                  key={idx}
+                  person={person}
+                  cardId={`${committee.name}-${idx}`}
+                  className="aspect-[1/2.5] overflow-hidden rounded-2xl"
+                  style={{
+                    transform: `translateY(${Math.sin(Date.now() * 0.012 + idx * Math.PI) * 30}px) scale(${1 + Math.sin(Date.now() * 0.009) * 0.15})`,
+                    transition: 'all 0.4s ease-out',
+                    filter: `brightness(${1 + Math.sin(Date.now() * 0.006) * 0.2})`
+                  }}
+                  animationDelay={idx * 700}
+                  size="large"
+                />
+              ))}
+            </div>
+          </div>
+        );
+      case 'crystal-lattice':
+        return (
+          <div key={committee.name} className="flex flex-col items-center mb-20 relative min-h-[350px]">
+            <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-15 rounded-3xl blur-2xl animate-pulse`}></div>
+            <h3 className={`text-2xl md:text-4xl font-black mb-10 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10`}>
+              {committee.name}
+            </h3>
+            <div className="relative flex justify-center items-center">
+              {committee.people.map((person: Person, idx: number) => (
+                <PersonCard
+                  key={idx}
+                  person={person}
+                  cardId={`${committee.name}-${idx}`}
+                  className="aspect-[1/2.5] overflow-hidden rounded-2xl"
+                  style={{
+                    transform: `rotate(${Math.sin(Date.now() * 0.005 + idx) * 12}deg) scale(${1 + Math.sin(Date.now() * 0.004) * 0.1})`,
+                    transition: 'all 0.5s ease-out',
+                    filter: `saturate(${1 + Math.sin(Date.now() * 0.003) * 0.3})`
+                  }}
+                  animationDelay={idx * 400}
+                  size="large"
+                />
+              ))}
+            </div>
+          </div>
+        );
+      default:
+        return (
+          <div key={committee.name} className="flex flex-col items-center mb-20 relative min-h-[350px]">
+            <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-20 rounded-full blur-3xl animate-pulse`}></div>
+            <h3 className={`text-2xl md:text-4xl font-black mb-10 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10`}>
+              {committee.name}
+            </h3>
+            <div className="relative flex justify-center items-center">
+              {committee.people.map((person: Person, idx: number) => (
+                <PersonCard
+                  key={idx}
+                  person={person}
+                  cardId={`${committee.name}-${idx}`}
+                  className="aspect-[1/2.5] overflow-hidden rounded-2xl"
+                  style={{
+                    transform: `translateY(${Math.sin(Date.now() * 0.005 + idx * Math.PI) * 40}px) scale(${1 + Math.sin(Date.now() * 0.003) * 0.1})`,
+                    transition: 'all 0.5s ease-out',
+                    filter: `hue-rotate(${Date.now() * 0.01}deg)`
+                  }}
+                  animationDelay={idx * 400}
+                  size="large"
+                />
+              ))}
+            </div>
+          </div>
+        );
+    }
   };
 
   return (
@@ -599,132 +1169,10 @@ export default function PeopleStrip() {
         Committee Cores
       </h2>
 
-      {/* Committee grid - responsive layout with double-card committees first */}
-      <div className="w-full max-w-6xl px-2 sm:px-4 space-y-8">
-        {/* Double card committees with special single cards beside Internal Arrangements */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
-          {doubleCardCommittees.map((committee, committeeIndex) => {
-            const originalIndex = committees.findIndex(c => c.name === committee.name);
-            
-            // Special case for Internal Arrangements - add 3 single cards beside it
-            if (committee.name === "Internal Arrangements") {
-              return (
-                <div key={committeeIndex} className="col-span-1 sm:col-span-2 md:col-span-3">
-                  <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12 mb-8">
-                    {/* Internal Arrangements on the left */}
-                    <div className="flex flex-col items-center">
-                      <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent uppercase tracking-wide text-center" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
-                        {committee.name}
-                      </h3>
-                      
-                      {/* Internal Arrangements cards with V-shape */}
-                      <div className="flex overflow-hidden">
-                        {Array.from({ length: committee.cards }, (_, cardIndex) => {
-                          const personIndex = originalIndex * 3 + cardIndex;
-                          const person = people[personIndex % people.length];
-                          return (
-                            <PersonCard
-                              key={cardIndex}
-                              person={person}
-                              cardId={`${committee.name}-${cardIndex}`}
-                              className={`w-[120px] sm:w-[130px] md:w-[150px] overflow-hidden aspect-[1/2.5] ${person.bg}`}
-                              transformClass={cardIndex === 1 ? 'transform -translate-y-6 sm:-translate-y-8' : 'transform translate-y-6 sm:translate-y-8'}
-                            />
-                          );
-                        })}
-                      </div>
-                    </div>
-                    
-                    {/* 3 single cards beside Internal Arrangements */}
-                    <div className="flex flex-col sm:flex-row gap-6 sm:gap-8">
-                      {specialSingleCards.map((singleCommittee, singleIndex) => {
-                        const singleOriginalIndex = committees.findIndex(c => c.name === singleCommittee.name);
-                        return (
-                          <div key={singleIndex} className="flex flex-col items-center">
-                            <h4 className="text-lg sm:text-xl md:text-2xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent uppercase tracking-wide text-center" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
-                              {singleCommittee.name}
-                            </h4>
-                            <div className="flex overflow-hidden">
-                              {Array.from({ length: singleCommittee.cards }, (_, cardIndex) => {
-                                const personIndex = singleOriginalIndex * 3 + cardIndex;
-                                const person = people[personIndex % people.length];
-                                return (
-                                  <PersonCard
-                                    key={cardIndex}
-                                    person={person}
-                                    cardId={`${singleCommittee.name}-${cardIndex}`}
-                                    className={`w-[110px] sm:w-[120px] md:w-[130px] overflow-hidden aspect-[1/2.5] ${person.bg}`}
-                                  />
-                                );
-                              })}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              );
-            }
-            
-            // Regular double card committees
-            return (
-              <div key={committeeIndex} className="flex flex-col items-center">
-                {/* Committee subheading - responsive size */}
-                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent uppercase tracking-wide text-center" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
-                  {committee.name}
-                </h3>
-                
-                {/* Double committee cards with V-shape */}
-                <div className="flex overflow-hidden">
-                  {Array.from({ length: committee.cards }, (_, cardIndex) => {
-                    const personIndex = originalIndex * 3 + cardIndex;
-                    const person = people[personIndex % people.length];
-                    return (
-                      <PersonCard
-                        key={cardIndex}
-                        person={person}
-                        cardId={`${committee.name}-${cardIndex}`}
-                        className={`w-[120px] sm:w-[130px] md:w-[150px] overflow-hidden aspect-[1/2.5] ${person.bg}`}
-                        transformClass={cardIndex === 1 ? 'transform -translate-y-6 sm:-translate-y-8' : 'transform translate-y-6 sm:translate-y-8'}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Remaining single card committees - max 4 per row */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
-          {remainingSingleCards.map((committee, committeeIndex) => {
-            const originalIndex = committees.findIndex(c => c.name === committee.name);
-            return (
-              <div key={committeeIndex} className="flex flex-col items-center">
-                {/* Committee subheading - responsive size */}
-                <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent uppercase tracking-wide text-center" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
-                  {committee.name}
-                </h3>
-                
-                {/* Single committee card - matching double card width */}
-                <div className="flex overflow-hidden">
-                  {Array.from({ length: committee.cards }, (_, cardIndex) => {
-                    const personIndex = originalIndex * 3 + cardIndex;
-                    const person = people[personIndex % people.length];
-                    return (
-                      <PersonCard
-                        key={cardIndex}
-                        person={person}
-                        cardId={`${committee.name}-${cardIndex}`}
-                        className={`w-[120px] sm:w-[130px] md:w-[150px] overflow-hidden aspect-[1/2.5] ${person.bg}`}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
+      {/* Ultra Creative Committee Layouts */}
+      <div className="w-full max-w-7xl px-2 sm:px-4 space-y-16 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16">
+          {committeeData.map((committee) => renderCommitteeLayout(committee))}
         </div>
       </div>
 

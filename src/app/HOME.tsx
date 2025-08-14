@@ -1,61 +1,10 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
-import dynamic from 'next/dynamic';
-import { Play, Github, Linkedin, Home, Calendar, Users, CheckCircle, Info, Clock, Image, Mail } from 'lucide-react';
-import { FloatingDock } from '../../components/FloatingDock';
-
-// Custom Spline component using runtime directly - React 19 compatible
-const SplineComponent = dynamic(() => 
-  import('@splinetool/runtime').then(({ Application }) => {
-    return Promise.resolve({
-      default: ({ scene }: { scene: string }) => {
-        const canvasRef = useRef<HTMLCanvasElement>(null);
-        
-        useEffect(() => {
-          if (canvasRef.current) {
-            const app = new Application(canvasRef.current);
-            app.load(scene).catch(console.error);
-            
-            return () => {
-              app.dispose();
-            };
-          }
-        }, [scene]);
-        
-        return <canvas ref={canvasRef} className="w-full h-full" />;
-      }
-    });
-  }).catch(() => {
-    // Fallback if runtime fails
-    return Promise.resolve({ 
-      default: () => (
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-600 to-purple-700">
-          <div className="absolute inset-0">
-            <div className="absolute top-1/4 left-1/2 w-96 h-96 bg-gradient-to-br from-blue-400/30 to-purple-500/40 rounded-full blur-3xl transform -translate-x-1/2 animate-pulse"></div>
-            <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-gradient-to-tl from-indigo-400/40 to-blue-600/30 rounded-full blur-2xl animate-pulse delay-1000"></div>
-            <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-gradient-to-r from-purple-400/30 to-pink-500/40 rounded-full blur-2xl animate-pulse delay-2000"></div>
-          </div>
-        </div>
-      )
-    });
-  }), {
-    ssr: false,
-    loading: () => <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-600 to-purple-700" />
-  }
-);
+import React from 'react';
+import { Play, Github, Linkedin, LayoutDashboard } from 'lucide-react';
+import SidebarDock from '../../components/SidebarDock';
+import InstantSpline from '../../components/InstantSpline';
 
 export default function LayeredLandingPage() {
-  const navigationItems = [
-    { title: 'Home', icon: <Home className="w-5 h-5" />, href: '/' },
-    { title: 'Event', icon: <Calendar className="w-5 h-5" />, href: '/Events' },
-    { title: 'Team', icon: <Users className="w-5 h-5" />, href: '/Team' },
-    { title: 'Sponsors', icon: <CheckCircle className="w-5 h-5" />, href: '/Sponsors' },
-    { title: 'About', icon: <Info className="w-5 h-5" />, href: '/Contact' },
-    { title: 'Schedule', icon: <Clock className="w-5 h-5" />, href: '/FAQ' },
-    { title: 'Event Gallery', icon: <Image className="w-5 h-5" />, href: '/Gallery' },
-    { title: 'Contact', icon: <Mail className="w-5 h-5" />, href: '/Contact' },
-  ];
-
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
       
@@ -79,7 +28,13 @@ export default function LayeredLandingPage() {
         <a href="/Signup" className="px-8 py-4 bg-white/20 hover:bg-white/30 rounded-full text-white text-sm font-medium transition-all duration-300 border border-white/40">
           Sign Up
         </a>
+        <a href="/dashboard" className="w-12 h-12 bg-purple-600/60 hover:bg-purple-600/80 rounded-full text-white transition-all duration-300 border border-purple-400/40 flex items-center justify-center">
+          <LayoutDashboard className="w-5 h-5" />
+        </a>
       </div>
+      
+      {/* SidebarDock - Consistent with other pages */}
+      <SidebarDock />
       
       {/* Right Panel - Blue Section with Notch Cutout */}
       <div 
@@ -92,7 +47,15 @@ export default function LayeredLandingPage() {
       >
         {/* Spline background - positioned within right panel */}
         <div className="absolute inset-0 -z-10">
-          <SplineComponent scene="https://prod.spline.design/3O0nwQNm6dcILIOA/scene.splinecode" />
+          <InstantSpline 
+            scene="https://prod.spline.design/3O0nwQNm6dcILIOA/scene.splinecode"
+            style={{
+              width: '100%',
+              height: '100%'
+            }}
+          />
+          {/* Black overlay on top of spline */}
+          <div className="absolute inset-0 bg-black/40" />
         </div>
 
         {/* Background 3D Elements */}
@@ -109,89 +72,17 @@ export default function LayeredLandingPage() {
           </div>
         </nav>
         
-        {/* Main Content Area */}
-        <div className="relative z-10">
-          <div className="grid grid-cols-2 gap-12 items-start">
-            
-            {/* Left Content */}
-            <div className="ml-4">
-              <h1 className="text-7xl font-extrabold text-white leading-tight mb-8 tracking-wide">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-300">
-                  Experience
-                </span><br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-indigo-600 drop-shadow-2xl">
-                  Color
-                </span><br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 drop-shadow-2xl">
-                  to Cosmos
-                </span>
-              </h1>
-              
-              <p className="text-white/90 text-xl mb-8 leading-relaxed font-medium tracking-wide">
-                Create, Customize and Enhance 3D Models<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-orange-400 to-red-500 font-semibold">
-                  Effortlessly
-                </span>
-              </p>
-              
-              {/* Sponsor CTA Button */}
-              <div className="mb-8">
-                <a 
-                  href="/Sponsors/why-sponsor-us"
-                  className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-lg font-semibold rounded-full hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-                >
-                  <span className="mr-2">🌟</span>
-                  Become a Sponsor
-                  <span className="ml-2">→</span>
-                </a>
-                <p className="text-white/70 text-sm mt-3 ml-2">
-                  Join us in creating an extraordinary cosmic carnival experience
-                </p>
-              </div>
-            </div>
-            
-            {/* Right Content - Stats & Features */}
-            <div className="space-y-6 mt-4">
-              
-              {/* Sponsor Cards */}
-              <div className="bg-white/15 backdrop-blur-xl rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
-                <h4 className="text-white text-lg font-semibold mb-4">Sponsored by</h4>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">S1</span>
-                    </div>
-                    <span className="text-white/70 text-sm">TechCorp Solutions</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-400 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">S2</span>
-                    </div>
-                    <span className="text-white/70 text-sm">InnovateLabs</span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Second Sponsor Card */}
-              <div className="bg-white/15 backdrop-blur-xl rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
-                <h4 className="text-white text-lg font-semibold mb-4">Partners</h4>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-pink-400 to-red-400 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">P1</span>
-                    </div>
-                    <span className="text-white/70 text-sm">Creative Studios</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">P2</span>
-                    </div>
-                    <span className="text-white/70 text-sm">Design Hub</span>
-                  </div>
-                </div>
-              </div>
-              
-            </div>
+        {/* Main Content Area - Centered Sabrang 2025 */}
+        <div className="relative z-10 flex items-center justify-center h-full">
+          <div className="text-center">
+            <h1 className="text-8xl md:text-9xl font-extrabold text-white leading-tight tracking-wide">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-300">
+                SABRANG
+              </span><br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-indigo-600 drop-shadow-2xl">
+                2025
+              </span>
+            </h1>
           </div>
         </div>
         
@@ -219,11 +110,6 @@ export default function LayeredLandingPage() {
             <div className="w-30 h-26 ml-12 flex items-center justify-center top-0">
             <img src="/images/Logo@2x.png" alt="Logo" className="w-36 h-25" onError={(e) => { (e.target as HTMLImageElement).src = '/images/Logo.svg'; }} />
           </div>
-        </div>
-        
-        {/* Navigation Icons */}
-        <div className="pl-8 pr-30 pb-4 mb-2">
-          <FloatingDock items={navigationItems} desktopClassName="-ml-2" />
         </div>
         
         {/* Get Started Button - Creates True Notch Effect */}
