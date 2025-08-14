@@ -92,6 +92,7 @@ const Navbar: React.FC = () => {
             <a href="/About" className="text-white font-medium hover:text-yellow-300 transition">About</a>
             <a href="/Gallery" className="text-white font-medium hover:text-yellow-300 transition">Gallery</a>
             <a href="/Team" className="text-white font-medium hover:text-yellow-300 transition">Team</a>
+            <a href="/why-sponsor-us" className="text-white font-medium hover:text-yellow-300 transition">Why Sponsor Us</a>
             <a href="/FAQ" className="text-white font-medium hover:text-yellow-300 transition">FAQ</a>
             <a href="/Contact" className="text-white font-medium hover:text-yellow-300 transition">Contact</a>
             
@@ -125,6 +126,7 @@ const Navbar: React.FC = () => {
             <a href="/About" className="block text-white py-2 hover:text-yellow-300">About</a>
             <a href="/Gallery" className="block text-white py-2 hover:text-yellow-300">Gallery</a>
             <a href="/Team" className="block text-white py-2 hover:text-yellow-300">Team</a>
+            <a href="/why-sponsor-us" className="block text-white py-2 hover:text-yellow-300">Why Sponsor Us</a>
             <a href="/FAQ" className="block text-white py-2 hover:text-yellow-300">FAQ</a>
             <a href="/Contact" className="block text-white py-2 hover:text-yellow-300">Contact</a>
             

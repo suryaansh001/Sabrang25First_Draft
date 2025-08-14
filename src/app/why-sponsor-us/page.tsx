@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { FloatingDock } from '../../../../components/FloatingDock';
+import { FloatingDock } from '../../../components/FloatingDock';
 import {
   IconHome,
   IconUsers,
@@ -50,11 +50,11 @@ const WhySponsorUs = () => {
       href: "/Team",
     },
     {
-      title: "Sponsors",
+      title: "Why Sponsor Us",
       icon: (
         <IconCircle className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
-      href: "/Sponsors",
+      href: "/why-sponsor-us",
     },
     {
       title: "Gallery",
