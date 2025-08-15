@@ -79,26 +79,6 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Middle Section - LOCATION */}
-      <div className="border-t border-white/20 px-6 py-8">
-        <div className="max-w-7xl mx-auto">
-          <h3 className="text-lg font-bold uppercase mb-6 text-white text-center">Location</h3>
-          <div className="w-full max-w-4xl mx-auto">
-            <div className="relative w-full h-80 rounded-lg overflow-hidden border border-white/20">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3560.105288737097!2d75.64772927553119!3d26.836603276692568!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396c4af4fe68f403%3A0x3bf05f95df22b8c4!2sJK%20Lakshmipat%20University!5e0!3m2!1sen!2sin!4v1749983502958!5m2!1sen!2sin"
-                className="w-full h-full"
-                style={{ border: 0 }}
-                allowFullScreen={true}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="JK Lakshmipat University Location"
-              ></iframe>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Bottom Section - Copyright */}
       <div className="bg-black/30 px-6 py-4">
         <div className="max-w-7xl mx-auto text-center text-sm text-gray-300">

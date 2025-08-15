@@ -27,7 +27,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <main>{children}</main>
         {!hideChrome && <SidebarDock />}
       </div>
-      {mounted && !hideChrome && <Footer />}
+      {mounted && pathname !== "/" && <Footer />}
     </>
   );
 }
