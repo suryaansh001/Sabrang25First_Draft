@@ -5,14 +5,31 @@ import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 const Gallery = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [stars, setStars] = useState<Array<{id: number, x: number, y: number, size: number, animationDelay: number, duration: number}>>([]);
   
   const images = [
-    '/images/gallery_sample/1.webp',
-    '/images/gallery_sample/2.webp',
-    '/images/gallery_sample/3.webp',
-    '/images/gallery_sample/4.webp',
-    '/images/gallery_sample/5.webp',
+    '/images/gallery_desktop/1.png',
+    '/images/gallery_desktop/2.png',
+    // '/images/gallery_sample/3.webp',
+    // '/images/gallery_sample/4.webp',
+    // '/images/gallery_sample/5.webp',
   ];
+
+  // Generate stars for the background
+  useEffect(() => {
+    const generateStars = () => {
+      const newStars = Array.from({ length: 100 }, (_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: Math.random() * 3 + 1,
+        animationDelay: Math.random() * 3,
+        duration: Math.random() * 4 + 2
+      }));
+      setStars(newStars);
+    };
+    generateStars();
+  }, []);
 
   // Auto-advance slides every 6 seconds
   useEffect(() => {
@@ -54,7 +71,33 @@ const Gallery = () => {
   };
 
   return (
-    <div className="min-h-screen text-white font-sans relative overflow-hidden bg-gray-900">
+    <div className="min-h-screen text-white font-sans relative overflow-hidden">
+      {/* Starry Space Background */}
+      <div className="fixed inset-0 bg-gradient-to-br from-indigo-950 via-purple-950 via-pink-900 to-black -z-10">
+        {/* Animated Stars */}
+        {stars.map((star) => (
+          <div
+            key={star.id}
+            className="absolute bg-white rounded-full animate-pulse"
+            style={{
+              left: `${star.x}%`,
+              top: `${star.y}%`,
+              width: `${star.size}px`,
+              height: `${star.size}px`,
+              animationDelay: `${star.animationDelay}s`,
+              animationDuration: `${star.duration}s`,
+            }}
+          />
+        ))}
+        
+        {/* Nebula Effects */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-blue-400 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
+          <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-pink-400 rounded-full blur-2xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        </div>
+      </div>
+
       {/* Page Title */}
       <div className="text-center pt-16 pb-8 z-20">
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-3 bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(236,72,153,0.35)]">
@@ -67,8 +110,8 @@ const Gallery = () => {
       </div>
       
       {/* Main Image Display */}
-      <div className="relative w-full flex items-center justify-center p-4 z-10">
-        <div className="relative w-full max-w-6xl h-[600px] md:h-[700px] lg:h-[800px] rounded-2xl overflow-hidden shadow-2xl">
+      <div className="relative w-full flex items-center justify-center p-1 z-10 h-[calc(100vh-120px)]">
+        <div className="relative w-full max-w-9xl h-full rounded-2xl overflow-hidden">
           {images.map((image, index) => (
             <div
               key={index}
@@ -96,14 +139,12 @@ const Gallery = () => {
                     : 'scale(1.05)',
                 }}
               />
-              {/* Enhanced overlay with gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
             </div>
           ))}
         </div>
         
-        {/* Navigation Buttons */}
-        <div className="absolute bottom-8 right-8 flex space-x-4 z-20">
+        {/* Navigation Buttons - Positioned beside the image */}
+        <div className="absolute right-8 top-1/2 transform -translate-y-1/2 flex flex-col space-y-4 z-20">
           <button
             onClick={goToPrevious}
             disabled={isTransitioning}
@@ -133,23 +174,6 @@ const Gallery = () => {
             </div>
             <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 via-pink-600 to-purple-600 rounded-full blur opacity-0 group-hover:opacity-75 transition-opacity duration-500 -z-10"></div>
           </button>
-        </div>
-
-        {/* Image thumbnails */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
-          {images.map((image, index) => (
-            <button
-              key={index}
-              onClick={() => goToImage(index)}
-              disabled={isTransitioning}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index === currentImageIndex 
-                  ? 'bg-white scale-125' 
-                  : 'bg-white/40 hover:bg-white/60 hover:scale-110'
-              } ${isTransitioning ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-              aria-label={`Go to image ${index + 1}`}
-            />
-          ))}
         </div>
       </div>
     </div>
