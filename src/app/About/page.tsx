@@ -102,10 +102,17 @@ const AboutPage = () => {
 
         {/* Why It's OP Section */}
         <section className="py-20 px-6 bg-black/20 backdrop-blur-sm relative overflow-hidden">
-          {/* Background Video */}
+          {/* Background Video with Image Fallback */}
           <div className="absolute inset-0 -z-10">
+                         {/* Image Fallback - Always visible */}
+             <img 
+               src="/images/backgrounds/about-page/WhatsApp Image 2025-08-13 at 20.04.40_42fe13c8.jpg" 
+               alt="Why It's OP Background"
+               className="w-full h-full object-cover"
+             />
+            {/* Video Overlay - when loaded */}
             <video 
-              className="w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover"
               autoPlay 
               muted 
               loop
@@ -159,67 +166,88 @@ const AboutPage = () => {
               </h2>
             </div>
             
-            {/* Three Vertical Parallel Videos */}
+            {/* Three Vertical Parallel Videos with Image Fallbacks */}
             <div className="grid md:grid-cols-3 gap-8">
-              {/* Panache Video */}
-              <div className="relative group h-[600px]">
-                <div className="absolute inset-0 overflow-hidden rounded-2xl">
-                  <video 
-                    className="w-full h-full object-cover"
-                    autoPlay 
-                    muted 
-                    loop
-                    playsInline
-                  >
-                    <source src="/video/about-section/panache.mp4" type="video/mp4" />
-                  </video>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                </div>
-                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
-                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Panache</h3>
-                  <p className="text-xl text-gray-200 drop-shadow-lg">Glamorous fashion show</p>
-                </div>
-              </div>
-              
-              {/* Band Jam Video */}
-              <div className="relative group h-[600px]">
-                <div className="absolute inset-0 overflow-hidden rounded-2xl">
-                  <video 
-                    className="w-full h-full object-cover"
-                    autoPlay 
-                    muted 
-                    loop
-                    playsInline
-                  >
-                    <source src="/video/about-section/BandJAM.mp4" type="video/mp4" />
-                  </video>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                </div>
-                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
-                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Band Jam</h3>
-                  <p className="text-xl text-gray-200 drop-shadow-lg">Electrifying music</p>
-                </div>
-              </div>
-              
-              {/* Dance Battle Video */}
-              <div className="relative group h-[600px]">
-                <div className="absolute inset-0 overflow-hidden rounded-2xl">
-                  <video 
-                    className="w-full h-full object-cover"
-                    autoPlay 
-                    muted 
-                    loop
-                    playsInline
-                  >
-                    <source src="/video/about-section/Dance (2).mp4" type="video/mp4" />
-                  </video>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                </div>
-                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
-                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Dance Battle</h3>
-                  <p className="text-xl text-gray-200 drop-shadow-lg">Ultimate dance glory</p>
-                </div>
-              </div>
+                             {/* Panache Video */}
+               <div className="relative group h-[600px]">
+                 <div className="absolute inset-0 overflow-hidden rounded-2xl">
+                   {/* Image Fallback - Always visible */}
+                   <img 
+                     src="/images/about-section/Panache.png" 
+                     alt="Panache Fashion Show"
+                     className="w-full h-full object-cover"
+                   />
+                   {/* Video Overlay - when loaded */}
+                   <video 
+                     className="absolute inset-0 w-full h-full object-cover"
+                     autoPlay 
+                     muted 
+                     loop
+                     playsInline
+                   >
+                     <source src="/video/about-section/panache.mp4" type="video/mp4" />
+                   </video>
+                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                 </div>
+                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+                   <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Panache</h3>
+                   <p className="text-xl text-gray-200 drop-shadow-lg">Glamorous fashion show</p>
+                 </div>
+               </div>
+               
+               {/* Band Jam Video */}
+               <div className="relative group h-[600px]">
+                 <div className="absolute inset-0 overflow-hidden rounded-2xl">
+                   {/* Image Fallback - Always visible */}
+                   <img 
+                     src="/images/about-section/Bandjam.png" 
+                     alt="Band Jam Music Competition"
+                     className="w-full h-full object-cover"
+                   />
+                   {/* Video Overlay - when loaded */}
+                   <video 
+                     className="absolute inset-0 w-full h-full object-cover"
+                     autoPlay 
+                     muted 
+                     loop
+                     playsInline
+                   >
+                     <source src="/video/about-section/BandJAM.mp4" type="video/mp4" />
+                   </video>
+                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                 </div>
+                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+                   <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Band Jam</h3>
+                   <p className="text-xl text-gray-200 drop-shadow-lg">Electrifying music</p>
+                 </div>
+               </div>
+               
+               {/* Dance Battle Video */}
+               <div className="relative group h-[600px]">
+                 <div className="absolute inset-0 overflow-hidden rounded-2xl">
+                   {/* Image Fallback - Always visible */}
+                   <img 
+                     src="/images/about-section/Dance.png" 
+                     alt="Dance Battle Competition"
+                     className="w-full h-full object-cover"
+                   />
+                   {/* Video Overlay - when loaded */}
+                   <video 
+                     className="absolute inset-0 w-full h-full object-cover"
+                     autoPlay 
+                     muted 
+                     loop
+                     playsInline
+                   >
+                     <source src="/video/about-section/Dance (2).mp4" type="video/mp4" />
+                   </video>
+                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                 </div>
+                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+                   <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Dance Battle</h3>
+                   <p className="text-xl text-gray-200 drop-shadow-lg">Ultimate dance glory</p>
+                 </div>
+               </div>
             </div>
           </div>
         </section>
