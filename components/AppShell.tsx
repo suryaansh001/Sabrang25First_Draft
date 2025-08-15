@@ -16,7 +16,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     setMounted(true);
   }, []);
 
-  const hideChrome = pathname === "/" || pathname?.startsWith("/home") || pathname === "/Login" || pathname === "/Signup" || pathname === "/Events" || pathname === "/Team" || pathname === "/FAQ" || pathname === "/Contact" || pathname === "/About" || pathname === "/Gallery" || pathname === "/Sponsors/why-sponsor-us";
+  const hideChrome = pathname === "/" || pathname?.startsWith("/home") || pathname === "/Login" || pathname === "/Signup" || pathname === "/Events" || pathname === "/Team" || pathname === "/FAQ" || pathname === "/Contact" || pathname === "/About" || pathname === "/Sponsors/why-sponsor-us";
 
   return (
     <>

@@ -33,18 +33,64 @@ const navigationItems = [
 
 export const SidebarDock: React.FC<SidebarDockProps> = ({ className = '' }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  let mouseY = useMotionValue(Infinity);
+  const [mouseY, setMouseY] = useState(0);
+  let mouseYMotion = useMotionValue(Infinity);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Use the global mouse Y position
+    setMouseY(e.clientY);
+    mouseYMotion.set(e.clientY);
+    
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+
+  const handleMouseLeave = () => {
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    
+    // Set a small timeout to ensure smooth transition
+    timeoutRef.current = setTimeout(() => {
+      setIsExpanded(false);
+      mouseYMotion.set(Infinity);
+    }, 100);
+  };
+
+  const handleMouseEnter = () => {
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setIsExpanded(true);
+  };
+
+  // Cleanup timeout on unmount
+  React.useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <motion.div
+      ref={containerRef}
       className={`fixed left-4 top-[55%] transform -translate-y-1/2 z-50 ${className}`}
-      onMouseEnter={() => setIsExpanded(true)}
-      onMouseLeave={() => {
-        setIsExpanded(false);
-        mouseY.set(Infinity);
-      }}
-      onMouseMove={(e) => mouseY.set(e.pageY)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onMouseMove={handleMouseMove}
       initial={false}
+      style={{ pointerEvents: 'auto' }}
     >
       <motion.div
         className="flex flex-col items-start gap-3 rounded-2xl bg-black/40 backdrop-blur-md border border-white/20 px-3 py-4 shadow-2xl"
@@ -52,13 +98,14 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({ className = '' }) => {
           width: isExpanded ? 200 : 60,
           transition: { duration: 0.3, ease: "easeInOut" }
         }}
+        onMouseLeave={handleMouseLeave}
       >
         {navigationItems.map((item, index) => (
           <IconContainer 
             key={item.title} 
             item={item} 
             index={index} 
-            mouseY={mouseY}
+            mouseY={mouseYMotion}
             isExpanded={isExpanded}
           />
         ))}
@@ -81,14 +128,17 @@ function IconContainer({
   let ref = useRef<HTMLDivElement>(null);
 
   let distance = useTransform(mouseY, (val: number) => {
-    let bounds = ref.current?.getBoundingClientRect() ?? { y: 0, height: 0 };
-    return val - bounds.y - bounds.height / 2;
+    if (!ref.current) return 1000;
+    const bounds = ref.current.getBoundingClientRect();
+    const iconCenterY = bounds.top + bounds.height / 2;
+    const distance = Math.abs(val - iconCenterY);
+    return distance;
   });
 
-  let widthTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
-  let heightTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
-  let widthTransformIcon = useTransform(distance, [-150, 0, 150], [20, 40, 20]);
-  let heightTransformIcon = useTransform(distance, [-150, 0, 150], [20, 40, 20]);
+  let widthTransform = useTransform(distance, [0, 30, 60], [80, 60, 40]);
+  let heightTransform = useTransform(distance, [0, 30, 60], [80, 60, 40]);
+  let widthTransformIcon = useTransform(distance, [0, 30, 60], [40, 30, 20]);
+  let heightTransformIcon = useTransform(distance, [0, 30, 60], [40, 30, 20]);
 
   let width = useSpring(widthTransform, {
     mass: 0.1,
