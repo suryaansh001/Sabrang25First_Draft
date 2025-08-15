@@ -71,6 +71,7 @@ export default function SplashCursor({
   excludeSelectors = ['.no-splash', '[data-no-splash]', '.profile-card', '.team-card', 'button', '.button', '.btn', 'input', 'textarea', 'select', 'form', '.form', 'a[href]', '.pc-card-wrapper', '.pc-card', '.pc-inside', '.pc-content', '.pc-contact-btn', '.pc-user-info']
 }: SplashCursorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [webGLAvailable, setWebGLAvailable] = React.useState<boolean | null>(null);
 
   // Function to check if mouse is over excluded elements
   const isOverExcludedElement = (clientX: number, clientY: number): boolean => {
@@ -117,13 +118,19 @@ export default function SplashCursor({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // Check if WebGL is supported at all
+    if (!window.WebGLRenderingContext && !window.WebGL2RenderingContext) {
+      console.warn('WebGL not supported in this browser, SplashCursor will be disabled');
+      setWebGLAvailable(false);
+      return;
+    }
+
     let pointers: Pointer[] = [pointerPrototype()];
 
     let config = {
       SIM_RESOLUTION: SIM_RESOLUTION!,
       DYE_RESOLUTION: DYE_RESOLUTION!,
       CAPTURE_RESOLUTION: CAPTURE_RESOLUTION!,
-      DENSITY_DISSIPATION: DENSITY_DISSIPATION!,
       VELOCITY_DISSIPATION: VELOCITY_DISSIPATION!,
       PRESSURE: PRESSURE!,
       PRESSURE_ITERATIONS: PRESSURE_ITERATIONS!,
@@ -137,8 +144,26 @@ export default function SplashCursor({
       TRANSPARENT,
     };
 
-    const { gl, ext } = getWebGLContext(canvas);
-    if (!gl || !ext) return;
+    // Try to get WebGL context with error handling
+    let gl: WebGLRenderingContext | WebGL2RenderingContext | null = null;
+    let ext: any = null;
+    
+    try {
+      const webGLContext = getWebGLContext(canvas);
+      gl = webGLContext.gl;
+      ext = webGLContext.ext;
+      setWebGLAvailable(true);
+    } catch (error) {
+      console.warn('WebGL not available, SplashCursor will be disabled:', error);
+      setWebGLAvailable(false);
+      return; // Exit gracefully if WebGL fails
+    }
+    
+    if (!gl || !ext) {
+      console.warn('WebGL context could not be created, SplashCursor will be disabled');
+      setWebGLAvailable(false);
+      return;
+    }
 
     if (!ext.supportLinearFiltering) {
       config.DYE_RESOLUTION = 256;
@@ -1563,6 +1588,11 @@ export default function SplashCursor({
     BACK_COLOR,
     TRANSPARENT,
   ]);
+
+  // Don't render anything if WebGL is not available
+  if (webGLAvailable === false) {
+    return null;
+  }
 
   return (
     <div
