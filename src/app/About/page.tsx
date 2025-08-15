@@ -64,7 +64,7 @@ const AboutPage = () => {
               <div className="relative group">
                 <div className="relative overflow-hidden rounded-2xl">
                   <img 
-                    src="/images/about-section/what_is_sabrang.JPG" 
+                    src="/images/about-section/what_is_sabrang.webp" 
                     alt="What is Sabrang - Cultural Fest Celebration"
                     className="w-full h-[500px] object-cover transform group-hover:scale-105 transition-transform duration-700"
                   />
