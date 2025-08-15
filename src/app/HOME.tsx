@@ -1,9 +1,25 @@
 'use client';
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { Play, Github, Linkedin, LayoutDashboard } from 'lucide-react';
 import SidebarDock from '../../components/SidebarDock';
 
 const LayeredLandingPage = memo(function LayeredLandingPage() {
+  useEffect(() => {
+    // Check if video file is accessible
+    fetch('/video/Hero_Video.mp4', { method: 'HEAD' })
+      .then(response => {
+        if (response.ok) {
+          console.log('✅ Video file is accessible:', response.status, response.statusText);
+          console.log('📏 Content-Length:', response.headers.get('content-length'));
+        } else {
+          console.error('❌ Video file not accessible:', response.status, response.statusText);
+        }
+      })
+      .catch(error => {
+        console.error('❌ Error checking video file:', error);
+      });
+  }, []);
+
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
       
@@ -40,13 +56,25 @@ const LayeredLandingPage = memo(function LayeredLandingPage() {
       >
         {/* Video background - positioned within right panel */}
         <div className="absolute inset-0 -z-10">
+          {/* Fallback background gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-700 to-indigo-800" />
+          
           <video
             autoPlay
             loop
             muted
             playsInline
+            preload="metadata"
             className="w-full h-full object-cover"
             style={{ filter: 'brightness(0.7) contrast(1.2)' }}
+            onError={(e) => {
+              console.error('Video failed to load:', e);
+              // Fallback to background gradient if video fails
+              const videoElement = e.target as HTMLVideoElement;
+              videoElement.style.display = 'none';
+            }}
+            onLoadStart={() => console.log('Video loading started')}
+            onCanPlay={() => console.log('Video can play')}
           >
             <source src="/video/Hero_Video.mp4" type="video/mp4" />
             Your browser does not support the video tag.
