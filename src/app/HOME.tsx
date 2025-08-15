@@ -3,6 +3,84 @@ import React, { memo, useEffect } from 'react';
 import { Play, Github, Linkedin, LayoutDashboard } from 'lucide-react';
 import SidebarDock from '../../components/SidebarDock';
 
+// Video Background Component with multiple fallbacks
+const VideoBackground = () => {
+  const [videoError, setVideoError] = React.useState(false);
+  const [videoLoaded, setVideoLoaded] = React.useState(false);
+  const [videoAccessible, setVideoAccessible] = React.useState(false);
+
+  // Test if video is accessible
+  React.useEffect(() => {
+    const testVideo = async () => {
+      try {
+        const response = await fetch('/video/Hero_Video.mp4', { method: 'HEAD' });
+        if (response.ok) {
+          console.log('✅ Video file accessible:', response.status);
+          setVideoAccessible(true);
+        } else {
+          console.error('❌ Video file not accessible:', response.status);
+          setVideoAccessible(false);
+        }
+      } catch (error) {
+        console.error('❌ Error testing video accessibility:', error);
+        setVideoAccessible(false);
+      }
+    };
+    
+    testVideo();
+  }, []);
+
+  const handleVideoError = () => {
+    console.error('Video failed to load, falling back to static background');
+    setVideoError(true);
+  };
+
+  const handleVideoLoad = () => {
+    console.log('Video loaded successfully');
+    setVideoLoaded(true);
+  };
+
+  // Always show fallback first, then try to load video
+  return (
+    <>
+      {/* Fallback background that's always visible */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-700 to-indigo-800" />
+      
+      {/* Video overlay - only if accessible and no error */}
+      {videoAccessible && !videoError && (
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          className="w-full h-full object-cover opacity-80"
+          style={{ filter: 'brightness(0.7) contrast(1.2)' }}
+          onError={handleVideoError}
+          onLoadStart={() => console.log('Video loading started')}
+          onCanPlay={handleVideoLoad}
+          onLoadedData={handleVideoLoad}
+        >
+          <source src="/video/Hero_Video.mp4" type="video/mp4" />
+          {/* TODO: Create compressed version: Hero_Video_compressed.mp4 (target: <5MB) */}
+          <source src="/video/Hero_Video_compressed.mp4" type="video/mp4" />
+          <source src="/video/Hero_Video.webm" type="video/webm" />
+          Your browser does not support the video tag.
+        </video>
+      )}
+      
+      {/* Debug info in development */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="absolute top-4 left-4 text-white text-xs bg-black/50 p-2 rounded">
+          Video Status: {videoAccessible ? '✅ Accessible' : '❌ Not Accessible'} | 
+          Loaded: {videoLoaded ? '✅' : '⏳'} | 
+          Error: {videoError ? '❌' : '✅'}
+        </div>
+      )}
+    </>
+  );
+};
+
 const LayeredLandingPage = memo(function LayeredLandingPage() {
   useEffect(() => {
     // Check if video file is accessible
@@ -56,29 +134,9 @@ const LayeredLandingPage = memo(function LayeredLandingPage() {
       >
         {/* Video background - positioned within right panel */}
         <div className="absolute inset-0 -z-10">
-          {/* Fallback background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-700 to-indigo-800" />
+          {/* Video with multiple fallbacks */}
+          <VideoBackground />
           
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="metadata"
-            className="w-full h-full object-cover"
-            style={{ filter: 'brightness(0.7) contrast(1.2)' }}
-            onError={(e) => {
-              console.error('Video failed to load:', e);
-              // Fallback to background gradient if video fails
-              const videoElement = e.target as HTMLVideoElement;
-              videoElement.style.display = 'none';
-            }}
-            onLoadStart={() => console.log('Video loading started')}
-            onCanPlay={() => console.log('Video can play')}
-          >
-            <source src="/video/Hero_Video.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
           {/* Black overlay on top of video */}
           <div className="absolute inset-0 bg-black/60" />
         </div>

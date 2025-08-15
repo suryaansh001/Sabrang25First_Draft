@@ -27,6 +27,28 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
+  // Add headers for video files
+  async headers() {
+    return [
+      {
+        source: '/video/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+          {
+            key: 'Accept-Ranges',
+            value: 'bytes',
+          },
+          {
+            key: 'Content-Type',
+            value: 'video/mp4',
+          },
+        ],
+      },
+    ];
+  },
   // Reduce bundle size
   webpack: (config: any, { dev, isServer }: { dev: boolean; isServer: boolean }) => {
     if (!dev && !isServer) {
