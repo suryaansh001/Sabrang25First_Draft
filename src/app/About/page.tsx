@@ -28,7 +28,7 @@ const AboutPage = () => {
         <section 
           className="min-h-screen flex items-center justify-center relative"
           style={{
-            backgroundImage: 'url(/images/backgrounds/about-hero.webp)',
+            backgroundImage: 'url(/images/about-section/about-bg.webp)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat'
@@ -56,19 +56,18 @@ const AboutPage = () => {
         {/* What is Sabrang Section */}
         <section className="py-20 px-6">
           <div className="max-w-7xl mx-auto">
+            {/* Hero Image for What is Sabrang */}
+            
+            
             <div className="grid lg:grid-cols-2 gap-16 items-center">
-              {/* Left: Video */}
+              {/* Left: Image */}
               <div className="relative group">
                 <div className="relative overflow-hidden rounded-2xl">
-                  <video 
+                  <img 
+                    src="/images/about-section/what_is_sabrang.JPG" 
+                    alt="What is Sabrang - Cultural Fest Celebration"
                     className="w-full h-[500px] object-cover transform group-hover:scale-105 transition-transform duration-700"
-                    autoPlay 
-                    muted 
-                    loop
-                    playsInline
-                  >
-                    <source src="/images/backgrounds/about-page/WhatsApp Video 2025-08-13 at 20.05.38_14fdac7b.mp4" type="video/mp4" />
-                  </video>
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                 </div>
                 <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-2xl font-bold">
@@ -102,10 +101,24 @@ const AboutPage = () => {
         </section>
 
         {/* Why It's OP Section */}
-        <section className="py-20 px-6 bg-black/20 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
-              {/* Left: Content */}
+        <section className="py-20 px-6 bg-black/20 backdrop-blur-sm relative overflow-hidden">
+          {/* Background Video */}
+          <div className="absolute inset-0 -z-10">
+            <video 
+              className="w-full h-full object-cover"
+              autoPlay 
+              muted 
+              loop
+              playsInline
+            >
+              <source src="/video/about-section/about-op.mp4" type="video/mp4" />
+            </video>
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-900/80 via-blue-900/70 to-pink-900/80"></div>
+          </div>
+          
+          <div className="max-w-7xl mx-auto relative z-10">
+            <div className="text-center max-w-4xl mx-auto">
+              {/* Content */}
               <div className="space-y-6">
                 <h2 className="text-4xl md:text-5xl font-bold">
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">
@@ -124,119 +137,13 @@ const AboutPage = () => {
                     'Immersive themes every year',
                     'Epic nights with DJs, live bands, and celebrities'
                   ].map((item, index) => (
-                    <div key={index} className="flex items-center space-x-3">
+                    <div key={index} className="flex items-center justify-center space-x-3">
                       <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                       <span className="text-gray-300 text-lg">{item}</span>
                     </div>
                   ))}
                 </div>
               </div>
-              
-              {/* Right: Video */}
-              <div className="relative group">
-                <div className="relative overflow-hidden rounded-2xl">
-                  <video 
-                    className="w-full h-[500px] object-cover transform group-hover:scale-105 transition-transform duration-700"
-                    autoPlay 
-                    muted 
-                    loop
-                    playsInline
-                  >
-                    <source src="/images/backgrounds/about-page/WhatsApp Video 2025-08-13 at 20.05.38_e7f140a8.mp4" type="video/mp4" />
-                  </video>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
-                      <div className="w-0 h-0 border-l-[20px] border-l-white border-t-[12px] border-t-transparent border-b-[12px] border-b-transparent ml-2"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Event Categories Section */}
-        <section className="py-20 px-6">
-          <div className="max-w-7xl mx-auto text-center mb-16">
-            <h2 className="text-5xl md:text-6xl font-bold mb-6">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-500 to-indigo-600">
-                Galactic Domains
-              </span>
-            </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Explore the cosmic realms of creativity and competition
-            </p>
-          </div>
-          
-          <div className="max-w-7xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-8">
-              {[
-                {
-                  title: 'Tech Galaxy',
-                  description: 'Code through the stars in cosmic hackathons & stellar showcases',
-                  image: '/images/backgrounds/about-page/WhatsApp Video 2025-08-13 at 20.05.33_be271183.mp4',
-                  type: 'video',
-                  color: 'from-blue-500 to-cyan-500'
-                },
-                {
-                  title: 'Command Nexus',
-                  description: 'Lead missions with interstellar quizzes & cosmic challenges',
-                  image: '/images/backgrounds/about-page/WhatsApp Video 2025-08-13 at 20.05.29_c38cc6c0.mp4',
-                  type: 'video',
-                  color: 'from-purple-500 to-pink-500'
-                },
-                {
-                  title: 'Creative Cosmos',
-                  description: 'Design nebulas through artistic contests & visual installations',
-                  image: '/images/backgrounds/about-page/WhatsApp Image 2025-08-13 at 20.04.40_42fe13c8.jpg',
-                  type: 'image',
-                  color: 'from-green-500 to-blue-500'
-                },
-                {
-                  title: 'Cultural Universe',
-                  description: 'Express your stellar soul through dance, music, drama & fashion',
-                  image: '/images/backgrounds/about-page/WhatsApp Image 2025-08-13 at 20.04.37_b514dcc5.jpg',
-                  type: 'image',
-                  color: 'from-orange-500 to-red-500'
-                }
-              ].map((category, index) => (
-                <div key={index} className="group relative overflow-hidden rounded-2xl bg-black/20 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-500">
-                  <div className="relative h-64 overflow-hidden">
-                    {category.type === 'video' ? (
-                      <video 
-                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                        autoPlay 
-                        muted 
-                        loop
-                        playsInline
-                      >
-                        <source src={category.image} type="video/mp4" />
-                      </video>
-                    ) : (
-                      <img 
-                        src={category.image} 
-                        alt={category.title}
-                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                      />
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                  </div>
-                  
-                  <div className="p-6">
-                    <h3 className={`text-2xl font-bold mb-3 bg-gradient-to-r ${category.color} bg-clip-text text-transparent`}>
-                      {category.title}
-                    </h3>
-                    <p className="text-gray-300 leading-relaxed">
-                      {category.description}
-                    </p>
-                  </div>
-                  
-                  <div className="absolute top-4 right-4 w-12 h-12 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <span className="text-white text-lg">✨</span>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </section>
@@ -244,41 +151,73 @@ const AboutPage = () => {
         {/* Flagship Section */}
         <section className="py-20 px-6 bg-black/20 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
-              {/* Left: Video */}
-              <div className="relative group">
-                <div className="relative overflow-hidden rounded-2xl">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500">
+                  Flagship Showdowns
+                </span>
+              </h2>
+            </div>
+            
+            {/* Three Vertical Parallel Videos */}
+            <div className="grid md:grid-cols-3 gap-8">
+              {/* Panache Video */}
+              <div className="relative group h-[600px]">
+                <div className="absolute inset-0 overflow-hidden rounded-2xl">
                   <video 
-                    className="w-full h-[500px] object-cover transform group-hover:scale-105 transition-transform duration-700"
+                    className="w-full h-full object-cover"
                     autoPlay 
                     muted 
                     loop
                     playsInline
                   >
-                    <source src="/images/backgrounds/about-page/WhatsApp Video 2025-08-13 at 20.05.21_c5cbabb1.mp4" type="video/mp4" />
+                    <source src="/video/about-section/panache.mp4" type="video/mp4" />
                   </video>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                </div>
+                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Panache</h3>
+                  <p className="text-xl text-gray-200 drop-shadow-lg">Glamorous fashion show</p>
                 </div>
               </div>
               
-              {/* Right: Content */}
-              <div className="space-y-6">
-                <h2 className="text-4xl md:text-5xl font-bold">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500">
-                    Flagship Showdowns
-                  </span>
-                </h2>
-                <div className="space-y-4">
-                  {[
-                    'Panache – Glamorous fashion show',
-                    'Band Jam – Electrifying music',
-                    'Dance Battle – Ultimate dance glory'
-                  ].map((item, index) => (
-                    <div key={index} className="flex items-center space-x-3 p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-colors duration-300">
-                      <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                      <span className="text-gray-300 text-lg">{item}</span>
-                    </div>
-                  ))}
+              {/* Band Jam Video */}
+              <div className="relative group h-[600px]">
+                <div className="absolute inset-0 overflow-hidden rounded-2xl">
+                  <video 
+                    className="w-full h-full object-cover"
+                    autoPlay 
+                    muted 
+                    loop
+                    playsInline
+                  >
+                    <source src="/video/about-section/BandJAM.mp4" type="video/mp4" />
+                  </video>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                </div>
+                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Band Jam</h3>
+                  <p className="text-xl text-gray-200 drop-shadow-lg">Electrifying music</p>
+                </div>
+              </div>
+              
+              {/* Dance Battle Video */}
+              <div className="relative group h-[600px]">
+                <div className="absolute inset-0 overflow-hidden rounded-2xl">
+                  <video 
+                    className="w-full h-full object-cover"
+                    autoPlay 
+                    muted 
+                    loop
+                    playsInline
+                  >
+                    <source src="/video/about-section/Dance (2).mp4" type="video/mp4" />
+                  </video>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                </div>
+                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Dance Battle</h3>
+                  <p className="text-xl text-gray-200 drop-shadow-lg">Ultimate dance glory</p>
                 </div>
               </div>
             </div>
@@ -310,18 +249,14 @@ const AboutPage = () => {
                 </div>
               </div>
               
-              {/* Right: Video */}
+              {/* Right: Image */}
               <div className="relative group">
                 <div className="relative overflow-hidden rounded-2xl">
-                  <video 
+                  <img 
+                    src="/images/backgrounds/about-page/WhatsApp Image 2025-08-13 at 20.04.37_b514dcc5.jpg" 
+                    alt="Beyond Competitions - Live Performance"
                     className="w-full h-[500px] object-cover transform group-hover:scale-105 transition-transform duration-700"
-                    autoPlay 
-                    muted 
-                    loop
-                    playsInline
-                  >
-                    <source src="/images/backgrounds/about-page/WhatsApp Video 2025-08-13 at 20.05.16_97cce750.mp4" type="video/mp4" />
-                  </video>
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                 </div>
                 <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-full flex items-center justify-center text-2xl font-bold">
@@ -336,18 +271,14 @@ const AboutPage = () => {
         <section className="py-20 px-6 bg-black/20 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
-              {/* Left: Video */}
+              {/* Left: Image */}
               <div className="relative group">
                 <div className="relative overflow-hidden rounded-2xl">
-                  <video 
+                  <img 
+                    src="/images/backgrounds/about-page/WhatsApp Image 2025-08-13 at 20.04.40_42fe13c8.jpg" 
+                    alt="Final Vibe - Live Event Atmosphere"
                     className="w-full h-[500px] object-cover transform group-hover:scale-105 transition-transform duration-700"
-                    autoPlay 
-                    muted 
-                    loop
-                    playsInline
-                  >
-                    <source src="/images/backgrounds/about-page/WhatsApp Video 2025-08-13 at 20.04.50_8741c3be.mp4" type="video/mp4" />
-                  </video>
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                 </div>
               </div>

@@ -207,275 +207,241 @@ export default function PeopleStrip() {
 
   // People array with detailed information for each person
   const people: Person[] = [
+    // Organizing Committee
     { 
-      img: "/images/OH_images_home/anni.jpeg", 
-      bg: "bg-orange-500",
-      name: "Aarav Sharma",
-      role: "Lead Organizer",
-      committee: "Organizing Heads",
-      contact: "aarav.sharma@email.com",
+      img: "/images/Team/OH/Chetesh Sharma.png", 
+      bg: "bg-gradient-to-br from-orange-500 via-rose-500 to-yellow-400",
+      name: "Chetesh Sharma",
+      role: "Organizing Committee",
+      committee: "Organizing Committee",
+      contact: "chetesh.sharma@email.com",
       phone: "+91 98765 43210"
     },
     { 
-      img: "/images/OH_images_home/chetesh.jpeg", 
-      bg: "bg-green-500",
-      name: "Zara Khan",
-      role: "Event Coordinator",
-      committee: "Organizing Heads",
-      contact: "zara.khan@email.com",
+      img: "/images/Team/OH/Diya Garg.png", 
+      bg: "bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-400",
+      name: "Diya Garg",
+      role: "Organizing Committee",
+      committee: "Organizing Committee",
+      contact: "diya.garg@email.com",
       phone: "+91 98765 43211"
     },
     { 
-      img: "/images/OH_images_home/diya.jpeg", 
-      bg: "bg-blue-900",
-      name: "Vikram Patel",
-      role: "Technical Director",
-      committee: "Organizing Heads",
-      contact: "vikram.patel@email.com",
+      img: "/images/Team/OH/Anirudh Saini.png", 
+      bg: "bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500",
+      name: "Anirudh Saini",
+      role: "Organizing Committee",
+      committee: "Organizing Committee",
+      contact: "anirudh.saini@email.com",
       phone: "+91 98765 43212"
     },
+    // Core Committee Members
     { 
-      img: "/images/OIP.webp", 
-      bg: "bg-orange-300",
-      name: "Priya Singh",
-      role: "Discipline Head",
-      committee: "Discipline",
-      contact: "priya.singh@email.com",
-      phone: "+91 98765 43213"
-    },
-    { 
-      img: "/images/OH_images_home/rahul.jpeg", 
-      bg: "bg-blue-900",
+      img: "/images/Team/Discipline/Rahul_Verma.png", 
+      bg: "bg-red-500",
       name: "Rahul Verma",
-      role: "Discipline Coordinator",
+      role: "Discipline",
       committee: "Discipline",
       contact: "rahul.verma@email.com",
       phone: "+91 98765 43214"
     },
     { 
-      img: "/images/OH_images_home/ananya.jpeg", 
-      bg: "bg-red-500",
-      name: "Ananya Das",
-      role: "Design Lead",
-      committee: "Design",
-      contact: "ananya.das@email.com",
+      img: "/images/Team/Discipline/Kriti_Gupta.png", 
+      bg: "bg-orange-500",
+      name: "Kriti Gupta",
+      role: "Discipline",
+      committee: "Discipline",
+      contact: "kriti.gupta@email.com",
       phone: "+91 98765 43215"
     },
     { 
       img: "/images/OH_images_home/karan.jpeg", 
-      bg: "bg-orange-500",
-      name: "Karan Malhotra",
-      role: "Decor Head",
-      committee: "Decor",
-      contact: "karan.malhotra@email.com",
+      bg: "bg-purple-500",
+      name: "Priyanshu Kullu",
+      role: "Design",
+      committee: "Design",
+      contact: "priyanshu.kullu@email.com",
       phone: "+91 98765 43216"
     },
     { 
       img: "/images/OH_images_home/sneha.jpeg", 
-      bg: "bg-green-500",
-      name: "Sneha Reddy",
-      role: "Decor Coordinator",
+      bg: "bg-blue-500",
+      name: "Jinal Lodha",
+      role: "Decor",
       committee: "Decor",
-      contact: "sneha.reddy@email.com",
+      contact: "jinal.lodha@email.com",
       phone: "+91 98765 43217"
     },
     { 
       img: "/images/OH_images_home/arjun.jpeg", 
-      bg: "bg-purple-500",
-      name: "Arjun Kapoor",
-      role: "Media Head",
-      committee: "Media",
-      contact: "arjun.kapoor@email.com",
+      bg: "bg-green-500",
+      name: "Jigeesha Agarawal",
+      role: "Decor",
+      committee: "Decor",
+      contact: "jigeesha.agarawal@email.com",
       phone: "+91 98765 43218"
     },
     { 
       img: "/images/OH_images_home/meera.jpeg", 
       bg: "bg-pink-500",
-      name: "Meera Iyer",
-      role: "Report Lead",
-      committee: "Report",
-      contact: "meera.iyer@email.com",
+      name: "Chahat Khandelwal",
+      role: "Media",
+      committee: "Media",
+      contact: "chahat.khandelwal@email.com",
       phone: "+91 98765 43219"
     },
     { 
       img: "/images/OH_images_home/aditya.jpeg", 
       bg: "bg-indigo-500",
-      name: "Aditya Rao",
-      role: "Photography Head",
-      committee: "Photography",
-      contact: "aditya.rao@email.com",
+      name: "Prabal Agarwal",
+      role: "Report",
+      committee: "Report",
+      contact: "prabal.agarwal@email.com",
       phone: "+91 98765 43220"
     },
     { 
       img: "/images/OH_images_home/kavya.jpeg", 
       bg: "bg-teal-500",
-      name: "Kavya Menon",
-      role: "Photography Coordinator",
+      name: "Shourya Prajapat",
+      role: "Photography",
       committee: "Photography",
-      contact: "kavya.menon@email.com",
+      contact: "shourya.prajapat@email.com",
       phone: "+91 98765 43221"
     },
     { 
       img: "/images/OH_images_home/rohan.jpeg", 
       bg: "bg-yellow-500",
-      name: "Rohan Gupta",
-      role: "Cultural Head",
-      committee: "Cultural",
-      contact: "rohan.gupta@email.com",
+      name: "Ekansh Saraswat",
+      role: "Photography",
+      committee: "Photography",
+      contact: "ekansh.saraswat@email.com",
       phone: "+91 98765 43222"
     },
     { 
       img: "/images/OH_images_home/ishita.jpeg", 
       bg: "bg-cyan-500",
-      name: "Ishita Sharma",
-      role: "Cultural Coordinator",
+      name: "Kopal Jain",
+      role: "Cultural",
       committee: "Cultural",
-      contact: "ishita.sharma@email.com",
+      contact: "kopal.jain@email.com",
       phone: "+91 98765 43223"
     },
     { 
       img: "/images/OH_images_home/dev.jpeg", 
       bg: "bg-lime-500",
-      name: "Dev Malhotra",
-      role: "Hospitality Head",
-      committee: "Hospitality",
-      contact: "dev.malhotra@email.com",
+      name: "Satvick Vaid",
+      role: "Cultural",
+      committee: "Cultural",
+      contact: "satvick.vaid@email.com",
       phone: "+91 98765 43224"
     },
     { 
       img: "/images/OH_images_home/tanvi.jpeg", 
       bg: "bg-amber-500",
-      name: "Tanvi Singh",
-      role: "Stage & Venue Head",
-      committee: "Stage & Venue",
-      contact: "tanvi.singh@email.com",
+      name: "Suryaansh Sharma",
+      role: "Tech & Support",
+      committee: "Tech & Support",
+      contact: "suryaansh.sharma@email.com",
       phone: "+91 98765 43225"
     },
     { 
       img: "/images/OH_images_home/aryan.jpeg", 
       bg: "bg-emerald-500",
-      name: "Aryan Kumar",
-      role: "Stage & Venue Coordinator",
-      committee: "Stage & Venue",
-      contact: "aryan.kumar@email.com",
+      name: "Lakshay Khandelwal",
+      role: "Internal Arrangements",
+      committee: "Internal Arrangements",
+      contact: "lakshay.khandelwal@email.com",
       phone: "+91 98765 43226"
     },
     { 
       img: "/images/OH_images_home/nisha.jpeg", 
       bg: "bg-violet-500",
-      name: "Nisha Patel",
-      role: "Registrations Head",
-      committee: "Registrations",
-      contact: "nisha.patel@email.com",
+      name: "Dimple Ramrakhani",
+      role: "Internal Arrangements",
+      committee: "Internal Arrangements",
+      contact: "dimple.ramrakhani@email.com",
       phone: "+91 98765 43227"
     },
     { 
       img: "/images/OH_images_home/vedant.jpeg", 
       bg: "bg-rose-500",
-      name: "Vedant Sharma",
-      role: "Registrations Coordinator",
-      committee: "Registrations",
-      contact: "vedant.sharma@email.com",
+      name: "Anmol Sahu",
+      role: "Transport",
+      committee: "Transport",
+      contact: "anmol.sahu@email.com",
       phone: "+91 98765 43228"
     },
     { 
       img: "/images/OH_images_home/riya.jpeg", 
       bg: "bg-sky-500",
-      name: "Riya Khanna",
-      role: "Tech & Support Head",
-      committee: "Tech & Support",
-      contact: "riya.khanna@email.com",
+      name: "Vandan P. Shah",
+      role: "Social Media",
+      committee: "Social Media",
+      contact: "vandan.shah@email.com",
       phone: "+91 98765 43229"
     },
     { 
       img: "/images/OH_images_home/shaurya.jpeg", 
       bg: "bg-slate-500",
-      name: "Shaurya Verma",
-      role: "Internal Arrangements Head",
-      committee: "Internal Arrangements",
-      contact: "shaurya.verma@email.com",
+      name: "Tanveer Kanderiya",
+      role: "Prize & Certificates",
+      committee: "Prize & Certificates",
+      contact: "tanveer.kanderiya@email.com",
       phone: "+91 98765 43230"
     },
     { 
       img: "/images/OH_images_home/aisha.jpeg", 
       bg: "bg-zinc-500",
-      name: "Aisha Khan",
-      role: "Internal Arrangements Coordinator",
-      committee: "Internal Arrangements",
-      contact: "aisha.khan@email.com",
+      name: "Aayushi Meel",
+      role: "Hospitality",
+      committee: "Hospitality",
+      contact: "aayushi.meel@email.com",
       phone: "+91 98765 43231"
     },
     { 
       img: "/images/OH_images_home/dhruv.jpeg", 
       bg: "bg-neutral-500",
-      name: "Dhruv Singh",
-      role: "Transport Head",
-      committee: "Transport",
-      contact: "dhruv.singh@email.com",
+      name: "Suryansh Khandelwal",
+      role: "Stage & Venue",
+      committee: "Stage & Venue",
+      contact: "suryansh.khandelwal@email.com",
       phone: "+91 98765 43232"
     },
     { 
       img: "/images/OH_images_home/kiara.jpeg", 
       bg: "bg-stone-500",
-      name: "Kiara Reddy",
-      role: "Social Media Head",
-      committee: "Social Media",
-      contact: "kiara.reddy@email.com",
+      name: "Vinay Kumar Lunawat",
+      role: "Stage & Venue",
+      committee: "Stage & Venue",
+      contact: "vinay.lunawat@email.com",
       phone: "+91 98765 43233"
     },
     { 
       img: "/images/OH_images_home/yash.jpeg", 
       bg: "bg-gray-500",
-      name: "Yash Malhotra",
-      role: "Prize & Certificates Head",
-      committee: "Prize & Certificates",
-      contact: "yash.malhotra@email.com",
+      name: "Ayushi Kabra",
+      role: "Registrations",
+      committee: "Registrations",
+      contact: "ayushi.kabra@email.com",
       phone: "+91 98765 43234"
     },
     { 
       img: "/images/OH_images_home/pooja.jpeg", 
       bg: "bg-red-600",
-      name: "Pooja Iyer",
-      role: "Committee Member",
-      committee: "General",
-      contact: "pooja.iyer@email.com",
+      name: "Jayash Gehlot",
+      role: "Registrations",
+      committee: "Registrations",
+      contact: "jayash.gehlot@email.com",
       phone: "+91 98765 43235"
     },
     { 
       img: "/images/OH_images_home/aarush.jpeg", 
       bg: "bg-blue-600",
-      name: "Aarush Kapoor",
-      role: "Committee Member",
-      committee: "General",
-      contact: "aarush.kapoor@email.com",
+      name: "Lead By OH",
+      role: "Sponsorship & Promotion",
+      committee: "Sponsorship & Promotion",
+      contact: "lead.oh@email.com",
       phone: "+91 98765 43236"
-    },
-    { 
-      img: "/images/OH_images_home/zara.jpeg", 
-      bg: "bg-green-600",
-      name: "Zara Malhotra",
-      role: "Committee Member",
-      committee: "General",
-      contact: "zara.malhotra@email.com",
-      phone: "+91 98765 43237"
-    },
-    { 
-      img: "/images/OH_images_home/vivaan.jpeg", 
-      bg: "bg-purple-600",
-      name: "Vivaan Sharma",
-      role: "Committee Member",
-      committee: "General",
-      contact: "vivaan.sharma@email.com",
-      phone: "+91 98765 43238"
-    },
-    { 
-      img: "/images/OH_images_home/anvi.jpeg", 
-      bg: "bg-pink-600",
-      name: "Anvi Patel",
-      role: "Committee Member",
-      committee: "General",
-      contact: "anvi.patel@email.com",
-      phone: "+91 98765 43239"
     }
   ];
 
@@ -524,52 +490,58 @@ export default function PeopleStrip() {
       color: "from-pink-500 via-rose-500 to-red-500"
     },
     {
-      name: "Hospitality",
-      people: [people[14]],
-      layout: "energy-field",
-      color: "from-cyan-500 via-blue-500 to-indigo-500"
-    },
-    {
-      name: "Stage & Venue",
-      people: [people[15], people[16]],
-      layout: "magnetic-field",
-      color: "from-violet-500 via-purple-500 to-indigo-500"
-    },
-    {
-      name: "Registrations",
-      people: [people[17], people[18]],
-      layout: "particle-system",
-      color: "from-emerald-500 via-green-500 to-lime-500"
-    },
-    {
       name: "Tech & Support",
-      people: [people[19]],
+      people: [people[14]],
       layout: "matrix-code",
-      color: "from-slate-500 via-gray-500 to-zinc-500"
+      color: "from-amber-500 via-orange-500 to-red-500"
     },
     {
       name: "Internal Arrangements",
-      people: [people[20], people[21]],
+      people: [people[15], people[16]],
       layout: "galaxy-cluster",
-      color: "from-purple-600 via-blue-600 to-cyan-600"
+      color: "from-emerald-500 via-green-500 to-lime-500"
     },
     {
       name: "Transport",
-      people: [people[22]],
+      people: [people[17]],
       layout: "wormhole",
-      color: "from-orange-500 via-red-500 to-pink-500"
+      color: "from-neutral-500 via-gray-500 to-stone-500"
     },
     {
       name: "Social Media",
-      people: [people[23]],
+      people: [people[18]],
       layout: "digital-rain",
-      color: "from-teal-500 via-cyan-500 to-blue-500"
+      color: "from-sky-500 via-blue-500 to-indigo-500"
     },
     {
       name: "Prize & Certificates",
-      people: [people[24]],
+      people: [people[19]],
       layout: "crystal-lattice",
-      color: "from-amber-500 via-yellow-500 to-lime-500"
+      color: "from-slate-500 via-gray-500 to-zinc-500"
+    },
+    {
+      name: "Hospitality",
+      people: [people[20]],
+      layout: "energy-field",
+      color: "from-zinc-500 via-gray-500 to-slate-500"
+    },
+    {
+      name: "Stage & Venue",
+      people: [people[21], people[22]],
+      layout: "magnetic-field",
+      color: "from-neutral-500 via-stone-500 to-gray-500"
+    },
+    {
+      name: "Registrations",
+      people: [people[23], people[24]],
+      layout: "particle-system",
+      color: "from-red-600 via-pink-600 to-rose-600"
+    },
+    {
+      name: "Sponsorship & Promotion",
+      people: [people[25]],
+      layout: "cosmic-field",
+      color: "from-blue-600 via-indigo-600 to-purple-600"
     }
   ];
 
@@ -586,7 +558,8 @@ export default function PeopleStrip() {
     animationDelay = 0,
     size = "normal",
     style = {},
-    isCommitteeCard = false
+    isCommitteeCard = false,
+    isOH = false
   }: { 
     person: Person; 
     className?: string; 
@@ -596,6 +569,7 @@ export default function PeopleStrip() {
     size?: "normal" | "small" | "large";
     style?: React.CSSProperties;
     isCommitteeCard?: boolean;
+    isOH?: boolean;
   }) => {
     const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
       console.log('Mouse enter on card:', person.name);
@@ -640,6 +614,12 @@ export default function PeopleStrip() {
 
     // If it's a committee card, use polaroid style
     if (isCommitteeCard) {
+      // Create deterministic values based on cardId to avoid hydration mismatches
+      const cardHash = cardId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      const rotation = (cardHash % 6) - 3; // -3 to 2 degrees
+      const zIndex = (cardHash % 5) + 1; // 1 to 5
+      const shadowRotation = (cardHash % 6 - 3) * 0.5; // -1.5 to 1.5 degrees
+      
       return (
         <div
           ref={(el) => {
@@ -647,8 +627,8 @@ export default function PeopleStrip() {
           }}
           className={`relative group cursor-pointer ${className}`}
           style={{
-            transform: `rotate(${Math.random() * 6 - 3}deg)`,
-            zIndex: Math.floor(Math.random() * 5) + 1,
+            transform: `rotate(${rotation}deg)`,
+            zIndex: zIndex,
           }}
         >
           {/* Polaroid Frame */}
@@ -690,7 +670,7 @@ export default function PeopleStrip() {
           <div 
             className="absolute top-1 left-1 w-full h-full bg-black/20 -z-10 blur-sm"
             style={{
-              transform: `rotate(${(Math.random() * 6 - 3) * 0.5}deg)`,
+              transform: `rotate(${shadowRotation}deg)`,
             }}
           />
         </div>
@@ -708,29 +688,55 @@ export default function PeopleStrip() {
         onMouseLeave={handleMouseLeave}
         style={cardStyle}
       >
-        <div className={`relative w-full h-full ${person.bg} rounded-2xl overflow-hidden shadow-lg`}>
+        <div className={`relative w-full h-full rounded-2xl overflow-hidden shadow-lg`}>
+          {/* Splash gradient rectangle behind OH members */}
+          {isOH && (
+            <>
+              <div className={`absolute inset-0 ${person.bg} rounded-2xl opacity-90`} />
+              <img
+                src="/images/BG-TEAM.png"
+                alt="splash"
+                className="absolute inset-0 w-full h-full object-cover opacity-70 mix-blend-screen pointer-events-none"
+              />
+            </>
+          )}
+
+          {/* Solid background color for Core Committee Members */}
+          {!isOH && (
+            <div className={`absolute inset-0 ${person.bg} rounded-2xl`} />
+          )}
+
+          {/* Main Image */}
           <img
             src={person.img}
             alt={person.name}
-            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+            className={`w-full h-full ${isOH ? 'object-cover' : 'object-contain p-4'} transition-transform duration-500 ease-out group-hover:scale-105 relative z-10`}
             onError={(e) => {
-              console.log('Image failed to load:', person.img);
-              // Fallback to a colored background if image fails
+              console.error('Image failed to load:', person.img);
+              // Hide the image and show fallback
               e.currentTarget.style.display = 'none';
             }}
           />
           
-          {/* Fallback colored background if image fails */}
-          <div className={`absolute inset-0 ${person.bg} transition-transform duration-500 ease-out group-hover:scale-105`} />
+          {/* Optional frame glow */}
+          <div className="absolute inset-0 ring-1 ring-white/10 rounded-2xl" />
           
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out" />
+          {/* Gradient overlay for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out" />
           
           {/* Text overlay */}
           <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out">
             <h3 className="text-lg font-bold mb-1">{person.name}</h3>
             <p className="text-sm opacity-90">{person.role}</p>
           </div>
+          
+          {/* Always visible name for OH members */}
+          {isOH && (
+            <div className="absolute bottom-0 left-0 right-0 p-4 text-white relative z-30">
+              <h3 className="text-lg font-bold mb-1 text-center">{person.name}</h3>
+              <p className="text-sm opacity-90 text-center">{person.role}</p>
+            </div>
+          )}
         </div>
         
         {/* Hover overlay indicator */}
@@ -794,27 +800,36 @@ export default function PeopleStrip() {
     <div className="flex flex-col items-center px-2 sm:px-4 py-4 sm:py-8">
 
       
-      {/* Main "Organizing Heads" heading with cosmic styling - responsive */}
-      <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-8 sm:mb-12 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent drop-shadow-2xl tracking-widest uppercase" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
-        Organizing Heads
+      {/* Main "SABRANG'25" heading with cosmic styling - responsive */}
+      <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 sm:mb-6 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent drop-shadow-2xl tracking-widest uppercase" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
+        SABRANG'25
       </h1>
+      
+      {/* Subtitle */}
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 sm:mb-12 text-white text-center">
+        Names of Organising
+      </h2>
       
       {/* Organizing Heads cards - responsive sizing */}
       <div className="flex overflow-hidden mb-12 sm:mb-16">
-        {cards.map((person, index) => (
-          <PersonCard
-            key={index}
-            person={person}
-            cardId={`organizing-head-${index}`}
-            className={`w-[120px] sm:w-[150px] md:w-[180px] overflow-hidden aspect-[1/2.5] ${person.bg}`}
-            transformClass={index === 1 ? 'transform -translate-y-8 sm:-translate-y-12 md:-translate-y-15' : 'transform translate-y-8 sm:translate-y-12 md:translate-y-12'}
-          />
-        ))}
+        {cards.map((person, index) => {
+          console.log(`Rendering organizing head ${index}:`, person.name, 'Image path:', person.img);
+          return (
+            <PersonCard
+              key={index}
+              person={person}
+              cardId={`organizing-head-${index}`}
+              className={`w-[200px] sm:w-[250px] md:w-[300px] h-[380px] sm:h-[460px] md:h-[520px] overflow-hidden rounded-2xl shadow-2xl`}
+              transformClass={index === 1 ? 'transform -translate-y-8 sm:-translate-y-12 md:-translate-y-15' : 'transform translate-y-8 sm:translate-y-12 md:translate-y-12'}
+              isOH
+            />
+          );
+        })}
       </div>
       
-      {/* "Committee Cores" heading - responsive */}
+      {/* "Names of Core Committee Members" heading - responsive */}
       <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-8 sm:mb-12 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent drop-shadow-2xl tracking-widest uppercase" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
-        Committee Cores
+        Names of Core Committee Members
       </h2>
 
       {/* Committee Layouts - Row-based */}

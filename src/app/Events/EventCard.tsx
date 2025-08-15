@@ -27,46 +27,61 @@ export default function EventCard({ event, outline, variant = 'default' }: Event
 
   return (
     <div className={cn('relative p-2 rounded-2xl group metallic-border')} data-no-splash="true"> 
-      <div className={cn('w-96 rounded-xl', borderClass)}>
+      <div className={cn('w-80 rounded-xl', borderClass)}>
         <CardSpotlight
           className={cn(
-            'h-[28rem] rounded-xl p-6 relative z-10 flex flex-col overflow-hidden',
+            'h-[40rem] rounded-xl relative z-10 flex flex-col overflow-hidden',
             variant === 'glass'
               ? 'bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl'
               : 'bg-black'
           )}
         >
-          {/* Event Image */}
-          <div className="relative h-48 w-full rounded-xl overflow-hidden mb-4">
+          {/* Full Size Event Poster Image */}
+          <div className="relative h-full w-full rounded-xl overflow-hidden">
             <img
               src={event.image || "/images/building-6011756_1280.jpg"}
               alt={event.title}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-          </div>
-
-          {/* Event Title */}
-          <h2 className="text-2xl font-bold text-white mb-3 font-['Playfair_Display'] leading-tight">
-            {event.title}
-          </h2>
-          
-          {/* Event Description */}
-          <p className="text-sm text-white/90 mb-6 font-['Playfair_Display'] leading-relaxed flex-1">
-            {event.description}
-          </p>
-          
-          {/* Bottom Section */}
-          <div className="flex justify-between items-center">
-            <div className="text-sm text-white/70 font-medium">
-              {event.date}
+            {/* Gradient Overlay for Text Readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+            
+            {/* Event Content Overlay */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+              {/* Event Title */}
+              <h2 className="text-3xl font-bold mb-4 font-['Playfair_Display'] leading-tight drop-shadow-lg">
+                {event.title}
+              </h2>
+              
+              {/* Event Description */}
+              <p className="text-base text-white/90 mb-6 font-['Playfair_Display'] leading-relaxed drop-shadow-lg">
+                {event.description}
+              </p>
+              
+              {/* Event Details */}
+              <div className="space-y-3 mb-6">
+                {event.date && (
+                  <div className="flex items-center space-x-2">
+                    <span className="text-yellow-400 font-semibold">📅</span>
+                    <span className="text-white/90">{event.date}</span>
+                  </div>
+                )}
+                {event.prize && (
+                  <div className="flex items-center space-x-2">
+                    <span className="text-yellow-400 font-semibold">🏆</span>
+                    <span className="text-white/90">Prize: {event.prize}</span>
+                  </div>
+                )}
+              </div>
+              
+              {/* Register Button */}
+              <a
+                href="/Signup"
+                className="inline-block px-8 py-4 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white text-lg font-semibold shadow-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
+              >
+                {event.registration || "Register Now"}
+              </a>
             </div>
-            <a
-              href="/Signup"
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-semibold shadow-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
-            >
-              {event.registration || "Register Now"}
-            </a>
           </div>
         </CardSpotlight>
       </div>

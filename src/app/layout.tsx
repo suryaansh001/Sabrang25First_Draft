@@ -18,6 +18,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Google Fonts */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+        
         {/* Essential preloading for Spline */}
         <link rel="preload" href="https://prod.spline.design/3O0nwQNm6dcILIOA/scene.splinecode" as="fetch" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://prod.spline.design" />

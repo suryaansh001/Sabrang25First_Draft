@@ -1,23 +1,16 @@
 'use client';
-import React from 'react';
+import React, { memo } from 'react';
 import { Play, Github, Linkedin, LayoutDashboard } from 'lucide-react';
 import SidebarDock from '../../components/SidebarDock';
-import InstantSpline from '../../components/InstantSpline';
 
-export default function LayeredLandingPage() {
+const LayeredLandingPage = memo(function LayeredLandingPage() {
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
       
       {/* Top Right Black Pill Notch */}
       <div 
-        className="absolute top-0 right-30 z-20"
-        style={{
-          width: '500px',
-          height: '70px',
-          background: 'black',
-          borderRadius: '30px',
-          transform: 'translateX(50%)',
-        }}
+        className="absolute top-0 right-30 z-20 w-[500px] h-[70px] bg-black rounded-[30px]"
+        style={{ transform: 'translateX(50%)' }}
       />
       
       {/* Auth Buttons - Positioned above everything */}
@@ -45,28 +38,32 @@ export default function LayeredLandingPage() {
           clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% calc(100% - 100px), 200px calc(100% - 100px), 200px calc(100% - 60px), 0% calc(100% - 60px))'
         }}
       >
-        {/* Spline background - positioned within right panel */}
+        {/* Video background - positioned within right panel */}
         <div className="absolute inset-0 -z-10">
-          <InstantSpline 
-            scene="https://prod.spline.design/3O0nwQNm6dcILIOA/scene.splinecode"
-            style={{
-              width: '100%',
-              height: '100%'
-            }}
-          />
-          {/* Black overlay on top of spline */}
-          <div className="absolute inset-0 bg-black/40" />
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+            style={{ filter: 'brightness(0.7) contrast(1.2)' }}
+          >
+            <source src="/video/Hero_Video.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          {/* Black overlay on top of video */}
+          <div className="absolute inset-0 bg-black/60" />
         </div>
 
         {/* Background 3D Elements */}
-        <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/2 w-96 h-96 bg-gradient-to-br from-blue-400/30 to-purple-500/40 rounded-full blur-3xl transform -translate-x-1/2"></div>
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/4 left-1/2 w-96 h-96 bg-gradient-to-br from-blue-400/30 to-purple-500/40 rounded-full blur-3xl -translate-x-1/2"></div>
           <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-gradient-to-tl from-indigo-400/40 to-blue-600/30 rounded-full blur-2xl"></div>
           <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-gradient-to-r from-purple-400/30 to-pink-500/40 rounded-full blur-2xl"></div>
         </div>
         
         {/* Top Navigation */}
-        <nav className="relative z-40 flex items-center justify-between p-8 pt-0">
+        <nav className="relative z-40 flex items-center justify-between p-8 pt-0 pointer-events-none">
           <div className="flex items-center space-x-4 ml-12">
             {/* Navigation links moved to left panel as icons */}
           </div>
@@ -75,31 +72,18 @@ export default function LayeredLandingPage() {
         {/* Main Content Area - Centered Sabrang 2025 */}
         <div className="relative z-10 flex items-center justify-center h-full">
           <div className="text-center">
-            <h1 className="text-8xl md:text-9xl font-extrabold text-white leading-tight tracking-wide">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-300">
+            <h1 className="text-7xl md:text-8xl lg:text-9xl font-black text-white leading-none tracking-tighter" style={{ fontFamily: "'Orbitron', 'Arial Black', sans-serif" }}>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 drop-shadow-lg" style={{ textShadow: '0 0 30px rgba(255,255,255,0.3)' }}>
                 SABRANG
               </span><br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-indigo-600 drop-shadow-2xl">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-400 to-indigo-500 drop-shadow-2xl" style={{ textShadow: '0 0 40px rgba(147,51,234,0.4)' }}>
                 2025
               </span>
             </h1>
           </div>
         </div>
         
-        {/* Social Media Icons - Bottom Right of Right Panel */}
-        <div className="absolute bottom-8 right-8 z-20 bg-black rounded-full mb-[-6]">
-          <div className="flex space-x-4">
-            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer border border-white/20 backdrop-blur-sm">
-              <Play className="w-6 h-6 text-white" />
-            </div>
-            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer border border-white/20 backdrop-blur-sm">
-              <Github className="w-6 h-6 text-white" />
-            </div>
-            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer border border-white/20 backdrop-blur-sm">
-              <Linkedin className="w-6 h-6 text-white" />
-            </div>
-          </div>
-        </div>
+        
       </div>
       
       {/* Left Panel - Black Section */}
@@ -121,15 +105,16 @@ export default function LayeredLandingPage() {
               width: '380px', // Extends deep into blue panel
               height: '60px' // Much smaller height like reference
             }}
-            onClick={() => console.log('Register Now clicked')}
+
           >
             Register Now
           </a>
         </div>
       </div>
       
-      {/* Bottom Search Bar - Only on Blue Panel */}
-      
+
     </div>
   );
-}
+});
+
+export default LayeredLandingPage;

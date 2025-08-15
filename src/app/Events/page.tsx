@@ -25,16 +25,17 @@ interface Event {
 }
 
 const events: Event[] = [
+  // Cultural Events (First 3 are Flagship)
   {
     id: 1,
-    title: "Panache - Fashion Show",
+    title: "PANACHE",
     date: "25.12.2024",
     time: "21:00",
     shares: "156 Shares",
-    image: "/images/building-6011756_1280.jpg",
+    image: "/images/Events/Cultural/Panache.jpg",
     description: "Experience the most glamorous fashion showcase of the year featuring emerging designers and stunning runway presentations.",
     venue: "Main Auditorium",
-    price: "$85",
+    price: "₹85",
     capacity: "2,500 people",
     genre: "Fashion Show",
     category: "Cultural",
@@ -43,46 +44,14 @@ const events: Event[] = [
   },
   {
     id: 2,
-    title: "Hackathon - Code & Create",
+    title: "BAND JAM",
     date: "15.1.2025",
     time: "19:30",
-    shares: "89 Shares",
-    image: "/images/building-6011756_1280.jpg",
-    description: "24-hour coding challenge where developers compete to create innovative solutions for real-world problems.",
-    venue: "Computer Science Lab",
-    price: "Free",
-    capacity: "500 people",
-    genre: "Tech Competition",
-    category: "Technical",
-    details: "Learn about the latest developments in technology and software development. Network with fellow developers and industry professionals. Prizes worth $10,000+ for winning teams.",
-    isFlagship: true
-  },
-  {
-    id: 3,
-    title: "Business Plan Competition",
-    date: "10.2.2025",
-    time: "20:00",
-    shares: "234 Shares",
-    image: "/images/building-6011756_1280.jpg",
-    description: "Pitch your innovative business ideas to a panel of industry experts and investors.",
-    venue: "Business School Auditorium",
-    price: "$25",
-    capacity: "200 people",
-    genre: "Business",
-    category: "Business",
-    details: "Discover the next generation of entrepreneurs and business leaders. This event features multiple rounds of pitching, mentorship sessions, and networking opportunities with investors.",
-    isFlagship: true
-  },
-  {
-    id: 4,
-    title: "Band Jam - Musical Extravaganza",
-    date: "05.3.2025",
-    time: "22:00",
     shares: "567 Shares",
-    image: "/images/building-6011756_1280.jpg",
+    image: "/images/Events/Cultural/BandJam.jpg",
     description: "The biggest musical festival featuring college bands competing for the ultimate prize and recognition.",
     venue: "Open Air Amphitheater",
-    price: "$120",
+    price: "₹120",
     capacity: "50,000 people",
     genre: "Music Festival",
     category: "Cultural",
@@ -90,67 +59,429 @@ const events: Event[] = [
     isFlagship: true
   },
   {
-    id: 5,
-    title: "Robo Wars - Battle of Bots",
+    id: 3,
+    title: "DANCE BATTLE",
     date: "20.3.2025",
     time: "18:00",
     shares: "189 Shares",
-    image: "/images/building-6011756_1280.jpg",
-    description: "Witness epic robot battles as engineering students showcase their mechanical creations in intense combat.",
-    venue: "Engineering Workshop",
-    price: "$15",
+    image: "/images/Events/Cultural/DanceBattle.jpg",
+    description: "Witness epic dance battles as talented dancers showcase their skills in intense competition.",
+    venue: "Dance Studio",
+    price: "₹15",
     capacity: "1,000 people",
-    genre: "Robotics",
-    category: "Technical",
-    details: "Experience the thrill of robot combat as teams battle it out with their custom-built machines. Features multiple weight categories and special awards for innovation.",
+    genre: "Dance Competition",
+    category: "Cultural",
+    details: "Experience the thrill of dance battles as teams compete with their choreographed routines. Features multiple dance styles and special awards for innovation.",
     isFlagship: true
   },
   {
-    id: 6,
-    title: "Cultural Night",
+    id: 4,
+    title: "NUKKAD NATAK",
     date: "12.4.2025",
     time: "19:00",
     shares: "78 Shares",
-    image: "/images/building-6011756_1280.jpg",
-    description: "Celebrate diversity through dance, music, and cultural performances from around the world.",
-    venue: "Cultural Center",
+    image: "/images/Events/Cultural/Nukkad Natak.jpg",
+    description: "Street theater performances that bring social issues to life through powerful storytelling.",
+    venue: "Open Air Stage",
     price: "Free",
     capacity: "800 people",
-    genre: "Cultural",
+    genre: "Street Theater",
     category: "Cultural",
-    details: "A night of cultural exchange featuring traditional dances, folk music, and ethnic performances. Food stalls serving international cuisine.",
+    details: "A night of cultural expression featuring street plays, folk performances, and social commentary through theater.",
+    isFlagship: false
+  },
+  {
+    id: 5,
+    title: "SPOTLIGHT",
+    date: "28.4.2025",
+    time: "16:00",
+    shares: "45 Shares",
+    image: "/images/Events/Cultural/spotlight.jpg",
+    description: "Individual performance showcase for solo artists and performers.",
+    venue: "Performance Hall",
+    price: "Free",
+    capacity: "300 people",
+    genre: "Solo Performance",
+    category: "Cultural",
+    details: "Showcase your individual talent in music, dance, or any performing art form.",
+    isFlagship: false
+  },
+  {
+    id: 6,
+    title: "SINGING PALOOZA",
+    date: "05.5.2025",
+    time: "08:00",
+    shares: "123 Shares",
+    image: "/images/Events/Cultural/Singing.jpg",
+    description: "Singing competition for vocal talents across all genres.",
+    venue: "Music Hall",
+    price: "Free",
+    capacity: "2,000 people",
+    genre: "Singing Competition",
+    category: "Cultural",
+    details: "Competitive singing events including classical, contemporary, and fusion music. Medals and trophies for winners.",
     isFlagship: false
   },
   {
     id: 7,
-    title: "Tech Talk Series",
-    date: "28.4.2025",
-    time: "16:00",
-    shares: "45 Shares",
-    image: "/images/building-6011756_1280.jpg",
-    description: "Interactive sessions with industry leaders sharing insights on emerging technologies and career guidance.",
-    venue: "Seminar Hall",
+    title: "STEP UP",
+    date: "15.6.2025",
+    time: "18:00",
+    shares: "92 Shares",
+    image: "/images/Events/Cultural/step-up.jpg",
+    description: "Dance competition focusing on individual and group performances.",
+    venue: "Dance Studio",
     price: "Free",
     capacity: "300 people",
-    genre: "Workshop",
-    category: "Technical",
-    details: "Learn from experts in AI, blockchain, cybersecurity, and more. Includes Q&A sessions and networking opportunities.",
+    genre: "Dance",
+    category: "Cultural",
+    details: "Showcase your dance skills in various styles including contemporary, hip-hop, and classical forms.",
     isFlagship: false
   },
   {
     id: 8,
-    title: "Sports Meet",
-    date: "05.5.2025",
-    time: "08:00",
-    shares: "123 Shares",
-    image: "/images/building-6011756_1280.jpg",
-    description: "Annual sports competition featuring athletics, team sports, and individual events.",
-    venue: "Sports Complex",
+    title: "DUMB SHOW",
+    date: "25.6.2025",
+    time: "19:00",
+    shares: "67 Shares",
+    image: "/images/Events/Cultural/Dumb Show.jpg",
+    description: "Silent acting competition where performers tell stories without words.",
+    venue: "Theater Hall",
     price: "Free",
-    capacity: "2,000 people",
-    genre: "Sports",
-    category: "Sports",
-    details: "Competitive sports events including track & field, football, basketball, and more. Medals and trophies for winners.",
+    capacity: "200 people",
+    genre: "Mime Acting",
+    category: "Cultural",
+    details: "Express emotions and tell stories through body language and facial expressions only.",
+    isFlagship: false
+  },
+
+  // Management Events
+  {
+    id: 9,
+    title: "BIDDING BEFORE WICKET",
+    date: "10.2.2025",
+    time: "20:00",
+    shares: "234 Shares",
+    image: "/images/Events/Management/BiddingBeforeWicket.png",
+    description: "Auction-based event where participants bid on various items and experiences.",
+    venue: "Business School Auditorium",
+    price: "₹25",
+    capacity: "200 people",
+    genre: "Auction",
+    category: "Management",
+    details: "Experience the thrill of bidding in a competitive auction environment. Features unique items and experiences up for grabs.",
+    isFlagship: false
+  },
+  {
+    id: 10,
+    title: "SEAL THE DEAL",
+    date: "20.2.2025",
+    time: "18:00",
+    shares: "189 Shares",
+    image: "/images/Events/Management/SealTheDeal.png",
+    description: "Negotiation and deal-making competition for business-minded students.",
+    venue: "Conference Room",
+    price: "₹15",
+    capacity: "150 people",
+    genre: "Negotiation",
+    category: "Management",
+    details: "Test your negotiation skills in real-world business scenarios and compete for the best deal.",
+    isFlagship: false
+  },
+
+  // Technical Events
+  {
+    id: 11,
+    title: "RADIANT",
+    date: "05.3.2025",
+    time: "14:00",
+    shares: "156 Shares",
+    image: "/images/Events/Technical/Radiant.jpg",
+    description: "Gaming tournament featuring popular competitive games.",
+    venue: "Gaming Arena",
+    price: "₹30",
+    capacity: "500 people",
+    genre: "Gaming",
+    category: "Technical",
+    details: "Compete in various gaming tournaments with exciting prizes and recognition.",
+    isFlagship: false
+  },
+  {
+    id: 12,
+    title: "CODEUREKA",
+    date: "15.3.2025",
+    time: "16:00",
+    shares: "89 Shares",
+    image: "/images/Events/Technical/Codeureka.jpg",
+    description: "Coding competition for programmers and developers.",
+    venue: "Computer Lab",
+    price: "Free",
+    capacity: "300 people",
+    genre: "Coding",
+    category: "Technical",
+    details: "Solve complex programming challenges and compete with fellow coders.",
+    isFlagship: false
+  },
+  {
+    id: 13,
+    title: "SYNERGY",
+    date: "25.3.2025",
+    time: "18:00",
+    shares: "123 Shares",
+    image: "/images/Events/Technical/Synergy.jpg",
+    description: "DJ mixing and music production competition.",
+    venue: "Music Studio",
+    price: "₹20",
+    capacity: "200 people",
+    genre: "Music Production",
+    category: "Technical",
+    details: "Showcase your DJ skills and music production abilities in this exciting competition.",
+    isFlagship: false
+  },
+  {
+    id: 14,
+    title: "FOCUS",
+    date: "05.4.2025",
+    time: "14:00",
+    shares: "78 Shares",
+    image: "/images/Events/Technical/Focus.jpg",
+    description: "Photography competition focusing on creative and technical skills.",
+    venue: "Photo Studio",
+    price: "Free",
+    capacity: "150 people",
+    genre: "Photography",
+    category: "Technical",
+    details: "Capture stunning moments and showcase your photography skills in various categories.",
+    isFlagship: false
+  },
+  {
+    id: 15,
+    title: "MAKE A MEME",
+    date: "15.4.2025",
+    time: "16:00",
+    shares: "92 Shares",
+    image: "/images/Events/Technical/MakeAMeme.jpg",
+    description: "Creative meme-making competition for digital artists.",
+    venue: "Digital Lab",
+    price: "Free",
+    capacity: "100 people",
+    genre: "Digital Art",
+    category: "Technical",
+    details: "Create hilarious and creative memes in this fun digital art competition.",
+    isFlagship: false
+  },
+  {
+    id: 16,
+    title: "UNKNOWN BATTLEGROUND",
+    date: "25.4.2025",
+    time: "18:00",
+    shares: "134 Shares",
+    image: "/images/Events/Technical/Battleground.jpg",
+    description: "PUBG tournament for gaming enthusiasts.",
+    venue: "Gaming Arena",
+    price: "₹25",
+    capacity: "400 people",
+    genre: "Battle Royale",
+    category: "Technical",
+    details: "Compete in intense PUBG battles with your squad for exciting prizes.",
+    isFlagship: false
+  },
+
+  // Design Events
+  {
+    id: 17,
+    title: "MINDSCAPE",
+    date: "05.5.2025",
+    time: "14:00",
+    shares: "123 Shares",
+    image: "/images/Events/Design/MINDSCAPE.jpg",
+    description: "Art and drawing competition for creative minds.",
+    venue: "Art Studio",
+    price: "₹30",
+    capacity: "150 people",
+    genre: "Drawing",
+    category: "Design",
+    details: "Express your creativity through various art forms and compete with fellow artists.",
+    isFlagship: false
+  },
+  {
+    id: 18,
+    title: "COLOR & CONTOUR",
+    date: "15.5.2025",
+    time: "16:00",
+    shares: "89 Shares",
+    image: "/images/Events/Design/COLOR&CONTOUR.jpg",
+    description: "Makeup and face painting competition.",
+    venue: "Beauty Studio",
+    price: "₹20",
+    capacity: "100 people",
+    genre: "Makeup Art",
+    category: "Design",
+    details: "Showcase your makeup and face painting skills in this creative competition.",
+    isFlagship: false
+  },
+  {
+    id: 19,
+    title: "E-TEE",
+    date: "25.5.2025",
+    time: "18:00",
+    shares: "67 Shares",
+    image: "/images/Events/Design/E-TEE.jpg",
+    description: "Digital art and illustration competition.",
+    venue: "Digital Studio",
+    price: "Free",
+    capacity: "120 people",
+    genre: "Digital Art",
+    category: "Design",
+    details: "Create stunning digital illustrations using tablets and digital tools.",
+    isFlagship: false
+  },
+  {
+    id: 20,
+    title: "CHAMELEON CANVAS",
+    date: "05.6.2025",
+    time: "14:00",
+    shares: "78 Shares",
+    image: "/images/Events/Design/CHAMELON_CANVAS.jpg",
+    description: "Painting competition with various mediums.",
+    venue: "Art Studio",
+    price: "₹25",
+    capacity: "100 people",
+    genre: "Painting",
+    category: "Design",
+    details: "Express yourself through various painting techniques and mediums.",
+    isFlagship: false
+  },
+  {
+    id: 21,
+    title: "RECREATION",
+    date: "15.6.2025",
+    time: "16:00",
+    shares: "92 Shares",
+    image: "/images/Events/Design/RECREATION.jpg",
+    description: "Recycled art and sculpture competition.",
+    venue: "Art Workshop",
+    price: "Free",
+    capacity: "80 people",
+    genre: "Recycled Art",
+    category: "Design",
+    details: "Create amazing art pieces using recycled materials and sustainable practices.",
+    isFlagship: false
+  },
+  {
+    id: 22,
+    title: "FRAME BY FRAME",
+    date: "25.6.2025",
+    time: "18:00",
+    shares: "67 Shares",
+    image: "/images/Events/Design/FRAMEBYFRAME.jpg",
+    description: "Photography and videography competition.",
+    venue: "Media Studio",
+    price: "₹20",
+    capacity: "100 people",
+    genre: "Media Arts",
+    category: "Design",
+    details: "Capture stunning moments and create compelling visual stories.",
+    isFlagship: false
+  },
+
+  // Literary Events
+  {
+    id: 23,
+    title: "DIALECTIC",
+    date: "05.7.2025",
+    time: "14:00",
+    shares: "89 Shares",
+    image: "/images/Events/literary/dialectic.jpg",
+    description: "Debate and public speaking competition.",
+    venue: "Debate Hall",
+    price: "Free",
+    capacity: "200 people",
+    genre: "Debate",
+    category: "Literary",
+    details: "Engage in intellectual debates on current topics and showcase your public speaking skills.",
+    isFlagship: false
+  },
+  {
+    id: 24,
+    title: "COURTROOM",
+    date: "15.7.2025",
+    time: "16:00",
+    shares: "123 Shares",
+    image: "/images/Events/literary/courtroom.jpg",
+    description: "Mock trial and legal debate competition.",
+    venue: "Courtroom",
+    price: "₹25",
+    capacity: "150 people",
+    genre: "Mock Trial",
+    category: "Literary",
+    details: "Experience the legal system through mock trials and courtroom debates.",
+    isFlagship: false
+  },
+
+  // Mini Events
+  {
+    id: 25,
+    title: "HOUSE FULL",
+    date: "05.8.2025",
+    time: "14:00",
+    shares: "78 Shares",
+    image: "/images/Events/minievent/HouseFull.jpg",
+    description: "Bingo (Housie) game with exciting prizes.",
+    venue: "Game Room",
+    price: "Free",
+    capacity: "100 people",
+    genre: "Bingo",
+    category: "Mini Event",
+    details: "Play the classic game of Bingo with friends and win exciting prizes.",
+    isFlagship: false
+  },
+  {
+    id: 26,
+    title: "Q FACTOR",
+    date: "15.8.2025",
+    time: "16:00",
+    shares: "92 Shares",
+    image: "/images/Events/minievent/QFACTOR.jpg",
+    description: "Trivia night with general knowledge questions.",
+    venue: "Quiz Hall",
+    price: "Free",
+    capacity: "120 people",
+    genre: "Quiz",
+    category: "Mini Event",
+    details: "Test your general knowledge in this exciting trivia competition.",
+    isFlagship: false
+  },
+  {
+    id: 27,
+    title: "METAPHOR",
+    date: "25.8.2025",
+    time: "18:00",
+    shares: "67 Shares",
+    image: "/images/Events/minievent/METaphor.jpg",
+    description: "Creative writing and poetry competition.",
+    venue: "Literature Hall",
+    price: "Free",
+    capacity: "80 people",
+    genre: "Creative Writing",
+    category: "Mini Event",
+    details: "Express yourself through creative writing and poetry in this intimate competition.",
+    isFlagship: false
+  },
+  {
+    id: 28,
+    title: "DARE AND CHAIR",
+    date: "05.9.2025",
+    time: "14:00",
+    shares: "89 Shares",
+    image: "/images/Events/minievent/DAREANDCHAIR.jpg",
+    description: "Fun challenges and dares with friends.",
+    venue: "Activity Room",
+    price: "Free",
+    capacity: "60 people",
+    genre: "Fun Games",
+    category: "Mini Event",
+    details: "Take on exciting challenges and dares in this fun-filled event.",
     isFlagship: false
   }
 ];
@@ -158,9 +489,11 @@ const events: Event[] = [
 const categories = [
   { name: "All", value: "all" },
   { name: "Cultural", value: "Cultural" },
+  { name: "Management", value: "Management" },
   { name: "Technical", value: "Technical" },
-  { name: "Business", value: "Business" },
-  { name: "Sports", value: "Sports" }
+  { name: "Design", value: "Design" },
+  { name: "Literary", value: "Literary" },
+  { name: "Mini Event", value: "Mini Event" }
 ];
 
 export default function EventsPage() {
@@ -275,7 +608,7 @@ export default function EventsPage() {
                   transition={{ duration: 0.8, delay: 0.2 }}
                   className="text-6xl md:text-8xl font-bold text-white mb-4"
                 >
-                  Events
+                  SABRANG 2024
                 </motion.h1>
                 <motion.div 
                   initial={{ width: 0 }}
@@ -335,7 +668,9 @@ export default function EventsPage() {
 
               {/* Events Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredEvents.map((event, index) => (
+                {filteredEvents.map((event, index) => {
+                  console.log(`Rendering event: ${event.title}, Image path: ${event.image}`);
+                  return (
                   <motion.div
                     key={event.id}
                     initial={{ opacity: 0, y: 50 }}
@@ -368,7 +703,25 @@ export default function EventsPage() {
                         <div className="absolute inset-0 rounded-lg border-2 border-gradient-to-r from-yellow-400 via-orange-500 to-red-500 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                       )}
                       
-                      <div className={`relative h-48 ${event.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`}>
+                      <div className="relative h-64">
+                        {/* Event Image */}
+                        <img 
+                          src={event.image} 
+                          alt={event.title}
+                          className="w-full h-full object-contain bg-gray-800 p-2"
+                          onError={(e) => {
+                            console.error(`Failed to load image: ${event.image}`);
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const fallback = document.getElementById(`fallback-${event.id}`);
+                            if (fallback) fallback.style.display = 'block';
+                          }}
+                          onLoad={() => console.log(`Successfully loaded image: ${event.image}`)}
+                        />
+                        {/* Fallback gradient background */}
+                        <div className={`absolute inset-0 ${event.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`} style={{ display: 'none' }} id={`fallback-${event.id}`}>
+                          <div className="absolute inset-0 bg-black/20" />
+                        </div>
                         <div className="absolute inset-0 bg-black/20" />
                         <div className="absolute bottom-4 left-4 right-4">
                           <p className="text-white text-sm opacity-80 mb-2">
@@ -401,7 +754,8 @@ export default function EventsPage() {
                       </div>
                     </div>
                   </motion.div>
-                ))}
+                );
+                })}
               </div>
             </div>
           </motion.main>
@@ -439,7 +793,25 @@ export default function EventsPage() {
                       </div>
                     )}
                     
-                    <div className={`relative h-64 ${selectedEvent.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`}>
+                    <div className="relative h-80">
+                      {/* Event Image in Modal */}
+                                              <img 
+                          src={selectedEvent.image} 
+                          alt={selectedEvent.title}
+                          className="w-full h-full object-contain bg-gray-800 p-3"
+                          onError={(e) => {
+                            console.error(`Failed to load modal image: ${selectedEvent.image}`);
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const fallback = document.getElementById(`modal-fallback-${selectedEvent.id}`);
+                            if (fallback) fallback.style.display = 'block';
+                          }}
+                          onLoad={() => console.log(`Successfully loaded modal image: ${selectedEvent.image}`)}
+                        />
+                                                                      {/* Fallback gradient background for modal */}
+                        <div className={`absolute inset-0 ${selectedEvent.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`} style={{ display: 'none' }} id={`modal-fallback-${selectedEvent.id}`}>
+                          <div className="absolute inset-0 bg-black/20" />
+                        </div>
                       <div className="absolute inset-0 bg-black/20" />
                       <div className="absolute bottom-4 left-4 right-4">
                         <p className="text-white text-sm opacity-80 mb-2">
