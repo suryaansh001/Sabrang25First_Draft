@@ -7,9 +7,10 @@ import SidebarDock from '../../components/SidebarDock';
 const VideoBackground = () => {
   const [videoError, setVideoError] = React.useState(false);
   const [videoLoaded, setVideoLoaded] = React.useState(false);
+  const [imageLoaded, setImageLoaded] = React.useState(false);
 
   const handleVideoError = () => {
-    console.error('Video failed to load, falling back to static background');
+    console.error('Video failed to load, falling back to hero background image');
     setVideoError(true);
   };
 
@@ -18,13 +19,34 @@ const VideoBackground = () => {
     setVideoLoaded(true);
   };
 
-  // Always show fallback first, then try to load video
+  const handleImageLoad = () => {
+    console.log('Hero background image loaded successfully');
+    setImageLoaded(true);
+  };
+
+  const handleImageError = () => {
+    console.error('Hero background image failed to load, using gradient fallback');
+    setImageLoaded(false);
+  };
+
   return (
     <>
-      {/* Fallback background that's always visible */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-700 to-indigo-800" />
+      {/* Primary fallback: Hero background image - always visible */}
+      <img
+        src="/images/herobg.jpg"
+        alt="Hero Background"
+        className="absolute inset-0 w-full h-full object-cover opacity-90"
+        style={{ filter: 'brightness(0.6) contrast(1.1)' }}
+        onLoad={handleImageLoad}
+        onError={handleImageError}
+      />
       
-      {/* Video overlay - only if no error */}
+      {/* Secondary fallback: Gradient background if image fails */}
+      {!imageLoaded && (
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-700 to-indigo-800" />
+      )}
+      
+      {/* Video overlay - shows when video loads, covers the image */}
       {!videoError && (
         <video
           autoPlay
@@ -32,7 +54,7 @@ const VideoBackground = () => {
           muted
           playsInline
           preload="metadata"
-          className="w-full h-full object-cover opacity-80"
+          className="absolute inset-0 w-full h-full object-cover opacity-80"
           style={{ filter: 'brightness(0.7) contrast(1.2)' }}
           onError={handleVideoError}
           onLoadStart={() => console.log('Video loading started')}
