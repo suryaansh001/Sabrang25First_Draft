@@ -7,28 +7,6 @@ import SidebarDock from '../../components/SidebarDock';
 const VideoBackground = () => {
   const [videoError, setVideoError] = React.useState(false);
   const [videoLoaded, setVideoLoaded] = React.useState(false);
-  const [videoAccessible, setVideoAccessible] = React.useState(false);
-
-  // Test if video is accessible
-  React.useEffect(() => {
-    const testVideo = async () => {
-      try {
-        const response = await fetch('/video/Hero_Video.mp4', { method: 'HEAD' });
-        if (response.ok) {
-          console.log('✅ Video file accessible:', response.status);
-          setVideoAccessible(true);
-        } else {
-          console.error('❌ Video file not accessible:', response.status);
-          setVideoAccessible(false);
-        }
-      } catch (error) {
-        console.error('❌ Error testing video accessibility:', error);
-        setVideoAccessible(false);
-      }
-    };
-    
-    testVideo();
-  }, []);
 
   const handleVideoError = () => {
     console.error('Video failed to load, falling back to static background');
@@ -46,8 +24,8 @@ const VideoBackground = () => {
       {/* Fallback background that's always visible */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-700 to-indigo-800" />
       
-      {/* Video overlay - only if accessible and no error */}
-      {videoAccessible && !videoError && (
+      {/* Video overlay - only if no error */}
+      {!videoError && (
         <video
           autoPlay
           loop
@@ -61,21 +39,9 @@ const VideoBackground = () => {
           onCanPlay={handleVideoLoad}
           onLoadedData={handleVideoLoad}
         >
-          <source src="/video/Hero_Video.mp4" type="video/mp4" />
-          {/* TODO: Create compressed version: Hero_Video_compressed.mp4 (target: <5MB) */}
-          <source src="/video/Hero_Video_compressed.mp4" type="video/mp4" />
-          <source src="/video/Hero_Video.webm" type="video/webm" />
+          <source src="/video/herovideo.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
-      )}
-      
-      {/* Debug info in development */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="absolute top-4 left-4 text-white text-xs bg-black/50 p-2 rounded">
-          Video Status: {videoAccessible ? '✅ Accessible' : '❌ Not Accessible'} | 
-          Loaded: {videoLoaded ? '✅' : '⏳'} | 
-          Error: {videoError ? '❌' : '✅'}
-        </div>
       )}
     </>
   );
