@@ -131,6 +131,7 @@ export default function SplashCursor({
       SIM_RESOLUTION: SIM_RESOLUTION!,
       DYE_RESOLUTION: DYE_RESOLUTION!,
       CAPTURE_RESOLUTION: CAPTURE_RESOLUTION!,
+      DENSITY_DISSIPATION: DENSITY_DISSIPATION!,
       VELOCITY_DISSIPATION: VELOCITY_DISSIPATION!,
       PRESSURE: PRESSURE!,
       PRESSURE_ITERATIONS: PRESSURE_ITERATIONS!,
@@ -165,7 +166,11 @@ export default function SplashCursor({
       return;
     }
 
-    if (!ext.supportLinearFiltering) {
+    // At this point, gl and ext are guaranteed to be non-null
+    const glContext = gl!;
+    const extContext = ext!;
+
+    if (!extContext.supportLinearFiltering) {
       config.DYE_RESOLUTION = 256;
       config.SHADING = false;
     }
@@ -349,12 +354,12 @@ export default function SplashCursor({
       keywords: string[] | null = null
     ): WebGLShader | null {
       const shaderSource = addKeywords(source, keywords);
-      const shader = gl.createShader(type);
+      const shader = glContext.createShader(type);
       if (!shader) return null;
-      gl.shaderSource(shader, shaderSource);
-      gl.compileShader(shader);
-      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.trace(gl.getShaderInfoLog(shader));
+      glContext.shaderSource(shader, shaderSource);
+      glContext.compileShader(shader);
+      if (!glContext.getShaderParameter(shader, glContext.COMPILE_STATUS)) {
+        console.trace(glContext.getShaderInfoLog(shader));
       }
       return shader;
     }
