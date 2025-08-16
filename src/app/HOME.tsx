@@ -49,7 +49,7 @@ const VideoBackground = () => {
     <>
       {/* Primary fallback: Hero background image - always visible */}
       <img
-        src="/images/home2.png"
+        src="/images/home.webp"
         alt="Hero Background"
         className="absolute inset-0 w-full h-full object-cover opacity-90"
         style={{ filter: 'brightness(0.6) contrast(1.1)' }}
