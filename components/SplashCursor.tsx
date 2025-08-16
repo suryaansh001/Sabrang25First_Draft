@@ -353,6 +353,7 @@ export default function SplashCursor({
       source: string,
       keywords: string[] | null = null
     ): WebGLShader | null {
+      if (!glContext) return null;
       const shaderSource = addKeywords(source, keywords);
       const shader = glContext.createShader(type);
       if (!shader) return null;
