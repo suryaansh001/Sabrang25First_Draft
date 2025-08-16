@@ -509,6 +509,7 @@ export default function EventsPage() {
   const handleClose = () => {
     setSelectedEvent(null);
   };
+  
 
   const handleShare = async () => {
     if (!selectedEvent) return;

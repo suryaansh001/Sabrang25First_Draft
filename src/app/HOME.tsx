@@ -8,15 +8,31 @@ const VideoBackground = () => {
   const [videoError, setVideoError] = React.useState(false);
   const [videoLoaded, setVideoLoaded] = React.useState(false);
   const [imageLoaded, setImageLoaded] = React.useState(false);
+  const [videoAttempted, setVideoAttempted] = React.useState(false);
 
-  const handleVideoError = () => {
-    console.error('Video failed to load, falling back to hero background image');
+  // Add timeout for video loading
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!videoLoaded && !videoError) {
+        console.log('Video loading timeout, falling back to image');
+        setVideoError(true);
+        setVideoAttempted(true);
+      }
+    }, 5000); // 5 second timeout
+
+    return () => clearTimeout(timeout);
+  }, [videoLoaded, videoError]);
+
+  const handleVideoError = (e: any) => {
+    console.error('Video failed to load, falling back to hero background image', e);
     setVideoError(true);
+    setVideoAttempted(true);
   };
 
   const handleVideoLoad = () => {
     console.log('Video loaded successfully');
     setVideoLoaded(true);
+    setVideoAttempted(true);
   };
 
   const handleImageLoad = () => {
@@ -39,6 +55,7 @@ const VideoBackground = () => {
         style={{ filter: 'brightness(0.6) contrast(1.1)' }}
         onLoad={handleImageLoad}
         onError={handleImageError}
+        crossOrigin="anonymous"
       />
       
       {/* Secondary fallback: Gradient background if image fails */}
@@ -60,6 +77,8 @@ const VideoBackground = () => {
           onLoadStart={() => console.log('Video loading started')}
           onCanPlay={handleVideoLoad}
           onLoadedData={handleVideoLoad}
+          onLoad={() => console.log('Video load event fired')}
+          onLoadedMetadata={() => console.log('Video metadata loaded')}
         >
           <source src="/video/herovideo.mp4" type="video/mp4" />
           Your browser does not support the video tag.
@@ -72,7 +91,7 @@ const VideoBackground = () => {
 const LayeredLandingPage = memo(function LayeredLandingPage() {
   useEffect(() => {
     // Check if video file is accessible
-    fetch('/video/Hero_Video.mp4', { method: 'HEAD' })
+    fetch('/video/herovideo.mp4', { method: 'HEAD' })
       .then(response => {
         if (response.ok) {
           console.log('✅ Video file is accessible:', response.status, response.statusText);
