@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, MapPin, Clock, Users, Star, Filter, Crown } from 'lucide-react';
+import { X, Calendar, MapPin, Clock, Users, Star, Filter, Crown, Check, Share2 } from 'lucide-react';
 import SidebarDock from '../../../components/SidebarDock';
 import Logo from '../../../components/Logo';
 import Footer from '../../../components/Footer';
@@ -500,6 +500,7 @@ export default function EventsPage() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [showFlagshipOnly, setShowFlagshipOnly] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [showCopyMessage, setShowCopyMessage] = useState(false);
 
   const handleCardClick = (event: Event) => {
     setSelectedEvent(event);
@@ -507,6 +508,40 @@ export default function EventsPage() {
 
   const handleClose = () => {
     setSelectedEvent(null);
+  };
+
+  const handleShare = async () => {
+    if (!selectedEvent) return;
+    
+    try {
+      // Create a shareable URL for the event
+      const eventUrl = `${window.location.origin}/Events?event=${selectedEvent.id}`;
+      
+      // Copy to clipboard
+      await navigator.clipboard.writeText(eventUrl);
+      
+      // Show success message
+      setShowCopyMessage(true);
+      
+      // Hide message after 2 seconds
+      setTimeout(() => {
+        setShowCopyMessage(false);
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = `${window.location.origin}/Events?event=${selectedEvent.id}`;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      
+      setShowCopyMessage(true);
+      setTimeout(() => {
+        setShowCopyMessage(false);
+      }, 2000);
+    }
   };
 
   // Filter events based on category and flagship toggle
@@ -942,8 +977,12 @@ export default function EventsPage() {
                         <button className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
                           BUY TICKETS
                         </button>
-                        <button className="px-6 py-3 border border-white/30 text-white rounded-lg hover:bg-white/10 transition-all duration-300">
-                          SHARE
+                        <button 
+                          onClick={handleShare}
+                          className="px-6 py-3 border border-white/30 text-white rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
+                        >
+                          <Share2 className="w-4 h-4" />
+                          <span>SHARE</span>
                         </button>
                       </div>
                     </div>
@@ -951,6 +990,26 @@ export default function EventsPage() {
                 </div>
               </motion.div>
             </div>
+
+            {/* Copy Success Message */}
+            <AnimatePresence>
+              {showCopyMessage && (
+                <motion.div
+                  initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 50, scale: 0.9 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-60"
+                >
+                  <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3">
+                    <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                      <Check className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="font-medium">Link copied to clipboard!</span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
