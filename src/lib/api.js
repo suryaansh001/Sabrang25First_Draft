@@ -1,6 +1,8 @@
 // Utility function to create API URLs without double slashes
 export const createApiUrl = (endpoint) => {
-  const baseUrl = 'http://localhost:8080';
+  //get url from .env file
+
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   
   // Remove trailing slash from base URL if present
   const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
