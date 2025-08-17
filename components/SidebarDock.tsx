@@ -5,10 +5,10 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from
 import { 
   Calendar, 
   Users, 
-  CheckCircle, 
+  Handshake, 
   Info, 
   Clock, 
-  Image, 
+  Star, 
   Mail,
   Home,
   HelpCircle,
@@ -20,14 +20,14 @@ interface SidebarDockProps {
 }
 
 const navigationItems = [
-  { title: 'Home', icon: <Home className="w-5 h-5" />, href: '/home' },
-  { title: 'Events', icon: <Calendar className="w-5 h-5" />, href: '/Events' },
-  { title: 'Team', icon: <Users className="w-5 h-5" />, href: '/Team' },
-  { title: 'Why Sponsor Us', icon: <CheckCircle className="w-5 h-5" />, href: '/why-sponsor-us' },
+  { title: 'Home', icon: <Home className="w-5 h-5" />, href: '/?skipLoading=true' },
   { title: 'About', icon: <Info className="w-5 h-5" />, href: '/About' },
+  { title: 'Events', icon: <Calendar className="w-5 h-5" />, href: '/Events' },
+  { title: 'Highlights', icon: <Star className="w-5 h-5" />, href: '/Gallery' },
   { title: 'Schedule', icon: <Clock className="w-5 h-5" />, href: '/schedule' },
+  { title: 'Team', icon: <Users className="w-5 h-5" />, href: '/Team' },
   { title: 'FAQ', icon: <HelpCircle className="w-5 h-5" />, href: '/FAQ' },
-  { title: 'Gallery', icon: <Image className="w-5 h-5" />, href: '/Gallery' },
+  { title: 'Why Sponsor Us', icon: <Handshake className="w-5 h-5" />, href: '/why-sponsor-us' },
   { title: 'Contact', icon: <Mail className="w-5 h-5" />, href: '/Contact' },
 ];
 

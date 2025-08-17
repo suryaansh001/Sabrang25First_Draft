@@ -37,7 +37,7 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-bold uppercase mb-6 text-white">Quick Links</h3>
             <div className="space-y-3">
-              <a href="/" className="block text-sm hover:text-gray-300 transition-colors">About</a>
+              <a href="/?skipLoading=true" className="block text-sm hover:text-gray-300 transition-colors">About</a>
               <a href="/FAQ" className="block text-sm hover:text-gray-300 transition-colors">Schedule</a>
               <a href="/Team" className="block text-sm hover:text-gray-300 transition-colors">Speakers</a>
               <a href="https://jklu.edu.in" target="_blank" rel="noopener noreferrer" className="block text-sm hover:text-gray-300 transition-colors">University Website</a>
