@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import LayeredLandingPage from "./HOME";
 import LoadingPage from "../../components/LoadingPage";
 
-export default function Page() {
+// Separate component that uses useSearchParams
+function PageContent() {
   const [showLoading, setShowLoading] = useState(false);
   const [hasShownLoading, setHasShownLoading] = useState(false);
   const router = useRouter();
@@ -50,5 +51,14 @@ export default function Page() {
       />
       <LayeredLandingPage isLoading={showLoading} />
     </>
+  );
+}
+
+// Main page component with Suspense boundary
+export default function Page() {
+  return (
+    <Suspense fallback={<LayeredLandingPage isLoading={false} />}>
+      <PageContent />
+    </Suspense>
   );
 }
