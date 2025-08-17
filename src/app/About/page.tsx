@@ -118,10 +118,16 @@ const AboutPage = () => {
               loop
               playsInline
               preload="metadata"
-              onError={(e) => console.warn('About video failed to load, using image fallback', e)}
+              onError={(e) => {
+                console.warn('About video failed to load, using image fallback', e);
+                const target = e.target as HTMLVideoElement;
+                target.style.display = 'none';
+              }}
+              onLoadStart={() => console.log('About video loading started')}
+              onCanPlay={() => console.log('About video can play')}
             >
-              <source src="/video/about-section/about-op.mp4" type="video/mp4" />
-              <source src="/video/about-section/about-op.webm" type="video/webm" />
+              <source src="/videos/optimized/aboutop.mp4" type="video/mp4" />
+              <source src="/videos/aboutsection/aboutop.mp4" type="video/mp4" />
             </video>
             <div className="absolute inset-0 bg-gradient-to-br from-purple-900/80 via-blue-900/70 to-pink-900/80"></div>
           </div>
@@ -188,10 +194,16 @@ const AboutPage = () => {
                      loop
                      playsInline
                      preload="metadata"
-                     onError={(e) => console.warn('Panache video failed to load, using image fallback', e)}
+                     onError={(e) => {
+                       console.warn('Panache video failed to load, using image fallback', e);
+                       const target = e.target as HTMLVideoElement;
+                       target.style.display = 'none';
+                     }}
+                     onLoadStart={() => console.log('Panache video loading started')}
+                     onCanPlay={() => console.log('Panache video can play')}
                    >
-                     <source src="/video/about-section/panache.mp4" type="video/mp4" />
-                     <source src="/video/about-section/panache.webm" type="video/webm" />
+                     <source src="/videos/optimized/panache.mp4" type="video/mp4" />
+                     <source src="/videos/aboutsection/panache.mp4" type="video/mp4" />
                    </video>
                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                  </div>
@@ -218,10 +230,16 @@ const AboutPage = () => {
                      loop
                      playsInline
                      preload="metadata"
-                     onError={(e) => console.warn('Band Jam video failed to load, using image fallback', e)}
+                     onError={(e) => {
+                       console.warn('Band Jam video failed to load, using image fallback', e);
+                       const target = e.target as HTMLVideoElement;
+                       target.style.display = 'none';
+                     }}
+                     onLoadStart={() => console.log('Band Jam video loading started')}
+                     onCanPlay={() => console.log('Band Jam video can play')}
                    >
-                     <source src="/video/about-section/BandJAM.mp4" type="video/mp4" />
-                     <source src="/video/about-section/BandJAM.webm" type="video/webm" />
+                     <source src="/videos/optimized/bandjam.mp4" type="video/mp4" />
+                     <source src="/videos/aboutsection/bandjam.mp4" type="video/mp4" />
                    </video>
                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                  </div>
@@ -248,10 +266,16 @@ const AboutPage = () => {
                      loop
                      playsInline
                      preload="metadata"
-                     onError={(e) => console.warn('Dance video failed to load, using image fallback', e)}
+                     onError={(e) => {
+                       console.warn('Dance video failed to load, using image fallback', e);
+                       const target = e.target as HTMLVideoElement;
+                       target.style.display = 'none';
+                     }}
+                     onLoadStart={() => console.log('Dance video loading started')}
+                     onCanPlay={() => console.log('Dance video can play')}
                    >
-                     <source src="/video/about-section/Dance (2).mp4" type="video/mp4" />
-                     <source src="/video/about-section/Dance (2).webm" type="video/webm" />
+                     <source src="/videos/optimized/dance.mp4" type="video/mp4" />
+                     <source src="/videos/aboutsection/dance.mp4" type="video/mp4" />
                    </video>
                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                  </div>
