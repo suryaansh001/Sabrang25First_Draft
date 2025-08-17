@@ -57,7 +57,8 @@ function checkVideoDirectory() {
   
   // Check main videos
   const mainVideos = [
-    { name: 'Hero Video', path: path.join(VIDEO_DIR, 'herovideo.mp4') },
+    { name: 'Hero Video (Original)', path: path.join(VIDEO_DIR, 'herovideo.mp4') },
+    { name: 'Hero Video 2 (Optimized)', path: path.join(VIDEO_DIR, 'herovideo2.mp4') },
     { name: 'Loading Video', path: path.join(VIDEO_DIR, 'loadingvideo.mp4') }
   ];
   
@@ -77,6 +78,15 @@ function checkVideoDirectory() {
     { name: 'Dance Video', path: path.join(aboutDir, 'Dance (2).mp4') }
   ];
   
+  // Check for WebM versions
+  const webmVideos = [
+    { name: 'Hero Video 2 WebM', path: path.join(VIDEO_DIR, 'herovideo2.webm') },
+    { name: 'About OP WebM', path: path.join(aboutDir, 'about-op.webm') },
+    { name: 'Panache WebM', path: path.join(aboutDir, 'panache.webm') },
+    { name: 'Band Jam WebM', path: path.join(aboutDir, 'BandJAM.webm') },
+    { name: 'Dance WebM', path: path.join(aboutDir, 'Dance (2).webm') }
+  ];
+  
   console.log('\n🎭 About Section Videos:');
   console.log('='.repeat(50));
   
@@ -84,11 +94,18 @@ function checkVideoDirectory() {
     checkVideoFile(video.path, video.name)
   );
   
+  console.log('\n🌐 WebM Videos (for better compatibility):');
+  console.log('='.repeat(50));
+  
+  const webmResults = webmVideos.map(video => 
+    checkVideoFile(video.path, video.name)
+  );
+  
   // Summary
   console.log('\n📊 Summary:');
   console.log('='.repeat(50));
   
-  const allResults = [...mainResults, ...aboutResults];
+  const allResults = [...mainResults, ...aboutResults, ...webmResults];
   const existingVideos = allResults.filter(r => r.exists);
   const largeVideos = existingVideos.filter(r => r.isLarge);
   const missingVideos = allResults.filter(r => !r.exists);

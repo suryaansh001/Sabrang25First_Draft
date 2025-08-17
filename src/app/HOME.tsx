@@ -99,8 +99,8 @@ const VideoBackground = () => {
         >
           {/* Multiple source formats for better compatibility */}
           <source src={getVideoSource()} type={`video/${currentFormat}`} />
-          <source src="/video/herovideo.mp4" type="video/mp4" />
-          <source src="/video/herovideo.webm" type="video/webm" />
+          <source src="/video/herovideo2.mp4" type="video/mp4" />
+          <source src="/video/herovideo2.webm" type="video/webm" />
           Your browser does not support the video tag.
         </video>
       )}
