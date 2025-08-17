@@ -1,5 +1,5 @@
 'use client';
-import React, { memo, useEffect } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { Play, Github, Linkedin, LayoutDashboard } from 'lucide-react';
 import SidebarDock from '../../components/SidebarDock';
 
@@ -10,49 +10,56 @@ const VideoBackground = () => {
   const [imageLoaded, setImageLoaded] = React.useState(false);
   const [videoAttempted, setVideoAttempted] = React.useState(false);
   const [currentFormat, setCurrentFormat] = React.useState<'mp4' | 'webm'>('mp4');
+  const [debugInfo, setDebugInfo] = React.useState<string[]>([]);
+
+  const addDebugInfo = (info: string) => {
+    console.log(`🎬 Video Debug: ${info}`);
+    setDebugInfo(prev => [...prev, `${new Date().toLocaleTimeString()}: ${info}`]);
+  };
 
   // Add timeout for video loading
   React.useEffect(() => {
     const timeout = setTimeout(() => {
       if (!videoLoaded && !videoError) {
-        console.log('Video loading timeout, falling back to image');
+        addDebugInfo('Video loading timeout, falling back to image');
         setVideoError(true);
         setVideoAttempted(true);
       }
-    }, 8000); // Increased timeout for deployment
+    }, 10000); // Increased timeout for deployment
 
     return () => clearTimeout(timeout);
   }, [videoLoaded, videoError]);
 
   const handleVideoError = (e: any) => {
-    console.error('Video failed to load, trying fallback format or image', e);
+    addDebugInfo(`Video failed to load (${currentFormat}): ${e.target?.error?.message || 'Unknown error'}`);
     
     // Try WebM if MP4 failed
     if (currentFormat === 'mp4' && !videoAttempted) {
-      console.log('Trying WebM format...');
+      addDebugInfo('Trying WebM format...');
       setCurrentFormat('webm');
       setVideoError(false);
       return;
     }
     
     // If both formats failed, fall back to image
+    addDebugInfo('Both video formats failed, using image fallback');
     setVideoError(true);
     setVideoAttempted(true);
   };
 
   const handleVideoLoad = () => {
-    console.log(`Video loaded successfully (${currentFormat})`);
+    addDebugInfo(`Video loaded successfully (${currentFormat})`);
     setVideoLoaded(true);
     setVideoAttempted(true);
   };
 
   const handleImageLoad = () => {
-    console.log('Hero background image loaded successfully');
+    addDebugInfo('Hero background image loaded successfully');
     setImageLoaded(true);
   };
 
   const handleImageError = () => {
-    console.error('Hero background image failed to load, using gradient fallback');
+    addDebugInfo('Hero background image failed to load, using gradient fallback');
     setImageLoaded(false);
   };
 
@@ -62,8 +69,13 @@ const VideoBackground = () => {
     return currentFormat === 'mp4' ? `${basePath}.mp4` : `${basePath}.webm`;
   };
 
+  // Check if we're in development mode
+  const isDevelopment = process.env.NODE_ENV === 'development';
+
   return (
     <>
+
+
       {/* Primary fallback: Hero background image - always visible */}
       <img
         src="/images/hero.webp"
@@ -87,15 +99,19 @@ const VideoBackground = () => {
           loop
           muted
           playsInline
-          preload="metadata"
+          preload="auto"
           className="absolute inset-0 w-full h-full object-cover opacity-80"
           style={{ filter: 'brightness(0.7) contrast(1.2)' }}
           onError={handleVideoError}
-          onLoadStart={() => console.log(`Video loading started (${currentFormat})`)}
+          onLoadStart={() => addDebugInfo(`Video loading started (${currentFormat})`)}
           onCanPlay={handleVideoLoad}
           onLoadedData={handleVideoLoad}
-          onLoad={() => console.log('Video load event fired')}
-          onLoadedMetadata={() => console.log('Video metadata loaded')}
+          onLoad={() => addDebugInfo('Video load event fired')}
+          onLoadedMetadata={() => addDebugInfo('Video metadata loaded')}
+          onStalled={() => addDebugInfo('Video stalled')}
+          onSuspend={() => addDebugInfo('Video suspended')}
+          onAbort={() => addDebugInfo('Video aborted')}
+          onEmptied={() => addDebugInfo('Video emptied')}
         >
           {/* Multiple source formats for better compatibility */}
           <source src={getVideoSource()} type={`video/${currentFormat}`} />
@@ -113,10 +129,13 @@ interface LayeredLandingPageProps {
 }
 
 const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false }: LayeredLandingPageProps) {
+  const [videoStatus, setVideoStatus] = useState<{[key: string]: any}>({});
+
   useEffect(() => {
     // Check if video files are accessible
     const checkVideoFiles = async () => {
       const formats = ['mp4', 'webm'];
+      const status: {[key: string]: any} = {};
       
       for (const format of formats) {
         try {
@@ -128,21 +147,73 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
           if (response.ok) {
             console.log(`✅ Video file (${format}) is accessible:`, response.status, response.statusText);
             console.log('📏 Content-Length:', response.headers.get('content-length'));
-            break; // Found a working format
+            status[format] = {
+              accessible: true,
+              status: response.status,
+              contentLength: response.headers.get('content-length')
+            };
           } else {
             console.warn(`⚠️ Video file (${format}) not accessible:`, response.status, response.statusText);
+            status[format] = {
+              accessible: false,
+              status: response.status,
+              error: response.statusText
+            };
           }
         } catch (error) {
           console.error(`❌ Error checking video file (${format}):`, error);
+          status[format] = {
+            accessible: false,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          };
         }
       }
+
+      // Also check alternative video files
+      const altVideos = ['herovideo2.mp4', 'herovideo2.webm'];
+      for (const video of altVideos) {
+        try {
+          const response = await fetch(`/video/${video}`, { 
+            method: 'HEAD',
+            cache: 'no-cache'
+          });
+          
+          if (response.ok) {
+            console.log(`✅ Alternative video file (${video}) is accessible:`, response.status);
+            status[video] = {
+              accessible: true,
+              status: response.status,
+              contentLength: response.headers.get('content-length')
+            };
+          } else {
+            console.warn(`⚠️ Alternative video file (${video}) not accessible:`, response.status);
+            status[video] = {
+              accessible: false,
+              status: response.status
+            };
+          }
+        } catch (error) {
+          console.error(`❌ Error checking alternative video file (${video}):`, error);
+          status[video] = {
+            accessible: false,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          };
+        }
+      }
+
+      setVideoStatus(status);
     };
 
     checkVideoFiles();
   }, []);
 
+  // Check if we're in development mode
+  const isDevelopment = process.env.NODE_ENV === 'development';
+
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
+      
+
       
       {/* Top Right Black Pill Notch */}
       {!isLoading && (
