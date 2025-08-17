@@ -98,18 +98,21 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ onComplete, isVisible }) => {
         </div>
 
       {/* Video container */}
+      {/* TEMPORARILY COMMENTED OUT - UNCOMMENT WHEN READY TO USE LOADING VIDEO */}
       <div className="relative w-full h-full flex items-center justify-center">
-        <video
-          ref={videoRef}
-          className="w-full h-full object-cover cursor-pointer"
-          onClick={handleVideoClick}
-          muted
-          playsInline
-          preload="auto"
-        >
-          <source src="/video/loadingvideo2.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        {false && (
+          <video
+            ref={videoRef}
+            className="w-full h-full object-cover cursor-pointer"
+            onClick={handleVideoClick}
+            muted
+            playsInline
+            preload="auto"
+          >
+            <source src="/video/loadingvideo2.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        )}
 
         {/* Video controls overlay */}
         <div className="absolute inset-0 flex items-center justify-center">
