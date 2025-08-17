@@ -29,7 +29,7 @@ export default function EventCarousel({ events, initialIndex = 0 }: EventCarouse
 
   const getVideoSrc = useCallback((index: number) => {
     const event = events[index];
-    return event?.video || `/video/853828-hd_1920_1080_25fps.mp4`;
+    return event?.video || `/video/loadingvideo.mp4`;
   }, [events]);
 
   const goToNext = useCallback(() => {
@@ -117,7 +117,11 @@ export default function EventCarousel({ events, initialIndex = 0 }: EventCarouse
         loop
         muted
         playsInline
-        preload="auto"
+        preload="metadata"
+        onError={(e) => {
+          console.warn('Event carousel video failed to load, using fallback image', e);
+          setVideoError(true);
+        }}
       />
       
       {/* Fallback background image if video fails */}

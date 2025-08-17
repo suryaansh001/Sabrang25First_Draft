@@ -45,6 +45,27 @@ const nextConfig: NextConfig = {
             key: 'Content-Type',
             value: 'video/mp4',
           },
+          {
+            key: 'Cross-Origin-Embedder-Policy',
+            value: 'require-corp',
+          },
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin',
+          },
+        ],
+      },
+      {
+        source: '/video/:path*.webm',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'video/webm',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
         ],
       },
     ];

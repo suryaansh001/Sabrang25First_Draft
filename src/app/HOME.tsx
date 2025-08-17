@@ -3,12 +3,13 @@ import React, { memo, useEffect } from 'react';
 import { Play, Github, Linkedin, LayoutDashboard } from 'lucide-react';
 import SidebarDock from '../../components/SidebarDock';
 
-// Video Background Component with multiple fallbacks
+// Video Background Component with multiple fallbacks and optimizations
 const VideoBackground = () => {
   const [videoError, setVideoError] = React.useState(false);
   const [videoLoaded, setVideoLoaded] = React.useState(false);
   const [imageLoaded, setImageLoaded] = React.useState(false);
   const [videoAttempted, setVideoAttempted] = React.useState(false);
+  const [currentFormat, setCurrentFormat] = React.useState<'mp4' | 'webm'>('mp4');
 
   // Add timeout for video loading
   React.useEffect(() => {
@@ -18,19 +19,29 @@ const VideoBackground = () => {
         setVideoError(true);
         setVideoAttempted(true);
       }
-    }, 5000); // 5 second timeout
+    }, 8000); // Increased timeout for deployment
 
     return () => clearTimeout(timeout);
   }, [videoLoaded, videoError]);
 
   const handleVideoError = (e: any) => {
-    console.error('Video failed to load, falling back to hero background image', e);
+    console.error('Video failed to load, trying fallback format or image', e);
+    
+    // Try WebM if MP4 failed
+    if (currentFormat === 'mp4' && !videoAttempted) {
+      console.log('Trying WebM format...');
+      setCurrentFormat('webm');
+      setVideoError(false);
+      return;
+    }
+    
+    // If both formats failed, fall back to image
     setVideoError(true);
     setVideoAttempted(true);
   };
 
   const handleVideoLoad = () => {
-    console.log('Video loaded successfully');
+    console.log(`Video loaded successfully (${currentFormat})`);
     setVideoLoaded(true);
     setVideoAttempted(true);
   };
@@ -43,6 +54,12 @@ const VideoBackground = () => {
   const handleImageError = () => {
     console.error('Hero background image failed to load, using gradient fallback');
     setImageLoaded(false);
+  };
+
+  // Get video source based on current format
+  const getVideoSource = () => {
+    const basePath = '/video/herovideo';
+    return currentFormat === 'mp4' ? `${basePath}.mp4` : `${basePath}.webm`;
   };
 
   return (
@@ -74,13 +91,16 @@ const VideoBackground = () => {
           className="absolute inset-0 w-full h-full object-cover opacity-80"
           style={{ filter: 'brightness(0.7) contrast(1.2)' }}
           onError={handleVideoError}
-          onLoadStart={() => console.log('Video loading started')}
+          onLoadStart={() => console.log(`Video loading started (${currentFormat})`)}
           onCanPlay={handleVideoLoad}
           onLoadedData={handleVideoLoad}
           onLoad={() => console.log('Video load event fired')}
           onLoadedMetadata={() => console.log('Video metadata loaded')}
         >
+          {/* Multiple source formats for better compatibility */}
+          <source src={getVideoSource()} type={`video/${currentFormat}`} />
           <source src="/video/herovideo.mp4" type="video/mp4" />
+          <source src="/video/herovideo.webm" type="video/webm" />
           Your browser does not support the video tag.
         </video>
       )}
@@ -90,19 +110,31 @@ const VideoBackground = () => {
 
 const LayeredLandingPage = memo(function LayeredLandingPage() {
   useEffect(() => {
-    // Check if video file is accessible
-    fetch('/video/herovideo.mp4', { method: 'HEAD' })
-      .then(response => {
-        if (response.ok) {
-          console.log('✅ Video file is accessible:', response.status, response.statusText);
-          console.log('📏 Content-Length:', response.headers.get('content-length'));
-        } else {
-          console.error('❌ Video file not accessible:', response.status, response.statusText);
+    // Check if video files are accessible
+    const checkVideoFiles = async () => {
+      const formats = ['mp4', 'webm'];
+      
+      for (const format of formats) {
+        try {
+          const response = await fetch(`/video/herovideo.${format}`, { 
+            method: 'HEAD',
+            cache: 'no-cache' // Prevent caching issues
+          });
+          
+          if (response.ok) {
+            console.log(`✅ Video file (${format}) is accessible:`, response.status, response.statusText);
+            console.log('📏 Content-Length:', response.headers.get('content-length'));
+            break; // Found a working format
+          } else {
+            console.warn(`⚠️ Video file (${format}) not accessible:`, response.status, response.statusText);
+          }
+        } catch (error) {
+          console.error(`❌ Error checking video file (${format}):`, error);
         }
-      })
-      .catch(error => {
-        console.error('❌ Error checking video file:', error);
-      });
+      }
+    };
+
+    checkVideoFiles();
   }, []);
 
   return (

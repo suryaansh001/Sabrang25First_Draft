@@ -117,8 +117,11 @@ const AboutPage = () => {
               muted 
               loop
               playsInline
+              preload="metadata"
+              onError={(e) => console.warn('About video failed to load, using image fallback', e)}
             >
               <source src="/video/about-section/about-op.mp4" type="video/mp4" />
+              <source src="/video/about-section/about-op.webm" type="video/webm" />
             </video>
             <div className="absolute inset-0 bg-gradient-to-br from-purple-900/80 via-blue-900/70 to-pink-900/80"></div>
           </div>
@@ -184,8 +187,11 @@ const AboutPage = () => {
                      muted 
                      loop
                      playsInline
+                     preload="metadata"
+                     onError={(e) => console.warn('Panache video failed to load, using image fallback', e)}
                    >
                      <source src="/video/about-section/panache.mp4" type="video/mp4" />
+                     <source src="/video/about-section/panache.webm" type="video/webm" />
                    </video>
                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                  </div>
@@ -211,8 +217,11 @@ const AboutPage = () => {
                      muted 
                      loop
                      playsInline
+                     preload="metadata"
+                     onError={(e) => console.warn('Band Jam video failed to load, using image fallback', e)}
                    >
                      <source src="/video/about-section/BandJAM.mp4" type="video/mp4" />
+                     <source src="/video/about-section/BandJAM.webm" type="video/webm" />
                    </video>
                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                  </div>
@@ -238,8 +247,11 @@ const AboutPage = () => {
                      muted 
                      loop
                      playsInline
+                     preload="metadata"
+                     onError={(e) => console.warn('Dance video failed to load, using image fallback', e)}
                    >
                      <source src="/video/about-section/Dance (2).mp4" type="video/mp4" />
+                     <source src="/video/about-section/Dance (2).webm" type="video/webm" />
                    </video>
                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                  </div>
