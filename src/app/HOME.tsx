@@ -325,8 +325,7 @@ const VideoBackground = () => {
       )}
       
       {/* Video overlay - shows when video loads and hasn't been played before, covers the image */}
-      {/* TEMPORARILY COMMENTED OUT - UNCOMMENT WHEN READY TO USE LOADING VIDEO */}
-      {false && !videoError && !hasPlayedVideo && (
+      {!videoError && !hasPlayedVideo && (
         <video
           ref={videoRef}
           autoPlay
