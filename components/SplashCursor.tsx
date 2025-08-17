@@ -166,6 +166,13 @@ export default function SplashCursor({
       return;
     }
 
+    // Additional safety check for WebGL context validity
+    if (!gl.getExtension || !gl.createBuffer) {
+      console.warn('WebGL context is invalid, SplashCursor will be disabled');
+      setWebGLAvailable(false);
+      return;
+    }
+
     // At this point, gl and ext are guaranteed to be non-null
     const glContext = gl!;
     const extContext = ext!;
@@ -1057,14 +1064,35 @@ export default function SplashCursor({
     }
 
     updateKeywords();
-    initFramebuffers();
+    
+    // Only initialize framebuffers if WebGL is available
+    if (webGLAvailable) {
+      try {
+        initFramebuffers();
+      } catch (error) {
+        console.warn('Failed to initialize framebuffers:', error);
+        setWebGLAvailable(false);
+        return;
+      }
+    }
 
     let lastUpdateTime = Date.now();
     let colorUpdateTimer = 0.0;
 
     function updateFrame() {
+      // Don't run if WebGL is not available
+      if (!webGLAvailable) return;
+      
       const dt = calcDeltaTime();
-      if (resizeCanvas()) initFramebuffers();
+      if (resizeCanvas()) {
+        try {
+          initFramebuffers();
+        } catch (error) {
+          console.warn('Failed to reinitialize framebuffers:', error);
+          setWebGLAvailable(false);
+          return;
+        }
+      }
       updateColors(dt);
       applyInputs();
       step(dt);
@@ -1537,6 +1565,11 @@ export default function SplashCursor({
     }
     document.body.addEventListener("touchstart", handleFirstTouchStart);
 
+    // Only start animation if WebGL is available
+    if (webGLAvailable) {
+      requestAnimationFrame(updateFrame);
+    }
+
     window.addEventListener(
       "touchstart",
       (e) => {
@@ -1576,6 +1609,18 @@ export default function SplashCursor({
         updatePointerUpData(pointer);
       }
     });
+
+    // Cleanup function
+    return () => {
+      // Remove event listeners
+      document.body.removeEventListener("touchstart", handleFirstTouchStart);
+      window.removeEventListener("touchstart", () => {});
+      window.removeEventListener("touchmove", () => {});
+      window.removeEventListener("touchend", () => {});
+      window.removeEventListener("mousedown", () => {});
+      window.removeEventListener("mousemove", () => {});
+      window.removeEventListener("mouseup", () => {});
+    };
   }, [
     SIM_RESOLUTION,
     DYE_RESOLUTION,

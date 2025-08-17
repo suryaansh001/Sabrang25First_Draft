@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import AppShell from "../../components/AppShell";
+import { VideoProvider } from "../../components/VideoContext";
 
 export const metadata: Metadata = {
   title: "Sabrang",
@@ -45,7 +46,9 @@ export default function RootLayout({
         }} />
       </head>
       <body className="antialiased">
-        <AppShell>{children}</AppShell>
+        <VideoProvider>
+          <AppShell>{children}</AppShell>
+        </VideoProvider>
       </body>
     </html>
   );

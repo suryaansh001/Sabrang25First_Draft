@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { 
   Calendar, 
   Users, 
@@ -31,19 +32,32 @@ const navigationItems = [
   { title: 'Contact', icon: <Mail className="w-5 h-5" />, href: '/Contact' },
 ];
 
+// Add a global state to track pending navigation
+let pendingNavigation: string | null = null;
+let navigationCallback: ((href: string) => void) | null = null;
+
+export const setNavigationCallback = (callback: (href: string) => void) => {
+  navigationCallback = callback;
+};
+
 export const SidebarDock: React.FC<SidebarDockProps> = ({ className = '' }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  let mouseY = useMotionValue(Infinity);
+  const router = useRouter();
+  const mouseY = useMotionValue(Infinity);
+
+  const handleMouseEnter = useCallback(() => setIsExpanded(true), []);
+  const handleMouseLeave = useCallback(() => {
+    setIsExpanded(false);
+    mouseY.set(Infinity);
+  }, [mouseY]);
+  const handleMouseMove = useCallback((e: React.MouseEvent) => mouseY.set(e.pageY), [mouseY]);
 
   return (
     <motion.div
-      className={`fixed left-4 top-[55%] transform -translate-y-1/2 z-[60] ${className}`}
-      onMouseEnter={() => setIsExpanded(true)}
-      onMouseLeave={() => {
-        setIsExpanded(false);
-        mouseY.set(Infinity);
-      }}
-      onMouseMove={(e) => mouseY.set(e.pageY)}
+      className={`fixed left-4 top-[55%] transform -translate-y-1/2 z-[60] transform-gpu ${className}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onMouseMove={handleMouseMove}
       initial={false}
     >
       <motion.div
@@ -60,6 +74,7 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({ className = '' }) => {
             index={index} 
             mouseY={mouseY}
             isExpanded={isExpanded}
+            router={router}
           />
         ))}
       </motion.div>
@@ -71,50 +86,67 @@ function IconContainer({
   item, 
   index, 
   mouseY, 
-  isExpanded 
+  isExpanded,
+  router
 }: { 
   item: { title: string; icon: React.ReactNode; href: string };
   index: number;
   mouseY: any;
   isExpanded: boolean;
+  router: any;
 }) {
-  let ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
-  let distance = useTransform(mouseY, (val: number) => {
-    let bounds = ref.current?.getBoundingClientRect() ?? { y: 0, height: 0 };
+  const distance = useTransform(mouseY, (val: number) => {
+    const bounds = ref.current?.getBoundingClientRect() ?? { y: 0, height: 0 };
     return val - bounds.y - bounds.height / 2;
   });
 
-  let widthTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
-  let heightTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
-  let widthTransformIcon = useTransform(distance, [-150, 0, 150], [20, 40, 20]);
-  let heightTransformIcon = useTransform(distance, [-150, 0, 150], [20, 40, 20]);
+  const widthTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
+  const heightTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
+  const widthTransformIcon = useTransform(distance, [-150, 0, 150], [20, 40, 20]);
+  const heightTransformIcon = useTransform(distance, [-150, 0, 150], [20, 40, 20]);
 
-  let width = useSpring(widthTransform, {
+  const width = useSpring(widthTransform, {
     mass: 0.1,
     stiffness: 150,
     damping: 12,
   });
-  let height = useSpring(heightTransform, {
+  const height = useSpring(heightTransform, {
     mass: 0.1,
     stiffness: 150,
     damping: 12,
   });
-  let widthIcon = useSpring(widthTransformIcon, {
+  const widthIcon = useSpring(widthTransformIcon, {
     mass: 0.1,
     stiffness: 150,
     damping: 12,
   });
-  let heightIcon = useSpring(widthTransformIcon, {
+  const heightIcon = useSpring(widthTransformIcon, {
     mass: 0.1,
     stiffness: 150,
     damping: 12,
   });
+
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    // Store the pending navigation
+    pendingNavigation = item.href;
+    
+    // Trigger the transition first
+    if (navigationCallback) {
+      navigationCallback(item.href);
+    } else {
+      // Fallback to direct navigation if callback not set
+      router.push(item.href);
+    }
+  }, [item.href, router]);
 
   return (
-    <motion.a
-      href={item.href}
-      className="group flex items-center gap-3 w-full text-white hover:text-white/80 transition-colors"
+    <motion.button
+      onClick={handleClick}
+      className="group flex items-center gap-3 w-full text-white hover:text-white/80 transition-colors transform-gpu"
       initial={{ opacity: 0, x: -20 }}
       animate={{ 
         opacity: 1, 
@@ -127,7 +159,7 @@ function IconContainer({
       <motion.div
         ref={ref}
         style={{ width, height }}
-        className="flex-shrink-0 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 group-hover:bg-white/30 transition-colors"
+        className="flex-shrink-0 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 group-hover:bg-white/30 transition-colors transform-gpu"
       >
         <motion.div
           style={{ width: widthIcon, height: heightIcon }}
@@ -149,7 +181,7 @@ function IconContainer({
           </motion.span>
         )}
       </AnimatePresence>
-    </motion.a>
+    </motion.button>
   );
 }
 

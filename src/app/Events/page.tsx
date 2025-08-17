@@ -644,7 +644,7 @@ export default function EventsPage() {
                   transition={{ duration: 0.8, delay: 0.2 }}
                   className="text-6xl md:text-8xl font-bold text-white mb-4"
                 >
-                  SABRANG 2024
+                  SABRANG 2025
                 </motion.h1>
                 <motion.div 
                   initial={{ width: 0 }}
