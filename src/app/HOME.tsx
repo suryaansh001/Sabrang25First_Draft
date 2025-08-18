@@ -102,11 +102,11 @@ const VideoBackground = () => {
   React.useEffect(() => {
     const timeout = setTimeout(() => {
       if (!videoLoaded && !videoError) {
-        console.log(`Video loading timeout (${loadingStrategy} strategy), falling back to image`);
+        console.log(`Video loading timeout (${loadingStrategy} strategy), falling back to enhanced background`);
         setVideoError(true);
         setVideoAttempted(true);
       }
-    }, loadingStrategy === 'aggressive' ? 8000 : 15000);
+    }, loadingStrategy === 'aggressive' ? 5000 : 10000); // Reduced timeout for faster fallback
 
     return () => clearTimeout(timeout);
   }, [videoLoaded, videoError, loadingStrategy]);
@@ -122,8 +122,8 @@ const VideoBackground = () => {
       return;
     }
     
-    // If both formats failed, fall back to image
-    console.log('Both video formats failed, using image fallback');
+    // If both formats failed, fall back to enhanced background
+    console.log('Both video formats failed, using enhanced background fallback');
     setVideoError(true);
     setVideoAttempted(true);
   };
@@ -150,33 +150,24 @@ const VideoBackground = () => {
       const handleVisibilityChange = () => {
         if (!document.hidden && videoLoaded) {
           console.log('Tab became visible, restoring video...');
-          // Immediate attempt to restore video
-          if (video.paused) {
-            video.play().catch(e => console.log('Video restoration failed:', e));
-          }
+          // Small delay to ensure DOM is ready
+          setTimeout(() => {
+            if (video.paused) {
+              video.play().catch(e => console.log('Video restoration failed:', e));
+            }
+          }, 100);
         }
       };
 
-      // Check every 1 second if video is still playing
-      const interval = setInterval(ensurePlaying, 1000);
+      // Check every 2 seconds if video is still playing
+      const interval = setInterval(ensurePlaying, 2000);
       
       // Listen for tab visibility changes
       document.addEventListener('visibilitychange', handleVisibilityChange);
       
-      // Listen for window focus events
-      const handleWindowFocus = () => {
-        if (videoLoaded && video.paused) {
-          console.log('Window focused, restoring video...');
-          video.play().catch(e => console.log('Video restoration on focus failed:', e));
-        }
-      };
-      
-      window.addEventListener('focus', handleWindowFocus);
-      
       return () => {
         clearInterval(interval);
         document.removeEventListener('visibilitychange', handleVisibilityChange);
-        window.removeEventListener('focus', handleWindowFocus);
       };
     }
   }, [videoLoaded]);
@@ -202,37 +193,11 @@ const VideoBackground = () => {
       };
 
       // Try to restore video when tab becomes visible
-      const timer = setTimeout(restoreVideo, 100);
-      
-      // Also try immediately
-      restoreVideo();
+      const timer = setTimeout(restoreVideo, 300);
       
       return () => clearTimeout(timer);
     }
   }, [isTabVisible, videoLoaded]);
-
-  // Additional video restoration on user interaction
-  React.useEffect(() => {
-    const handleUserInteraction = () => {
-      if (videoRef.current && videoLoaded && videoRef.current.paused) {
-        console.log('User interaction detected, attempting to restore video...');
-        videoRef.current.play().catch(e => console.log('Video restoration on user interaction failed:', e));
-      }
-    };
-
-    // Listen for various user interactions
-    document.addEventListener('click', handleUserInteraction);
-    document.addEventListener('keydown', handleUserInteraction);
-    document.addEventListener('touchstart', handleUserInteraction);
-    document.addEventListener('mousemove', handleUserInteraction);
-
-    return () => {
-      document.removeEventListener('click', handleUserInteraction);
-      document.removeEventListener('keydown', handleUserInteraction);
-      document.removeEventListener('touchstart', handleUserInteraction);
-      document.removeEventListener('mousemove', handleUserInteraction);
-    };
-  }, [videoLoaded]);
 
   const handleImageLoad = () => {
     console.log('Hero background image loaded successfully');
@@ -270,6 +235,19 @@ const VideoBackground = () => {
     return `${basePath}.${format}`;
   };
 
+  // Debug video loading
+  React.useEffect(() => {
+    console.log('Video loading debug info:', {
+      currentFormat,
+      networkSpeed,
+      loadingStrategy,
+      videoLoaded,
+      videoError,
+      videoAttempted,
+      videoSource: getVideoSource()
+    });
+  }, [currentFormat, networkSpeed, loadingStrategy, videoLoaded, videoError, videoAttempted]);
+
   // Get preload strategy based on network speed
   const getPreloadStrategy = () => {
     if (loadingStrategy === 'aggressive') {
@@ -280,18 +258,21 @@ const VideoBackground = () => {
 
   return (
     <>
-      {/* Primary fallback: Hero background image - always visible */}
+      {/* Primary background: bg.jpg image */}
       <img
-        src="/images/hero.webp"
-        alt="Hero Background"
-        className="absolute inset-0 w-full h-full object-cover opacity-90"
-        style={{ filter: 'brightness(0.6) contrast(1.1)' }}
+        src="/bg.jpg"
+        alt="Background"
+        className="absolute inset-0 w-full h-full object-cover opacity-100"
+        style={{ filter: 'brightness(0.8) contrast(1.1)' }}
         onLoad={handleImageLoad}
         onError={handleImageError}
         crossOrigin="anonymous"
         loading="eager"
         fetchPriority="high"
       />
+      
+      {/* Backup gradient background - always present as safety net */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-purple-900 to-blue-900 opacity-40" />
       
       {/* Secondary fallback: Disco animated background if image fails */}
       {!imageLoaded && (
@@ -380,14 +361,6 @@ const VideoBackground = () => {
           onSuspend={() => console.log('Video suspended')}
           onAbort={() => console.log('Video aborted')}
           onEmptied={() => console.log('Video emptied')}
-          onPause={() => {
-            console.log('Video paused, attempting to resume...');
-            setTimeout(() => {
-              if (videoRef.current && videoRef.current.paused) {
-                videoRef.current.play().catch(e => console.log('Video resume failed:', e));
-              }
-            }, 100);
-          }}
           onEnded={() => {
             console.log('Video ended, restarting...');
             if (videoRef.current) {
@@ -399,9 +372,22 @@ const VideoBackground = () => {
           {/* Multiple source formats for better compatibility */}
           <source src={getVideoSource()} type={`video/${currentFormat}`} />
           <source src="/videos/herovideo2.mp4" type="video/mp4" />
+          <source src="/videos/herovideo.mp4" type="video/mp4" />
           <source src="/videos/herovideo2.webm" type="video/webm" />
           Your browser does not support the video tag.
         </video>
+      )}
+      
+      {/* Enhanced fallback background - always visible when video fails or is not loaded */}
+      {(videoError || !videoLoaded) && (
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-purple-900 to-blue-900">
+          {/* Animated background elements for visual interest */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute top-1/4 left-1/2 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-500/30 rounded-full blur-3xl -translate-x-1/2 animate-pulse" style={{ animationDuration: '4s' }}></div>
+            <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-gradient-to-tl from-indigo-400/20 to-blue-600/25 rounded-full blur-2xl animate-pulse" style={{ animationDuration: '5s', animationDelay: '1s' }}></div>
+            <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-gradient-to-r from-purple-400/20 to-pink-500/25 rounded-full blur-2xl animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }}></div>
+          </div>
+        </div>
       )}
 
             {/* Ultimate fallback: Disco party background when both video and image fail */}
