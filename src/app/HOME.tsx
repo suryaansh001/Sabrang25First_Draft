@@ -224,7 +224,7 @@ const VideoBackground = () => {
 
   // Get video source based on current format and network speed
   const getVideoSource = () => {
-    const basePath = '/video/herovideo';
+    const basePath = '/videos/herovideo';
     const format = currentFormat === 'mp4' ? 'mp4' : 'webm';
     
     // Use smaller video for slow networks
