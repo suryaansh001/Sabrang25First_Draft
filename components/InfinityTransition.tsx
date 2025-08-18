@@ -45,13 +45,13 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
   if (!isActive) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] pointer-events-none">
+    <div className="fixed inset-0 z-[100] pointer-events-auto">
       {/* Background overlay */}
       <motion.div
         className="absolute inset-0 bg-black"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: currentPhase === 'complete' ? 0 : 1 }}
-        transition={{ duration: 0.3 }}
+        initial={{ opacity: 1 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0 }}
       />
 
       {/* Animation container */}

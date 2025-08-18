@@ -3,6 +3,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&display=swap');
 
+/* Bobogie Groovy Font */
+@font-face {
+  font-family: 'Bobogie Groovy';
+  src: url('/Font/bobogie-groovy/Bobogie Groovy.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Rogta Modern Font */
+@font-face {
+  font-family: 'Rogta Modern';
+  src: url('/Font/rogta-modern/RogtaModern-Bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* TAN Nimbus Font */
+@font-face {
+  font-family: 'TAN Nimbus';
+  src: url('/Font/TAN_Nimbus/TAN-NIMBUS.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @import "tailwindcss";
 
 @tailwind base;

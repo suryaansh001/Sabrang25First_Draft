@@ -62,13 +62,12 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
   }, [router]);
 
   const handleTransitionComplete = () => {
-    setShowTransition(false);
-    
-    // Animation completed, now show the new page content
+    // Reveal new content first, then remove overlay to avoid any visual gap
     if (pendingNavigation) {
       setPendingNavigation(null);
-      setIsTransitioning(false); // Show new page content
     }
+    setIsTransitioning(false);
+    setShowTransition(false);
   };
 
   useEffect(() => {
@@ -90,11 +89,12 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
       <div className="relative z-10">
         {mounted && !hideChrome && <Logo />}
         <main 
-          className={`transition-opacity duration-200 ${
+          key={pathname}
+          className={`${
             isTransitioning ? 'opacity-0 pointer-events-none invisible' : 'opacity-100 visible'
           }`}
         >
-          {children}
+          {!isTransitioning && children}
         </main>
         {!hideChrome && <SidebarDock />}
       </div>
