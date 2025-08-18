@@ -150,24 +150,33 @@ const VideoBackground = () => {
       const handleVisibilityChange = () => {
         if (!document.hidden && videoLoaded) {
           console.log('Tab became visible, restoring video...');
-          // Small delay to ensure DOM is ready
-          setTimeout(() => {
-            if (video.paused) {
-              video.play().catch(e => console.log('Video restoration failed:', e));
-            }
-          }, 100);
+          // Immediate attempt to restore video
+          if (video.paused) {
+            video.play().catch(e => console.log('Video restoration failed:', e));
+          }
         }
       };
 
-      // Check every 2 seconds if video is still playing
-      const interval = setInterval(ensurePlaying, 2000);
+      // Check every 1 second if video is still playing
+      const interval = setInterval(ensurePlaying, 1000);
       
       // Listen for tab visibility changes
       document.addEventListener('visibilitychange', handleVisibilityChange);
       
+      // Listen for window focus events
+      const handleWindowFocus = () => {
+        if (videoLoaded && video.paused) {
+          console.log('Window focused, restoring video...');
+          video.play().catch(e => console.log('Video restoration on focus failed:', e));
+        }
+      };
+      
+      window.addEventListener('focus', handleWindowFocus);
+      
       return () => {
         clearInterval(interval);
         document.removeEventListener('visibilitychange', handleVisibilityChange);
+        window.removeEventListener('focus', handleWindowFocus);
       };
     }
   }, [videoLoaded]);
@@ -193,11 +202,37 @@ const VideoBackground = () => {
       };
 
       // Try to restore video when tab becomes visible
-      const timer = setTimeout(restoreVideo, 300);
+      const timer = setTimeout(restoreVideo, 100);
+      
+      // Also try immediately
+      restoreVideo();
       
       return () => clearTimeout(timer);
     }
   }, [isTabVisible, videoLoaded]);
+
+  // Additional video restoration on user interaction
+  React.useEffect(() => {
+    const handleUserInteraction = () => {
+      if (videoRef.current && videoLoaded && videoRef.current.paused) {
+        console.log('User interaction detected, attempting to restore video...');
+        videoRef.current.play().catch(e => console.log('Video restoration on user interaction failed:', e));
+      }
+    };
+
+    // Listen for various user interactions
+    document.addEventListener('click', handleUserInteraction);
+    document.addEventListener('keydown', handleUserInteraction);
+    document.addEventListener('touchstart', handleUserInteraction);
+    document.addEventListener('mousemove', handleUserInteraction);
+
+    return () => {
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('keydown', handleUserInteraction);
+      document.removeEventListener('touchstart', handleUserInteraction);
+      document.removeEventListener('mousemove', handleUserInteraction);
+    };
+  }, [videoLoaded]);
 
   const handleImageLoad = () => {
     console.log('Hero background image loaded successfully');
@@ -345,6 +380,14 @@ const VideoBackground = () => {
           onSuspend={() => console.log('Video suspended')}
           onAbort={() => console.log('Video aborted')}
           onEmptied={() => console.log('Video emptied')}
+          onPause={() => {
+            console.log('Video paused, attempting to resume...');
+            setTimeout(() => {
+              if (videoRef.current && videoRef.current.paused) {
+                videoRef.current.play().catch(e => console.log('Video resume failed:', e));
+              }
+            }, 100);
+          }}
           onEnded={() => {
             console.log('Video ended, restarting...');
             if (videoRef.current) {
