@@ -324,8 +324,8 @@ const VideoBackground = () => {
         </div>
       )}
       
-      {/* Video overlay - shows when video loads and hasn't been played before, covers the image */}
-      {!videoError && !hasPlayedVideo && (
+      {/* Video overlay - keep mounted as long as no error so it doesn't disappear */}
+      {!videoError && (
         <video
           ref={videoRef}
           autoPlay
