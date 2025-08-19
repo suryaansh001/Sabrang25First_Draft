@@ -16,21 +16,21 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
       // Start the animation sequence
       setCurrentPhase('ball');
       
-      // Ball phase: 2.5 seconds
+      // Ball phase: 0.9 seconds
       const ballTimer = setTimeout(() => {
         setCurrentPhase('infinity');
-      }, 2500);
+      }, 900);
 
-      // Infinity phase: 1 second
+      // Infinity phase: 0.5 seconds
       const infinityTimer = setTimeout(() => {
         setCurrentPhase('zoom');
-      }, 3500);
+      }, 1400);
 
-      // Zoom phase: 0.5 seconds
+      // Zoom phase: 0.4 seconds
       const zoomTimer = setTimeout(() => {
         setCurrentPhase('complete');
         onComplete();
-      }, 4000);
+      }, 1800);
 
       return () => {
         clearTimeout(ballTimer);
@@ -75,7 +75,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
                 }}
                 exit={{ scale: 0, opacity: 0 }}
                 transition={{ 
-                  duration: 2.5, 
+                  duration: 0.9, 
                   ease: "easeInOut"
                 }}
               />
@@ -141,7 +141,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
                 className="absolute inset-0 w-32 h-32"
                 initial={{ scale: 1 }}
                 animate={{ scale: 60 }}
-                transition={{ duration: 0.5, ease: "easeIn" }}
+                transition={{ duration: 0.4, ease: "easeIn" }}
               >
                 <svg
                   viewBox="0 0 302.73 467.06"
