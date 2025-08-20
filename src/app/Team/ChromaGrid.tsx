@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import PolaroidFrame from "../../../PolaroidGrid";
 
 // Define the Person type interface
 interface Person {
@@ -12,90 +11,291 @@ interface Person {
   phone: string;
 }
 
-// Expanded Card Component that appears on hover
-const ExpandedCard = ({ 
-  hoveredPerson, 
-  isHovered, 
-  cardPosition, 
-  onClose 
+// New Holographic Card Component for Committee Members
+const HolographicCard = ({ 
+  person, 
+  cardId,
+  animationDelay = 0,
+  onMouseEnter,
+  onMouseLeave
 }: { 
-  hoveredPerson: Person | null; 
-  isHovered: boolean; 
-  cardPosition: { x: number; y: number; width: number; height: number }; 
-  onClose: () => void;
+  person: Person; 
+  cardId: string;
+  animationDelay?: number;
+  onMouseEnter: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onMouseLeave: () => void;
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  
-  console.log('ExpandedCard render:', { hoveredPerson: hoveredPerson?.name, isHovered, cardPosition });
-  
-  useEffect(() => {
-    console.log('ExpandedCard useEffect:', { isHovered, hoveredPerson: hoveredPerson?.name });
-    if (isHovered && hoveredPerson) {
-      setIsExpanded(true);
-    } else {
-      setIsExpanded(false);
-    }
-  }, [isHovered, hoveredPerson]);
+  const [hoveredCard, setHoveredCard] = useState(false);
+  const [activeCard, setActiveCard] = useState(false);
 
-  if (!hoveredPerson || !isHovered) {
-    console.log('ExpandedCard returning null:', { hoveredPerson: !!hoveredPerson, isHovered });
-    return null;
-  }
-
-  const handleMouseLeave = () => {
-    setIsExpanded(false);
-    // Faster response for shrinking animation
-    setTimeout(() => {
-      onClose();
-    }, 150);
+  // Handle mouse events for the expanded card functionality
+  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+    setHoveredCard(true);
+    onMouseEnter(e);
   };
 
-  const handleMouseEnter = () => {
-    // Immediate expansion for smooth animation
-    setIsExpanded(true);
+  const handleMouseLeave = () => {
+    setHoveredCard(false);
+    onMouseLeave();
+  };
+
+  // Generate hologram colors based on person's role
+  const getHologramColors = (role: string) => {
+    const colors = [
+      "from-cyan-400 via-purple-500 to-pink-500",
+      "from-emerald-400 via-teal-500 to-blue-500",
+      "from-orange-400 via-red-500 to-pink-500",
+      "from-violet-400 via-purple-500 to-indigo-500",
+      "from-lime-400 via-green-500 to-emerald-500",
+      "from-rose-400 via-pink-500 to-fuchsia-500"
+    ];
+    const hash = role.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return colors[hash % colors.length];
+  };
+
+  const hologram = getHologramColors(person.role);
+
+  const handleCardClick = () => {
+    setActiveCard(!activeCard);
+  };
+
+  const getCardTransform = (isHovered: boolean, isActive: boolean) => {
+    if (isActive) return 'rotateX(-10deg) rotateY(10deg) scale(1.05)';
+    if (isHovered) return 'rotateX(-5deg) rotateY(-5deg) scale(1.02)';
+    return 'rotate(0deg)';
   };
 
   return (
-    <>
-      {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-all duration-200"
-        style={{ 
-          opacity: isExpanded ? 1 : 0.6,
-          backdropFilter: isExpanded ? 'blur(8px)' : 'blur(4px)'
-        }}
-      />
-      
-      {/* Growing Card - starts small and grows smoothly */}
-      <div 
-        className={`bg-white rounded-2xl shadow-2xl overflow-hidden growing-card ${isExpanded ? 'expanded' : ''}`}
+    <div className="group relative">
+      {/* Main Card Container */}
+      <div
+        className="relative cursor-pointer transition-all duration-700 ease-out transform-gpu"
         style={{
-          position: 'fixed',
-          left: isExpanded ? '50%' : `${cardPosition.x}px`,
-          top: isExpanded ? '50%' : `${cardPosition.y}px`,
-          width: isExpanded ? '90vw' : `${cardPosition.width}px`,
-          maxWidth: isExpanded ? '1200px' : 'none',
-          height: isExpanded ? '80vh' : `${cardPosition.height}px`,
-          zIndex: 50,
-          transition: isExpanded 
-            ? 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)' 
-            : 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-          transform: isExpanded ? 'translate(-50%, -50%)' : 'none',
-          transformOrigin: `${cardPosition.x + cardPosition.width/2}px ${cardPosition.y + cardPosition.height/2}px`,
-          boxShadow: isExpanded ? '0 25px 50px -12px rgba(0, 0, 0, 0.25)' : '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-          opacity: isExpanded ? 1 : 0.9,
+          transform: getCardTransform(hoveredCard, activeCard),
+          transformStyle: 'preserve-3d'
         }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onClick={handleCardClick}
+      >
+        {/* Holographic Border */}
+        <div className={`
+          absolute -inset-0.5 rounded-3xl opacity-75 transition-all duration-500
+          bg-gradient-to-r ${hologram} blur-sm
+          ${hoveredCard ? 'animate-pulse' : ''}
+        `} />
+
+        {/* Glass Morphism Card */}
+        <div className="relative h-96 w-64 rounded-3xl backdrop-blur-xl bg-white/10 border border-white/20 overflow-hidden shadow-2xl">
+          {/* Liquid Animation Background */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className={`
+              absolute inset-0 bg-gradient-to-br ${hologram} opacity-20
+              transition-all duration-1000 ease-out
+              ${hoveredCard ? 'scale-150 rotate-12' : 'scale-100'}
+            `} />
+            
+            {/* Morphing Shapes */}
+            <div className={`
+              absolute top-4 right-4 w-16 h-16 bg-white/10 rounded-full
+              transition-all duration-700 ease-out
+              ${hoveredCard ? 'scale-150 translate-x-4 -translate-y-2' : 'scale-100'}
+            `} />
+            <div className={`
+              absolute bottom-4 left-4 w-12 h-12 bg-white/5 rounded-full
+              transition-all duration-500 ease-out
+              ${hoveredCard ? 'scale-200 translate-x-8 translate-y-4' : 'scale-100'}
+            `} />
+          </div>
+
+          {/* Card Content */}
+          <div className="relative z-10 p-6 h-full flex flex-col">
+            {/* Avatar Section */}
+            <div className="relative mx-auto mb-4">
+              <div className={`
+                relative w-36 h-36 rounded-2xl overflow-hidden
+                transition-all duration-500 ease-out transform-gpu
+                ${hoveredCard ? 'scale-110 rotate-3' : 'scale-100'}
+              `}>
+                <img 
+                  src={person.img} 
+                  alt={person.name}
+                  className="w-full h-full object-cover transition-all duration-500"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent to-white/20" />
+              </div>
+              
+              {/* Floating Ring */}
+              <div className={`
+                absolute -inset-3 border-2 border-white/30 rounded-2xl
+                transition-all duration-700 ease-out
+                ${hoveredCard ? 'scale-125 rotate-12 opacity-100' : 'scale-100 opacity-0'}
+              `} />
+            </div>
+
+            {/* Member Info */}
+            <div className="text-center text-white flex-grow flex flex-col justify-center">
+              <h3 className={`
+                text-lg font-bold mb-2 transition-all duration-300
+                ${hoveredCard ? 'text-white scale-105' : 'text-white/90'}
+              `}>
+                {person.name}
+              </h3>
+              <p className="text-xs font-semibold opacity-80 mb-3 uppercase tracking-widest text-purple-200">
+                {person.role}
+              </p>
+              <p className="text-xs opacity-70 leading-relaxed line-clamp-2">
+                Leading the charge in making our annual fest unforgettable with creative vision and seamless execution.
+              </p>
+            </div>
+
+            {/* Magnetic Hover Indicator */}
+            <div className={`
+              absolute bottom-4 right-4 w-6 h-6 rounded-full bg-white/20 backdrop-blur-sm
+              border border-white/30 flex items-center justify-center text-white text-xs
+              transition-all duration-300 transform-gpu
+              ${hoveredCard ? 'scale-125 bg-white/30' : 'scale-100'}
+            `}>
+              {activeCard ? '×' : '↗'}
+            </div>
+          </div>
+
+          {/* Shimmer Effect */}
+          <div className={`
+            absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent
+            -skew-x-12 transition-all duration-700 ease-out
+            ${hoveredCard ? 'translate-x-full' : '-translate-x-full'}
+          `} />
+        </div>
+
+        {/* Floating Contact Panel */}
+        <div className={`
+          absolute -bottom-4 left-1/2 -translate-x-1/2 w-72 max-w-sm
+          bg-black/40 backdrop-blur-2xl rounded-2xl border border-white/20
+          transition-all duration-500 ease-out transform-gpu origin-top
+          ${activeCard 
+            ? 'opacity-100 scale-100 translate-y-8 z-50' 
+            : 'opacity-0 scale-90 translate-y-0 pointer-events-none z-0'
+          }
+        `}>
+          <div className="p-4 text-white">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-bold text-base bg-clip-text text-transparent bg-gradient-to-r from-white to-purple-200">
+                Contact Information
+              </h4>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveCard(false);
+                }}
+                className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all duration-200 backdrop-blur-sm border border-white/20"
+              >
+                <span className="text-xs">×</span>
+              </button>
+            </div>
+            
+            <div className="space-y-3 text-xs">
+              {[
+                { icon: '✉', label: 'Email', value: person.contact },
+                { icon: '📱', label: 'Phone', value: person.phone },
+                { icon: '🏛', label: 'Committee', value: person.committee }
+              ].map((contact, idx) => (
+                <div key={idx} className="flex items-center space-x-3 group/item cursor-pointer">
+                  <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center backdrop-blur-sm group-hover/item:bg-white/20 transition-all duration-200">
+                    <span className="text-xs">{contact.icon}</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs text-white/60 uppercase tracking-wide font-medium">{contact.label}</p>
+                    <p className="text-white/90 font-medium text-xs">{contact.value}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Simplified Expanded Card Component with clean hover logic
+const ExpandedCard = ({ 
+  hoveredPerson, 
+  isVisible, 
+  cardPosition, 
+  onClose,
+  onMouseEnter,
+  onMouseLeave,
+  clearCloseTimeout
+}: { 
+  hoveredPerson: Person | null; 
+  isVisible: boolean; 
+  cardPosition: { x: number; y: number; width: number; height: number }; 
+  onClose: () => void;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+  clearCloseTimeout: () => void;
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  
+  // Handle expansion animation
+  useEffect(() => {
+    if (isVisible) {
+      // Small delay to ensure smooth animation
+      const timer = setTimeout(() => setIsExpanded(true), 50);
+      return () => clearTimeout(timer);
+    } else {
+      setIsExpanded(false);
+    }
+  }, [isVisible]);
+
+  // Don't render if not visible
+  if (!isVisible || !hoveredPerson) {
+    return null;
+  }
+
+  return (
+    <>
+      {/* Backdrop with smooth fade */}
+      <div 
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-all duration-500 ease-out"
+        style={{ 
+          opacity: isExpanded ? 1 : 0,
+          backdropFilter: isExpanded ? 'blur(12px)' : 'blur(0px)'
+        }}
+      />
+      
+      {/* Main Card Container */}
+      <div 
+        ref={cardRef}
+        className="fixed bg-white rounded-2xl shadow-2xl overflow-hidden z-50 transition-all duration-500 ease-out"
+        style={{
+          left: isExpanded ? '50%' : `${cardPosition.x}px`,
+          top: isExpanded ? '50%' : `${cardPosition.y}px`,
+          width: isExpanded ? '65vw' : `${cardPosition.width}px`,
+          maxWidth: isExpanded ? '700px' : 'none',
+          height: isExpanded ? '55vh' : `${cardPosition.height}px`,
+          transform: isExpanded ? 'translate(-50%, -50%)' : 'none',
+          transformOrigin: `${cardPosition.x + cardPosition.width/2}px ${cardPosition.y + cardPosition.height/2}px`,
+          boxShadow: isExpanded 
+            ? '0 25px 50px -12px rgba(0, 0, 0, 0.3)' 
+            : '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+          opacity: isExpanded ? 1 : 0.95,
+          scale: isExpanded ? 1 : 0.98,
+        }}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
       >
         {/* Close Button */}
         <button
           onClick={() => {
-            setIsExpanded(false);
-            setTimeout(() => {
-              onClose();
-            }, 150);
+            onClose();
           }}
+          onMouseEnter={clearCloseTimeout}
           className="absolute top-4 right-4 z-10 bg-white/20 backdrop-blur-sm rounded-full p-2 hover:bg-white/30 transition-all duration-200 hover:scale-110"
           aria-label="Close expanded card"
           title="Close expanded card"
@@ -117,19 +317,49 @@ const ExpandedCard = ({
               />
             </div>
             
-            {/* Image Overlay Info */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 text-white transition-all duration-500">
-              <h2 className="text-3xl lg:text-4xl font-bold mb-2 transition-all duration-500" style={{ transform: isExpanded ? 'translateY(0)' : 'translateY(10px)', opacity: isExpanded ? 1 : 0.8 }}>{hoveredPerson.name}</h2>
-              <p className="text-xl lg:text-2xl text-blue-300 mb-1 transition-all duration-500 delay-100" style={{ transform: isExpanded ? 'translateY(0)' : 'translateY(10px)', opacity: isExpanded ? 1 : 0.8 }}>{hoveredPerson.role}</p>
-              <p className="text-lg text-gray-300 transition-all duration-500 delay-200" style={{ transform: isExpanded ? 'translateY(0)' : 'translateY(10px)', opacity: isExpanded ? 1 : 0.8 }}>{hoveredPerson.committee}</p>
+            {/* Image Overlay Info with staggered animation */}
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 text-white">
+              <h2 
+                className="text-3xl lg:text-4xl font-bold mb-2 transition-all duration-700 ease-out"
+                style={{ 
+                  transform: isExpanded ? 'translateY(0)' : 'translateY(20px)', 
+                  opacity: isExpanded ? 1 : 0 
+                }}
+              >
+                {hoveredPerson.name}
+              </h2>
+              <p 
+                className="text-xl lg:text-2xl text-blue-300 mb-1 transition-all duration-700 ease-out delay-100"
+                style={{ 
+                  transform: isExpanded ? 'translateY(0)' : 'translateY(20px)', 
+                  opacity: isExpanded ? 1 : 0 
+                }}
+              >
+                {hoveredPerson.role}
+              </p>
+              <p 
+                className="text-lg text-gray-300 transition-all duration-700 ease-out delay-200"
+                style={{ 
+                  transform: isExpanded ? 'translateY(0)' : 'translateY(20px)', 
+                  opacity: isExpanded ? 1 : 0 
+                }}
+              >
+                {hoveredPerson.committee}
+              </p>
             </div>
           </div>
           
-          {/* Information Section */}
+          {/* Information Section with slide-in animation */}
           <div className="lg:w-1/3 p-6 lg:p-8 bg-gradient-to-br from-gray-50 to-white">
             <div className="space-y-6">
               {/* Contact Information */}
-              <div className="transition-all duration-500" style={{ transform: isExpanded ? 'translateX(0)' : 'translateX(20px)', opacity: isExpanded ? 1 : 0.8 }}>
+              <div 
+                className="transition-all duration-700 ease-out delay-200"
+                style={{ 
+                  transform: isExpanded ? 'translateX(0)' : 'translateX(30px)', 
+                  opacity: isExpanded ? 1 : 0 
+                }}
+              >
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Contact Information</h3>
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200">
@@ -159,7 +389,13 @@ const ExpandedCard = ({
               </div>
               
               {/* Role Details */}
-              <div className="transition-all duration-500 delay-100" style={{ transform: isExpanded ? 'translateX(0)' : 'translateX(20px)', opacity: isExpanded ? 1 : 0.8 }}>
+              <div 
+                className="transition-all duration-700 ease-out delay-300"
+                style={{ 
+                  transform: isExpanded ? 'translateX(0)' : 'translateX(30px)', 
+                  opacity: isExpanded ? 1 : 0 
+                }}
+              >
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Role Details</h3>
                 <div className="space-y-3">
                   <div className="p-3 bg-gray-50 rounded-lg">
@@ -174,7 +410,13 @@ const ExpandedCard = ({
               </div>
               
               {/* Quick Actions */}
-              <div className="pt-4 transition-all duration-500 delay-200" style={{ transform: isExpanded ? 'translateX(0)' : 'translateX(20px)', opacity: isExpanded ? 1 : 0.8 }}>
+              <div 
+                className="pt-4 transition-all duration-700 ease-out delay-400"
+                style={{ 
+                  transform: isExpanded ? 'translateX(0)' : 'translateX(30px)', 
+                  opacity: isExpanded ? 1 : 0 
+                }}
+              >
                 <button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
                   Send Message
                 </button>
@@ -188,22 +430,89 @@ const ExpandedCard = ({
 };
 
 export default function PeopleStrip() {
+  // 🚀 SUPER SMOOTH HOVER SYSTEM - Single state for hover management
+  // This creates a buttery smooth experience with no flickering
   const [hoveredPerson, setHoveredPerson] = useState<Person | null>(null);
-  const [isHovered, setIsHovered] = useState(false);
   const [cardPosition, setCardPosition] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const [isClient, setIsClient] = useState(false);
   const cardRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  
+  // Single timeout reference for ultra-smooth transitions
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Prevent hydration mismatch by only rendering animations on client
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // Function to close the expanded card
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Super smooth hover handler - no delays, immediate response
+  const handleCardHover = (e: React.MouseEvent<HTMLDivElement>, person: Person) => {
+    // Clear any existing close timeout immediately
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    setCardPosition({
+      x: rect.left,
+      y: rect.top,
+      width: rect.width,
+      height: rect.height
+    });
+    
+    // Immediate response - no delays
+    setHoveredPerson(person);
+  };
+
+  // Super smooth hover out with minimal delay
+  const handleCardHoverOut = () => {
+    // Ultra-small delay to prevent flickering when moving between card and expanded window
+    // This creates a buffer zone for smooth transitions
+    closeTimeoutRef.current = setTimeout(() => {
+      setHoveredPerson(null);
+    }, 80); // Optimized to 80ms for buttery smooth response
+  };
+
+  // Handle expanded card hover - keep it open
+  const handleExpandedCardHover = () => {
+    // Clear timeout when hovering over expanded card
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+  };
+
+  // Handle expanded card hover out - close it with minimal delay
+  const handleExpandedCardHoverOut = () => {
+    // Minimal delay to prevent accidental closing when moving mouse slightly
+    // This creates a small buffer zone for ultra-smooth experience
+    closeTimeoutRef.current = setTimeout(() => {
+      setHoveredPerson(null);
+    }, 30); // Ultra-minimal delay for buttery smooth experience
+  };
+
+  // Function to close the expanded card manually
   const handleCloseExpandedCard = () => {
-    setIsHovered(false);
+    // Clear any existing timeout
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+    
     setHoveredPerson(null);
   };
+
+
 
   // People array with detailed information for each person
   const people: Person[] = [
@@ -572,24 +881,11 @@ export default function PeopleStrip() {
     isOH?: boolean;
   }) => {
     const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
-      console.log('Mouse enter on card:', person.name);
-      const rect = e.currentTarget.getBoundingClientRect();
-      console.log('Card position:', rect);
-      setCardPosition({
-        x: rect.left,
-        y: rect.top,
-        width: rect.width,
-        height: rect.height
-      });
-      setHoveredPerson(person);
-      setIsHovered(true);
-      console.log('Hover state set:', { person: person.name, isHovered: true });
+      handleCardHover(e, person);
     };
 
     const handleMouseLeave = () => {
-      console.log('Mouse leave on card:', person.name);
-      setIsHovered(false);
-      setHoveredPerson(null);
+      handleCardHoverOut();
     };
 
     const sizeClasses = {
@@ -612,68 +908,17 @@ export default function PeopleStrip() {
       animationDelay: `${animationDelay}ms`
     };
 
-    // If it's a committee card, use polaroid style
+    // If it's a committee card, use holographic style
     if (isCommitteeCard) {
-      // Create deterministic values based on cardId to avoid hydration mismatches
-      const cardHash = cardId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      const rotation = (cardHash % 6) - 3; // -3 to 2 degrees
-      const zIndex = (cardHash % 5) + 1; // 1 to 5
-      const shadowRotation = (cardHash % 6 - 3) * 0.5; // -1.5 to 1.5 degrees
-      
       return (
-        <div
-          ref={(el) => {
-            cardRefs.current[cardId] = el;
-          }}
-          className={`relative group cursor-pointer ${className}`}
-          style={{
-            transform: `rotate(${rotation}deg)`,
-            zIndex: zIndex,
-          }}
-        >
-          {/* Polaroid Frame */}
-          <div className="p-3 pb-12 shadow-2xl transform transition-all duration-300 hover:scale-105 hover:rotate-0 hover:z-50 border-2 border-white">
-                         {/* Hollow Photo Area - completely transparent with border frame */}
-             <div className="relative overflow-hidden aspect-[4/5] mb-3 border-2 border-gray-300 bg-transparent">
-               {/* Photo area with person's actual image */}
-               <img 
-                 src={person.img} 
-                 alt={person.name}
-                 className="w-full h-full object-cover"
-                 onError={(e) => {
-                   // Fallback to colored background if image fails
-                   e.currentTarget.style.display = 'none';
-                 }}
-               />
-               {/* Fallback colored background if image fails */}
-               <div className={`absolute inset-0 ${person.bg} -z-10`} />
-               {/* Optional overlay gradient for better text contrast on hover */}
-               <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-             </div>
-            
-            {/* Text Area */}
-            <div className="text-center space-y-1">
-              <h3 className="font-bold text-white-800 text-sm leading-tight">
-                {person.name}
-              </h3>
-              <p className="text-gray-600 text-xs font-medium leading-tight">
-                {person.role}
-              </p>
-            </div>
-            
-            {/* Tape Effect */}
-            <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-12 h-4 bg-yellow-100 opacity-80 rotate-12 shadow-sm border border-yellow-200" />
-            <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-12 h-4 bg-yellow-100 opacity-60 -rotate-6 shadow-sm border border-yellow-200" />
-          </div>
-          
-          {/* Drop Shadow */}
-          <div 
-            className="absolute top-1 left-1 w-full h-full bg-black/20 -z-10 blur-sm"
-            style={{
-              transform: `rotate(${shadowRotation}deg)`,
-            }}
-          />
-        </div>
+        <HolographicCard
+          key={cardId}
+          person={person}
+          cardId={cardId}
+          animationDelay={animationDelay}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        />
       );
     }
 
@@ -833,7 +1078,7 @@ export default function PeopleStrip() {
       </h2>
 
       {/* Committee Layouts - Row-based */}
-      <div className="w-full max-w-7xl px-2 sm:px-4 space-y-16 relative z-10">
+      <div className="w-full max-w-7xl px-2 sm:px-4 space-y-16 relative z-10 perspective-1000">
         <div className="flex flex-col space-y-24">
           {committeeData.map((committee) => renderCommitteeLayout(committee))}
         </div>
@@ -842,9 +1087,17 @@ export default function PeopleStrip() {
       {/* Expanded Card that appears on hover */}
       <ExpandedCard 
         hoveredPerson={hoveredPerson} 
-        isHovered={isHovered} 
+        isVisible={!!hoveredPerson} // Use !!hoveredPerson to control visibility
         cardPosition={cardPosition} 
-        onClose={handleCloseExpandedCard} 
+        onClose={handleCloseExpandedCard}
+        onMouseEnter={handleExpandedCardHover}
+        onMouseLeave={handleExpandedCardHoverOut}
+        clearCloseTimeout={() => {
+          if (closeTimeoutRef.current) {
+            clearTimeout(closeTimeoutRef.current);
+            closeTimeoutRef.current = null;
+          }
+        }}
       />
 
       {/* CSS for animations */}
@@ -859,55 +1112,53 @@ export default function PeopleStrip() {
           50% { transform: scale(1.02); }
         }
         
-        .growing-card {
-          will-change: transform, left, top, width, height;
-          backface-visibility: hidden;
-          /* Simplified transforms for better performance */
+                          /* Optimized transitions for expanded card */
+         .expanded-card {
+           will-change: transform, left, top, width, height, opacity, scale;
+           backface-visibility: hidden;
+           transform: translateZ(0);
+           -webkit-transform: translateZ(0);
+         }
+         
+         /* Smooth backdrop animation */
+         .backdrop-blur-sm {
+           transition: backdrop-filter 0.5s ease-out;
+         }
+         
+         /* Smooth content transitions */
+         .transition-all {
+           transition-property: all;
+           transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+         }
+         
+         /* Optimize image transitions */
+         img {
+           image-rendering: -webkit-optimize-contrast;
+           image-rendering: crisp-edges;
+         }
+         
+         /* Staggered animation delays for content */
+         .stagger-1 { animation-delay: 0.1s; }
+         .stagger-2 { animation-delay: 0.2s; }
+         .stagger-3 { animation-delay: 0.3s; }
+         .stagger-4 { animation-delay: 0.4s; }
+        
+        /* Line clamp utility for text truncation */
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        
+        /* 3D Transform utilities for holographic cards */
+        .perspective-1000 {
+          perspective: 1000px;
+        }
+        
+        .transform-gpu {
           transform: translateZ(0);
           -webkit-transform: translateZ(0);
-        }
-        
-        .growing-card.expanded {
-          transform: translate(-50%, -50%) translateZ(0) !important;
-        }
-        
-
-        
-        /* Optimized transitions for better performance */
-        .growing-card {
-          transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-        
-        /* Remove conflicting animations that might cause jank */
-        .animate-in {
-          animation: none !important;
-        }
-        
-        /* Smooth backdrop animation */
-        .backdrop-blur-sm {
-          transition: backdrop-filter 0.2s ease-out;
-        }
-        
-        /* Additional performance optimizations */
-        .growing-card * {
-          will-change: auto;
-        }
-        
-        /* Smooth content transitions */
-        .transition-all {
-          transition-property: all;
-          transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-        
-        /* Optimize image transitions */
-        img {
-          image-rendering: -webkit-optimize-contrast;
-          image-rendering: crisp-edges;
-        }
-        
-        /* Performance optimizations for shrinking animation */
-        .growing-card:not(.expanded) {
-          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
       `}</style>
     </div>
