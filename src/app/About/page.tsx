@@ -120,7 +120,7 @@ const AboutPage = () => {
           <div className="absolute inset-0 bg-black/60" />
           <div className="max-w-7xl mx-auto text-center relative z-10">
             <h1 className="text-6xl md:text-8xl font-extrabold mb-8 leading-tight">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-300">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300 drop-shadow-2xl">
                 ABOUT
               </span>
               <br />
@@ -148,7 +148,7 @@ const AboutPage = () => {
               <div className="absolute inset-0 bg-black/60" />
               <div className="relative z-10 p-6 space-y-6">
                 <h2 className="text-4xl font-bold">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300">
                     What is Sabrang?
                   </span>
                 </h2>
@@ -188,7 +188,7 @@ const AboutPage = () => {
               {/* Right: Content */}
               <div className="space-y-6">
                 <h2 className="text-4xl md:text-5xl font-bold">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300">
                     What is Sabrang?
                   </span>
                 </h2>
@@ -247,11 +247,11 @@ const AboutPage = () => {
               {/* Content */}
               <div className="space-y-6">
                 <h2 className="text-4xl md:text-5xl font-bold">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300">
                     Why It's OP
                   </span>
                   <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300">
                     (Overpowered)
                   </span>
                 </h2>
@@ -279,7 +279,7 @@ const AboutPage = () => {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300">
                   Flagship Showdowns
                 </span>
               </h2>
@@ -411,7 +411,7 @@ const AboutPage = () => {
               <div className="absolute inset-0 bg-black/60" />
               <div className="relative z-10 p-6 space-y-6">
                 <h2 className="text-4xl font-bold">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300">
                     Beyond Competitions
                   </span>
                 </h2>
@@ -431,7 +431,7 @@ const AboutPage = () => {
               {/* Left: Content */}
               <div className="space-y-6">
                 <h2 className="text-4xl md:text-5xl font-bold">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300">
                     Beyond Competitions
                   </span>
                 </h2>
@@ -480,7 +480,7 @@ const AboutPage = () => {
               <div className="absolute inset-0 bg-black/60" />
               <div className="relative z-10 p-6 space-y-6">
                 <h2 className="text-4xl font-bold">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-500 to-indigo-600">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300">
                     The Final Vibe
                   </span>
                 </h2>
@@ -511,7 +511,7 @@ const AboutPage = () => {
               {/* Right: Content */}
               <div className="space-y-6">
                 <h2 className="text-4xl md:text-5xl font-bold">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-500 to-indigo-600">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300">
                     The Final Vibe
                   </span>
                 </h2>
