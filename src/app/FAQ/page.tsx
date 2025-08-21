@@ -218,14 +218,7 @@ const FAQ = () => {
         </div>
       </div>
       
-<<<<<<< HEAD
-      {/* Footer properly positioned at bottom */}
-      <div className="mt-auto">
-        <Footer />
-      </div>
-=======
       {/* Footer is rendered globally in AppShell */}
->>>>>>> 733a2c3 (Mobile optimizations + footer cleanup)
 
       <style jsx>{`
         @keyframes fade-in {
