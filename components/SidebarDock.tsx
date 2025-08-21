@@ -54,7 +54,7 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({ className = '' }) => {
 
   return (
     <motion.div
-      className={`fixed left-4 top-[55%] transform -translate-y-1/2 z-[60] transform-gpu ${className}`}
+      className={`hidden md:block fixed left-4 top-[55%] transform -translate-y-1/2 z-[60] transform-gpu ${className}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onMouseMove={handleMouseMove}
