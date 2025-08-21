@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import SidebarDock from '../../../components/SidebarDock';
 import Logo from '../../../components/Logo';
-// import Footer from '../../../components/Footer';
+import { Calendar, Users, Handshake, Info, Clock, Star, Mail, Home, HelpCircle, X, ChevronUp, Search, MessageCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import InfinityTransition from '../../../components/InfinityTransition';
 
 interface Star {
   id: number;
@@ -15,31 +17,85 @@ interface Star {
 }
 
 const FAQ = () => {
+  const router = useRouter();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showTransition, setShowTransition] = useState(false);
+  const [targetHref, setTargetHref] = useState<string | null>(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [stars, setStars] = useState<Star[]>([]);
+
+  const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
+    { title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
+    { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
+    { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
+    { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
+    { title: 'Schedule', href: '/schedule', icon: <Clock className="w-5 h-5" /> },
+    { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
+    { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
+    { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
+    { title: 'Contact', href: '/Contact', icon: <Mail className="w-5 h-5" /> },
+  ];
+
   const faqs = [
     {
       question: "What is Sabrang '25?",
-      answer: "Sabrang '25 is the grandest cultural fest, offering a platform for talent, captivating performances, and unforgettable memories."
+      answer: "Sabrang '25 is the grandest cultural fest, offering a platform for talent, captivating performances, and unforgettable memories. It's a three-day celebration of music, dance, art, technology, and pure creativity.",
+      category: "General",
+      icon: "🎭"
     },
     {
       question: "How can I participate in Sabrang '25 events?",
-      answer: "You can register for various competitions and workshops through our 'Register Now' button on the homepage or by navigating to the Events section."
+      answer: "You can register for various competitions and workshops through our 'Register Now' button on the homepage or by navigating to the Events section. Registration is open for all college students and young professionals.",
+      category: "Participation",
+      icon: "🎯"
     },
     {
       question: "Is there a registration fee?",
-      answer: "Information regarding registration fees for specific events will be provided during the registration process or can be found on the individual event pages."
+      answer: "Information regarding registration fees for specific events will be provided during the registration process or can be found on the individual event pages. Some events are free while others may have nominal fees.",
+      category: "Registration",
+      icon: "💰"
     },
     {
       question: "Where will Sabrang '25 take place?",
-      answer: "Details about the venue and specific event locations will be announced closer to the event date on our website and social media channels."
+      answer: "Details about the venue and specific event locations will be announced closer to the event date on our website and social media channels. The event will be held at JKLU campus with multiple venues.",
+      category: "Venue",
+      icon: "📍"
     },
     {
       question: "Can I attend Sabrang '25 without participating in events?",
-      answer: "Yes, you are welcome to attend Sabrang '25 as a spectator to enjoy the performances and overall festive atmosphere."
+      answer: "Yes, you are welcome to attend Sabrang '25 as a spectator to enjoy the performances and overall festive atmosphere. Spectator passes will be available for purchase.",
+      category: "Attendance",
+      icon: "👥"
+    },
+    {
+      question: "What are the flagship events?",
+      answer: "Our flagship events include PANACHE (fashion show), BAND JAM (music festival), and DANCE BATTLE (dance competition). These events feature the highest prize pools and celebrity judges.",
+      category: "Events",
+      icon: "🏆"
+    },
+    {
+      question: "How can I get updates about Sabrang '25?",
+      answer: "Follow us on social media platforms and subscribe to our newsletter for the latest updates, event announcements, and exclusive behind-the-scenes content.",
+      category: "Updates",
+      icon: "📱"
+    },
+    {
+      question: "Are there accommodation facilities for outstation participants?",
+      answer: "Yes, we provide accommodation facilities for outstation participants. Details about accommodation options, pricing, and booking procedures will be shared closer to the event date.",
+      category: "Accommodation",
+      icon: "🏨"
     }
   ];
 
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const [stars, setStars] = useState<Star[]>([]);
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  useEffect(() => {
+    const onScroll = () => setShowScrollTop(window.scrollY > 300);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     // Generate random stars (fewer stars on mobile for better performance)
@@ -76,169 +132,278 @@ const FAQ = () => {
     setOpenIndex(prev => (prev === index ? null : index));
   };
 
+  const filteredFaqs = faqs.filter(faq =>
+    faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    faq.answer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    faq.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
+    <div className="min-h-screen text-white font-sans relative overflow-hidden flex flex-col">
+      {/* Background Image */}
     <div 
-      className="min-h-screen text-white font-sans relative overflow-hidden"
+        className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
       style={{
-        WebkitTapHighlightColor: 'transparent',
-        WebkitOverflowScrolling: 'touch',
-        scrollBehavior: 'smooth'
-      }}
-    >
-      <Logo />
-      <SidebarDock />
-      {/* Cosmic Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 via-purple-950 via-pink-900 to-black">
-        {/* Nebula Effect */}
-        <div className="absolute inset-0 opacity-15 sm:opacity-25 md:opacity-30">
-          <div className="absolute top-8 sm:top-16 md:top-20 left-8 sm:left-16 md:left-20 w-32 h-32 sm:w-48 md:w-72 lg:w-96 sm:h-48 md:h-72 lg:h-96 bg-purple-500 rounded-full blur-2xl sm:blur-3xl animate-pulse will-change-transform"></div>
-          <div className="absolute top-32 sm:top-48 md:top-60 right-12 sm:right-24 md:right-32 w-24 h-24 sm:w-32 md:w-48 lg:w-64 sm:h-32 md:h-48 lg:h-64 bg-blue-400 rounded-full blur-2xl sm:blur-3xl animate-pulse will-change-transform" style={{animationDelay: '1s'}}></div>
-          <div className="absolute bottom-16 sm:bottom-32 md:bottom-40 left-1/4 sm:left-1/3 w-28 h-28 sm:w-40 md:w-60 lg:w-80 sm:h-40 md:h-60 lg:h-80 bg-pink-400 rounded-full blur-2xl sm:blur-3xl animate-pulse will-change-transform" style={{animationDelay: '2s'}}></div>
-        </div>
+          backgroundImage: 'url(/images/backgrounds/faq.webp)'
+        }}
+      />
+      
+      {/* Black Overlay for better text readability */}
+      <div className="fixed inset-0 -z-10 bg-black/60" />
 
-        {/* Animated Stars */}
-        {stars.map((star) => (
-          <div
-            key={star.id}
-            className="absolute bg-white rounded-full animate-pulse will-change-transform"
-            style={{
-              left: `${star.x}%`,
-              top: `${star.y}%`,
-              width: `${star.size}px`,
-              height: `${star.size}px`,
-              animationDelay: `${star.animationDelay}s`,
-              animationDuration: `${star.duration}s`,
-            }}
-          />
-        ))}
+      {/* Logo and sidebar */}
+      <Logo className="block" />
+      <SidebarDock className="hidden lg:block" />
 
-        {/* Floating Planets - Responsive sizes */}
-        <div className="absolute top-16 sm:top-24 md:top-32 right-6 sm:right-12 md:right-20 w-8 h-8 sm:w-12 md:w-16 lg:w-24 sm:h-12 md:h-16 lg:h-24 bg-gradient-to-br from-orange-400 to-red-500 rounded-full animate-bounce will-change-transform" style={{animationDuration: '6s'}}></div>
-        <div className="absolute top-32 sm:top-56 md:top-80 left-6 sm:left-12 md:left-16 w-6 h-6 sm:w-8 md:w-12 lg:w-16 sm:h-8 md:h-12 lg:h-16 bg-gradient-to-br from-blue-300 to-blue-600 rounded-full animate-bounce will-change-transform" style={{animationDuration: '8s', animationDelay: '2s'}}></div>
-        <div className="absolute bottom-12 sm:bottom-24 md:bottom-32 right-16 sm:right-32 md:right-40 w-7 h-7 sm:w-10 md:w-16 lg:w-20 sm:h-10 md:h-16 lg:h-20 bg-gradient-to-br from-yellow-300 to-orange-400 rounded-full animate-bounce will-change-transform" style={{animationDuration: '7s', animationDelay: '1s'}}></div>
+      {/* Mobile hamburger (same style as About section) */}
+      <button
+        aria-label="Open menu"
+        onClick={() => setMobileMenuOpen(true)}
+        className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
+      >
+        <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
+        <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
+        <span className="block h-0.5 bg-white/80 rounded-full w-4" />
+      </button>
 
-        {/* Saturn-like Ring Planet - Mobile optimized */}
-        <div className="absolute bottom-6 sm:bottom-12 md:bottom-20 left-6 sm:left-12 md:left-20">
-          <div className="relative">
-            <div className="w-12 h-12 sm:w-16 md:w-20 lg:w-28 sm:h-16 md:h-20 lg:h-28 bg-gradient-to-br from-yellow-200 to-orange-300 rounded-full animate-spin will-change-transform" style={{animationDuration: '20s'}}></div>
-            <div className="absolute inset-0 border border-yellow-400 sm:border-2 md:border-3 lg:border-4 rounded-full transform rotate-12 scale-125 sm:scale-150 opacity-40 sm:opacity-60"></div>
-            <div className="absolute inset-0 border border-yellow-300 rounded-full transform -rotate-12 scale-110 sm:scale-125 opacity-30 sm:opacity-40"></div>
+      {/* Mobile menu overlay */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
+          <div className="absolute top-4 right-4">
+            <button
+              aria-label="Close menu"
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
+            >
+              <X className="w-6 h-6 text-white" />
+            </button>
+          </div>
+          <div className="pt-20 px-6 h-full overflow-y-auto">
+            <div className="grid grid-cols-1 gap-3 pb-8">
+              {mobileNavItems.map((item) => (
+                <button
+                  key={item.title}
+                  onClick={() => { setMobileMenuOpen(false); setTargetHref(item.href); setShowTransition(true); }}
+                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                >
+                  <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
+                    {item.icon}
+                  </span>
+                  <span className="font-medium">{item.title}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
+      )}
 
-        {/* Shooting Stars - Mobile responsive */}
-        <div className="absolute top-16 sm:top-32 md:top-40 left-0 w-0.5 h-0.5 sm:w-1 md:w-2 sm:h-1 md:h-2 bg-white rounded-full animate-ping" style={{animationDelay: '3s'}}></div>
-        <div className="absolute top-24 sm:top-48 md:top-60 right-0 w-0.5 h-0.5 sm:w-1 md:w-1 sm:h-1 md:h-1 bg-yellow-200 rounded-full animate-ping" style={{animationDelay: '7s'}}></div>
+      {/* Local Infinity Transition for mobile nav (mobile-optimized) */}
+      <InfinityTransition
+        isActive={showTransition}
+        onComplete={() => {
+          if (targetHref) {
+            router.push(targetHref);
+          }
+          setShowTransition(false);
+          setTargetHref(null);
+        }}
+      />
+
+      {/* Main Content Container */}
+      <div className="relative z-10 pb-16 flex-grow">
+        {/* Hero Section */}
+        <section 
+          className="min-h-screen flex items-center justify-center relative px-4 sm:px-6"
+          style={{
+            backgroundImage: 'url(/images/backgrounds/faq.webp)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        >
+          {/* Hero Background Overlay */}
+          <div className="absolute inset-0 bg-black/60" />
+          <div className="max-w-7xl mx-auto text-center relative z-10 px-4 sm:px-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold mb-6 sm:mb-8 leading-tight">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-300">
+                FREQUENTLY
+              </span>
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-indigo-600 drop-shadow-2xl">
+                ASKED QUESTIONS
+              </span>
+            </h1>
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed mb-6 sm:mb-8 px-2">
+              Find answers to all your questions about Sabrang '25. Everything you need to know about participation, 
+              events, registration, and more.
+            </p>
+            
+            {/* Search Bar */}
+            <div className="max-w-2xl mx-auto px-4 sm:px-0">
+          <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
+                <input
+                  type="text"
+                  placeholder="Search questions or keywords..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 sm:pl-12 pr-4 py-3 sm:py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl sm:rounded-2xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 text-sm sm:text-base"
+                />
+          </div>
+        </div>
       </div>
+        </section>
 
-      {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
-                 {/* Glowing Title - Mobile responsive */}
-         <div className="text-center mb-6 sm:mb-8 relative">
-           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-tight text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-pink-200 to-purple-200 drop-shadow-2xl animate-pulse px-2 text-center">
-             Frequently Asked Questions
-           </h1>
-           <div className="absolute inset-0 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-tight text-white opacity-20 blur-sm px-2 text-center">
-             Frequently Asked Questions
-           </div>
+        {/* FAQ Section */}
+        <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto">
+            {/* Section Header */}
+            <div className="text-center mb-12 sm:mb-16">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
+                  Got Questions?
+                </span>
+              </h2>
+              <p className="text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto px-2">
+                We've compiled the most common questions to help you get started. Can't find what you're looking for? 
+                <button className="text-purple-400 hover:text-purple-300 transition-colors ml-2">
+                  Contact us directly
+                </button>
+              </p>
          </div>
 
-        <p className="text-lg sm:text-xl md:text-2xl max-w-3xl text-center mb-8 sm:mb-12 text-blue-100 animate-fade-in px-4">
-          🌟 Find answers to common questions about Sabrang '25 🌟
-        </p>
-
-        {/* FAQ Cards - Mobile optimized */}
-        <div className="w-full max-w-3xl space-y-4 sm:space-y-6 px-2 sm:px-0">
-          {faqs.map((faq, index) => (
+            {/* FAQ Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+              {filteredFaqs.map((faq, index) => (
             <div
               key={index}
-              className="relative group"
+                  className="group relative"
             >
               {/* Glowing Border Effect */}
-              <div className="absolute -inset-0.5 sm:-inset-1 bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 rounded-lg sm:rounded-xl blur opacity-25 sm:opacity-30 group-hover:opacity-50 sm:group-hover:opacity-60 transition duration-300"></div>
+                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-300"></div>
               
-              <div className="relative border border-cyan-400/50 rounded-lg sm:rounded-xl overflow-hidden bg-gradient-to-br from-indigo-900/80 via-purple-900/80 to-pink-900/80 backdrop-blur-sm shadow-xl sm:shadow-2xl transition-all duration-500 transform hover:scale-[1.01] sm:hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(34,211,238,0.3)] sm:hover:shadow-[0_0_40px_rgba(34,211,238,0.4)]">
-                {/* Question Button - Touch optimized */}
+                  <div className="relative bg-gradient-to-br from-gray-900/90 via-gray-800/90 to-gray-900/90 backdrop-blur-sm border border-gray-700/50 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl sm:shadow-2xl transition-all duration-500 transform hover:scale-[1.01] sm:hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] sm:hover:shadow-[0_0_40px_rgba(168,85,247,0.3)]">
+                    {/* Question Header */}
                 <button
                   onClick={() => toggle(index)}
-                  className="w-full text-left px-4 sm:px-6 py-4 sm:py-6 flex justify-between items-start sm:items-center focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:ring-inset group active:scale-[0.98] transition-transform duration-150"
+                      className="w-full text-left p-4 sm:p-6 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:ring-inset group active:scale-[0.98] transition-transform duration-150 touch-manipulation"
                   aria-expanded={openIndex === index}
                   aria-controls={`faq-answer-${index}`}
                 >
-                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 to-yellow-200 group-hover:from-yellow-200 group-hover:to-pink-200 transition-all duration-300 pr-4 leading-relaxed">
-                    ✨ {faq.question}
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start space-x-3 sm:space-x-4 flex-1">
+                          <span className="text-2xl sm:text-3xl">{faq.icon}</span>
+                          <div className="flex-1">
+                            <h3 className="text-base sm:text-lg md:text-xl font-bold text-white group-hover:text-purple-300 transition-colors duration-300 leading-relaxed">
+                              {faq.question}
                   </h3>
+                            <div className="flex items-center space-x-2 mt-2">
+                              <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                                {faq.category}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
                   <span
-                    className={`transform transition-all duration-500 text-xl sm:text-2xl flex-shrink-0 ${
+                          className={`transform transition-all duration-500 text-xl sm:text-2xl flex-shrink-0 ml-3 sm:ml-4 ${
                       openIndex === index 
-                        ? 'rotate-180 text-yellow-300 scale-110 sm:scale-125' 
-                        : 'text-cyan-300 group-hover:text-yellow-300 group-hover:scale-105 sm:group-hover:scale-110'
+                              ? 'rotate-180 text-purple-400 scale-110' 
+                              : 'text-gray-400 group-hover:text-purple-400 group-hover:scale-105'
                     }`}
                     aria-hidden="true"
                   >
-                    🌟
+                          <ChevronUp className="w-5 h-5 sm:w-6 sm:h-6" />
                   </span>
+                      </div>
                 </button>
 
-                {/* Answer Container - Mobile optimized */}
+                    {/* Answer Container */}
                 <div
                   id={`faq-answer-${index}`}
                   className={`px-4 sm:px-6 transition-all duration-500 ease-in-out overflow-hidden ${
                     openIndex === index 
-                      ? 'max-h-64 sm:max-h-48 opacity-100 pb-4 sm:pb-6' 
+                          ? 'max-h-96 opacity-100 pb-4 sm:pb-6' 
                       : 'max-h-0 opacity-0 pb-0'
                   }`}
                   aria-hidden={openIndex !== index}
                 >
-                  <div className="border-t border-cyan-400/30 pt-3 sm:pt-4">
-                    <p className="text-blue-100 leading-relaxed text-sm sm:text-base">
+                      <div className="border-t border-gray-700/50 pt-3 sm:pt-4">
+                        <p className="text-gray-300 leading-relaxed text-sm sm:text-base md:text-lg">
                       {faq.answer}
                     </p>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-700/30">
+                          <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-400">
+                            <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span>Need more help?</span>
+                          </div>
+                          <button className="text-purple-400 hover:text-purple-300 text-xs sm:text-sm font-medium transition-colors">
+                            Contact Support
+                          </button>
                   </div>
                 </div>
-
-                {/* Particle Effect on Hover - Reduced on mobile */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none hidden sm:block">
-                  <div className="absolute top-4 left-4 w-1 h-1 bg-yellow-300 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
-                  <div className="absolute top-8 right-8 w-1 h-1 bg-pink-300 rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
-                  <div className="absolute bottom-4 left-8 w-1 h-1 bg-cyan-300 rounded-full animate-ping" style={{animationDelay: '1.5s'}}></div>
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Bottom Decoration - Mobile responsive */}
-        <div className="mt-12 sm:mt-16 text-center">
-          <div className="inline-flex items-center space-x-2 text-lg sm:text-xl md:text-2xl animate-bounce">
-            <span>🌌</span>
-            <span className="text-purple-200 font-semibold text-center">Explore the Universe of Sabrang '25</span>
-            <span>🚀</span>
+            {/* No Results Message */}
+            {filteredFaqs.length === 0 && searchTerm && (
+              <div className="text-center py-16">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-2xl font-bold text-gray-300 mb-4">No questions found</h3>
+                <p className="text-gray-400 mb-6">
+                  Try searching with different keywords or browse all questions above.
+                </p>
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-xl text-white font-medium transition-colors duration-300"
+                >
+                  Clear Search
+                </button>
+              </div>
+            )}
+
+            {/* Bottom CTA */}
+            <div className="text-center mt-12 sm:mt-16 md:mt-20">
+              <div className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 backdrop-blur-sm border border-purple-500/30 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 mx-4 sm:mx-0">
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4">
+                  Still have questions?
+                </h3>
+                <p className="text-base sm:text-lg text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-2">
+                  Our team is here to help! Reach out to us and we'll get back to you as soon as possible.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                  <button 
+                    onClick={() => router.push('/Contact')}
+                    className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl text-white font-semibold transition-all duration-300 transform hover:scale-105 text-sm sm:text-base"
+                  >
+                    Contact Support
+                  </button>
+                  <button 
+                    onClick={() => router.push('/Events')}
+                    className="px-6 sm:px-8 py-3 sm:py-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white font-semibold transition-all duration-300 text-sm sm:text-base"
+                  >
+                    View All Events
+                  </button>
+                </div>
           </div>
         </div>
       </div>
+        </section>
+      </div>
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 touch-manipulation"
+        >
+          <ChevronUp className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+        </button>
+      )}
       
       {/* Footer is rendered globally in AppShell */}
-
-      <style jsx>{`
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 1s ease-out;
-        }
-        
-        @media (prefers-reduced-motion: reduce) {
-          .animate-pulse,
-          .animate-bounce,
-          .animate-spin,
-          .animate-ping,
-          .animate-fade-in {
-            animation: none;
-          }
-        }
-      `}</style>
     </div>
   );
 };

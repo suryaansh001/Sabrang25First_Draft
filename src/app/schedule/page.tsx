@@ -1,13 +1,18 @@
 'use client';
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import Footer from '../../../components/Footer';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Calendar, Clock, MapPin, ChevronRight, ChevronDown, Home, Info, Star, Users, HelpCircle, Handshake, Mail } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import SidebarDock from '../../../components/SidebarDock';
+import Logo from '../../../components/Logo';
+import InfinityTransition from '../../../components/InfinityTransition';
 
 interface TimelineEvent {
 	time: string;
 	event: string;
 	description: string;
 	location: string;
+	category?: string;
 }
 
 interface TimelineData {
@@ -15,387 +20,388 @@ interface TimelineData {
 }
 
 export default function SchedulePage() {
+	const router = useRouter();
 	const [activeDay, setActiveDay] = useState<number>(1);
+	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+	const [showTransition, setShowTransition] = useState(false);
+	const [targetHref, setTargetHref] = useState<string | null>(null);
+	const [isMobile, setIsMobile] = useState(false);
+	const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+	const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
+		{ title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
+		{ title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
+		{ title: 'Events', href: '/Events', icon: <Star className="w-5 h-5" /> },
+		{ title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
+		{ title: 'Schedule', href: '/schedule', icon: <Calendar className="w-5 h-5" /> },
+		{ title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
+		{ title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
+		{ title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
+		{ title: 'Contact', href: '/Contact', icon: <Mail className="w-5 h-5" /> },
+	];
 
 	const timelineData: TimelineData = {
 		1: [
-			{ time: "9:00 AM", event: "Opening Ceremony", description: "Welcome to Sabrang 2025", location: "Main Auditorium" },
-			{ time: "10:30 AM", event: "Tech Workshop", description: "AI & Machine Learning", location: "Lab 101" },
-			{ time: "12:00 PM", event: "Lunch Break", description: "Networking & Refreshments", location: "Food Court" },
-			{ time: "2:00 PM", event: "Cultural Performance", description: "Traditional Dance Show", location: "Open Air Theater" },
-			{ time: "4:00 PM", event: "Sports Event", description: "Inter-College Cricket", location: "Sports Ground" },
-			{ time: "6:00 PM", event: "Evening Concert", description: "Live Music & DJ", location: "Amphitheater" },
+			{ time: "9:00 AM", event: "Opening Ceremony", description: "Welcome to Sabrang 2025", location: "Main Auditorium", category: "Ceremony" },
+			{ time: "10:30 AM", event: "Tech Workshop", description: "AI & Machine Learning", location: "Lab 101", category: "Workshop" },
+			{ time: "12:00 PM", event: "Lunch Break", description: "Networking & Refreshments", location: "Food Court", category: "Break" },
+			{ time: "2:00 PM", event: "Cultural Performance", description: "Traditional Dance Show", location: "Open Air Theater", category: "Cultural" },
+			{ time: "4:00 PM", event: "Sports Event", description: "Inter-College Cricket", location: "Sports Ground", category: "Sports" },
+			{ time: "6:00 PM", event: "Evening Concert", description: "Live Music & DJ", location: "Amphitheater", category: "Entertainment" },
 		],
 		2: [
-			{ time: "9:00 AM", event: "Academic Seminar", description: "Future of Technology", location: "Conference Hall" },
-			{ time: "11:00 AM", event: "Art Exhibition", description: "Student Artwork Display", location: "Art Gallery" },
-			{ time: "1:00 PM", event: "Lunch Break", description: "Cultural Food Festival", location: "Food Court" },
-			{ time: "3:00 PM", event: "Drama Competition", description: "One Act Plays", location: "Auditorium" },
-			{ time: "5:00 PM", event: "Science Fair", description: "Innovation Projects", location: "Science Block" },
-			{ time: "7:00 PM", event: "Night Carnival", description: "Games & Entertainment", location: "Campus Ground" },
+			{ time: "9:00 AM", event: "Academic Seminar", description: "Future of Technology", location: "Conference Hall", category: "Academic" },
+			{ time: "11:00 AM", event: "Art Exhibition", description: "Student Artwork Display", location: "Art Gallery", category: "Art" },
+			{ time: "1:00 PM", event: "Lunch Break", description: "Cultural Food Festival", location: "Food Court", category: "Break" },
+			{ time: "3:00 PM", event: "Drama Competition", description: "One Act Plays", location: "Auditorium", category: "Cultural" },
+			{ time: "5:00 PM", event: "Science Fair", description: "Innovation Projects", location: "Science Block", category: "Science" },
+			{ time: "7:00 PM", event: "Night Carnival", description: "Games & Entertainment", location: "Campus Ground", category: "Entertainment" },
 		],
 		3: [
-			{ time: "9:00 AM", event: "Final Competitions", description: "Championship Rounds", location: "Various Venues" },
-			{ time: "11:00 AM", event: "Award Ceremony", description: "Recognition & Prizes", location: "Main Auditorium" },
-			{ time: "1:00 PM", event: "Farewell Lunch", description: "Closing Celebration", location: "Food Court" },
-			{ time: "3:00 PM", event: "Cultural Parade", description: "Grand Finale March", location: "Campus Route" },
-			{ time: "5:00 PM", event: "Closing Ceremony", description: "Vote of Thanks", location: "Open Air Theater" },
-			{ time: "6:00 PM", event: "Fireworks", description: "Spectacular Display", location: "Sports Ground" },
+			{ time: "9:00 AM", event: "Final Competitions", description: "Championship Rounds", location: "Various Venues", category: "Competition" },
+			{ time: "11:00 AM", event: "Award Ceremony", description: "Recognition & Prizes", location: "Main Auditorium", category: "Ceremony" },
+			{ time: "1:00 PM", event: "Farewell Lunch", description: "Closing Celebration", location: "Food Court", category: "Break" },
+			{ time: "3:00 PM", event: "Cultural Parade", description: "Grand Finale March", location: "Campus Route", category: "Cultural" },
+			{ time: "5:00 PM", event: "Closing Ceremony", description: "Vote of Thanks", location: "Open Air Theater", category: "Ceremony" },
+			{ time: "6:00 PM", event: "Fireworks", description: "Spectacular Display", location: "Sports Ground", category: "Entertainment" },
 		]
 	};
 
+	useEffect(() => {
+		const checkMobile = () => {
+			setIsMobile(window.innerWidth < 1024);
+		};
+		
+		checkMobile();
+		window.addEventListener('resize', checkMobile);
+		
+		return () => window.removeEventListener('resize', checkMobile);
+	}, []);
+
+	const getCategoryColor = (category: string) => {
+		const colors: { [key: string]: string } = {
+			'Ceremony': 'from-purple-500 to-pink-500',
+			'Workshop': 'from-blue-500 to-cyan-500',
+			'Break': 'from-green-500 to-emerald-500',
+			'Cultural': 'from-orange-500 to-red-500',
+			'Sports': 'from-yellow-500 to-orange-500',
+			'Entertainment': 'from-pink-500 to-purple-500',
+			'Academic': 'from-indigo-500 to-blue-500',
+			'Art': 'from-red-500 to-pink-500',
+			'Science': 'from-cyan-500 to-blue-500',
+			'Competition': 'from-yellow-500 to-green-500'
+		};
+		return colors[category] || 'from-gray-500 to-gray-600';
+	};
+
 	return (
-		<div className="min-h-screen relative overflow-hidden" style={{
-			backgroundImage: 'url(/images/Schedule.jpg)',
-			backgroundSize: 'cover',
-			backgroundPosition: 'center',
-			backgroundRepeat: 'no-repeat'
-		}}>
-			{/* Dark overlay for better text readability */}
-			<div className="absolute inset-0 bg-black/60 pointer-events-none"></div>
+		<div className="min-h-screen text-white font-sans relative overflow-hidden flex flex-col">
+			{/* Background Image */}
+			<div 
+				className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
+				style={{
+					backgroundImage: 'url(/images/Schedule.jpg)'
+				}}
+			/>
+			
+			{/* Black Overlay for better text readability */}
+			<div className="fixed inset-0 -z-10 bg-black/60" />
 
-			{/* Background Pattern - keeping subtle overlay */}
-			<div className="absolute inset-0 opacity-20 pointer-events-none">
-				<div
-					className="absolute inset-0"
-					style={{
-						backgroundImage:
-							"radial-gradient(circle at 25% 25%, rgba(147, 51, 234, 0.2) 0%, transparent 50%),\n                           radial-gradient(circle at 75% 75%, rgba(236, 72, 153, 0.2) 0%, transparent 50%)",
-						backgroundSize: '200px 200px, 300px 300px',
-						backgroundPosition: '0 0, 100px 100px',
-					}}
-				/>
-			</div>
+			{/* Logo and sidebar */}
+			<Logo className="block" />
+			<SidebarDock className="hidden lg:block" />
 
-			{/* Header */}
-			<div className="relative z-20 pt-8 pb-6">
-				<div className="container mx-auto px-6">
+			{/* Mobile hamburger */}
+			<button
+				aria-label="Open menu"
+				onClick={() => setMobileMenuOpen(true)}
+				className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
+			>
+				<span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
+				<span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
+				<span className="block h-0.5 bg-white/80 rounded-full w-4" />
+			</button>
+
+			{/* Mobile menu overlay */}
+			{mobileMenuOpen && (
+				<div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
+					<div className="absolute top-4 right-4">
+						<button
+							aria-label="Close menu"
+							onClick={() => setMobileMenuOpen(false)}
+							className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
+						>
+							<Calendar className="w-6 h-6 text-white" />
+						</button>
+					</div>
+					<div className="pt-20 px-6 h-full overflow-y-auto">
+						<div className="grid grid-cols-1 gap-3 pb-8">
+							{mobileNavItems.map((item) => (
+								<button
+									key={item.title}
+									onClick={() => { setMobileMenuOpen(false); setTargetHref(item.href); setShowTransition(true); }}
+									className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+								>
+									<span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
+										{item.icon}
+									</span>
+									<span className="font-medium">{item.title}</span>
+								</button>
+							))}
+						</div>
+					</div>
+				</div>
+			)}
+
+			{/* Infinity Transition */}
+			<InfinityTransition
+				isActive={showTransition}
+				onComplete={() => {
+					if (targetHref) {
+						router.push(targetHref);
+					}
+					setShowTransition(false);
+					setTargetHref(null);
+				}}
+			/>
+
+			{/* Main Content Container */}
+			<div className="relative z-10 pb-16 flex-grow pt-20 lg:pt-0">
+				{/* Header */}
+				<div className="text-center mb-8 sm:mb-12">
 					<motion.div
 						initial={{ opacity: 0, y: -50 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.8 }}
-						className="text-center"
+						className="px-4 sm:px-6 pt-10 sm:pt-14 lg:pt-16"
 					>
-						<h1
-							className="text-6xl md:text-8xl font-black text-white mb-3"
-							style={{ fontFamily: "'Orbitron', sans-serif" }}
-						>
+						<h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-4 sm:mb-6">
 							<span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-indigo-600">
 								SCHEDULE
 							</span>
 						</h1>
-						<p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
+						<p className="text-lg sm:text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
 							Experience the magic of Sabrang 2025
 						</p>
 					</motion.div>
 				</div>
-			</div>
 
-			{/* Day Tabs */}
-			<div className="relative z-20 container mx-auto px-6 mb-8">
-				<div className="flex justify-center space-x-4">
-					{[1, 2, 3].map((day) => (
-						<motion.button
-							key={day}
-							onClick={() => setActiveDay(day)}
-							className={`px-8 py-4 rounded-2xl font-bold text-lg transition-all duration-300 ${
-								activeDay === day
-									? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/50'
-									: 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/70 hover:text-white'
-							}`}
-							whileHover={{ scale: 1.05 }}
-							whileTap={{ scale: 0.95 }}
-						>
-							Day {day}
-						</motion.button>
-					))}
+				{/* Day Tabs */}
+				<div className="px-4 sm:px-6 mb-8">
+					<div className="flex justify-center space-x-2 sm:space-x-4">
+						{[1, 2, 3].map((day) => (
+							<motion.button
+								key={day}
+								onClick={() => setActiveDay(day)}
+								className={`px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-lg transition-all duration-300 ${
+									activeDay === day
+										? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/50'
+										: 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/70 hover:text-white'
+								}`}
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+							>
+								Day {day}
+							</motion.button>
+						))}
+					</div>
 				</div>
-			</div>
 
-			{/* Full Page Timeline */}
-			<div className="relative z-20 container mx-auto px-6 pb-20">
-				<div className="w-full overflow-x-auto">
-					<motion.svg
-						viewBox="0 0 2400 800"
-						className="w-[2400px] h-[600px] md:h-[700px] min-w-full"
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						transition={{ duration: 0.8 }}
-					>
-						<defs>
-							<linearGradient id="timelineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-								<stop offset="0%" stopColor="#8b5cf6" />
-								<stop offset="25%" stopColor="#ec4899" />
-								<stop offset="50%" stopColor="#6366f1" />
-								<stop offset="75%" stopColor="#ec4899" />
-								<stop offset="100%" stopColor="#8b5cf6" />
-							</linearGradient>
-							<filter id="timelineGlow" filterUnits="userSpaceOnUse">
-								<feGaussianBlur stdDeviation="8" result="coloredBlur" />
-								<feMerge>
-									<feMergeNode in="coloredBlur" />
-									<feMergeNode in="SourceGraphic" />
-								</feMerge>
-							</filter>
-						</defs>
+				{/* Timeline Content */}
+				<div className="px-4 sm:px-6">
+					{/* Desktop: Horizontal Timeline */}
+					{!isMobile && (
+						<div className="hidden lg:block">
+							<div className="w-full overflow-x-auto">
+								<motion.svg
+									viewBox="0 0 2400 800"
+									className="w-[2400px] h-[600px] min-w-full"
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									transition={{ duration: 0.8 }}
+								>
+									<defs>
+										<linearGradient id="timelineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+											<stop offset="0%" stopColor="#8b5cf6" />
+											<stop offset="25%" stopColor="#ec4899" />
+											<stop offset="50%" stopColor="#6366f1" />
+											<stop offset="75%" stopColor="#ec4899" />
+											<stop offset="100%" stopColor="#8b5cf6" />
+										</linearGradient>
+									</defs>
 
-						{/* Main Timeline Path - Horizontal zig-zag like the image */}
-						<motion.path
-							d="M 100,400 Q 300,300 500,400 T 900,300 T 1300,400 T 1700,300 T 2100,400 T 2300,300"
-							fill="none"
-							stroke="url(#timelineGradient)"
-							strokeWidth="15"
-							strokeLinecap="round"
-							style={{ filter: 'url(#timelineGlow)' }}
-							initial={{ strokeDasharray: 3000, strokeDashoffset: 3000 }}
-							animate={{ strokeDashoffset: 0 }}
-							transition={{ duration: 5, ease: 'easeInOut' }}
-						/>
-
-						{/* Timeline Events - Horizontal layout with proper zig-zag positioning */}
-						{timelineData[activeDay].map((event, index) => {
-							const x = 200 + (index * 400); // Horizontal spacing
-							const y = 400 + (index % 2 === 0 ? 0 : -100); // Zig-zag pattern matching the path
-							
-							return (
-								<g key={index} className="cursor-pointer group">
-									{/* Event Circle */}
-									<motion.circle
-										cx={x}
-										cy={y}
-										r="25"
-										fill="#ffffff"
-										className="drop-shadow-[0_0_25px_rgba(139,92,246,0.9)] group-hover:r-30 transition-all duration-300"
-										initial={{ scale: 0, opacity: 0 }}
-										animate={{ scale: 1, opacity: 1 }}
-										transition={{ delay: 0.5 + index * 0.2, type: 'spring', stiffness: 200 }}
-									/>
-									
-									{/* Event Details Box - Positioned above or below based on zig-zag */}
-									<motion.rect
-										x={x - 180}
-										y={y + (index % 2 === 0 ? 50 : -210)}
-										width="360"
-										height="160"
-										rx="20"
-										fill="rgba(0,0,0,0.85)"
+									{/* Horizontal Timeline Path */}
+									<motion.path
+										d="M 100,400 Q 300,300 500,400 T 900,300 T 1300,400 T 1700,300 T 2100,400 T 2300,300"
+										fill="none"
 										stroke="url(#timelineGradient)"
-										strokeWidth="3"
-										className="group-hover:stroke-2 group-hover:stroke-pink-400 transition-all duration-300"
-										initial={{ opacity: 0, y: 30 }}
-										animate={{ opacity: 1, y: 0 }}
-										transition={{ delay: 1 + index * 0.2 }}
-									/>
-									
-									{/* Event Text - Positioned in the event box */}
-									<motion.text
-										x={x}
-										y={y + (index % 2 === 0 ? 85 : -175)}
-										textAnchor="middle"
-										className="text-base font-bold fill-white"
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1 }}
-										transition={{ delay: 1.2 + index * 0.2 }}
-									>
-										{event.time}
-									</motion.text>
-									
-									<motion.text
-										x={x}
-										y={y + (index % 2 === 0 ? 115 : -145)}
-										textAnchor="middle"
-										className="text-base font-semibold fill-purple-300"
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1 }}
-										transition={{ delay: 1.3 + index * 0.2 }}
-									>
-										{event.event}
-									</motion.text>
-									
-									<motion.text
-										x={x}
-										y={y + (index % 2 === 0 ? 140 : -120)}
-										textAnchor="middle"
-										className="text-sm fill-gray-300"
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1 }}
-										transition={{ delay: 1.4 + index * 0.2 }}
-									>
-										{event.description}
-									</motion.text>
-									
-									<motion.text
-										x={x}
-										y={y + (index % 2 === 0 ? 165 : -95)}
-										textAnchor="middle"
-										className="text-sm fill-pink-300"
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1 }}
-										transition={{ delay: 1.5 + index * 0.2 }}
-									>
-										📍 {event.location}
-									</motion.text>
-
-									{/* Transparent Blurred Hover Container - Positioned at hover point */}
-									<motion.rect
-										x={x - 200}
-										y={y - 200}
-										width="400"
-										height="350"
-										rx="20"
-										fill="rgba(0,0,0,0.85)"
-										stroke="rgba(139,92,246,0.6)"
-										strokeWidth="2"
-										className="opacity-0 group-hover:opacity-100 transition-all duration-300 ease-out"
-										style={{
-											filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.5))'
-										}}
+										strokeWidth="15"
+										strokeLinecap="round"
+										initial={{ strokeDasharray: 3000, strokeDashoffset: 3000 }}
+										animate={{ strokeDashoffset: 0 }}
+										transition={{ duration: 5, ease: 'easeInOut' }}
 									/>
 
-									{/* Hover Photo Placeholder - Left side with better styling */}
-									<motion.rect
-										x={x - 180}
-										y={y - 180}
-										width="140"
-										height="140"
-										rx="15"
-										fill="rgba(139,92,246,0.3)"
-										stroke="rgba(255,255,255,0.5)"
-										strokeWidth="2"
-										className="opacity-0 group-hover:opacity-100 transition-all duration-400 delay-100"
-									>
-										<title>Event Photo</title>
-									</motion.rect>
+									{/* Timeline Events */}
+									{timelineData[activeDay].map((event, index) => {
+										const x = 200 + (index * 400);
+										const y = 400 + (index % 2 === 0 ? 0 : -100);
+										
+										return (
+											<g
+												key={index}
+												className="cursor-pointer"
+												onMouseEnter={() => setHoveredIndex(index)}
+												onMouseLeave={() => setHoveredIndex(null)}
+											>
+												<motion.circle
+													cx={x}
+													cy={y}
+													r="25"
+													fill="#ffffff"
+													className="drop-shadow-[0_0_25px_rgba(139,92,246,0.9)]"
+													initial={{ scale: 0, opacity: 0 }}
+													animate={{ scale: hoveredIndex === index ? 1.25 : 1, opacity: 1 }}
+													transition={{ delay: 0.5 + index * 0.2, type: 'spring', stiffness: 250, damping: 15 }}
+												/>
+												
+												<motion.rect
+													x={x - 180}
+													y={y + (index % 2 === 0 ? 50 : -210)}
+													width="360"
+													height="160"
+													rx="20"
+													fill="rgba(0,0,0,0.85)"
+													stroke={hoveredIndex === index ? '#ec4899' : 'url(#timelineGradient)'}
+													strokeWidth={hoveredIndex === index ? 5 : 3}
+													initial={{ opacity: 0, y: 30 }}
+													animate={{ opacity: 1, y: 0 }}
+													transition={{ delay: 1 + index * 0.2 }}
+												/>
+												
+												<motion.text
+													x={x}
+													y={y + (index % 2 === 0 ? 85 : -175)}
+													textAnchor="middle"
+													className="text-base font-bold fill-white"
+													initial={{ opacity: 0 }}
+													animate={{ opacity: 1 }}
+													transition={{ delay: 1.2 + index * 0.2 }}
+												>
+													{event.time}
+												</motion.text>
+												
+												<motion.text
+													x={x}
+													y={y + (index % 2 === 0 ? 115 : -145)}
+													textAnchor="middle"
+													className="text-base font-semibold fill-purple-300"
+													initial={{ opacity: 0 }}
+													animate={{ opacity: 1 }}
+													transition={{ delay: 1.3 + index * 0.2 }}
+												>
+													{event.event}
+												</motion.text>
+												
+												<motion.text
+													x={x}
+													y={y + (index % 2 === 0 ? 140 : -120)}
+													textAnchor="middle"
+													className="text-sm fill-gray-300"
+													initial={{ opacity: 0 }}
+													animate={{ opacity: 1 }}
+													transition={{ delay: 1.4 + index * 0.2 }}
+												>
+													{event.description}
+												</motion.text>
+												
+												<motion.text
+													x={x}
+													y={y + (index % 2 === 0 ? 165 : -95)}
+													textAnchor="middle"
+													className="text-sm fill-pink-300"
+													initial={{ opacity: 0 }}
+													animate={{ opacity: 1 }}
+													transition={{ delay: 1.5 + index * 0.2 }}
+												>
+													📍 {event.location}
+												</motion.text>
+											</g>
+										);
+									})}
+								</motion.svg>
+							</div>
+						</div>
+					)}
 
-									{/* Photo Icon - Centered in photo area */}
-									<motion.text
-										x={x - 110}
-										y={y - 110}
-										textAnchor="middle"
-										className="text-4xl fill-white opacity-0 group-hover:opacity-100 transition-all duration-400 delay-200"
-									>
-										📸
-									</motion.text>
-
-									{/* Photo Label */}
-									<motion.text
-										x={x - 110}
-										y={y - 70}
-										textAnchor="middle"
-										className="text-xs fill-white opacity-0 group-hover:opacity-100 transition-all duration-400 delay-250"
-									>
-										Event Photo
-									</motion.text>
-
-									{/* Event Details - Right side with better background */}
-									<motion.rect
-										x={x - 30}
-										y={y - 180}
-										width="170"
-										height="140"
-										rx="15"
-										fill="rgba(255,255,255,0.1)"
-										stroke="rgba(255,255,255,0.2)"
-										strokeWidth="1"
-										className="opacity-0 group-hover:opacity-100 transition-all duration-400 delay-150"
+					{/* Mobile: Vertical Timeline */}
+					{isMobile && (
+						<div className="lg:hidden">
+							<div className="relative">
+								{/* Vertical Timeline Line */}
+								<div className="absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 via-pink-500 to-indigo-600 rounded-full">
+									<motion.div
+										className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-purple-500 via-pink-500 to-indigo-600 rounded-full origin-top"
+										initial={{ scaleY: 0 }}
+										animate={{ scaleY: 1 }}
+										transition={{ duration: 2, ease: "easeInOut" }}
 									/>
+								</div>
 
-									{/* Event Title - Right side */}
-									<motion.text
-										x={x - 20}
-										y={y - 160}
-										textAnchor="start"
-										className="text-base font-bold fill-white opacity-0 group-hover:opacity-100 transition-all duration-400 delay-200"
-									>
-										{event.event}
-									</motion.text>
+								{/* Timeline Events */}
+								<div className="space-y-6 ml-16">
+									{timelineData[activeDay].map((event, index) => (
+										<motion.div
+											key={index}
+											initial={{ opacity: 0, x: -50 }}
+											animate={{ opacity: 1, x: 0 }}
+											transition={{ delay: index * 0.2, duration: 0.6 }}
+											className="relative group"
+										>
+											{/* Event Circle */}
+											<div className="absolute -left-12 top-6 w-6 h-6 bg-white rounded-full border-4 border-purple-500 shadow-lg shadow-purple-500/50 group-hover:scale-125 transition-transform duration-300" />
 
-									{/* Time - Right side */}
-									<motion.text
-										x={x - 20}
-										y={y - 135}
-										textAnchor="start"
-										className="text-sm fill-purple-300 opacity-0 group-hover:opacity-100 transition-all duration-400 delay-250"
-									>
-										⏰ {event.time}
-									</motion.text>
+											{/* Event Card */}
+											<div className="bg-gradient-to-br from-gray-900/90 via-gray-800/90 to-gray-900/90 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-4 sm:p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
+												{/* Category Badge */}
+												<div className="flex items-center justify-between mb-3">
+													<span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${getCategoryColor(event.category || '')} text-white`}>
+														{event.category}
+													</span>
+													<ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-purple-400 transition-colors" />
+												</div>
 
-									{/* Location - Right side */}
-									<motion.text
-										x={x - 20}
-										y={y - 110}
-										textAnchor="start"
-										className="text-sm fill-blue-300 opacity-0 group-hover:opacity-100 transition-all duration-400 delay-300"
-									>
-										📍 {event.location}
-									</motion.text>
+												{/* Event Title */}
+												<h3 className="text-lg sm:text-xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
+													{event.event}
+												</h3>
 
-									{/* Description - Right side */}
-									<motion.text
-										x={x - 20}
-										y={y - 85}
-										textAnchor="start"
-										className="text-xs fill-gray-200 opacity-0 group-hover:opacity-100 transition-all duration-400 delay-350"
-									>
-										{event.description}
-									</motion.text>
+												{/* Time */}
+												<div className="flex items-center space-x-2 mb-2">
+													<Clock className="w-4 h-4 text-purple-400" />
+													<span className="text-purple-300 font-medium">{event.time}</span>
+												</div>
 
-									{/* Bottom Info Section */}
-									<motion.rect
-										x={x - 180}
-										y={y - 30}
-										width="360"
-										height="60"
-										rx="15"
-										fill="rgba(139,92,246,0.2)"
-										stroke="rgba(139,92,246,0.4)"
-										strokeWidth="1"
-										className="opacity-0 group-hover:opacity-100 transition-all duration-400 delay-400"
-									/>
+												{/* Description */}
+												<p className="text-gray-300 text-sm sm:text-base mb-3 leading-relaxed">
+													{event.description}
+												</p>
 
-									{/* Additional Details - Bottom section */}
-									<motion.text
-										x={x - 170}
-										y={y - 10}
-										textAnchor="start"
-										className="text-xs fill-white opacity-0 group-hover:opacity-100 transition-all duration-400 delay-450"
-									>
-										🎯 Hover for more details
-									</motion.text>
+												{/* Location */}
+												<div className="flex items-center space-x-2">
+													<MapPin className="w-4 h-4 text-pink-400" />
+													<span className="text-pink-300 text-sm">{event.location}</span>
+												</div>
 
-									<motion.text
-										x={x + 150}
-										y={y - 10}
-										textAnchor="end"
-										className="text-xs fill-purple-200 opacity-0 group-hover:opacity-100 transition-all duration-400 delay-500"
-									>
-										✨ Sabrang 2025
-									</motion.text>
-
-									{/* Hover Glow Effect - Enhanced */}
-									<motion.circle
-										cx={x}
-										cy={y}
-										r="35"
-										fill="none"
-										stroke="rgba(255,255,255,0.4)"
-										strokeWidth="2"
-										className="opacity-0 group-hover:opacity-100 transition-all duration-300"
-									/>
-									
-									<motion.circle
-										cx={x}
-										cy={y}
-										r="45"
-										fill="none"
-										stroke="rgba(236, 72, 153, 0.3)"
-										strokeWidth="1"
-										className="opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100"
-									/>
-								</g>
-							);
-						})}
-					</motion.svg>
+												{/* Hover Effect */}
+												<div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+											</div>
+										</motion.div>
+									))}
+								</div>
+							</div>
+						</div>
+					)}
 				</div>
 			</div>
 		</div>
