@@ -597,13 +597,8 @@ export default function EventsPage() {
       
       {/* Black Overlay */}
       <div className="fixed inset-0 -z-10 bg-black/50" />
-      {/* Mobile top-left logo */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
-        <img src="/images/Logo@2x.png" alt="Logo" className="h-10 w-auto" onError={(e) => { (e.target as HTMLImageElement).src = '/images/Logo.svg'; }} />
-      </div>
-
-      {/* Desktop chrome */}
-      <Logo className="hidden lg:block" />
+      {/* Logo and sidebar */}
+      <Logo className="block" />
       <SidebarDock className="hidden lg:block" />
 
       {/* Mobile hamburger */}
@@ -1064,36 +1059,36 @@ export default function EventsPage() {
       </AnimatePresence>
 
 
-      {/* Mobile menu overlay */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
-          <div className="absolute top-4 right-4">
-            <button
-              aria-label="Close menu"
-              onClick={() => setMobileMenuOpen(false)}
-              className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
-            >
-              <X className="w-6 h-6 text-white" />
-            </button>
-          </div>
-          <div className="pt-20 px-6">
-            <div className="grid grid-cols-1 gap-3">
-              {mobileNavItems.map((item) => (
-                <button
-                  key={item.title}
-                  onClick={() => { setMobileMenuOpen(false); setTargetHref(item.href); setShowTransition(true); }}
-                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
-                >
-                  <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
-                    {item.icon}
-                  </span>
-                  <span className="font-medium">{item.title}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+             {/* Mobile menu overlay */}
+       {mobileMenuOpen && (
+         <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
+           <div className="absolute top-4 right-4">
+             <button
+               aria-label="Close menu"
+               onClick={() => setMobileMenuOpen(false)}
+               className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
+             >
+               <X className="w-6 h-6 text-white" />
+             </button>
+           </div>
+           <div className="pt-20 px-6 h-full overflow-y-auto">
+             <div className="grid grid-cols-1 gap-3 pb-8">
+               {mobileNavItems.map((item) => (
+                 <button
+                   key={item.title}
+                   onClick={() => { setMobileMenuOpen(false); setTargetHref(item.href); setShowTransition(true); }}
+                   className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                 >
+                   <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
+                     {item.icon}
+                   </span>
+                   <span className="font-medium">{item.title}</span>
+                 </button>
+               ))}
+             </div>
+           </div>
+         </div>
+       )}
 
       {/* Infinity transition for mobile nav */}
       <InfinityTransition

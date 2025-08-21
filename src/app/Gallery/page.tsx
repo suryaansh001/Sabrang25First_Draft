@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { IconChevronLeft, IconChevronRight, IconMenu2, IconChevronUp } from '@tabler/icons-react';
+import { IconChevronLeft, IconChevronRight, IconMenu2, IconChevronUp, IconHome, IconInfoCircle, IconCalendar, IconUsers, IconStar, IconHelpCircle, IconMail } from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import InfinityTransition from '../../../components/InfinityTransition';
@@ -27,13 +27,13 @@ const Gallery = () => {
 
   // Navigation items for mobile menu
   const navigationItems = [
-    { href: '/', label: 'Home' },
-    { href: '/About', label: 'About' },
-    { href: '/Events', label: 'Events' },
-    { href: '/Team', label: 'Team' },
-    { href: '/Gallery', label: 'Gallery' },
-    { href: '/FAQ', label: 'FAQ' },
-    { href: '/Contact', label: 'Contact' },
+    { href: '/', label: 'Home', icon: <IconHome className="w-5 h-5" /> },
+    { href: '/About', label: 'About', icon: <IconInfoCircle className="w-5 h-5" /> },
+    { href: '/Events', label: 'Events', icon: <IconCalendar className="w-5 h-5" /> },
+    { href: '/Team', label: 'Team', icon: <IconUsers className="w-5 h-5" /> },
+    { href: '/Gallery', label: 'Gallery', icon: <IconStar className="w-5 h-5" /> },
+    { href: '/FAQ', label: 'FAQ', icon: <IconHelpCircle className="w-5 h-5" /> },
+    { href: '/Contact', label: 'Contact', icon: <IconMail className="w-5 h-5" /> },
   ];
 
   // Handle mobile navigation
@@ -114,61 +114,61 @@ const Gallery = () => {
 
   return (
     <div className="min-h-screen text-white font-sans relative overflow-hidden">
-      {/* Infinity Transition */}
-      <InfinityTransition 
-        isActive={showTransition} 
-        onComplete={() => {
-          setShowTransition(false);
-          if (targetHref) {
-            router.push(targetHref);
-          }
-        }}
-      />
+             {/* Logo and sidebar */}
+       <Logo className="block" />
 
-      {/* Mobile Navigation */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 p-4">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Logo />
-          </div>
-          
-          {/* Hamburger Menu */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-3 rounded-xl active:scale-95 transition"
-          >
-            <IconMenu2 className="w-6 h-6 text-white" />
-          </button>
-        </div>
-      </div>
+       {/* Infinity Transition */}
+       <InfinityTransition 
+         isActive={showTransition} 
+         onComplete={() => {
+           setShowTransition(false);
+           if (targetHref) {
+             router.push(targetHref);
+           }
+         }}
+       />
 
-      {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="lg:hidden fixed inset-0 bg-black/90 backdrop-blur-md z-40"
-          >
-            <div className="flex flex-col items-center justify-center h-full space-y-8">
-              {navigationItems.map((item, index) => (
-                <motion.button
-                  key={item.href}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  onClick={() => handleMobileNavigation(item.href)}
-                  className="text-2xl font-semibold text-white hover:text-purple-300 transition-colors"
-                >
-                  {item.label}
-                </motion.button>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+       {/* Mobile hamburger (same style as About page) */}
+       <button
+         aria-label="Open menu"
+         onClick={() => setMobileMenuOpen(true)}
+         className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
+       >
+         <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
+         <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
+         <span className="block h-0.5 bg-white/80 rounded-full w-4" />
+       </button>
+
+       {/* Mobile menu overlay */}
+       {mobileMenuOpen && (
+         <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
+           <div className="absolute top-4 right-4">
+             <button
+               aria-label="Close menu"
+               onClick={() => setMobileMenuOpen(false)}
+               className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
+             >
+               <IconMenu2 className="w-6 h-6 text-white" />
+             </button>
+           </div>
+           <div className="pt-20 px-6 h-full overflow-y-auto">
+             <div className="grid grid-cols-1 gap-3 pb-8">
+                               {navigationItems.map((item) => (
+                  <button
+                    key={item.href}
+                    onClick={() => handleMobileNavigation(item.href)}
+                    className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                  >
+                    <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
+                      {item.icon}
+                    </span>
+                    <span className="font-medium">{item.label}</span>
+                  </button>
+                ))}
+             </div>
+           </div>
+         </div>
+       )}
 
       {/* Starry Space Background */}
       <div className="fixed inset-0 bg-gradient-to-br from-indigo-950 via-purple-950 via-pink-900 to-black -z-10">
@@ -208,8 +208,8 @@ const Gallery = () => {
       </div>
       
       {/* Main Image Display */}
-      <div className="relative w-full flex items-center justify-center p-1 z-10 h-[calc(100vh-120px)]">
-        <div className="relative w-full max-w-9xl h-full rounded-2xl overflow-hidden">
+      <div className="relative w-full flex items-center justify-center p-1 lg:p-2 z-10 h-[calc(100vh-160px)]">
+        <div className="relative w-full max-w-6xl h-full rounded-2xl overflow-hidden shadow-2xl border border-white/10">
           {images.map((image, index) => (
             <div
               key={index}
@@ -227,16 +227,16 @@ const Gallery = () => {
                   : 'brightness(0.8) contrast(0.8)',
               }}
             >
-              <img
-                src={image}
-                alt={`Gallery Image ${index + 1}`}
-                className="w-full h-full object-contain transition-all duration-1000 ease-in-out"
-                style={{
-                  transform: index === currentImageIndex 
-                    ? 'scale(1)' 
-                    : 'scale(1.05)',
-                }}
-              />
+                             <img
+                 src={image}
+                 alt={`Gallery Image ${index + 1}`}
+                 className="w-full h-full object-contain transition-all duration-1000 ease-in-out"
+                 style={{
+                   transform: index === currentImageIndex 
+                     ? 'scale(1.05)' 
+                     : 'scale(1.1)',
+                 }}
+               />
             </div>
           ))}
         </div>

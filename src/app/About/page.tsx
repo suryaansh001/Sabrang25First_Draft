@@ -46,18 +46,8 @@ const AboutPage = () => {
       {/* Black Overlay for better text readability */}
       <div className="fixed inset-0 -z-10 bg-black/60" />
 
-      {/* Mobile top-left logo (same as HOME) */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
-        <img
-          src="/images/Logo@2x.png"
-          alt="Logo"
-          className="h-10 w-auto"
-          onError={(e) => { (e.target as HTMLImageElement).src = '/images/Logo.svg'; }}
-        />
-      </div>
-
-      {/* Desktop logo and sidebar */}
-      <Logo className="hidden lg:block" />
+      {/* Logo and sidebar */}
+      <Logo className="block" />
       <SidebarDock className="hidden lg:block" />
 
       {/* Mobile hamburger (same style as HOME) */}
@@ -83,8 +73,8 @@ const AboutPage = () => {
               <X className="w-6 h-6 text-white" />
             </button>
           </div>
-          <div className="pt-20 px-6">
-            <div className="grid grid-cols-1 gap-3">
+          <div className="pt-20 px-6 h-full overflow-y-auto">
+            <div className="grid grid-cols-1 gap-3 pb-8">
               {mobileNavItems.map((item) => (
                 <button
                   key={item.title}
