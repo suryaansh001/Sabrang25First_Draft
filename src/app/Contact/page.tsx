@@ -2,9 +2,8 @@
 
 import React from 'react';
 import Logo from '../../../components/Logo';
-import Footer from '../../../components/Footer'
-import SidebarDock from '../../../components/SidebarDock';
 import Footer from '../../../components/Footer';
+import SidebarDock from '../../../components/SidebarDock';
 
 const Contact = () => {
   return (
