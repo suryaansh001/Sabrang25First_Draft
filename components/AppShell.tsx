@@ -65,8 +65,11 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
     if (pendingNavigation) {
       setPendingNavigation(null);
     }
-    setIsTransitioning(false);
+    // Keep content hidden a tiny bit longer on mobile to prevent previous page flash
     setShowTransition(false);
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 30); // 30ms buffer as requested
   };
 
   useEffect(() => {

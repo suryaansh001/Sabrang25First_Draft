@@ -1,26 +1,118 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Logo from '../../../components/Logo';
 import SidebarDock from '../../../components/SidebarDock';
-import Footer from '../../../components/Footer';
+import { Calendar, Users, Handshake, Info, Clock, Star, Mail, Home, HelpCircle, X, ChevronUp } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import InfinityTransition from '../../../components/InfinityTransition';
 
 const AboutPage = () => {
+  const router = useRouter();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showTransition, setShowTransition] = useState(false);
+  const [targetHref, setTargetHref] = useState<string | null>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
+    { title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
+    { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
+    { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
+    { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
+    { title: 'Schedule', href: '/schedule', icon: <Clock className="w-5 h-5" /> },
+    { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
+    { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
+    { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
+    { title: 'Contact', href: '/Contact', icon: <Mail className="w-5 h-5" /> },
+  ];
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  useEffect(() => {
+    const onScroll = () => setShowScrollTop(window.scrollY > 300);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
     <div className="min-h-screen text-white relative overflow-hidden flex flex-col">
       {/* Background Image */}
       <div 
         className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: 'url(/images/backgrounds/aboutpage.webp)'
+          backgroundImage: 'url(/images/about-section/about_back.webp)'
         }}
       />
       
       {/* Black Overlay for better text readability */}
       <div className="fixed inset-0 -z-10 bg-black/60" />
-      
-      <Logo />
-      <SidebarDock />
+
+      {/* Mobile top-left logo (same as HOME) */}
+      <div className="lg:hidden fixed top-4 left-4 z-50">
+        <img
+          src="/images/Logo@2x.png"
+          alt="Logo"
+          className="h-10 w-auto"
+          onError={(e) => { (e.target as HTMLImageElement).src = '/images/Logo.svg'; }}
+        />
+      </div>
+
+      {/* Desktop logo and sidebar */}
+      <Logo className="hidden lg:block" />
+      <SidebarDock className="hidden lg:block" />
+
+      {/* Mobile hamburger (same style as HOME) */}
+      <button
+        aria-label="Open menu"
+        onClick={() => setMobileMenuOpen(true)}
+        className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
+      >
+        <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
+        <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
+        <span className="block h-0.5 bg-white/80 rounded-full w-4" />
+      </button>
+
+      {/* Mobile menu overlay */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
+          <div className="absolute top-4 right-4">
+            <button
+              aria-label="Close menu"
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
+            >
+              <X className="w-6 h-6 text-white" />
+            </button>
+          </div>
+          <div className="pt-20 px-6">
+            <div className="grid grid-cols-1 gap-3">
+              {mobileNavItems.map((item) => (
+                <button
+                  key={item.title}
+                  onClick={() => { setMobileMenuOpen(false); setTargetHref(item.href); setShowTransition(true); }}
+                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                >
+                  <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
+                    {item.icon}
+                  </span>
+                  <span className="font-medium">{item.title}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Local Infinity Transition for mobile nav (mobile-optimized) */}
+      <InfinityTransition
+        isActive={showTransition}
+        onComplete={() => {
+          if (targetHref) {
+            router.push(targetHref);
+          }
+          setShowTransition(false);
+          setTargetHref(null);
+        }}
+      />
       
       {/* Main Content Container */}
       <div className="relative z-10 pb-16 flex-grow">
@@ -56,10 +148,38 @@ const AboutPage = () => {
         {/* What is Sabrang Section */}
         <section className="py-20 px-6">
           <div className="max-w-7xl mx-auto">
-            {/* Hero Image for What is Sabrang */}
-            
-            
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
+            {/* Mobile: background image behind text */}
+            <div className="lg:hidden relative overflow-hidden rounded-2xl mb-12">
+              <img
+                src="/images/about-section/what_is_sabrang.webp"
+                alt="What is Sabrang - Cultural Fest Celebration"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/60" />
+              <div className="relative z-10 p-6 space-y-6">
+                <h2 className="text-4xl font-bold">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
+                    What is Sabrang?
+                  </span>
+                </h2>
+                <p className="text-lg text-gray-200 leading-relaxed">
+                  Sabrang isn't just a fest — it's an explosion of talent, creativity, and cosmic energy.
+                  Over three thrilling days, JKLU transforms into a universe of music, dance, art, technology,
+                  and pure celebration.
+                </p>
+                <p className="text-lg text-gray-200 leading-relaxed">
+                  With a massive prize pool, flagship events, celebrity performances, and non-stop entertainment,
+                  Sabrang is where memories are made and legends are born.
+                </p>
+                <div className="flex items-center space-x-4 pt-2">
+                  <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
+                  <span className="text-purple-300 font-medium">Experience the Magic</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop: side by side */}
+            <div className="hidden lg:grid lg:grid-cols-2 gap-16 items-center">
               {/* Left: Image */}
               <div className="relative group">
                 <div className="relative overflow-hidden rounded-2xl">
@@ -291,7 +411,33 @@ const AboutPage = () => {
         {/* Beyond Competitions Section */}
         <section className="py-20 px-6">
           <div className="max-w-7xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
+            {/* Mobile: background image behind text */}
+            <div className="lg:hidden relative overflow-hidden rounded-2xl mb-12">
+              <img
+                src="/images/backgrounds/about-page/WhatsApp Image 2025-08-13 at 20.04.37_b514dcc5.jpg"
+                alt="Beyond Competitions - Live Performance"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/60" />
+              <div className="relative z-10 p-6 space-y-6">
+                <h2 className="text-4xl font-bold">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500">
+                    Beyond Competitions
+                  </span>
+                </h2>
+                <div className="space-y-4">
+                  {['DJ Night: Dance till dawn','Mini Games Arena','Wall of Goodness'].map((item, index) => (
+                    <div key={index} className="flex items-center space-x-3 p-4 bg-white/5 rounded-xl border border-white/10">
+                      <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
+                      <span className="text-gray-200 text-lg">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop: side by side */}
+            <div className="hidden lg:grid lg:grid-cols-2 gap-16 items-center">
               {/* Left: Content */}
               <div className="space-y-6">
                 <h2 className="text-4xl md:text-5xl font-bold">
@@ -334,7 +480,32 @@ const AboutPage = () => {
         {/* Final Vibe Section */}
         <section className="py-20 px-6 bg-black/20 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
+            {/* Mobile: background image behind text */}
+            <div className="lg:hidden relative overflow-hidden rounded-2xl mb-12">
+              <img
+                src="/images/backgrounds/about-page/WhatsApp Image 2025-08-13 at 20.04.40_42fe13c8.jpg"
+                alt="Final Vibe - Live Event Atmosphere"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/60" />
+              <div className="relative z-10 p-6 space-y-6">
+                <h2 className="text-4xl font-bold">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-500 to-indigo-600">
+                    The Final Vibe
+                  </span>
+                </h2>
+                <p className="text-xl text-gray-200 leading-relaxed">
+                  Imagine vibrant lights, roaring crowds, breathtaking performances, and an energy that doesn't fade until the last beat drops. That's Sabrang—more than a fest, it's an experience you'll remember for years.
+                </p>
+                <div className="flex items-center space-x-4 pt-2">
+                  <div className="w-3 h-3 bg-pink-500 rounded-full animate-pulse"></div>
+                  <span className="text-pink-300 font-medium">Unforgettable Memories</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop: side by side */}
+            <div className="hidden lg:grid lg:grid-cols-2 gap-16 items-center">
               {/* Left: Image */}
               <div className="relative group">
                 <div className="relative overflow-hidden rounded-2xl">
@@ -369,10 +540,18 @@ const AboutPage = () => {
         </section>
       </div>
 
-      {/* Footer with proper z-index */}
-      <div className="relative z-10">
-        <Footer />
-      </div>
+      {/* Footer is rendered globally in AppShell */}
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 z-40 w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white shadow-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 active:scale-95"
+          aria-label="Scroll to top"
+        >
+          <ChevronUp className="w-6 h-6" />
+        </button>
+      )}
 
       <style jsx>{`
         /* Custom scrollbar */

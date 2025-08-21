@@ -1,8 +1,10 @@
 'use client';
 import React, { memo, useEffect, useState } from 'react';
-import { Play, Github, Linkedin, LayoutDashboard } from 'lucide-react';
+import { Play, Github, Linkedin, LayoutDashboard, Calendar, Users, Handshake, Info, Clock, Star, Mail, Home, HelpCircle, X } from 'lucide-react';
 import SidebarDock from '../../components/SidebarDock';
 import { useVideo } from '../../components/VideoContext';
+import { useRouter } from 'next/navigation';
+import InfinityTransition from '../../components/InfinityTransition';
 
 // Video Background Component with comprehensive optimizations
 const VideoBackground = () => {
@@ -470,8 +472,44 @@ interface LayeredLandingPageProps {
   isLoading?: boolean;
 }
 
+// Lightweight video layer for mobile/tablet to avoid heavy fallbacks
+const MobileVideoBackground: React.FC = () => {
+  return (
+    <video
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="metadata"
+      className="absolute inset-0 w-full h-full object-cover"
+      style={{ filter: 'brightness(0.7) contrast(1.2)' }}
+    >
+      <source src="/videos/herovideo2.webm" type="video/webm" />
+      <source src="/videos/herovideo2.mp4" type="video/mp4" />
+      <source src="/videos/herovideo.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  );
+};
+
 const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false }: LayeredLandingPageProps) {
   const [assetsLoaded, setAssetsLoaded] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showTransition, setShowTransition] = useState(false);
+  const [targetHref, setTargetHref] = useState<string | null>(null);
+  const router = useRouter();
+
+  const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
+    { title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
+    { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
+    { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
+    { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
+    { title: 'Schedule', href: '/schedule', icon: <Clock className="w-5 h-5" /> },
+    { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
+    { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
+    { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
+    { title: 'Contact', href: '/Contact', icon: <Mail className="w-5 h-5" /> },
+  ];
 
   useEffect(() => {
     // Simple asset preloading for critical resources
@@ -502,112 +540,252 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
-      
-
-      
-      {/* Top Right Black Pill Notch */}
-      {!isLoading && (
-        <div 
-          className="absolute top-0 right-30 z-20 w-[500px] h-[70px] bg-black rounded-[30px]"
-          style={{ transform: 'translateX(50%)' }}
+      {/* Mobile & Tablet Hero (<= lg) */}
+      <div className="block lg:hidden relative min-h-screen">
+        <img
+          src="/herobg.webp"
+          alt="Hero background"
+          className="absolute inset-0 w-full h-full object-cover"
+          loading="eager"
+          fetchPriority="high"
         />
-      )}
-      
-      {/* Register Now Button - Positioned above everything */}
-      {!isLoading && (
-        <div className="absolute top-2.5 right-2 z-50 flex items-center space-x-5">
-          <a href="/Signup" className="px-24 py-4 bg-black/40 backdrop-blur-sm rounded-full text-white text-sm font-medium hover:bg-black/60 transition-all duration-300 border border-white/30">
-            Register Now
-          </a>
-          <a href="/dashboard" className="w-12 h-12 bg-purple-600/60 hover:bg-purple-600/80 rounded-full text-white transition-all duration-300 border border-purple-400/40 flex items-center justify-center">
-            <LayoutDashboard className="w-5 h-5" />
-          </a>
+        {/* Mobile video background (same as desktop sources, lightweight) */}
+        <div className="absolute inset-0">
+          <MobileVideoBackground />
         </div>
-      )}
-      
-      {/* SidebarDock - Consistent with other pages */}
-      {!isLoading && <SidebarDock />}
-      
-      {/* Right Panel - Blue Section with Notch Cutout */}
-      <div 
-        className="absolute top-0 h-full bg-gradient-to-br from-blue-500 via-blue-600 to-purple-700 p-6 sm:p-8 md:p-12 lg:p-16"
-        style={{
-          left: '16.67%',
-          right: '0',
-          clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% calc(100% - 100px), 200px calc(100% - 100px), 200px calc(100% - 60px), 0% calc(100% - 60px))'
-        }}
-      >
-        {/* Video background - positioned within right panel */}
-        <div className="absolute inset-0 -z-10">
-          {/* Video with multiple fallbacks */}
-          <VideoBackground />
-          
-          {/* Black overlay on top of video */}
-          <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
+
+        {/* Decorative overlays for mobile hero */}
+        <div className="absolute inset-0 z-10 pointer-events-none">
+          {/* Aurora blobs */}
+          <div className="aurora">
+            <div className="aurora-blob aurora-1" />
+            <div className="aurora-blob aurora-2" />
+            <div className="aurora-blob aurora-3" />
+          </div>
+
+          {/* Soft center glow behind title */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 sm:w-80 sm:h-80 rounded-full bg-gradient-to-br from-white/10 via-cyan-300/10 to-purple-500/10 blur-3xl" />
+
+          {/* Gentle scanline sweep */}
+          <div className="scan-line absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-transparent via-white/5 to-transparent" />
+
+          {/* Twinkling particles */}
+          {Array.from({ length: 18 }).map((_, i) => (
+            <span
+              key={i}
+              className="star-twinkle absolute rounded-full"
+              style={{
+                left: `${(i * 53) % 100}%`,
+                top: `${(i * 37) % 100}%`,
+                width: `${2 + (i % 3)}px`,
+                height: `${2 + (i % 3)}px`,
+                backgroundColor: i % 2 === 0 ? 'rgba(255,255,255,0.9)' : 'rgba(186,230,253,0.9)'
+              }}
+            />
+          ))}
         </div>
 
-        {/* Background 3D Elements */}
+        {/* Top-left logo */}
         {!isLoading && (
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-1/4 left-1/2 w-96 h-96 bg-gradient-to-br from-blue-400/30 to-purple-500/40 rounded-full blur-3xl -translate-x-1/2"></div>
-            <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-gradient-to-tl from-indigo-400/40 to-blue-600/30 rounded-full blur-2xl"></div>
-            <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-gradient-to-r from-purple-400/30 to-pink-500/40 rounded-full blur-2xl"></div>
+          <div className="absolute top-4 left-4 z-20">
+            <img
+              src="/images/Logo@2x.png"
+              alt="Logo"
+              className="h-10 w-auto"
+              loading="eager"
+              fetchPriority="high"
+              onError={(e) => {
+                console.log('Logo PNG failed, trying SVG fallback');
+                (e.target as HTMLImageElement).src = '/images/Logo.svg';
+              }}
+            />
           </div>
         )}
-        
-        {/* Top Navigation */}
-        <nav className="relative z-40 flex items-center justify-between p-8 pt-0 pointer-events-none">
-          <div className="flex items-center space-x-4 ml-12">
-            {/* Navigation links moved to left panel as icons */}
-          </div>
-        </nav>
-        
-        {/* Main Content Area - Centered Sabrang 2025 */}
+
+        {/* Top-right stylized hamburger (three decreasing lines) */}
         {!isLoading && (
-          <div className="relative z-10 flex items-center justify-center h-full">
-            <div className="text-center">
-                                            <h1 className="text-7xl md:text-8xl lg:text-9xl font-black text-white leading-none">
-                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 drop-shadow-lg text-8xl md:text-9xl lg:text-[12rem]" style={{ fontFamily: "'Stardos Stencil', 'Orbitron', sans-serif", textShadow: '0 0 30px rgba(255,255,255,0.5)', letterSpacing: '0.02em' }}>
-                   SABRANG
-                 </span><br /><br />
-                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 drop-shadow-2xl text-8xl md:text-9xl lg:text-[10rem]" style={{ fontFamily: "'Stardos Stencil', 'Orbitron', sans-serif", textShadow: '0 0 40px rgba(34, 211, 238, 0.6)' }}>
-                   2025
-                 </span>
+          <button
+            aria-label="Open menu"
+            onClick={() => setMobileMenuOpen(true)}
+            className="absolute top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition pointer-events-auto"
+          >
+            <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
+            <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
+            <span className="block h-0.5 bg-white/80 rounded-full w-4" />
+          </button>
+        )}
+
+        {/* Center content */}
+        {!isLoading && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center text-center px-6 pointer-events-none">
+            <div>
+              <h1 className="font-black leading-none">
+                <span className="block text-7xl sm:text-8xl md:text-9xl text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 drop-shadow" style={{ fontFamily: "'Stardos Stencil', 'Orbitron', sans-serif" }}>
+                  SABRANG
+                </span>
+                <span className="mt-3 block text-6xl sm:text-7xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 drop-shadow" style={{ fontFamily: "'Stardos Stencil', 'Orbitron', sans-serif" }}>
+                  25
+                </span>
               </h1>
+              <p className="mt-3 text-lg sm:text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-pink-400 to-cyan-300">
+                Noorwana & Color to Cosmos
+              </p>
+              <div className="mt-8 flex items-center justify-center gap-3">
+                <a href="/Signup" className="btn-prism pointer-events-auto">
+                  <span>Register Now</span>
+                </a>
+              </div>
             </div>
           </div>
         )}
-        
-        
+
+        {/* Mobile menu overlay */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
+            <div className="absolute top-4 right-4">
+              <button
+                aria-label="Close menu"
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
+              >
+                <X className="w-6 h-6 text-white" />
+              </button>
+            </div>
+            <div className="pt-20 px-6">
+              <div className="grid grid-cols-1 gap-3">
+                {mobileNavItems.map((item) => (
+                  <button
+                    key={item.title}
+                    onClick={() => { setMobileMenuOpen(false); setTargetHref(item.href); setShowTransition(true); }}
+                    className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                  >
+                    <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
+                      {item.icon}
+                    </span>
+                    <span className="font-medium">{item.title}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-      
-      {/* Left Panel - Black Section */}
-      <div className="absolute top-0 left-0 w-1/6 h-full bg-black flex flex-col">
-        
-        {/* Logo */}
+
+      {/* Desktop/Laptop layout (>= lg) */}
+      <div className="hidden lg:block">
+        {/* Top Right Black Pill Notch */}
         {!isLoading && (
-          <div className="p-8 pt-12">
-              <div className="w-30 h-26 ml-12 flex items-center justify-center top-0">
-              <img 
-                src="/images/Logo@2x.png" 
-                alt="Logo" 
-                className="w-36 h-25" 
-                loading="eager"
-                fetchPriority="high"
-                onError={(e) => { 
-                  console.log('Logo PNG failed, trying SVG fallback');
-                  (e.target as HTMLImageElement).src = '/images/Logo.svg'; 
-                }} 
-                onLoad={() => console.log('Logo loaded successfully')}
-              />
-            </div>
+          <div 
+            className="absolute top-0 right-30 z-20 w-[500px] h-[70px] bg-black rounded-[30px]"
+            style={{ transform: 'translateX(50%)' }}
+          />
+        )}
+        
+        {/* Register Now Button - Positioned above everything */}
+        {!isLoading && (
+          <div className="absolute top-2.5 right-2 z-50 flex items-center space-x-5">
+            <a href="/Signup" className="px-24 py-4 bg-black/40 backdrop-blur-sm rounded-full text-white text-sm font-medium hover:bg-black/60 transition-all duration-300 border border-white/30">
+              Register Now
+            </a>
+            <a href="/dashboard" className="w-12 h-12 bg-purple-600/60 hover:bg-purple-600/80 rounded-full text-white transition-all duration-300 border border-purple-400/40 flex items-center justify-center">
+              <LayoutDashboard className="w-5 h-5" />
+            </a>
           </div>
         )}
         
-
+        {/* SidebarDock - Consistent with other pages */}
+        {!isLoading && <SidebarDock className="hidden lg:block" />}
+        
+        {/* Right Panel - Blue Section with Notch Cutout */}
+        <div 
+          className="absolute top-0 h-full bg-gradient-to-br from-blue-500 via-blue-600 to-purple-700 p-6 sm:p-8 md:p-12 lg:p-16"
+          style={{
+            left: '16.67%',
+            right: '0',
+            clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% calc(100% - 100px), 200px calc(100% - 100px), 200px calc(100% - 60px), 0% calc(100% - 60px))'
+          }}
+        >
+          {/* Video background - positioned within right panel */}
+          <div className="absolute inset-0 -z-10">
+            {/* Video with multiple fallbacks */}
+            <VideoBackground />
+            
+            {/* Black overlay on top of video */}
+            <div className="absolute inset-0 bg-black/60" />
+          </div>
+          
+          {/* Background 3D Elements */}
+          {!isLoading && (
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute top-1/4 left-1/2 w-96 h-96 bg-gradient-to-br from-blue-400/30 to-purple-500/40 rounded-full blur-3xl -translate-x-1/2"></div>
+              <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-gradient-to-tl from-indigo-400/40 to-blue-600/30 rounded-full blur-2xl"></div>
+              <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-gradient-to-r from-purple-400/30 to-pink-500/40 rounded-full blur-2xl"></div>
+            </div>
+          )}
+          
+          {/* Top Navigation */}
+          <nav className="relative z-40 flex items-center justify-between p-8 pt-0 pointer-events-none">
+            <div className="flex items-center space-x-4 ml-12">
+              {/* Navigation links moved to left panel as icons */}
+            </div>
+          </nav>
+          
+          {/* Main Content Area - Centered Sabrang 2025 */}
+          {!isLoading && (
+            <div className="relative z-10 flex items-center justify-center h-full">
+              <div className="text-center">
+                                              <h1 className="text-7xl md:text-8xl lg:text-9xl font-black text-white leading-none">
+                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 drop-shadow-lg text-8xl md:text-9xl lg:text-[12rem]" style={{ fontFamily: "'Stardos Stencil', 'Orbitron', sans-serif", textShadow: '0 0 30px rgba(255,255,255,0.5)', letterSpacing: '0.02em' }}>
+                     SABRANG
+                   </span><br /><br />
+                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 drop-shadow-2xl text-8xl md:text-9xl lg:text-[10rem]" style={{ fontFamily: "'Stardos Stencil', 'Orbitron', sans-serif", textShadow: '0 0 40px rgba(34, 211, 238, 0.6)' }}>
+                     2025
+                   </span>
+                </h1>
+              </div>
+            </div>
+          )}
+          
+          
+        </div>
+        
+        {/* Left Panel - Black Section */}
+        <div className="absolute top-0 left-0 w-1/6 h-full bg-black flex flex-col">
+          
+          {/* Logo */}
+          {!isLoading && (
+            <div className="p-8 pt-12">
+                <div className="w-30 h-26 ml-12 flex items-center justify-center top-0">
+                <img 
+                  src="/images/Logo@2x.png" 
+                  alt="Logo" 
+                  className="w-36 h-25" 
+                  loading="eager"
+                  fetchPriority="high"
+                  onError={(e) => { 
+                    console.log('Logo PNG failed, trying SVG fallback');
+                    (e.target as HTMLImageElement).src = '/images/Logo.svg'; 
+                  }} 
+                  onLoad={() => console.log('Logo loaded successfully')}
+                />
+              </div>
+            </div>
+          )}
+          
+          
+        </div>
       </div>
-      
 
+      {/* Infinity transition for mobile nav */}
+      <InfinityTransition
+        isActive={showTransition}
+        onComplete={() => {
+          if (targetHref) router.push(targetHref);
+          setShowTransition(false);
+          setTargetHref(null);
+        }}
+      />
     </div>
   );
 });

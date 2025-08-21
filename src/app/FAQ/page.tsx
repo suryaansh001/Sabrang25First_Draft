@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import SidebarDock from '../../../components/SidebarDock';
 import Logo from '../../../components/Logo';
-import Footer from '../../../components/Footer';
+// import Footer from '../../../components/Footer';
 
 interface Star {
   id: number;
@@ -218,10 +218,14 @@ const FAQ = () => {
         </div>
       </div>
       
+<<<<<<< HEAD
       {/* Footer properly positioned at bottom */}
       <div className="mt-auto">
         <Footer />
       </div>
+=======
+      {/* Footer is rendered globally in AppShell */}
+>>>>>>> 733a2c3 (Mobile optimizations + footer cleanup)
 
       <style jsx>{`
         @keyframes fade-in {

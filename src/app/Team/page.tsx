@@ -1,13 +1,115 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { IconChevronUp } from '@tabler/icons-react';
+import { Calendar, Users, Handshake, Info, Clock, Star, Mail, Home, HelpCircle, X } from 'lucide-react';
 import ChromaGrid from "./ChromaGrid";
 import Logo from "../../../components/Logo";
-import SidebarDock from "../../../components/SidebarDock";
-import Footer from "../../../components/Footer";
+import InfinityTransition from "../../../components/InfinityTransition";
 
 const TeamPage = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showTransition, setShowTransition] = useState(false);
+  const [targetHref, setTargetHref] = useState<string>('');
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  
+  const router = useRouter();
+
+  // Navigation items for mobile menu (same as About page)
+  const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
+    { title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
+    { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
+    { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
+    { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
+    { title: 'Schedule', href: '/schedule', icon: <Clock className="w-5 h-5" /> },
+    { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
+    { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
+    { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
+    { title: 'Contact', href: '/Contact', icon: <Mail className="w-5 h-5" /> },
+  ];
+
+
+
+  // Scroll to top functionality
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="flex flex-col min-h-screen text-white relative">
+      {/* Infinity Transition */}
+      <InfinityTransition 
+        isActive={showTransition} 
+        onComplete={() => {
+          setShowTransition(false);
+          if (targetHref) {
+            router.push(targetHref);
+          }
+        }}
+      />
+
+      {/* Mobile top-left logo (same as About page) */}
+      <div className="lg:hidden fixed top-4 left-4 z-50">
+        <img
+          src="/images/Logo@2x.png"
+          alt="Logo"
+          className="h-10 w-auto"
+          onError={(e) => { (e.target as HTMLImageElement).src = '/images/Logo.svg'; }}
+        />
+      </div>
+
+      {/* Mobile hamburger (same style as About page) */}
+      <button
+        aria-label="Open menu"
+        onClick={() => setMobileMenuOpen(true)}
+        className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
+      >
+        <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
+        <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
+        <span className="block h-0.5 bg-white/80 rounded-full w-4" />
+      </button>
+
+      {/* Mobile menu overlay */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
+          <div className="absolute top-4 right-4">
+            <button
+              aria-label="Close menu"
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
+            >
+              <X className="w-6 h-6 text-white" />
+            </button>
+          </div>
+          <div className="pt-20 px-6">
+            <div className="grid grid-cols-1 gap-3">
+              {mobileNavItems.map((item) => (
+                <button
+                  key={item.title}
+                  onClick={() => { setMobileMenuOpen(false); setTargetHref(item.href); setShowTransition(true); }}
+                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                >
+                  <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
+                    {item.icon}
+                  </span>
+                  <span className="font-medium">{item.title}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Background Image */}
       <div
         className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
@@ -19,20 +121,32 @@ const TeamPage = () => {
       {/* Black Overlay for better text readability */}
       <div className="fixed inset-0 -z-10 bg-black/60" />
 
-      <Logo />
-      <SidebarDock />
+      {/* Desktop Logo and Sidebar */}
+      <div className="hidden lg:block">
+        <Logo />
+      </div>
 
       {/* Main Content Container - flex-1 makes it take remaining space */}
-      <div className="relative z-10 pt-24 flex-1">
+      <div className="relative z-10 pt-24 lg:pt-24 flex-1">
         <div className="px-4 sm:px-6 py-8 sm:py-16">
           <ChromaGrid />
         </div>
       </div>
 
-      {/* Footer at absolute bottom with higher z-index */}
-      <div className="relative z-50">
-        <Footer />
-      </div>
+      {/* Scroll to Top Button */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0 }}
+            onClick={scrollToTop}
+            className="fixed bottom-6 right-6 z-50 w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
+          >
+            <IconChevronUp className="w-6 h-6 text-white" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

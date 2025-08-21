@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, MapPin, Clock, Users, Star, Filter, Crown, Check, Share2 } from 'lucide-react';
+import { X, Calendar, MapPin, Clock, Users, Star, Filter, Crown, Check, Share2, Home, HelpCircle, Handshake, Mail, Info, ChevronUp } from 'lucide-react';
 import SidebarDock from '../../../components/SidebarDock';
 import Logo from '../../../components/Logo';
-import Footer from '../../../components/Footer';
+import { useRouter } from 'next/navigation';
+import InfinityTransition from '../../../components/InfinityTransition';
 
 interface Event {
   id: number;
@@ -497,10 +498,27 @@ const categories = [
 ];
 
 export default function EventsPage() {
+  const router = useRouter();
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [showFlagshipOnly, setShowFlagshipOnly] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [showCopyMessage, setShowCopyMessage] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showTransition, setShowTransition] = useState(false);
+  const [targetHref, setTargetHref] = useState<string | null>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
+    { title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
+    { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
+    { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
+    { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
+    { title: 'Schedule', href: '/schedule', icon: <Clock className="w-5 h-5" /> },
+    { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
+    { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
+    { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
+    { title: 'Contact', href: '/Contact', icon: <Mail className="w-5 h-5" /> },
+  ];
 
   const handleCardClick = (event: Event) => {
     setSelectedEvent(event);
@@ -545,6 +563,21 @@ export default function EventsPage() {
     }
   };
 
+  // Scroll to top functionality
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Handle scroll to show/hide scroll to top button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // Filter events based on category and flagship toggle
   const filteredEvents = events.filter(event => {
     const categoryMatch = selectedCategory === "all" || event.category === selectedCategory;
@@ -564,15 +597,32 @@ export default function EventsPage() {
       
       {/* Black Overlay */}
       <div className="fixed inset-0 -z-10 bg-black/50" />
-      <Logo />
-      <SidebarDock />
+      {/* Mobile top-left logo */}
+      <div className="lg:hidden fixed top-4 left-4 z-50">
+        <img src="/images/Logo@2x.png" alt="Logo" className="h-10 w-auto" onError={(e) => { (e.target as HTMLImageElement).src = '/images/Logo.svg'; }} />
+      </div>
+
+      {/* Desktop chrome */}
+      <Logo className="hidden lg:block" />
+      <SidebarDock className="hidden lg:block" />
+
+      {/* Mobile hamburger */}
+      <button
+        aria-label="Open menu"
+        onClick={() => setMobileMenuOpen(true)}
+        className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
+      >
+        <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
+        <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
+        <span className="block h-0.5 bg-white/80 rounded-full w-4" />
+      </button>
       
-      {/* Flagship Events Toggle - Absolute top right */}
+      {/* Flagship Events Toggle - hide on mobile to avoid overlapping navbar */}
       <motion.div 
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, delay: 0.5 }}
-        className="fixed top-6 right-6 z-50"
+        className="hidden lg:fixed lg:top-6 lg:right-6 lg:z-50 lg:block"
       >
         <div className="relative">
           {/* Main toggle container */}
@@ -637,7 +687,7 @@ export default function EventsPage() {
           >
             <div className="max-w-7xl mx-auto">
               {/* Title Section */}
-              <div className="mb-16 text-center">
+              <div className="mb-12 lg:mb-16 text-center pt-8 lg:pt-12">
                 <motion.h1 
                   initial={{ opacity: 0, x: -50 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -646,11 +696,22 @@ export default function EventsPage() {
                 >
                   SABRANG 2025
                 </motion.h1>
+                {/* Mobile subtitle only */}
+                <motion.div
+                  initial={{ opacity: 0, x: -50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  className="lg:hidden -mt-2 mb-4"
+                >
+                  <p className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-pink-400 to-cyan-300">
+                    Noorwana & Color to Cosmos
+                  </p>
+                </motion.div>
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: "100px" }}
                   transition={{ duration: 0.8, delay: 0.4 }}
-                  className="h-1 bg-gradient-to-r from-pink-400 to-purple-400 mb-8 mx-auto"
+                  className="h-1 bg-gradient-to-r from-pink-400 to-purple-400 mb-6 lg:mb-8 mx-auto"
                 />
                 <motion.p 
                   initial={{ opacity: 0, x: -50 }}
@@ -660,14 +721,6 @@ export default function EventsPage() {
                 >
                   It is a long established fact that a reader will be distracted by
                 </motion.p>
-                <motion.button 
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: 0.8 }}
-                  className="mt-6 px-6 py-3 border border-white text-white hover:bg-white hover:text-purple-900 transition-all duration-300 rounded"
-                >
-                  TIMETABLE
-                </motion.button>
               </div>
 
               {/* Category Filters */}
@@ -675,20 +728,20 @@ export default function EventsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 1 }}
-                className="mb-12"
+                className="mb-8 lg:mb-12"
               >
-                <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold text-white mb-4 flex items-center justify-center">
-                    <Filter className="w-6 h-6 mr-2" />
+                <div className="text-center mb-4 lg:mb-6">
+                  <h3 className="text-xl lg:text-2xl font-bold text-white mb-3 lg:mb-4 flex items-center justify-center">
+                    <Filter className="w-5 h-5 lg:w-6 lg:h-6 mr-2" />
                     Filter by Category
                   </h3>
                 </div>
-                <div className="flex flex-wrap justify-center gap-4">
+                <div className="grid grid-cols-2 lg:flex lg:flex-wrap justify-center gap-2 lg:gap-4 px-4 lg:px-0">
                   {categories.map((category) => (
                     <motion.button
                       key={category.value}
                       onClick={() => setSelectedCategory(category.value)}
-                      className={`px-6 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105 ${
+                      className={`px-3 lg:px-6 py-2 lg:py-3 rounded-full text-sm lg:text-base font-medium transition-all duration-300 transform hover:scale-105 ${
                         selectedCategory === category.value
                           ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
                           : 'bg-white/20 text-white border border-white/30 hover:bg-white/30'
@@ -703,7 +756,7 @@ export default function EventsPage() {
               </motion.div>
 
               {/* Events Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                 {filteredEvents.map((event, index) => {
                   console.log(`Rendering event: ${event.title}, Image path: ${event.image}`);
                   return (
@@ -714,7 +767,7 @@ export default function EventsPage() {
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                     className="group cursor-pointer"
                     onClick={() => handleCardClick(event)}
-                    whileHover={{ scale: 1.03 }}
+                    whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     <div className="bg-black/40 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 hover:border-white/30 transition-all duration-300 relative">
@@ -739,12 +792,13 @@ export default function EventsPage() {
                         <div className="absolute inset-0 rounded-lg border-2 border-gradient-to-r from-yellow-400 via-orange-500 to-red-500 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                       )}
                       
-                      <div className="relative h-64">
+                      {/* Poster Section */}
+                      <div className="relative h-80">
                         {/* Event Image */}
                         <img 
                           src={event.image} 
                           alt={event.title}
-                          className="w-full h-full object-contain bg-gray-800 p-2"
+                          className="w-full h-full object-contain"
                           onError={(e) => {
                             console.error(`Failed to load image: ${event.image}`);
                             const target = e.target as HTMLImageElement;
@@ -759,18 +813,20 @@ export default function EventsPage() {
                           <div className="absolute inset-0 bg-black/20" />
                         </div>
                         <div className="absolute inset-0 bg-black/20" />
-                        <div className="absolute bottom-4 left-4 right-4">
-                          <p className="text-white text-sm opacity-80 mb-2">
-                            {event.date} / {event.shares}
-                          </p>
-                          <h3 className="text-white font-semibold text-lg leading-tight">
-                            {event.title}
-                          </h3>
+                        
+                        {/* Click for more info overlay */}
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                          <div className="text-center text-white">
+                            <div className="text-2xl mb-2">👆</div>
+                            <div className="text-sm font-medium">Click for more info</div>
+                          </div>
                         </div>
                       </div>
-                      <div className="p-4">
+                      
+                      {/* Bottom Details Bar */}
+                      <div className="p-4 bg-black/60">
                         <div className="flex items-center justify-between text-gray-300 text-sm mb-2">
-                          <span>{event.time}</span>
+                          <span className="font-medium">{event.title}</span>
                           <span className={`px-2 py-1 rounded text-xs font-medium ${
                             event.isFlagship 
                               ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-300 border border-yellow-500/30' 
@@ -779,14 +835,14 @@ export default function EventsPage() {
                             {event.genre}
                           </span>
                         </div>
-                        {/* Flagship event indicator */}
-                        {event.isFlagship && (
-                          <div className="flex items-center space-x-2 mb-2">
-                            <span className="text-yellow-400 text-xs font-bold">🎯 PREMIUM EVENT</span>
-                            <span className="text-yellow-400 text-xs">•</span>
-                            <span className="text-yellow-400 text-xs font-medium">High Priority</span>
-                          </div>
-                        )}
+                        <div className="flex items-center justify-between text-gray-400 text-xs">
+                          <span>{event.date} • {event.time}</span>
+                          <span>{event.venue}</span>
+                        </div>
+                        {/* Click hint */}
+                        <div className="mt-2 text-center">
+                          <span className="text-gray-500 text-xs">👆 Click poster for details</span>
+                        </div>
                       </div>
                     </div>
                   </motion.div>
@@ -804,13 +860,13 @@ export default function EventsPage() {
             transition={{ duration: 0.4 }}
             className="fixed inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 z-50 overflow-hidden"
           >
-            <div className="flex h-full">
+            <div className="flex flex-col lg:flex-row h-full">
               {/* Left Side - Event Card */}
               <motion.div
                 initial={{ x: -100, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.6, ease: "easeOut" }}
-                className="w-1/2 p-8 flex items-center justify-center"
+                className="w-full lg:w-1/2 p-4 lg:p-8 flex items-center justify-center"
               >
                 <div className="w-full max-w-md">
                   <motion.div
@@ -829,34 +885,26 @@ export default function EventsPage() {
                       </div>
                     )}
                     
-                    <div className="relative h-80">
+                                        <div className="relative h-64 lg:h-80">
                       {/* Event Image in Modal */}
-                                              <img 
-                          src={selectedEvent.image} 
-                          alt={selectedEvent.title}
-                          className="w-full h-full object-contain bg-gray-800 p-3"
-                          onError={(e) => {
-                            console.error(`Failed to load modal image: ${selectedEvent.image}`);
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                            const fallback = document.getElementById(`modal-fallback-${selectedEvent.id}`);
-                            if (fallback) fallback.style.display = 'block';
-                          }}
-                          onLoad={() => console.log(`Successfully loaded modal image: ${selectedEvent.image}`)}
-                        />
-                                                                      {/* Fallback gradient background for modal */}
-                        <div className={`absolute inset-0 ${selectedEvent.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`} style={{ display: 'none' }} id={`modal-fallback-${selectedEvent.id}`}>
-                          <div className="absolute inset-0 bg-black/20" />
-                        </div>
-                      <div className="absolute inset-0 bg-black/20" />
-                      <div className="absolute bottom-4 left-4 right-4">
-                        <p className="text-white text-sm opacity-80 mb-2">
-                          {selectedEvent.date} / {selectedEvent.shares}
-                        </p>
-                        <h3 className="text-white font-semibold text-xl leading-tight">
-                          {selectedEvent.title}
-                        </h3>
+                      <img 
+                        src={selectedEvent.image} 
+                        alt={selectedEvent.title}
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          console.error(`Failed to load modal image: ${selectedEvent.image}`);
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const fallback = document.getElementById(`modal-fallback-${selectedEvent.id}`);
+                          if (fallback) fallback.style.display = 'block';
+                        }}
+                        onLoad={() => console.log(`Successfully loaded modal image: ${selectedEvent.image}`)}
+                      />
+                      {/* Fallback gradient background for modal */}
+                      <div className={`absolute inset-0 ${selectedEvent.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`} style={{ display: 'none' }} id={`modal-fallback-${selectedEvent.id}`}>
+                        <div className="absolute inset-0 bg-black/20" />
                       </div>
+                      <div className="absolute inset-0 bg-black/20" />
                     </div>
                     <div className="p-6">
                       <div className="space-y-3">
@@ -890,18 +938,18 @@ export default function EventsPage() {
                 initial={{ x: 100, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-                className="w-1/2 p-8 overflow-y-auto"
+                className="w-full lg:w-1/2 p-4 lg:p-8 overflow-y-auto"
               >
-                <div className="max-w-lg">
+                <div className="max-w-lg mx-auto lg:mx-0">
                   {/* Close Button */}
                   <motion.button
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.4 }}
                     onClick={handleClose}
-                    className="absolute top-8 right-8 w-12 h-12 bg-black/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-black/40 transition-colors border border-white/20"
+                    className="absolute top-4 lg:top-8 right-4 lg:right-8 w-10 h-10 lg:w-12 lg:h-12 bg-black/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-black/40 transition-colors border border-white/20"
                   >
-                    <X className="w-6 h-6" />
+                    <X className="w-5 h-5 lg:w-6 lg:h-6" />
                   </motion.button>
 
                   {/* Event Details Content */}
@@ -914,17 +962,17 @@ export default function EventsPage() {
                       <span className="inline-block px-3 py-1 bg-pink-500/20 text-pink-300 rounded-full text-sm mb-4">
                         {selectedEvent.genre}
                       </span>
-                      <h2 className="text-4xl font-bold text-white mb-4">
+                      <h2 className="text-2xl lg:text-4xl font-bold text-white mb-4">
                         {selectedEvent.title}
                       </h2>
-                      <p className="text-gray-300 text-lg leading-relaxed mb-6">
+                      <p className="text-gray-300 text-base lg:text-lg leading-relaxed mb-6">
                         {selectedEvent.description}
                       </p>
                     </div>
 
-                    <div className="space-y-6">
+                    <div className="space-y-4 lg:space-y-6">
                       <div>
-                        <h3 className="text-xl font-semibold text-white mb-3">Event Details</h3>
+                        <h3 className="text-lg lg:text-xl font-semibold text-white mb-3">Event Details</h3>
                         {/* Flagship Event Info */}
                         {selectedEvent.isFlagship && (
                           <div className="mb-4 p-3 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-lg">
@@ -1014,10 +1062,65 @@ export default function EventsPage() {
           </motion.div>
         )}
       </AnimatePresence>
-      {/* Footer properly positioned at bottom */}
-      <div className="mt-auto">
-        <Footer />
-      </div>
+
+
+      {/* Mobile menu overlay */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
+          <div className="absolute top-4 right-4">
+            <button
+              aria-label="Close menu"
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
+            >
+              <X className="w-6 h-6 text-white" />
+            </button>
+          </div>
+          <div className="pt-20 px-6">
+            <div className="grid grid-cols-1 gap-3">
+              {mobileNavItems.map((item) => (
+                <button
+                  key={item.title}
+                  onClick={() => { setMobileMenuOpen(false); setTargetHref(item.href); setShowTransition(true); }}
+                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                >
+                  <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
+                    {item.icon}
+                  </span>
+                  <span className="font-medium">{item.title}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Infinity transition for mobile nav */}
+      <InfinityTransition
+        isActive={showTransition}
+        onComplete={() => {
+          if (targetHref) router.push(targetHref);
+          setShowTransition(false);
+          setTargetHref(null);
+        }}
+      />
+
+      {/* Scroll to Top Button */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0 }}
+            onClick={scrollToTop}
+            className="fixed bottom-6 right-6 z-40 w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white shadow-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-110 active:scale-95"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <ChevronUp className="w-6 h-6" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

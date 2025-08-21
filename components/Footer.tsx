@@ -7,10 +7,10 @@ import { FaFacebookF, FaInstagram, FaTwitter, FaLinkedinIn, FaMapMarkerAlt, FaPh
 
 const Footer = () => {
   return (
-    <footer className="bg-gradient-to-r from-purple-900 via-pink-800 to-indigo-900 text-white">
+    <footer className="bg-gradient-to-r from-purple-900 via-pink-800 to-indigo-900 text-white relative z-10">
       {/* Top Section - Three Columns */}
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-6 py-8 lg:py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
           
           {/* CONTACT US */}
           <div>

@@ -13,29 +13,41 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
 
   useEffect(() => {
     if (isActive) {
-      // Start the animation sequence
-      setCurrentPhase('ball');
+      // Reset to idle first, then start animation
+      setCurrentPhase('idle');
       
-      // Ball phase: 0.9 seconds
-      const ballTimer = setTimeout(() => {
-        setCurrentPhase('infinity');
-      }, 900);
+      // Small delay to ensure clean state
+      const startTimer = setTimeout(() => {
+        setCurrentPhase('ball');
+        
+        // Ball phase: 0.8 seconds (slightly faster for mobile)
+        const ballTimer = setTimeout(() => {
+          setCurrentPhase('infinity');
+        }, 800);
 
-      // Infinity phase: 0.5 seconds
-      const infinityTimer = setTimeout(() => {
-        setCurrentPhase('zoom');
-      }, 1400);
+        // Infinity phase: 0.4 seconds
+        const infinityTimer = setTimeout(() => {
+          setCurrentPhase('zoom');
+        }, 1200);
 
-      // Zoom phase: 0.4 seconds
-      const zoomTimer = setTimeout(() => {
-        setCurrentPhase('complete');
-        onComplete();
-      }, 1800);
+        // Zoom phase: 0.3 seconds (faster for better responsiveness)
+        const zoomTimer = setTimeout(() => {
+          setCurrentPhase('complete');
+          // Small delay before calling onComplete to ensure animation finishes
+          setTimeout(() => {
+            onComplete();
+          }, 100);
+        }, 1500);
+
+        return () => {
+          clearTimeout(ballTimer);
+          clearTimeout(infinityTimer);
+          clearTimeout(zoomTimer);
+        };
+      }, 50);
 
       return () => {
-        clearTimeout(ballTimer);
-        clearTimeout(infinityTimer);
-        clearTimeout(zoomTimer);
+        clearTimeout(startTimer);
       };
     } else {
       setCurrentPhase('idle');
@@ -46,12 +58,12 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
 
   return (
     <div className="fixed inset-0 z-[100] pointer-events-auto">
-      {/* Background overlay */}
+      {/* Background overlay - always visible when active */}
       <motion.div
         className="absolute inset-0 bg-black"
-        initial={{ opacity: 1 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isActive ? 1 : 0 }}
+        transition={{ duration: 0.2 }}
       />
 
       {/* Animation container */}
@@ -75,7 +87,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
                 }}
                 exit={{ scale: 0, opacity: 0 }}
                 transition={{ 
-                  duration: 0.9, 
+                  duration: 0.8, 
                   ease: "easeInOut"
                 }}
               />
@@ -91,7 +103,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0, opacity: 0 }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
+                transition={{ duration: 0.4, ease: "easeInOut" }}
               >
                 <svg
                   viewBox="0 0 302.73 467.06"
@@ -141,7 +153,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
                 className="absolute inset-0 w-32 h-32"
                 initial={{ scale: 1 }}
                 animate={{ scale: 60 }}
-                transition={{ duration: 0.4, ease: "easeIn" }}
+                transition={{ duration: 0.3, ease: "easeIn" }}
               >
                 <svg
                   viewBox="0 0 302.73 467.06"

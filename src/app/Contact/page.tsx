@@ -312,6 +312,9 @@ const Contact = () => {
         </div>
       </div>
 
+      {/* Footer outside main container */}
+      {/* Footer is rendered globally in AppShell */}
+
       <style jsx>{`
         /* Custom scrollbar */
         ::-webkit-scrollbar {

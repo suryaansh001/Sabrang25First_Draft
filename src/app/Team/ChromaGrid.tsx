@@ -995,58 +995,58 @@ export default function PeopleStrip() {
     // Don't render animated layouts on server
     if (!isClient) {
       return (
-        <div key={committee.name} className="flex flex-col items-center mb-24 relative min-h-[400px]">
+        <div key={committee.name} className="flex flex-col items-center mb-24 relative min-h-[400px] w-full">
           <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-20 rounded-full blur-3xl`}></div>
-          <h3 className={`text-2xl md:text-4xl font-black mb-12 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10`}>
+          <h3 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black mb-8 sm:mb-12 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10 text-center px-4`}>
             {committee.name}
           </h3>
-          <div className="relative flex justify-center items-center gap-8">
-            {committee.people.map((person: Person, idx: number) => (
-              <PersonCard
-                key={idx}
-                person={person}
-                cardId={`${committee.name}-${idx}`}
-                className="w-[160px] sm:w-[180px] md:w-[200px]"
-                animationDelay={idx * 400}
-                size="normal"
-                isCommitteeCard={true}
-              />
-            ))}
-          </div>
+                     <div className="relative flex justify-center items-center gap-2 sm:gap-4 md:gap-6 lg:gap-8 w-full px-2 sm:px-4">
+             {committee.people.map((person: Person, idx: number) => (
+               <PersonCard
+                 key={idx}
+                 person={person}
+                 cardId={`${committee.name}-${idx}`}
+                 className="w-[80px] sm:w-[100px] md:w-[120px] lg:w-[140px] xl:w-[160px] 2xl:w-[200px] flex-shrink-0"
+                 animationDelay={idx * 400}
+                 size="normal"
+                 isCommitteeCard={true}
+               />
+             ))}
+           </div>
         </div>
       );
     }
 
     // Client-side animated layouts - Row-based layout with adaptive spacing
     return (
-      <div key={committee.name} className="flex flex-col items-center mb-24 relative min-h-[400px]">
+      <div key={committee.name} className="flex flex-col items-center mb-24 relative min-h-[400px] w-full">
         <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-20 rounded-full blur-3xl`}></div>
-        <h3 className={`text-2xl md:text-4xl font-black mb-12 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10`}>
+        <h3 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black mb-8 sm:mb-12 bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest relative z-10 text-center px-4`}>
           {committee.name}
         </h3>
-        <div className="relative flex justify-center items-center gap-8">
-          {committee.people.map((person: Person, idx: number) => (
-            <PersonCard
-              key={idx}
-              person={person}
-              cardId={`${committee.name}-${idx}`}
-              className="w-[160px] sm:w-[180px] md:w-[200px]"
-              animationDelay={idx * 200}
-              size="normal"
-              isCommitteeCard={true}
-            />
-          ))}
-        </div>
+                 <div className="relative flex justify-center items-center gap-2 sm:gap-4 md:gap-6 lg:gap-8 w-full px-2 sm:px-4">
+           {committee.people.map((person: Person, idx: number) => (
+             <PersonCard
+               key={idx}
+               person={person}
+               cardId={`${committee.name}-${idx}`}
+               className="w-[80px] sm:w-[100px] md:w-[120px] lg:w-[140px] xl:w-[160px] 2xl:w-[200px] flex-shrink-0"
+               animationDelay={idx * 200}
+               size="normal"
+               isCommitteeCard={true}
+             />
+           ))}
+         </div>
       </div>
     );
   };
 
   return (
-    <div className="flex flex-col items-center px-2 sm:px-4 py-4 sm:py-8">
+    <div className="flex flex-col items-center px-2 sm:px-4 py-4 sm:py-8 w-full">
 
       
       {/* Main "SABRANG'25" heading with cosmic styling - responsive */}
-      <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 sm:mb-6 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent drop-shadow-2xl tracking-widest uppercase" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
+      <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 sm:mb-6 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent drop-shadow-2xl tracking-widest uppercase text-center" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
         SABRANG'25
       </h1>
       
@@ -1055,27 +1055,28 @@ export default function PeopleStrip() {
         Names of Organising
       </h2>
       
-      {/* Organizing Heads cards - responsive sizing */}
-      <div className="flex overflow-hidden mb-12 sm:mb-16">
-        {cards.map((person, index) => {
-          console.log(`Rendering organizing head ${index}:`, person.name, 'Image path:', person.img);
-          return (
-            <PersonCard
-              key={index}
-              person={person}
-              cardId={`organizing-head-${index}`}
-              className={`w-[200px] sm:w-[250px] md:w-[300px] h-[380px] sm:h-[460px] md:h-[520px] overflow-hidden rounded-2xl shadow-2xl`}
-              transformClass={index === 1 ? 'transform -translate-y-8 sm:-translate-y-12 md:-translate-y-15' : 'transform translate-y-8 sm:translate-y-12 md:translate-y-12'}
-              isOH
-            />
-          );
-        })}
-      </div>
+             {/* Organizing Heads cards - responsive sizing */}
+       <div className="flex justify-center items-center gap-2 sm:gap-4 md:gap-6 lg:gap-8 mb-12 sm:mb-16 w-full px-2 sm:px-4">
+         {cards.map((person, index) => {
+           console.log(`Rendering organizing head ${index}:`, person.name, 'Image path:', person.img);
+           return (
+             <PersonCard
+               key={index}
+               person={person}
+               cardId={`organizing-head-${index}`}
+               className={`w-[100px] sm:w-[150px] md:w-[200px] lg:w-[250px] xl:w-[300px] h-[180px] sm:h-[280px] md:h-[380px] lg:h-[460px] xl:h-[520px] overflow-hidden rounded-2xl shadow-2xl flex-shrink-0`}
+               transformClass={index === 1 ? 'transform -translate-y-2 sm:-translate-y-4 md:-translate-y-8 lg:-translate-y-12 xl:-translate-y-15' : 'transform translate-y-2 sm:translate-y-4 md:translate-y-8 lg:translate-y-12 xl:translate-y-12'}
+               isOH
+             />
+           );
+         })}
+       </div>
       
       {/* "Names of Core Committee Members" heading - responsive */}
-      <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-8 sm:mb-12 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent drop-shadow-2xl tracking-widest uppercase" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
+      <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black mb-8 sm:mb-12 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent drop-shadow-2xl tracking-widest uppercase text-center px-4" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
         Names of Core Committee Members
       </h2>
+      
 
       {/* Committee Layouts - Row-based */}
       <div className="w-full max-w-7xl px-2 sm:px-4 space-y-16 relative z-10 perspective-1000">
