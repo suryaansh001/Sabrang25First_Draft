@@ -7,7 +7,7 @@ interface LogoProps {
 
 const Logo: React.FC<LogoProps> = ({ className = '' }) => {
   return (
-    <div className={`fixed top-4 left-4 z-[60] ${className}`}>
+    <div className={`fixed top-4 left-4 z-[40] ${className}`}>
       <div className="w-30 h-26 ml-12 flex items-center justify-center top-0">
         <img 
           src="/images/Logo@2x.png" 

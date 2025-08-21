@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import Footer from '../../../components/Footer';
 
 interface TimelineEvent {
 	time: string;

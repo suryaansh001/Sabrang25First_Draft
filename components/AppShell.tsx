@@ -2,7 +2,6 @@
 
 import { usePathname } from "next/navigation";
 import Background from "./Background";
-import Footer from "./Footer";
 import SplashCursor from "./SplashCursor";
 import SidebarDock, { setNavigationCallback } from "./SidebarDock";
 import Logo from "./Logo";
@@ -76,17 +75,17 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
 
 
 
-  const hideChrome = pathname === "/" || pathname?.startsWith("/home") || pathname === "/Login" || pathname === "/Signup" || pathname === "/Events" || pathname === "/Team" || pathname === "/FAQ" || pathname === "/Contact" || pathname === "/About" || pathname === "/Sponsors/why-sponsor-us";
+  const hideChrome = pathname === "/" || pathname?.startsWith("/home") || pathname === "/Login" || pathname === "/Signup";
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       <SplashCursor />
       <Background />
       <InfinityTransition 
         isActive={showTransition} 
         onComplete={handleTransitionComplete}
       />
-      <div className="relative z-10">
+      <div className="relative z-30 flex-grow">
         {mounted && !hideChrome && <Logo />}
         <main 
           key={pathname}
@@ -98,8 +97,8 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
         </main>
         {!hideChrome && <SidebarDock />}
       </div>
-      {mounted && pathname !== "/" && <Footer />}
-    </>
+      
+    </div>
   );
 }
 

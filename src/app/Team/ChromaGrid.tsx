@@ -276,9 +276,9 @@ const ExpandedCard = ({
         style={{
           left: isExpanded ? '50%' : `${cardPosition.x}px`,
           top: isExpanded ? '50%' : `${cardPosition.y}px`,
-          width: isExpanded ? '65vw' : `${cardPosition.width}px`,
-          maxWidth: isExpanded ? '700px' : 'none',
-          height: isExpanded ? '55vh' : `${cardPosition.height}px`,
+          width: isExpanded ? '105vw' : `${cardPosition.width}px`,
+          maxWidth: isExpanded ? '1100px' : 'none',
+          height: isExpanded ? '70vh' : `${cardPosition.height}px`,
           transform: isExpanded ? 'translate(-50%, -50%)' : 'none',
           transformOrigin: `${cardPosition.x + cardPosition.width/2}px ${cardPosition.y + cardPosition.height/2}px`,
           boxShadow: isExpanded 
@@ -305,10 +305,10 @@ const ExpandedCard = ({
           </svg>
         </button>
         
-        {/* Card Body */}
-        <div className="flex flex-col lg:flex-row h-full">
-          {/* Expanded Image Section */}
-          <div className="lg:w-2/3 relative">
+                 {/* Card Body */}
+         <div className="flex flex-col lg:flex-row h-full">
+           {/* Expanded Image Section */}
+           <div className="lg:w-3/5 relative">
             <div className={`w-full h-full ${hoveredPerson.bg}`}>
               <img
                 src={hoveredPerson.img}
@@ -317,40 +317,40 @@ const ExpandedCard = ({
               />
             </div>
             
-            {/* Image Overlay Info with staggered animation */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 text-white">
-              <h2 
-                className="text-3xl lg:text-4xl font-bold mb-2 transition-all duration-700 ease-out"
-                style={{ 
-                  transform: isExpanded ? 'translateY(0)' : 'translateY(20px)', 
-                  opacity: isExpanded ? 1 : 0 
-                }}
-              >
-                {hoveredPerson.name}
-              </h2>
-              <p 
-                className="text-xl lg:text-2xl text-blue-300 mb-1 transition-all duration-700 ease-out delay-100"
-                style={{ 
-                  transform: isExpanded ? 'translateY(0)' : 'translateY(20px)', 
-                  opacity: isExpanded ? 1 : 0 
-                }}
-              >
-                {hoveredPerson.role}
-              </p>
-              <p 
-                className="text-lg text-gray-300 transition-all duration-700 ease-out delay-200"
-                style={{ 
-                  transform: isExpanded ? 'translateY(0)' : 'translateY(20px)', 
-                  opacity: isExpanded ? 1 : 0 
-                }}
-              >
-                {hoveredPerson.committee}
-              </p>
-            </div>
+                         {/* Image Overlay Info with staggered animation */}
+             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-6 text-white">
+               <h2 
+                 className="text-2xl lg:text-3xl font-bold mb-2 transition-all duration-700 ease-out break-words"
+                 style={{ 
+                   transform: isExpanded ? 'translateY(0)' : 'translateY(20px)', 
+                   opacity: isExpanded ? 1 : 0 
+                 }}
+               >
+                 {hoveredPerson.name}
+               </h2>
+               <p 
+                 className="text-lg lg:text-xl text-blue-300 mb-1 transition-all duration-700 ease-out delay-100 break-words"
+                 style={{ 
+                   transform: isExpanded ? 'translateY(0)' : 'translateY(20px)', 
+                   opacity: isExpanded ? 1 : 0 
+                 }}
+               >
+                 {hoveredPerson.role}
+               </p>
+               <p 
+                 className="text-base text-gray-300 transition-all duration-700 ease-out delay-200 break-words"
+                 style={{ 
+                   transform: isExpanded ? 'translateY(0)' : 'translateY(20px)', 
+                   opacity: isExpanded ? 1 : 0 
+                 }}
+               >
+                 {hoveredPerson.committee}
+               </p>
+             </div>
           </div>
           
-          {/* Information Section with slide-in animation */}
-          <div className="lg:w-1/3 p-6 lg:p-8 bg-gradient-to-br from-gray-50 to-white">
+                     {/* Information Section with slide-in animation */}
+           <div className="lg:w-2/5 p-6 lg:p-8 bg-gradient-to-br from-gray-50 to-white">
             <div className="space-y-6">
               {/* Contact Information */}
               <div 
@@ -362,29 +362,29 @@ const ExpandedCard = ({
               >
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Contact Information</h3>
                 <div className="space-y-3">
-                  <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Email</p>
-                      <p className="text-blue-600 font-medium">{hoveredPerson.contact}</p>
-                    </div>
-                  </div>
+                                     <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200">
+                     <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                       <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 00-2-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                       </svg>
+                     </div>
+                     <div className="min-w-0 flex-1">
+                       <p className="text-sm text-gray-600">Email</p>
+                       <p className="text-blue-600 font-medium break-all">{hoveredPerson.contact}</p>
+                     </div>
+                   </div>
                   
-                  <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors duration-200">
-                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Phone</p>
-                      <p className="text-green-600 font-medium">{hoveredPerson.phone}</p>
-                    </div>
-                  </div>
+                                     <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors duration-200">
+                     <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                       <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                       </svg>
+                     </div>
+                     <div className="min-w-0 flex-1">
+                       <p className="text-sm text-gray-600">Phone</p>
+                       <p className="text-green-600 font-medium break-all">{hoveredPerson.phone}</p>
+                     </div>
+                   </div>
                 </div>
               </div>
               
@@ -398,14 +398,14 @@ const ExpandedCard = ({
               >
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Role Details</h3>
                 <div className="space-y-3">
-                  <div className="p-3 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-600">Position</p>
-                    <p className="text-gray-800 font-medium">{hoveredPerson.role}</p>
-                  </div>
-                  <div className="p-3 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-600">Committee</p>
-                    <p className="text-gray-800 font-medium">{hoveredPerson.committee}</p>
-                  </div>
+                                     <div className="p-3 bg-gray-50 rounded-lg">
+                     <p className="text-sm text-gray-600">Position</p>
+                     <p className="text-gray-800 font-medium break-words">{hoveredPerson.role}</p>
+                   </div>
+                   <div className="p-3 bg-gray-50 rounded-lg">
+                     <p className="text-sm text-gray-600">Committee</p>
+                     <p className="text-gray-800 font-medium break-words">{hoveredPerson.committee}</p>
+                   </div>
                 </div>
               </div>
               

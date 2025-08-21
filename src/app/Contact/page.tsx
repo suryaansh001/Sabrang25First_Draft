@@ -7,7 +7,7 @@ import Footer from '../../../components/Footer';
 
 const Contact = () => {
   return (
-    <div className="min-h-screen text-white relative overflow-hidden">
+    <div className="min-h-screen text-white relative overflow-hidden flex flex-col">
       {/* Background Image */}
       <div 
         className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
@@ -23,7 +23,7 @@ const Contact = () => {
       <SidebarDock />
       
       {/* Main Content Container */}
-      <div className="relative z-10 pt-24 pb-16">
+      <div className="relative z-10 pt-24 pb-16 flex-grow">
         {/* Hero Section */}
         <section className="py-0 px-6">
           <div className="max-w-7xl mx-auto text-center">
@@ -306,11 +306,11 @@ const Contact = () => {
            </div>
          </section>
 
-        
+        {/* Footer with proper z-index */}
+        <div className="relative z-10">
+          <Footer />
+        </div>
       </div>
-
-      {/* Footer outside main container */}
-      <Footer />
 
       <style jsx>{`
         /* Custom scrollbar */

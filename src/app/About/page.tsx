@@ -7,7 +7,7 @@ import Footer from '../../../components/Footer';
 
 const AboutPage = () => {
   return (
-    <div className="min-h-screen text-white relative overflow-hidden">
+    <div className="min-h-screen text-white relative overflow-hidden flex flex-col">
       {/* Background Image */}
       <div 
         className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
@@ -23,7 +23,7 @@ const AboutPage = () => {
       <SidebarDock />
       
       {/* Main Content Container */}
-      <div className="relative z-10 pb-16 ">
+      <div className="relative z-10 pb-16 flex-grow">
         {/* Hero Section */}
         <section 
           className="min-h-screen flex items-center justify-center relative"
@@ -369,8 +369,10 @@ const AboutPage = () => {
         </section>
       </div>
 
-      {/* Footer outside main container */}
-      <Footer />
+      {/* Footer with proper z-index */}
+      <div className="relative z-10">
+        <Footer />
+      </div>
 
       <style jsx>{`
         /* Custom scrollbar */

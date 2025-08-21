@@ -1014,7 +1014,10 @@ export default function EventsPage() {
           </motion.div>
         )}
       </AnimatePresence>
-      <Footer />
+      {/* Footer properly positioned at bottom */}
+      <div className="mt-auto">
+        <Footer />
+      </div>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
+import Footer from '../../../components/Footer';
 
 const Gallery = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -175,6 +176,11 @@ const Gallery = () => {
             <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 via-pink-600 to-purple-600 rounded-full blur opacity-0 group-hover:opacity-75 transition-opacity duration-500 -z-10"></div>
           </button>
         </div>
+      </div>
+
+      {/* Footer with proper z-index */}
+      <div className="relative z-10">
+        <Footer />
       </div>
     </div>
   );

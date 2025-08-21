@@ -218,8 +218,10 @@ const FAQ = () => {
         </div>
       </div>
       
-      {/* Footer outside main container */}
-      <Footer />
+      {/* Footer properly positioned at bottom */}
+      <div className="mt-auto">
+        <Footer />
+      </div>
 
       <style jsx>{`
         @keyframes fade-in {
