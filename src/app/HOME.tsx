@@ -682,6 +682,23 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
           />
         )}
         
+        {/* Top-left Logo (desktop) */}
+        {!isLoading && (
+          <div className="absolute top-10 left-10 z-50">
+            <img
+              src="/images/Logo@2x.png"
+              alt="Logo"
+              className="h-32 w-auto"
+              loading="eager"
+              fetchPriority="high"
+              onError={(e) => {
+                console.log('Logo PNG failed, trying SVG fallback');
+                (e.target as HTMLImageElement).src = '/images/Logo.svg';
+              }}
+            />
+          </div>
+        )}
+        
         {/* Register Now Button - Positioned above everything */}
         {!isLoading && (
           <div className="absolute top-2.5 right-2 z-50 flex items-center space-x-5">
@@ -701,7 +718,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         <div 
           className="absolute top-0 h-full bg-gradient-to-br from-blue-500 via-blue-600 to-purple-700 p-6 sm:p-8 md:p-12 lg:p-16"
           style={{
-            left: '16.67%',
+            left: '0',
             right: '0',
             clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% calc(100% - 100px), 200px calc(100% - 100px), 200px calc(100% - 60px), 0% calc(100% - 60px))'
           }}
@@ -750,31 +767,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
           
         </div>
         
-        {/* Left Panel - Black Section */}
-        <div className="absolute top-0 left-0 w-1/6 h-full bg-black flex flex-col">
-          
-          {/* Logo */}
-          {!isLoading && (
-            <div className="p-8 pt-12">
-                <div className="w-30 h-26 ml-12 flex items-center justify-center top-0">
-                <img 
-                  src="/images/Logo@2x.png" 
-                  alt="Logo" 
-                  className="w-36 h-25" 
-                  loading="eager"
-                  fetchPriority="high"
-                  onError={(e) => { 
-                    console.log('Logo PNG failed, trying SVG fallback');
-                    (e.target as HTMLImageElement).src = '/images/Logo.svg'; 
-                  }} 
-                  onLoad={() => console.log('Logo loaded successfully')}
-                />
-              </div>
-            </div>
-          )}
-          
-          
-        </div>
+        {/* Left panel removed */}
       </div>
 
       {/* Infinity transition for mobile nav */}
