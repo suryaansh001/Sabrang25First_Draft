@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { IconChevronLeft, IconChevronRight, IconMenu2, IconChevronUp, IconHome, IconInfoCircle, IconCalendar, IconUsers, IconStar, IconHelpCircle, IconMail } from '@tabler/icons-react';
+import { IconChevronLeft, IconChevronRight, IconMenu2, IconChevronUp, IconHome, IconInfoCircle, IconCalendar, IconUsers, IconStar, IconHelpCircle, IconMail, IconClock } from '@tabler/icons-react';
+import { Handshake } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import InfinityTransition from '../../../components/InfinityTransition';
@@ -54,14 +55,16 @@ const Gallery = () => {
 
   const images = isMobile ? mobileImages : desktopImages;
 
-  // Navigation items for mobile menu
+  // Navigation items for mobile menu - matching HOME page style
   const navigationItems = [
     { href: '/', label: 'Home', icon: <IconHome className="w-5 h-5" /> },
     { href: '/About', label: 'About', icon: <IconInfoCircle className="w-5 h-5" /> },
     { href: '/Events', label: 'Events', icon: <IconCalendar className="w-5 h-5" /> },
+    { href: '/Gallery', label: 'Highlights', icon: <IconStar className="w-5 h-5" /> },
+    { href: '/schedule', label: 'Schedule', icon: <IconClock className="w-5 h-5" /> },
     { href: '/Team', label: 'Team', icon: <IconUsers className="w-5 h-5" /> },
-    { href: '/Gallery', label: 'Gallery', icon: <IconStar className="w-5 h-5" /> },
     { href: '/FAQ', label: 'FAQ', icon: <IconHelpCircle className="w-5 h-5" /> },
+    { href: '/why-sponsor-us', label: 'Why Sponsor Us', icon: <Handshake className="w-5 h-5" /> },
     { href: '/Contact', label: 'Contact', icon: <IconMail className="w-5 h-5" /> },
   ];
 
@@ -86,10 +89,11 @@ const Gallery = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Generate stars for the background
+  // Generate stars for the background - optimized for mobile
   useEffect(() => {
     const generateStars = () => {
-      const newStars = Array.from({ length: 100 }, (_, i) => ({
+      const starCount = isMobile ? 50 : 100; // Fewer stars on mobile for performance
+      const newStars = Array.from({ length: starCount }, (_, i) => ({
         id: i,
         x: Math.random() * 100,
         y: Math.random() * 100,
@@ -100,7 +104,7 @@ const Gallery = () => {
       setStars(newStars);
     };
     generateStars();
-  }, []);
+  }, [isMobile]);
 
   // Auto-advance slides every 6 seconds
   useEffect(() => {
@@ -143,65 +147,72 @@ const Gallery = () => {
 
   return (
     <div className="min-h-screen text-white font-sans relative overflow-hidden">
-             {/* Logo and sidebar */}
-       <Logo className="block" />
+      {/* Logo and sidebar */}
+      <Logo className="block" />
 
-       {/* Infinity Transition */}
-       <InfinityTransition 
-         isActive={showTransition} 
-         onComplete={() => {
-           setShowTransition(false);
-           if (targetHref) {
-             router.push(targetHref);
-           }
-         }}
-       />
+      {/* Infinity Transition */}
+      <InfinityTransition 
+        isActive={showTransition} 
+        onComplete={() => {
+          setShowTransition(false);
+          if (targetHref) {
+            router.push(targetHref);
+          }
+        }}
+      />
 
-       {/* Mobile hamburger (same style as About page) */}
-       <button
-         aria-label="Open menu"
-         onClick={() => setMobileMenuOpen(true)}
-         className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
-       >
-         <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
-         <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
-         <span className="block h-0.5 bg-white/80 rounded-full w-4" />
-       </button>
+      {/* Mobile hamburger - matching HOME page style */}
+      <button
+        aria-label="Open menu"
+        onClick={() => setMobileMenuOpen(true)}
+        className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition pointer-events-auto"
+      >
+        <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
+        <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
+        <span className="block h-0.5 bg-white/80 rounded-full w-4" />
+      </button>
 
-       {/* Mobile menu overlay */}
-       {mobileMenuOpen && (
-         <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
-           <div className="absolute top-4 right-4">
-             <button
-               aria-label="Close menu"
-               onClick={() => setMobileMenuOpen(false)}
-               className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
-             >
-               <IconMenu2 className="w-6 h-6 text-white" />
-             </button>
-           </div>
-           <div className="pt-20 px-6 h-full overflow-y-auto">
-             <div className="grid grid-cols-1 gap-3 pb-8">
-                               {navigationItems.map((item) => (
-                  <button
-                    key={item.href}
-                    onClick={() => handleMobileNavigation(item.href)}
-                    className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
-                  >
-                    <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
-                      {item.icon}
-                    </span>
-                    <span className="font-medium">{item.label}</span>
-                  </button>
-                ))}
-             </div>
-           </div>
-         </div>
-       )}
+      {/* Mobile menu overlay - matching HOME page style */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
+          <div className="absolute top-4 right-4">
+            <button
+              aria-label="Close menu"
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
+            >
+              <IconMenu2 className="w-6 h-6 text-white" />
+            </button>
+          </div>
+          <div className="pt-20 px-6 h-full overflow-y-auto">
+            <div className="grid grid-cols-1 gap-3 pb-8">
+              {navigationItems.map((item) => (
+                <button
+                  key={item.href}
+                  onClick={() => handleMobileNavigation(item.href)}
+                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                >
+                  <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
+                    {item.icon}
+                  </span>
+                  <span className="font-medium">{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
-      {/* Starry Space Background */}
+      {/* Starry Space Background - optimized for mobile */}
       <div className="fixed inset-0 bg-gradient-to-br from-indigo-950 via-purple-950 via-pink-900 to-black -z-10">
-        {/* Animated Stars */}
+        {/* Hero background image */}
+        <img
+          src="/images/hero.webp"
+          alt="Hero background"
+          className="absolute inset-0 w-full h-full object-cover opacity-30"
+        />
+        
+        {/* Animated Stars - reduced count on mobile */}
         {stars.map((star) => (
           <div
             key={star.id}
@@ -217,7 +228,7 @@ const Gallery = () => {
           />
         ))}
         
-        {/* Nebula Effects */}
+        {/* Nebula Effects - simplified for mobile */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-blue-400 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
@@ -225,19 +236,19 @@ const Gallery = () => {
         </div>
       </div>
 
-      {/* Page Title */}
-      <div className="text-center pt-16 pb-8 z-20">
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-3 bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(236,72,153,0.35)]">
+      {/* Page Title - mobile optimized */}
+      <div className="text-center pt-16 pb-8 z-20 px-4">
+        <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-3 bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(236,72,153,0.35)]">
           Last Sabrang
         </h1>
-        <p className="text-lg md:text-xl lg:text-2xl text-white/80 drop-shadow-[0_0_12px_rgba(34,211,238,0.25)]">
+        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/80 drop-shadow-[0_0_12px_rgba(34,211,238,0.25)] px-2">
           Relive the moments from Sabrang '25!
         </p>
-        <div className="mt-4 h-1 w-48 mx-auto rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 blur-[1px]"></div>
+        <div className="mt-4 h-1 w-32 sm:w-48 mx-auto rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 blur-[1px]"></div>
       </div>
       
-      {/* Main Image Display */}
-      <div className="relative w-full flex items-center justify-center p-1 lg:p-2 z-10 h-[calc(100vh-160px)]">
+      {/* Main Image Display - mobile optimized */}
+      <div className="relative w-full flex items-center justify-center p-2 lg:p-4 z-10 h-[calc(100vh-200px)] sm:h-[calc(100vh-180px)]">
         <div className="relative w-full max-w-6xl h-full rounded-2xl overflow-hidden shadow-2xl border border-white/10">
           {images.map((image, index) => (
             <div
@@ -256,27 +267,27 @@ const Gallery = () => {
                   : 'brightness(0.8) contrast(0.8)',
               }}
             >
-                             <img
-                 src={image}
-                 alt={`Gallery Image ${index + 1}`}
-                 className="w-full h-full object-contain transition-all duration-1000 ease-in-out"
-                 style={{
-                   transform: index === currentImageIndex 
-                     ? 'scale(1.05)' 
-                     : 'scale(1.1)',
-                 }}
-               />
+              <img
+                src={image}
+                alt={`Gallery Image ${index + 1}`}
+                className="w-full h-full object-contain transition-all duration-1000 ease-in-out"
+                style={{
+                  transform: index === currentImageIndex 
+                    ? 'scale(1.05)' 
+                    : 'scale(1.1)',
+                }}
+              />
             </div>
           ))}
         </div>
         
-        {/* Navigation Buttons - Responsive positioning */}
-        <div className="absolute right-4 lg:right-8 top-1/2 transform -translate-y-1/2 flex flex-col space-y-2 lg:space-y-4 z-20">
+        {/* Navigation Buttons - mobile optimized positioning */}
+        <div className="absolute right-2 sm:right-4 lg:right-8 top-1/2 transform -translate-y-1/2 flex flex-col space-y-2 lg:space-y-4 z-20">
           <button
             onClick={goToPrevious}
             disabled={isTransitioning}
             className={`relative group overflow-hidden bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-500 p-1 rounded-full shadow-2xl transition-all duration-500 transform ${
-              isTransitioning ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-purple-500/50 hover:scale-110 hover:rotate-3'
+              isTransitioning ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-purple-500/50 hover:scale-110 hover:rotate-3 active:scale-95'
             }`}
             aria-label="Previous image"
           >
@@ -291,7 +302,7 @@ const Gallery = () => {
             onClick={goToNext}
             disabled={isTransitioning}
             className={`relative group overflow-hidden bg-gradient-to-r from-cyan-500 via-pink-600 to-purple-600 p-1 rounded-full shadow-2xl transition-all duration-500 transform ${
-              isTransitioning ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-cyan-500/50 hover:scale-110 hover:-rotate-3'
+              isTransitioning ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-cyan-500/50 hover:scale-110 hover:-rotate-3 active:scale-95'
             }`}
             aria-label="Next image"
           >
@@ -303,15 +314,31 @@ const Gallery = () => {
           </button>
         </div>
 
-        {/* Mobile Image Counter */}
-        <div className="lg:hidden absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
-          <span className="text-white text-sm">
+        {/* Mobile Image Counter - enhanced styling */}
+        <div className="lg:hidden absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 shadow-lg">
+          <span className="text-white text-sm font-medium">
             {currentImageIndex + 1} / {images.length}
           </span>
         </div>
+
+        {/* Mobile Thumbnail Dots */}
+        <div className="lg:hidden absolute bottom-16 left-1/2 transform -translate-x-1/2 flex space-x-2">
+          {images.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToImage(index)}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                index === currentImageIndex 
+                  ? 'bg-white scale-125' 
+                  : 'bg-white/40 hover:bg-white/60'
+              }`}
+              aria-label={`Go to image ${index + 1}`}
+            />
+          ))}
+        </div>
       </div>
 
-      {/* Scroll to Top Button */}
+      {/* Scroll to Top Button - mobile optimized */}
       <AnimatePresence>
         {showScrollTop && (
           <motion.button
@@ -319,7 +346,7 @@ const Gallery = () => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0 }}
             onClick={scrollToTop}
-            className="fixed bottom-6 right-6 z-50 w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
+            className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95"
           >
             <IconChevronUp className="w-6 h-6 text-white" />
           </motion.button>

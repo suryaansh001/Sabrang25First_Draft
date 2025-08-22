@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface InfinityTransitionProps {
@@ -10,105 +10,157 @@ interface InfinityTransitionProps {
 
 const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onComplete }) => {
   const [currentPhase, setCurrentPhase] = useState<'idle' | 'ball' | 'infinity' | 'zoom' | 'complete'>('idle');
-  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const animationRef = useRef<NodeJS.Timeout | null>(null);
+  const phaseTimersRef = useRef<{ [key: string]: NodeJS.Timeout }>({});
 
-  // Preload video when component mounts
+  // Detect mobile device
   useEffect(() => {
-    if (videoRef.current) {
-      console.log('Loading video...');
-      videoRef.current.load();
-      videoRef.current.play().catch((error) => {
-        // Handle autoplay restrictions
-        console.log('Video autoplay blocked:', error);
-      });
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Clear all timers
+  const clearAllTimers = useCallback(() => {
+    Object.values(phaseTimersRef.current).forEach(timer => clearTimeout(timer));
+    phaseTimersRef.current = {};
+    if (animationRef.current) {
+      clearTimeout(animationRef.current);
+      animationRef.current = null;
     }
   }, []);
 
-  // Handle video load event
-  const handleVideoLoad = () => {
-    console.log('Video loaded successfully');
-    setVideoLoaded(true);
-    if (videoRef.current) {
-      videoRef.current.play().catch((error) => {
-        // Handle autoplay restrictions
-        console.log('Video play error:', error);
-      });
-    }
-  };
-
-  // Handle video error
-  const handleVideoError = (error: any) => {
-    console.error('Video loading error:', error);
-  };
-
+  // Preload and prepare video
   useEffect(() => {
-    if (isActive) {
-      // Reset to idle first, then start animation
-      setCurrentPhase('idle');
+    if (videoRef.current) {
+      const video = videoRef.current;
       
-      // Small delay to ensure clean state
-      const startTimer = setTimeout(() => {
-        setCurrentPhase('ball');
-        
-        // Ball phase: 0.8 seconds (slightly faster for mobile)
-        const ballTimer = setTimeout(() => {
-          setCurrentPhase('infinity');
-        }, 800);
+      // Set video properties for optimal performance
+      video.preload = 'auto';
+      video.muted = true;
+      video.playsInline = true;
+      video.loop = false; // Don't loop for transition
+      
+      // Load video immediately
+      video.load();
+      
+      // Handle video ready state
+      const handleCanPlay = () => {
+        setVideoReady(true);
+        // Pause initially to prevent autoplay issues
+        video.pause();
+      };
 
-        // Infinity phase: 0.4 seconds
-        const infinityTimer = setTimeout(() => {
-          setCurrentPhase('zoom');
-        }, 1200);
+      const handleLoadedData = () => {
+        setVideoReady(true);
+        video.pause();
+      };
 
-        // Zoom phase: 0.3 seconds (faster for better responsiveness)
-        const zoomTimer = setTimeout(() => {
-          setCurrentPhase('complete');
-          // Small delay before calling onComplete to ensure animation finishes
-          setTimeout(() => {
-            onComplete();
-          }, 100);
-        }, 1500);
-
-        return () => {
-          clearTimeout(ballTimer);
-          clearTimeout(infinityTimer);
-          clearTimeout(zoomTimer);
-        };
-      }, 50);
+      video.addEventListener('canplay', handleCanPlay);
+      video.addEventListener('loadeddata', handleLoadedData);
 
       return () => {
-        clearTimeout(startTimer);
+        video.removeEventListener('canplay', handleCanPlay);
+        video.removeEventListener('loadeddata', handleLoadedData);
       };
-    } else {
-      setCurrentPhase('idle');
     }
-  }, [isActive, onComplete]);
+  }, []);
+
+  // Main animation controller - optimized for mobile
+  useEffect(() => {
+    if (!isActive) {
+      setCurrentPhase('idle');
+      clearAllTimers();
+      return;
+    }
+
+    // Clear any existing timers
+    clearAllTimers();
+
+    // Start animation sequence with mobile-optimized timing
+    const startAnimation = () => {
+      // Phase 1: Ball (faster on mobile)
+      setCurrentPhase('ball');
+      
+      const ballDuration = isMobile ? 600 : 800;
+      phaseTimersRef.current.ball = setTimeout(() => {
+        // Phase 2: Infinity (faster on mobile)
+        setCurrentPhase('infinity');
+        
+        const infinityDuration = isMobile ? 300 : 400;
+        phaseTimersRef.current.infinity = setTimeout(() => {
+          // Phase 3: Zoom (faster on mobile)
+          setCurrentPhase('zoom');
+          
+          const zoomDuration = isMobile ? 200 : 300;
+          phaseTimersRef.current.zoom = setTimeout(() => {
+            // Phase 4: Complete - show full black background
+            setCurrentPhase('complete');
+            
+            // Almost immediate completion for mobile, minimal delay for desktop
+            const completeDelay = isMobile ? 10 : 50;
+            phaseTimersRef.current.complete = setTimeout(() => {
+              onComplete();
+            }, completeDelay);
+          }, zoomDuration);
+        }, infinityDuration);
+      }, ballDuration);
+    };
+
+    // Reduced delay for mobile
+    const startDelay = isMobile ? 50 : 100;
+    animationRef.current = setTimeout(startAnimation, startDelay);
+
+    return () => {
+      clearAllTimers();
+    };
+  }, [isActive, onComplete, clearAllTimers, isMobile]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      clearAllTimers();
+    };
+  }, [clearAllTimers]);
+
+  // Play video when animation starts
+  useEffect(() => {
+    if (currentPhase === 'ball' && videoRef.current && videoReady) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.play().catch(() => {
+        // Ignore autoplay errors, animation will continue
+      });
+    }
+  }, [currentPhase, videoReady]);
 
   if (!isActive) return null;
 
   return (
     <div className="fixed inset-0 z-[100] pointer-events-auto">
-      {/* Background video with black filter */}
+      {/* Full black background - always visible when active */}
+      <div className="absolute inset-0 bg-black" />
+      
+      {/* Background video - only visible during animation phases */}
       <div className="absolute inset-0 overflow-hidden">
         <video
           ref={videoRef}
-          autoPlay
           muted
-          loop
           playsInline
           preload="auto"
           className="absolute inset-0 w-full h-full object-cover"
           style={{ 
             filter: 'brightness(0.6) contrast(1.1)',
-            opacity: videoLoaded ? 1 : 0,
-            transition: 'opacity 0.5s ease-in-out'
+            opacity: (videoReady && currentPhase !== 'complete') ? 1 : 0,
+            transition: 'opacity 0.2s ease-in-out' // Faster transition for mobile
           }}
-          onLoadedData={handleVideoLoad}
-          onCanPlay={handleVideoLoad}
-          onError={handleVideoError}
-          onLoadStart={() => console.log('Video load started')}
-          onProgress={() => console.log('Video loading progress')}
         >
           <source src="/videos/infinty_transition.mp4" type="video/mp4" />
           <source src="/videos/infinity_transition.mp4" type="video/mp4" />
@@ -116,70 +168,65 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
         </video>
         
         {/* Video loading indicator */}
-        {!videoLoaded && (
+        {!videoReady && currentPhase !== 'complete' && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/80">
-            <div className="text-white text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
-              <p className="text-sm">Loading video...</p>
-            </div>
+            {/* Loading indicator removed */}
           </div>
         )}
-        
-        {/* Additional black filter overlay for better contrast - reduced opacity */}
-        <div className="absolute inset-0 bg-black/30" />
       </div>
-
-      {/* Background overlay - always visible when active */}
-      <motion.div
-        className="absolute inset-0 bg-black/40"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isActive ? 1 : 0 }}
-        transition={{ duration: 0.2 }}
-      />
 
       {/* Animation container */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="relative w-32 h-32">
+        <div className="relative w-24 h-24 sm:w-32 sm:h-32">
           
-          {/* Ball Phase */}
+          {/* Ball Phase - optimized for mobile */}
           <AnimatePresence mode="wait">
             {currentPhase === 'ball' && (
               <motion.div
                 key="ball"
-                className="absolute inset-0 w-32 h-32 rounded-full"
+                className="absolute inset-0 w-full h-full rounded-full"
                 style={{
                   background: 'linear-gradient(135deg, #114fee 0%, #3edc81 50%, #114fee 100%)',
-                  boxShadow: '0 0 40px rgba(17, 79, 238, 0.8), 0 0 80px rgba(62, 220, 129, 0.6)'
+                  boxShadow: isMobile 
+                    ? '0 0 20px rgba(17, 79, 238, 0.6), 0 0 40px rgba(62, 220, 129, 0.4)'
+                    : '0 0 40px rgba(17, 79, 238, 0.8), 0 0 80px rgba(62, 220, 129, 0.6)'
                 }}
                 initial={{ scale: 0, rotate: 0 }}
                 animate={{ 
                   scale: 1, 
-                  rotate: 360
+                  rotate: isMobile ? 180 : 360 // Reduced rotation for mobile
                 }}
                 exit={{ scale: 0, opacity: 0 }}
                 transition={{ 
-                  duration: 0.8, 
+                  duration: isMobile ? 0.6 : 0.8, 
                   ease: "easeInOut"
                 }}
               />
             )}
           </AnimatePresence>
 
-          {/* Infinity Symbol Phase */}
+          {/* Infinity Symbol Phase - optimized for mobile */}
           <AnimatePresence mode="wait">
             {currentPhase === 'infinity' && (
               <motion.div
                 key="infinity"
-                className="absolute inset-0 w-32 h-32"
+                className="absolute inset-0 w-full h-full"
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0, opacity: 0 }}
-                transition={{ duration: 0.4, ease: "easeInOut" }}
+                transition={{ 
+                  duration: isMobile ? 0.3 : 0.4, 
+                  ease: "easeInOut" 
+                }}
               >
                 <svg
                   viewBox="0 0 302.73 467.06"
                   className="w-full h-full"
-                  style={{ filter: 'drop-shadow(0 0 30px rgba(17, 79, 238, 0.9))' }}
+                  style={{ 
+                    filter: isMobile 
+                      ? 'drop-shadow(0 0 15px rgba(17, 79, 238, 0.7))'
+                      : 'drop-shadow(0 0 30px rgba(17, 79, 238, 0.9))'
+                  }}
                 >
                   <defs>
                     <linearGradient id="infinity-main" x1="-225.6" y1="2357.64" x2="-96.05" y2="1908.83" gradientTransform="translate(-819.63 -1648.32) rotate(-31.96)" gradientUnits="userSpaceOnUse">
@@ -191,7 +238,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
                       <stop offset="1" stopColor="#ff0"/>
                     </linearGradient>
                     <filter id="infinity-glow">
-                      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                      <feGaussianBlur stdDeviation={isMobile ? "2" : "4"} result="coloredBlur"/>
                       <feMerge> 
                         <feMergeNode in="coloredBlur"/>
                         <feMergeNode in="SourceGraphic"/>
@@ -216,20 +263,27 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
             )}
           </AnimatePresence>
 
-          {/* Zoom Phase */}
+          {/* Zoom Phase - optimized for mobile */}
           <AnimatePresence mode="wait">
             {currentPhase === 'zoom' && (
               <motion.div
                 key="zoom"
-                className="absolute inset-0 w-32 h-32"
+                className="absolute inset-0 w-full h-full"
                 initial={{ scale: 1 }}
-                animate={{ scale: 60 }}
-                transition={{ duration: 0.3, ease: "easeIn" }}
+                animate={{ scale: isMobile ? 40 : 60 }} // Smaller zoom for mobile
+                transition={{ 
+                  duration: isMobile ? 0.2 : 0.3, 
+                  ease: "easeIn" 
+                }}
               >
                 <svg
                   viewBox="0 0 302.73 467.06"
                   className="w-full h-full"
-                  style={{ filter: 'drop-shadow(0 0 60px rgba(17, 79, 238, 1))' }}
+                  style={{ 
+                    filter: isMobile 
+                      ? 'drop-shadow(0 0 30px rgba(17, 79, 238, 0.8))'
+                      : 'drop-shadow(0 0 60px rgba(17, 79, 238, 1))'
+                  }}
                 >
                   <defs>
                     <linearGradient id="zoom-main" x1="-225.6" y1="2357.64" x2="-96.05" y2="1908.83" gradientTransform="translate(-819.63 -1648.32) rotate(-31.96)" gradientUnits="userSpaceOnUse">
@@ -243,7 +297,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
                   </defs>
                   <g>
                     <path
-                      d="M111.89,243.07c24.31,61.36,56.77,121.1,57.12,171.37.02,2.72-.25,5.39-.79,7.97-.12.61-.26,1.2-.42,1.79,0,0,0,0,0,0-9.09,37.03-38.54,38.01-62.59,29.39,8.38,3.85,17.14,7.19,26.25,9.98,37.13,11.34,94.36-3.69,112.42-64.5,16.54-55.68-23.67-130.74-53.56-203.32-10.94-26.57-20.5-52.8-25.39-77.62-3.57-18.1-4.65-35.46-1.97-51.65.71-4.26,1.67-8.27,2.86-12.03C173.47,25.72,194.71-.55,229.56.13,145.67-3.43,85.03,65.5,85.6,133.81c.09,11.05,1.25,22.22,3.23,33.42,4.46,25.19,13.07,50.66,23.06,75.85h0Z"
+                      d="M111.89,243.07c24.31,61.36,56.77,121.1,57.12,171.37.02,2.72-.25,5.39-.79,7.97-.12.61-.26,1.2-.42,1.79,0,0,0,0,0,0-9.09,37.03-38.54,38.01-62.59,29.39,8.38,3.85,17.14,7.19,26.25,9.98,37.13,11.34,94.36-3.69,112.42-64.5,16.54-55.68-23.67-130.74-53.56-203.32-10.94-26.57-20.5-52.8-25.39-77.62-3.57-18.1-4.65-35.46-1.97-51.65.71-4.26,1.67-8.27,2.86-12.03C173.47,25.72,194.71-.55,229.56.13,145.67-3.43,85.03,65.5,85.6,133.81c.09,11.05,1.25,22.21,3.23,33.42,4.46,25.19,13.07,50.66,23.06,75.85h0Z"
                       fill="url(#zoom-main)"
                     />
                     <path
