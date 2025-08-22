@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface InfinityTransitionProps {
@@ -10,6 +10,37 @@ interface InfinityTransitionProps {
 
 const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onComplete }) => {
   const [currentPhase, setCurrentPhase] = useState<'idle' | 'ball' | 'infinity' | 'zoom' | 'complete'>('idle');
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Preload video when component mounts
+  useEffect(() => {
+    if (videoRef.current) {
+      console.log('Loading video...');
+      videoRef.current.load();
+      videoRef.current.play().catch((error) => {
+        // Handle autoplay restrictions
+        console.log('Video autoplay blocked:', error);
+      });
+    }
+  }, []);
+
+  // Handle video load event
+  const handleVideoLoad = () => {
+    console.log('Video loaded successfully');
+    setVideoLoaded(true);
+    if (videoRef.current) {
+      videoRef.current.play().catch((error) => {
+        // Handle autoplay restrictions
+        console.log('Video play error:', error);
+      });
+    }
+  };
+
+  // Handle video error
+  const handleVideoError = (error: any) => {
+    console.error('Video loading error:', error);
+  };
 
   useEffect(() => {
     if (isActive) {
@@ -58,9 +89,49 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
 
   return (
     <div className="fixed inset-0 z-[100] pointer-events-auto">
+      {/* Background video with black filter */}
+      <div className="absolute inset-0 overflow-hidden">
+        <video
+          ref={videoRef}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ 
+            filter: 'brightness(0.6) contrast(1.1)',
+            opacity: videoLoaded ? 1 : 0,
+            transition: 'opacity 0.5s ease-in-out'
+          }}
+          onLoadedData={handleVideoLoad}
+          onCanPlay={handleVideoLoad}
+          onError={handleVideoError}
+          onLoadStart={() => console.log('Video load started')}
+          onProgress={() => console.log('Video loading progress')}
+        >
+          <source src="/videos/infinty_transition.mp4" type="video/mp4" />
+          <source src="/videos/infinity_transition.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        
+        {/* Video loading indicator */}
+        {!videoLoaded && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/80">
+            <div className="text-white text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
+              <p className="text-sm">Loading video...</p>
+            </div>
+          </div>
+        )}
+        
+        {/* Additional black filter overlay for better contrast - reduced opacity */}
+        <div className="absolute inset-0 bg-black/30" />
+      </div>
+
       {/* Background overlay - always visible when active */}
       <motion.div
-        className="absolute inset-0 bg-black"
+        className="absolute inset-0 bg-black/40"
         initial={{ opacity: 0 }}
         animate={{ opacity: isActive ? 1 : 0 }}
         transition={{ duration: 0.2 }}
@@ -172,7 +243,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
                   </defs>
                   <g>
                     <path
-                      d="M111.89,243.07c24.31,61.36,56.77,121.1,57.12,171.37.02,2.72-.25,5.39-.79,7.97-.12.61-.26,1.2-.42,1.79,0,0,0,0,0,0-9.09,37.03-38.54,38.01-62.59,29.39,8.38,3.85,17.14,7.19,26.25,9.98,37.13,11.34,94.36-3.69,112.42-64.5,16.54-55.68-23.67-130.74-53.56-203.32-10.94-26.57-20.5-52.8-25.39-77.62-3.57-18.1-4.65-35.46-1.97-51.65.71-4.26,1.67-8.27,2.86-12.03C173.47,25.72,194.71-.55,229.56.13,145.67-3.43,85.03,65.5,85.6,133.81c.09,11.05,1.25,22.21,3.23,33.42,4.46,25.19,13.07,50.66,23.06,75.85h0Z"
+                      d="M111.89,243.07c24.31,61.36,56.77,121.1,57.12,171.37.02,2.72-.25,5.39-.79,7.97-.12.61-.26,1.2-.42,1.79,0,0,0,0,0,0-9.09,37.03-38.54,38.01-62.59,29.39,8.38,3.85,17.14,7.19,26.25,9.98,37.13,11.34,94.36-3.69,112.42-64.5,16.54-55.68-23.67-130.74-53.56-203.32-10.94-26.57-20.5-52.8-25.39-77.62-3.57-18.1-4.65-35.46-1.97-51.65.71-4.26,1.67-8.27,2.86-12.03C173.47,25.72,194.71-.55,229.56.13,145.67-3.43,85.03,65.5,85.6,133.81c.09,11.05,1.25,22.22,3.23,33.42,4.46,25.19,13.07,50.66,23.06,75.85h0Z"
                       fill="url(#zoom-main)"
                     />
                     <path
