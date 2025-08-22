@@ -17,13 +17,42 @@ const Gallery = () => {
   
   const router = useRouter();
   
-  const images = [
-    '/images/gallery_desktop/1.png',
-    '/images/gallery_desktop/2.png',
-    // '/images/gallery_sample/3.webp',
-    // '/images/gallery_sample/4.webp',
-    // '/images/gallery_sample/5.webp',
+  // Responsive image sets for desktop and mobile
+  const desktopImages = [
+    '/images/gallery_desktop/1.webp',
+    '/images/gallery_desktop/2.webp',
+    '/images/gallery_desktop/3.webp',
+    '/images/gallery_desktop/4.webp',
+    '/images/gallery_desktop/5.webp',
+    '/images/gallery_desktop/6.webp',
   ];
+
+  const mobileImages = [
+    '/images/gallery_mobile/7.webp',
+    '/images/gallery_mobile/8.webp',
+    '/images/gallery_mobile/9.webp',
+    '/images/gallery_mobile/10.webp',
+    '/images/gallery_mobile/11.webp',
+    '/images/gallery_mobile/12.webp',
+  ];
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 1023px)');
+    const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
+      setIsMobile('matches' in e ? e.matches : (e as MediaQueryList).matches);
+    };
+    // Set initial
+    handleChange(mql);
+    // Listen to changes
+    mql.addEventListener ? mql.addEventListener('change', handleChange as (e: MediaQueryListEvent) => void) : mql.addListener(handleChange as any);
+    return () => {
+      mql.removeEventListener ? mql.removeEventListener('change', handleChange as (e: MediaQueryListEvent) => void) : mql.removeListener(handleChange as any);
+    };
+  }, []);
+
+  const images = isMobile ? mobileImages : desktopImages;
 
   // Navigation items for mobile menu
   const navigationItems = [
