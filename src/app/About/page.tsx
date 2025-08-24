@@ -283,117 +283,237 @@ const AboutPage = () => {
                   Flagship Showdowns
                 </span>
               </h2>
+              <p className="text-xl text-gray-300 mt-4 max-w-3xl mx-auto">
+                Our crown jewels - the most prestigious events that define Sabrang's legacy. 
+                These competitions bring together the nation's finest talent for epic showdowns.
+              </p>
             </div>
             
-            {/* Three Vertical Parallel Videos with Image Fallbacks */}
-            <div className="grid md:grid-cols-3 gap-8">
-                             {/* Panache Video */}
-               <div className="relative group h-[600px]">
-                 <div className="absolute inset-0 overflow-hidden rounded-2xl">
-                   {/* Image Fallback - Always visible */}
-                   <img 
-                     src="/images/about-section/Panache.png" 
-                     alt="Panache Fashion Show"
-                     className="w-full h-full object-cover"
-                   />
-                   {/* Video Overlay - when loaded */}
-                   <video 
-                     className="absolute inset-0 w-full h-full object-cover"
-                     autoPlay 
-                     muted 
-                     loop
-                     playsInline
-                     preload="metadata"
-                     onError={(e) => {
-                       console.warn('Panache video failed to load, using image fallback', e);
-                       const target = e.target as HTMLVideoElement;
-                       target.style.display = 'none';
-                     }}
-                     onLoadStart={() => console.log('Panache video loading started')}
-                     onCanPlay={() => console.log('Panache video can play')}
-                   >
-                     <source src="/videos/optimized/panache.mp4" type="video/mp4" />
-                     <source src="/videos/aboutsection/panache.mp4" type="video/mp4" />
-                   </video>
-                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                 </div>
-                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
-                   <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Panache</h3>
-                   <p className="text-xl text-gray-200 drop-shadow-lg">Glamorous fashion show</p>
-                 </div>
-               </div>
-               
-               {/* Band Jam Video */}
-               <div className="relative group h-[600px]">
-                 <div className="absolute inset-0 overflow-hidden rounded-2xl">
-                   {/* Image Fallback - Always visible */}
-                   <img 
-                     src="/images/about-section/Bandjam.png" 
-                     alt="Band Jam Music Competition"
-                     className="w-full h-full object-cover"
-                   />
-                   {/* Video Overlay - when loaded */}
-                   <video 
-                     className="absolute inset-0 w-full h-full object-cover"
-                     autoPlay 
-                     muted 
-                     loop
-                     playsInline
-                     preload="metadata"
-                     onError={(e) => {
-                       console.warn('Band Jam video failed to load, using image fallback', e);
-                       const target = e.target as HTMLVideoElement;
-                       target.style.display = 'none';
-                     }}
-                     onLoadStart={() => console.log('Band Jam video loading started')}
-                     onCanPlay={() => console.log('Band Jam video can play')}
-                   >
-                     <source src="/videos/optimized/bandjam.mp4" type="video/mp4" />
-                     <source src="/videos/aboutsection/bandjam.mp4" type="video/mp4" />
-                   </video>
-                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                 </div>
-                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
-                   <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Band Jam</h3>
-                   <p className="text-xl text-gray-200 drop-shadow-lg">Electrifying music</p>
-                 </div>
-               </div>
-               
-               {/* Dance Battle Video */}
-               <div className="relative group h-[600px]">
-                 <div className="absolute inset-0 overflow-hidden rounded-2xl">
-                   {/* Image Fallback - Always visible */}
-                   <img 
-                     src="/images/about-section/Dance.png" 
-                     alt="Dance Battle Competition"
-                     className="w-full h-full object-cover"
-                   />
-                   {/* Video Overlay - when loaded */}
-                   <video 
-                     className="absolute inset-0 w-full h-full object-cover"
-                     autoPlay 
-                     muted 
-                     loop
-                     playsInline
-                     preload="metadata"
-                     onError={(e) => {
-                       console.warn('Dance video failed to load, using image fallback', e);
-                       const target = e.target as HTMLVideoElement;
-                       target.style.display = 'none';
-                     }}
-                     onLoadStart={() => console.log('Dance video loading started')}
-                     onCanPlay={() => console.log('Dance video can play')}
-                   >
-                     <source src="/videos/optimized/dance.mp4" type="video/mp4" />
-                     <source src="/videos/aboutsection/dance.mp4" type="video/mp4" />
-                   </video>
-                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                 </div>
-                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
-                   <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Dance Battle</h3>
-                   <p className="text-xl text-gray-200 drop-shadow-lg">Ultimate dance glory</p>
-                 </div>
-               </div>
+            {/* First Row - Top 3 Flagship Events */}
+            <div className="grid md:grid-cols-3 gap-8 mb-12">
+              {/* Panache Video */}
+              <div className="relative group h-[600px]">
+                <div className="absolute inset-0 overflow-hidden rounded-2xl">
+                  {/* Image Fallback - Always visible */}
+                  <img 
+                    src="/images/about-section/Panache.png" 
+                    alt="Panache Fashion Show"
+                    className="w-full h-full object-cover"
+                  />
+                  {/* Video Overlay - when loaded */}
+                  <video 
+                    className="absolute inset-0 w-full h-full object-cover"
+                    autoPlay 
+                    muted 
+                    loop
+                    playsInline
+                    preload="metadata"
+                    onError={(e) => {
+                      console.warn('Panache video failed to load, using image fallback', e);
+                      const target = e.target as HTMLVideoElement;
+                      target.style.display = 'none';
+                    }}
+                    onLoadStart={() => console.log('Panache video loading started')}
+                    onCanPlay={() => console.log('Panache video can play')}
+                  >
+                    <source src="/videos/optimized/panache.mp4" type="video/mp4" />
+                    <source src="/videos/aboutsection/panache.mp4" type="video/mp4" />
+                  </video>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                </div>
+                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-4 py-2 rounded-full text-sm font-bold mb-4">
+                    ⭐ FLAGSHIP
+                  </div>
+                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Panache</h3>
+                  <p className="text-xl text-gray-200 drop-shadow-lg mb-4">Glamorous fashion show</p>
+                  <div className="text-sm text-gray-300 space-y-1">
+                    <p>• Two-day extravaganza</p>
+                    <p>• Theme Walk + Runway</p>
+                    <p>• ₹85-120 entry</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Band Jam Video */}
+              <div className="relative group h-[600px]">
+                <div className="absolute inset-0 overflow-hidden rounded-2xl">
+                  {/* Image Fallback - Always visible */}
+                  <img 
+                    src="/images/about-section/Bandjam.png" 
+                    alt="Band Jam Music Competition"
+                    className="w-full h-full object-cover"
+                  />
+                  {/* Video Overlay - when loaded */}
+                  <video 
+                    className="absolute inset-0 w-full h-full object-cover"
+                    autoPlay 
+                    muted 
+                    loop
+                    playsInline
+                    preload="metadata"
+                    onError={(e) => {
+                      console.warn('Band Jam video failed to load, using image fallback', e);
+                      const target = e.target as HTMLVideoElement;
+                      target.style.display = 'none';
+                    }}
+                    onLoadStart={() => console.log('Band Jam video loading started')}
+                    onCanPlay={() => console.log('Band Jam video can play')}
+                  >
+                    <source src="/videos/optimized/bandjam.mp4" type="video/mp4" />
+                    <source src="/videos/aboutsection/bandjam.mp4" type="video/mp4" />
+                  </video>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                </div>
+                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-4 py-2 rounded-full text-sm font-bold mb-4">
+                    ⭐ FLAGSHIP
+                  </div>
+                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Band Jam</h3>
+                  <p className="text-xl text-gray-200 drop-shadow-lg mb-4">Electrifying music</p>
+                  <div className="text-sm text-gray-300 space-y-1">
+                    <p>• Original compositions</p>
+                    <p>• Rock to classical fusion</p>
+                    <p>• ₹60 entry</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Dance Battle Video */}
+              <div className="relative group h-[600px]">
+                <div className="absolute inset-0 overflow-hidden rounded-2xl">
+                  {/* Image Fallback - Always visible */}
+                  <img 
+                    src="/images/about-section/Dance.png" 
+                    alt="Dance Battle Competition"
+                    className="w-full h-full object-cover"
+                  />
+                  {/* Video Overlay - when loaded */}
+                  <video 
+                    className="absolute inset-0 w-full h-full object-cover"
+                    autoPlay 
+                    muted 
+                    loop
+                    playsInline
+                    preload="metadata"
+                    onError={(e) => {
+                      console.warn('Dance video failed to load, using image fallback', e);
+                      const target = e.target as HTMLVideoElement;
+                      target.style.display = 'none';
+                    }}
+                    onLoadStart={() => console.log('Dance video loading started')}
+                    onCanPlay={() => console.log('Dance video can play')}
+                  >
+                    <source src="/videos/optimized/dance.mp4" type="video/mp4" />
+                    <source src="/videos/aboutsection/dance.mp4" type="video/mp4" />
+                  </video>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                </div>
+                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-4 py-2 rounded-full text-sm font-bold mb-4">
+                    ⭐ FLAGSHIP
+                  </div>
+                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Dance Battle</h3>
+                  <p className="text-xl text-gray-200 drop-shadow-lg mb-4">Ultimate dance glory</p>
+                  <div className="text-sm text-gray-300 space-y-1">
+                    <p>• Hip-hop to krumping</p>
+                    <p>• Crew vs crew battles</p>
+                    <p>• ₹45 entry</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Second Row - Remaining Flagship Events */}
+            <div className="grid md:grid-cols-4 gap-6">
+              {/* Nukkad Natak */}
+              <div className="relative group h-[400px] bg-gradient-to-br from-orange-600 to-red-600 rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-black/20" />
+                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">
+                    ⭐ FLAGSHIP
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-3">Nukkad Natak</h3>
+                  <p className="text-sm text-gray-200 mb-3">Street theater magic</p>
+                  <div className="text-xs text-gray-300 space-y-1">
+                    <p>• Social awareness</p>
+                    <p>• Open air performances</p>
+                    <p>• Free entry</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Spotlight */}
+              <div className="relative group h-[400px] bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-black/20" />
+                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">
+                    ⭐ FLAGSHIP
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-3">Spotlight</h3>
+                  <p className="text-sm text-gray-200 mb-3">Acting excellence</p>
+                  <div className="text-xs text-gray-300 space-y-1">
+                    <p>• Solo & duet acts</p>
+                    <p>• Dramatic performances</p>
+                    <p>• ₹25 entry</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Singing Palooza */}
+              <div className="relative group h-[400px] bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-black/20" />
+                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">
+                    ⭐ FLAGSHIP
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-3">Singing Palooza</h3>
+                  <p className="text-sm text-gray-200 mb-3">Vocal mastery</p>
+                  <div className="text-xs text-gray-300 space-y-1">
+                    <p>• Bollywood to classical</p>
+                    <p>• Solo & duet</p>
+                    <p>• ₹35 entry</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step Up */}
+              <div className="relative group h-[400px] bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-black/20" />
+                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">
+                    ⭐ FLAGSHIP
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-3">Step Up</h3>
+                  <p className="text-sm text-gray-200 mb-3">Group dance energy</p>
+                  <div className="text-xs text-gray-300 space-y-1">
+                    <p>• Synchronized routines</p>
+                    <p>• High-energy choreography</p>
+                    <p>• ₹40 entry</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Flagship Stats */}
+            <div className="mt-16 text-center">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-2xl p-6">
+                  <div className="text-4xl font-bold text-yellow-400 mb-2">8</div>
+                  <div className="text-lg text-yellow-200">Flagship Events</div>
+                  <div className="text-sm text-yellow-300 mt-2">Premium competitions</div>
+                </div>
+                <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-2xl p-6">
+                  <div className="text-4xl font-bold text-purple-400 mb-2">₹2,00,000+</div>
+                  <div className="text-lg text-purple-200">Prize Pool</div>
+                  <div className="text-sm text-purple-300 mt-2">For flagship winners</div>
+                </div>
+                <div className="bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 rounded-2xl p-6">
+                  <div className="text-4xl font-bold text-blue-400 mb-2">15,000+</div>
+                  <div className="text-lg text-blue-200">Total Capacity</div>
+                  <div className="text-sm text-blue-300 mt-2">Across all events</div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
