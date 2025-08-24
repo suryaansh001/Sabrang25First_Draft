@@ -2,6 +2,7 @@
 import React, { memo, useEffect, useState } from 'react';
 import { Play, Github, Linkedin, LayoutDashboard, Calendar, Users, Handshake, Info, Clock, Star, Mail, Home, HelpCircle, X } from 'lucide-react';
 import SidebarDock from '../../components/SidebarDock';
+import MobileScrollMenu from '../../components/MobileScrollMenu';
 import { useVideo } from '../../components/VideoContext';
 import { useRouter } from 'next/navigation';
 import InfinityTransition from '../../components/InfinityTransition';
@@ -273,7 +274,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
       )}
 
       {/* Mobile & Tablet Hero (<= lg) */}
-      <div className="block lg:hidden relative min-h-screen">
+      <div className="block lg:hidden relative min-h-screen overflow-hidden">
         {/* Mobile backup image - loads immediately */}
         <img
           src="/herobg.webp"
@@ -409,7 +410,63 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
             </div>
           </div>
         )}
+
+        {/* Mobile Scroll Menu - appears when scrolling */}
+        <MobileScrollMenu 
+          onNavigate={(href) => {
+            setTargetHref(href);
+            setShowTransition(true);
+          }}
+        />
       </div>
+
+      {/* Mobile Content Sections - separate from hero */}
+      {!isLoading && (
+        <div className="block lg:hidden relative bg-gradient-to-b from-black/80 via-purple-900/40 to-black/90 min-h-screen">
+          {/* About section */}
+          <section className="px-6 py-16">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold text-white mb-4">Welcome to Sabrang 25</h2>
+              <p className="text-gray-300 text-lg leading-relaxed">
+                Experience the magic of Noorwana & Color to Cosmos. Join us for an unforgettable celebration of culture, creativity, and community.
+              </p>
+            </div>
+          </section>
+
+          {/* Quick links section */}
+          <section className="px-6 py-16">
+            <h3 className="text-2xl font-bold text-white text-center mb-8">Explore More</h3>
+            <div className="grid grid-cols-2 gap-4">
+              {mobileNavItems.slice(1, 5).map((item) => (
+                <button
+                  key={item.title}
+                  onClick={() => { setTargetHref(item.href); setShowTransition(true); }}
+                  className="p-6 rounded-xl bg-white/10 border border-white/20 text-white hover:bg-white/15 active:scale-[0.98] transition-all duration-200 text-center group"
+                >
+                  <div className="w-12 h-12 bg-white/15 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-white/20 transition-colors">
+                    {item.icon}
+                  </div>
+                  <span className="font-medium text-sm">{item.title}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* Call to action */}
+          <section className="px-6 py-16">
+            <div className="text-center">
+              <h3 className="text-2xl font-bold text-white mb-4">Ready to Join?</h3>
+              <p className="text-gray-300 mb-6">Don't miss out on the biggest event of the year!</p>
+              <a 
+                href="/Signup" 
+                className="inline-block px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-white font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 active:scale-95"
+              >
+                Register Now
+              </a>
+            </div>
+          </section>
+        </div>
+      )}
 
       {/* Desktop/Laptop layout (>= lg) */}
       <div className="hidden lg:block">

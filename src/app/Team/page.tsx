@@ -129,6 +129,37 @@ const TeamPage = () => {
       {/* Main Content Container - flex-1 makes it take remaining space */}
       <div className="relative z-10 pt-24 lg:pt-24 flex-1">
         <div className="px-4 sm:px-6 py-8 sm:py-16">
+          {/* Enhanced page header */}
+          <div className="text-center mb-8 sm:mb-12">
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-4"
+            >
+              Our Team
+            </motion.h1>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto"
+            >
+              Meet the passionate individuals who make SABRANG'25 possible. From visionary leaders to dedicated team members, 
+              each person contributes their unique talents to create an unforgettable experience.
+            </motion.p>
+          </div>
+          
+          {/* Decorative elements */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 0.6 }}
+            className="flex justify-center mb-8"
+          >
+            <div className="w-24 h-1 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 rounded-full" />
+          </motion.div>
+          
           <ChromaGrid />
         </div>
       </div>
