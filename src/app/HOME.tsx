@@ -359,22 +359,40 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         {/* Center content */}
         {!isLoading && (
           <div className="absolute inset-0 z-20 flex items-center justify-center text-center px-6 pointer-events-none">
-            <div>
-              <h1 className="font-black leading-none">
-                <span className="block text-6xl sm:text-7xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 drop-shadow" style={{ fontFamily: "'Stardos Stencil', 'Orbitron', sans-serif" }}>
+            <div className="max-w-sm mx-auto">
+              {/* Main Title */}
+              <h1 className="font-black leading-none mb-6">
+                <span className="block text-6xl sm:text-7xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 drop-shadow-2xl" style={{ fontFamily: "'Stardos Stencil', 'Orbitron', sans-serif" }}>
                   SABRANG
                 </span>
-                <span className="inline-block text-5xl sm:text-6xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 drop-shadow ml-2 sm:ml-3 md:ml-4" style={{ fontFamily: "'Stardos Stencil', 'Orbitron', sans-serif" }}>
+                <span className="inline-block text-5xl sm:text-6xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 drop-shadow-2xl ml-2 sm:ml-3 md:ml-4" style={{ fontFamily: "'Stardos Stencil', 'Orbitron', sans-serif" }}>
                   25
                 </span>
               </h1>
-              <p className="mt-3 text-lg sm:text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-pink-400 to-cyan-300">
+              
+              {/* Subtitle */}
+              <p className="mt-4 text-lg sm:text-xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-pink-400 to-cyan-300 mb-8">
                 Noorwana & Color to Cosmos
               </p>
-              <div className="mt-8 flex items-center justify-center gap-3">
-                <a href="/Signup" className="btn-prism pointer-events-auto">
-                  <span>Register Now</span>
+              
+              {/* Tagline */}
+              <p className="text-gray-300 text-base mb-8 leading-relaxed">
+                Unforgettable celebration of culture, creativity, and community.
+              </p>
+              
+              {/* CTA Button */}
+              <div className="flex items-center justify-center">
+                <a href="/Signup" className="btn-prism pointer-events-auto transform hover:scale-105 transition-transform duration-300">
+                  <span className="text-lg font-semibold">Register Now</span>
                 </a>
+              </div>
+              
+              {/* Scroll indicator */}
+              <div className="mt-12 flex flex-col items-center space-y-2">
+                <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
+                  <div className="w-1 h-3 bg-white/60 rounded-full mt-2 animate-bounce"></div>
+                </div>
+                <span className="text-white/60 text-xs">Scroll to explore</span>
               </div>
             </div>
           </div>
@@ -423,46 +441,130 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
       {/* Mobile Content Sections - separate from hero */}
       {!isLoading && (
         <div className="block lg:hidden relative bg-gradient-to-b from-black/80 via-purple-900/40 to-black/90 min-h-screen">
-          {/* About section */}
-          <section className="px-6 py-16">
+          {/* Hero Introduction Section */}
+          <section className="px-6 py-20">
             <div className="text-center">
-              <h2 className="text-3xl font-bold text-white mb-4">Welcome to Sabrang 25</h2>
-              <p className="text-gray-300 text-lg leading-relaxed">
-                Experience the magic of Noorwana & Color to Cosmos. Join us for an unforgettable celebration of culture, creativity, and community.
+              <div className="w-16 h-1 bg-gradient-to-r from-purple-400 to-pink-400 mx-auto mb-6 rounded-full"></div>
+              <h2 className="text-4xl font-bold text-white mb-6">Sabrang 25</h2>
+              <p className="text-gray-300 text-lg leading-relaxed max-w-md mx-auto">
+                Unforgettable celebration of culture, creativity, and community.
               </p>
+              <div className="mt-6 flex items-center justify-center space-x-2">
+                <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                <span className="text-purple-300 text-sm">Experience the Magic</span>
+              </div>
             </div>
           </section>
 
-          {/* Quick links section */}
+          {/* Explore More Section */}
           <section className="px-6 py-16">
-            <h3 className="text-2xl font-bold text-white text-center mb-8">Explore More</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {mobileNavItems.slice(1, 5).map((item) => (
+            <div className="text-center mb-12">
+              <h3 className="text-3xl font-bold text-white mb-3">Explore More</h3>
+              <p className="text-gray-400 text-sm">Discover what makes Sabrang special</p>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+              {[
+                { title: 'About', icon: <Info className="w-6 h-6" />, href: '/About', color: 'from-blue-500 to-cyan-500' },
+                { title: 'Events', icon: <Calendar className="w-6 h-6" />, href: '/Events', color: 'from-purple-500 to-pink-500' },
+                { title: 'Highlights', icon: <Star className="w-6 h-6" />, href: '/Gallery', color: 'from-yellow-500 to-orange-500' },
+                { title: 'Schedule', icon: <Clock className="w-6 h-6" />, href: '/schedule', color: 'from-green-500 to-emerald-500' }
+              ].map((item, index) => (
                 <button
                   key={item.title}
                   onClick={() => { setTargetHref(item.href); setShowTransition(true); }}
-                  className="p-6 rounded-xl bg-white/10 border border-white/20 text-white hover:bg-white/15 active:scale-[0.98] transition-all duration-200 text-center group"
+                  className="group relative p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 hover:border-white/40 active:scale-[0.98] transition-all duration-300 text-center overflow-hidden"
                 >
-                  <div className="w-12 h-12 bg-white/15 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-white/20 transition-colors">
-                    {item.icon}
+                  {/* Background gradient on hover */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
+                  
+                  {/* Icon container */}
+                  <div className="relative z-10 w-14 h-14 bg-white/15 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-white/20 transition-all duration-300 group-hover:scale-110">
+                    <div className="text-white group-hover:text-white transition-colors duration-300">
+                      {item.icon}
+                    </div>
                   </div>
-                  <span className="font-medium text-sm">{item.title}</span>
+                  
+                  {/* Title */}
+                  <span className="relative z-10 font-semibold text-white text-sm group-hover:text-white transition-colors duration-300">
+                    {item.title}
+                  </span>
+                  
+                  {/* Hover effect */}
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </button>
               ))}
             </div>
           </section>
 
-          {/* Call to action */}
-          <section className="px-6 py-16">
+          {/* Ready to Join Section */}
+          <section className="px-6 py-20">
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-white mb-4">Ready to Join?</h3>
-              <p className="text-gray-300 mb-6">Don't miss out on the biggest event of the year!</p>
-              <a 
-                href="/Signup" 
-                className="inline-block px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-white font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 active:scale-95"
-              >
-                Register Now
-              </a>
+              <h3 className="text-3xl font-bold text-white mb-4">Ready to Join?</h3>
+              <p className="text-gray-300 mb-8 text-lg">Don't miss out on the biggest event of the year!</p>
+              
+              {/* Enhanced Register Button */}
+              <div className="relative group">
+                <a 
+                  href="/Signup" 
+                  className="relative inline-block px-10 py-5 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-full text-white font-bold text-lg hover:from-purple-700 hover:via-pink-700 hover:to-blue-700 transition-all duration-500 transform hover:scale-105 active:scale-95 shadow-2xl hover:shadow-purple-500/25"
+                >
+                  <span className="relative z-10">Register Now</span>
+                  
+                  {/* Button glow effect */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 blur-xl opacity-75 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </a>
+                
+                {/* Floating particles around button */}
+                <div className="absolute inset-0 pointer-events-none">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="absolute w-2 h-2 bg-purple-400 rounded-full animate-pulse"
+                      style={{
+                        left: `${20 + (i * 15)}%`,
+                        top: `${30 + (i * 20)}%`,
+                        animationDelay: `${i * 0.2}s`,
+                        animationDuration: '2s'
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+              
+              {/* Additional info */}
+              <div className="mt-8 flex items-center justify-center space-x-6 text-sm text-gray-400">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <span>3 Days</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                  <span>Live Events</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+                  <span>Premium</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Quick Stats Section */}
+          <section className="px-6 py-16">
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-2xl p-4">
+                <div className="text-2xl font-bold text-purple-400 mb-1">25+</div>
+                <div className="text-xs text-purple-300">Events</div>
+              </div>
+              <div className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-500/30 rounded-2xl p-4">
+                <div className="text-2xl font-bold text-blue-400 mb-1">₹3L+</div>
+                <div className="text-xs text-blue-300">Prizes</div>
+              </div>
+              <div className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-2xl p-4">
+                <div className="text-2xl font-bold text-yellow-400 mb-1">7</div>
+                <div className="text-xs text-yellow-300">Flagship</div>
+              </div>
             </div>
           </section>
         </div>
@@ -566,6 +668,147 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
           setTargetHref(null);
         }}
       />
+
+      {/* Enhanced Mobile Styles */}
+      <style jsx>{`
+        /* Mobile-specific animations */
+        @keyframes slideUpFade {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes scaleIn {
+          from {
+            opacity: 0;
+            transform: scale(0.9);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        /* Mobile hero animations */
+        .mobile-hero-content {
+          animation: slideUpFade 1s ease-out 0.5s both;
+        }
+
+        .mobile-hero-title {
+          animation: scaleIn 1.2s ease-out 0.8s both;
+        }
+
+        .mobile-hero-subtitle {
+          animation: slideUpFade 1s ease-out 1.1s both;
+        }
+
+        .mobile-hero-button {
+          animation: scaleIn 1s ease-out 1.4s both;
+        }
+
+        /* Enhanced mobile card hover effects */
+        .mobile-card-hover {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .mobile-card-hover:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Mobile button glow effect */
+        .mobile-button-glow {
+          position: relative;
+          overflow: hidden;
+        }
+
+        .mobile-button-glow::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+          transition: left 0.5s;
+        }
+
+        .mobile-button-glow:hover::before {
+          left: 100%;
+        }
+
+        /* Mobile star twinkle animation */
+        .star-twinkle {
+          animation: twinkle 3s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+          0%, 100% { opacity: 0.3; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Mobile responsive improvements */
+        @media (max-width: 640px) {
+          .mobile-hero-title {
+            font-size: 3.5rem;
+            line-height: 1;
+          }
+          
+          .mobile-hero-subtitle {
+            font-size: 1rem;
+          }
+          
+          .mobile-explore-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .mobile-hero-title {
+            font-size: 3rem;
+          }
+          
+          .mobile-explore-grid {
+            gap: 0.5rem;
+          }
+        }
+
+        /* Custom scrollbar for mobile */
+        @media (max-width: 768px) {
+          ::-webkit-scrollbar {
+            width: 4px;
+          }
+          
+          ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+          }
+          
+          ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #8b5cf6, #ec4899);
+            border-radius: 2px;
+          }
+        }
+
+        /* Smooth scrolling */
+        html {
+          scroll-behavior: smooth;
+        }
+
+        /* Enhanced mobile transitions */
+        .mobile-transition {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .mobile-transition:hover {
+          transform: translateY(-2px);
+        }
+      `}</style>
     </div>
   );
 });
