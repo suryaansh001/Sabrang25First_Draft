@@ -104,8 +104,8 @@ export default function SchedulePage() {
 				}}
 			/>
 			
-			{/* Black Overlay for better text readability */}
-			<div className="fixed inset-0 -z-10 bg-black/60" />
+			{/* Glass Effect Overlay - Darker for reduced background visibility */}
+			<div className="fixed inset-0 -z-10 bg-black/50 backdrop-blur-[2px]" />
 
 			{/* Logo and sidebar */}
 			<Logo className="block" />
@@ -115,7 +115,7 @@ export default function SchedulePage() {
 			<button
 				aria-label="Open menu"
 				onClick={() => setMobileMenuOpen(true)}
-				className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
+				className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition bg-white/15 backdrop-blur-md border border-white/25 hover:bg-white/25"
 			>
 				<span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
 				<span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
@@ -124,12 +124,12 @@ export default function SchedulePage() {
 
 			{/* Mobile menu overlay */}
 			{mobileMenuOpen && (
-				<div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
+				<div className="lg:hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-xl">
 					<div className="absolute top-4 right-4">
 						<button
 							aria-label="Close menu"
 							onClick={() => setMobileMenuOpen(false)}
-							className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
+							className="p-3 rounded-xl bg-white/20 backdrop-blur-md border border-white/35 hover:bg-white/25 transition"
 						>
 							<Calendar className="w-6 h-6 text-white" />
 						</button>
@@ -140,9 +140,9 @@ export default function SchedulePage() {
 								<button
 									key={item.title}
 									onClick={() => { setMobileMenuOpen(false); setTargetHref(item.href); setShowTransition(true); }}
-									className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+									className="flex items-center gap-3 p-4 rounded-xl bg-white/20 backdrop-blur-md border border-white/35 text-white text-base hover:bg-white/25 active:scale-[0.99] transition text-left"
 								>
-									<span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
+									<span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/25 backdrop-blur-md border border-white/35">
 										{item.icon}
 									</span>
 									<span className="font-medium">{item.title}</span>
@@ -180,7 +180,7 @@ export default function SchedulePage() {
 								SCHEDULE
 							</span>
 						</h1>
-						<p className="text-lg sm:text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
+						<p className="text-lg sm:text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto drop-shadow-lg">
 							Experience the magic of Sabrang 2025
 						</p>
 					</motion.div>
@@ -193,10 +193,10 @@ export default function SchedulePage() {
 							<motion.button
 								key={day}
 								onClick={() => setActiveDay(day)}
-								className={`px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-lg transition-all duration-300 ${
+								className={`px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-lg transition-all duration-300 backdrop-blur-md ${
 									activeDay === day
-										? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/50'
-										: 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/70 hover:text-white'
+										? 'bg-gradient-to-r from-purple-500/95 to-pink-500/95 text-white shadow-lg shadow-purple-500/50 border border-purple-400/40'
+										: 'bg-gray-800/60 text-gray-200 hover:bg-gray-700/70 hover:text-white border border-gray-600/40'
 								}`}
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
@@ -271,7 +271,7 @@ export default function SchedulePage() {
 													width="360"
 													height="160"
 													rx="20"
-													fill="rgba(0,0,0,0.85)"
+													fill="rgba(0,0,0,0.75)"
 													stroke={hoveredIndex === index ? '#ec4899' : 'url(#timelineGradient)'}
 													strokeWidth={hoveredIndex === index ? 5 : 3}
 													initial={{ opacity: 0, y: 30 }}
@@ -362,7 +362,7 @@ export default function SchedulePage() {
 											<div className="absolute -left-12 top-6 w-6 h-6 bg-white rounded-full border-4 border-purple-500 shadow-lg shadow-purple-500/50 group-hover:scale-125 transition-transform duration-300" />
 
 											{/* Event Card */}
-											<div className="bg-gradient-to-br from-gray-900/90 via-gray-800/90 to-gray-900/90 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-4 sm:p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
+											<div className="bg-gray-900/80 backdrop-blur-md border border-gray-600/50 rounded-2xl p-4 sm:p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
 												{/* Category Badge */}
 												<div className="flex items-center justify-between mb-3">
 													<span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${getCategoryColor(event.category || '')} text-white`}>
@@ -383,7 +383,7 @@ export default function SchedulePage() {
 												</div>
 
 												{/* Description */}
-												<p className="text-gray-300 text-sm sm:text-base mb-3 leading-relaxed">
+												<p className="text-gray-200 text-sm sm:text-base mb-3 leading-relaxed">
 													{event.description}
 												</p>
 
