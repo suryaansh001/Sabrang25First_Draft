@@ -560,8 +560,8 @@ export default function EventsPage() {
         }}
       />
       
-      {/* Black Overlay */}
-      <div className="fixed inset-0 -z-10 bg-black/50" />
+      {/* Glassy Translucent Overlay with 0.4 opacity */}
+      <div className="fixed inset-0 -z-10 bg-black/40 backdrop-blur-sm" />
       {/* Logo and sidebar */}
       <Logo className="block" />
       <SidebarDock className="hidden lg:block" />

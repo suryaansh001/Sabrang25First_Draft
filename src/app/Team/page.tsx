@@ -118,8 +118,8 @@ const TeamPage = () => {
         }}
       />
 
-      {/* Black Overlay for better text readability */}
-      <div className="fixed inset-0 -z-10 bg-black/60" />
+      {/* Glassy Translucent Overlay with 0.4 opacity */}
+      <div className="fixed inset-0 -z-10 bg-black/40 backdrop-blur-sm" />
 
       {/* Desktop Logo and Sidebar */}
       <div className="hidden lg:block">
