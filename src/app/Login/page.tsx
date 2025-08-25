@@ -178,10 +178,13 @@ const Login = () => {
         </div>
 
         <div className="space-y-3">
-          <button className="w-full flex justify-center items-center py-2 px-4 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-300 ease-in-out">
+          <a 
+            href={createApiUrl('/auth/google')} 
+            className="w-full flex justify-center items-center py-2 px-4 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-300 ease-in-out"
+          >
             <img src="/images/google-icon.svg" alt="Google" className="mr-2 h-5 w-5" />
             Sign in with Google
-          </button>
+          </a>
           <button className="w-full flex justify-center items-center py-2 px-4 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-300 ease-in-out">
             <img src="/images/facebook-icon.svg" alt="Facebook" className="mr-2 h-5 w-5" />
             Sign in with Facebook
