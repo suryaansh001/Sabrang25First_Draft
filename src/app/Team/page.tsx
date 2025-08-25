@@ -60,12 +60,14 @@ const TeamPage = () => {
 
       {/* Mobile top-left logo (same as About page) */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
-        <img
-          src="/images/Logo@2x.png"
-          alt="Logo"
-          className="h-10 w-auto"
-          onError={(e) => { (e.target as HTMLImageElement).src = '/images/Logo.svg'; }}
-        />
+        <a href="/" aria-label="Go to homepage">
+          <img
+            src="/images/Logo@2x.png"
+            alt="Logo"
+            className="h-10 w-auto cursor-pointer"
+            onError={(e) => { (e.target as HTMLImageElement).src = '/images/Logo.svg'; }}
+          />
+        </a>
       </div>
 
       {/* Mobile hamburger (same style as About page) */}

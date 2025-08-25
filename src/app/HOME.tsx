@@ -330,16 +330,18 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         {/* Top-left logo */}
         {!isLoading && (
           <div className="absolute top-4 left-4 z-20">
-            <img
-              src="/images/Logo@2x.png"
-              alt="Logo"
-              className="h-10 w-auto"
-              loading="eager"
-              fetchPriority="high"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = '/images/Logo.svg';
-              }}
-            />
+            <a href="/" aria-label="Go to homepage">
+              <img
+                src="/images/Logo@2x.png"
+                alt="Logo"
+                className="h-10 w-auto cursor-pointer"
+                loading="eager"
+                fetchPriority="high"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/images/Logo.svg';
+                }}
+              />
+            </a>
           </div>
         )}
 

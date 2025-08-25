@@ -96,14 +96,16 @@ const MobileScrollMenu: React.FC<MobileScrollMenuProps> = ({ onNavigate }) => {
             {/* Header with logo and toggle */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <img
-                  src="/images/Logo@2x.png"
-                  alt="Logo"
-                  className="h-8 w-auto"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/images/Logo.svg';
-                  }}
-                />
+                <a href="/" aria-label="Go to homepage">
+                  <img
+                    src="/images/Logo@2x.png"
+                    alt="Logo"
+                    className="h-8 w-auto cursor-pointer"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/images/Logo.svg';
+                    }}
+                  />
+                </a>
                 <span className="text-white font-semibold text-sm">Sabrang 25</span>
               </div>
               

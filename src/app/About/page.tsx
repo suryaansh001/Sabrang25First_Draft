@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Logo from '../../../components/Logo';
 import SidebarDock from '../../../components/SidebarDock';
 import { Calendar, Users, Handshake, Info, Clock, Star, Mail, Home, HelpCircle, X, ChevronUp } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -46,8 +45,7 @@ const AboutPage = () => {
       {/* Black Overlay for better text readability */}
       <div className="fixed inset-0 -z-10 bg-black/60" />
 
-      {/* Logo and sidebar */}
-      <Logo className="block" />
+      
       <SidebarDock className="hidden lg:block" />
 
       {/* Mobile hamburger (same style as HOME) */}
