@@ -473,6 +473,26 @@ export default function EventsPage() {
   const [targetHref, setTargetHref] = useState<string | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
+  // Derive high-level domain (Cultural, Technical, Business, Design, Literary, Mini Event)
+  const getEventDomain = (imagePath: string): string => {
+    try {
+      const match = imagePath.match(/\/images\/Events\/([^/]+)\//i);
+      if (!match) return 'General';
+      const raw = match[1].toLowerCase();
+      const map: Record<string, string> = {
+        cultural: 'Cultural',
+        technical: 'Technical',
+        management: 'Business',
+        design: 'Design',
+        literary: 'Literary',
+        minievent: 'Mini Event'
+      };
+      return map[raw] || raw.replace(/\b\w/g, (c) => c.toUpperCase());
+    } catch {
+      return 'General';
+    }
+  };
+
   const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
     { title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
@@ -549,9 +569,6 @@ export default function EventsPage() {
     const flagshipMatch = !showFlagshipOnly || event.isFlagship;
     return categoryMatch && flagshipMatch;
   });
-
-  // Temporary: route all rules to Coming Soon
-  const getRulesPath = (_event: any) => '/coming-soon';
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -718,113 +735,55 @@ export default function EventsPage() {
                 </div>
               </motion.div>
 
-              {/* Events Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
-                {filteredEvents.map((event, index) => {
-                  console.log(`Rendering event: ${event.title}, Image path: ${event.image}`);
-                  return (
+              {/* Events Grid - card with image and bottom info */}
+              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                {filteredEvents.map((event, index) => (
                   <motion.div
                     key={event.id}
-                    initial={{ opacity: 0, y: 50 }}
+                    initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                    className="group cursor-pointer"
+                    transition={{ duration: 0.5, delay: index * 0.05 }}
+                    className="bg-black/40 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 group cursor-pointer"
                     onClick={() => handleCardClick(event)}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(event); } }}
+                    tabIndex={0}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
                   >
-                    <div className=" overflow-hidden border border-white/0 bg-black/40 shadow-2xl hover:border-white/30 transition-all duration-300">
-                      <div className="relative">
-                    <div className="bg-black/40 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 hover:border-white/30 transition-all duration-300 relative">
-                      {/* Category Badge */}
-                      <div className="absolute top-2 md:top-3 left-2 md:left-3 z-10">
-                        <div className="bg-gradient-to-r from-blue-400 to-purple-500 text-white px-2 md:px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                          {event.category}
-                        </div>
-                      </div>
-                      
-                      {/* Flagship Event Badge */}
-                      {event.isFlagship && (
-                        <div className="absolute top-2 md:top-3 right-2 md:right-3 z-10">
-                          <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-2 md:px-3 py-1 rounded-full text-xs font-bold shadow-lg animate-pulse">
-                            ⭐ FLAGSHIP
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Enhanced border for flagship events */}
-                      {event.isFlagship && (
-                        <div className="absolute inset-0 rounded-lg border-2 border-gradient-to-r from-yellow-400 via-orange-500 to-red-500 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                      )}
-                      
-                      {/* Poster Section */}
-                      <div className="relative h-64 md:h-80">
-                        {/* Event Image */}
-                        <img 
-                          src={event.image} 
-                          alt={event.title}
-                          className="block w-full h-auto"
-                          className="w-full h-full object-contain"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                          }}
-                        />
-                      </div>
-                      <div className="p-4 space-y-2">
-                        <div className="flex items-center justify-between gap-3">
-                          <h3 className="text-white font-semibold text-lg leading-tight line-clamp-2">{event.title}</h3>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {event.category && (
-                            <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold text-white bg-white/10 border border-white/20">
-                              {event.category}
-                            </span>
-                          )}
-                          <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border ${event.isFlagship ? 'text-yellow-300 bg-yellow-500/10 border-yellow-500/30' : 'text-blue-300 bg-blue-500/10 border-blue-500/30'}`}>
+                    <div className="relative w-full aspect-[3/4] bg-black/20">
+                      <img
+                        src={event.image}
+                        alt={event.title}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        onError={(e) => {
+                          console.error(`Failed to load image: ${event.image}`);
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const fallback = document.getElementById(`fallback-${event.id}`);
+                          if (fallback) fallback.style.display = 'block';
+                        }}
+                      />
+                      <div
+                        className={`absolute inset-0 ${event.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`}
+                        style={{ display: 'none' }}
+                        id={`fallback-${event.id}`}
+                      />
+                    </div>
+                    <div className="p-2 bg-black/60">
+                      <div className="flex items-center justify-between text-white">
+                        <span className="text-xs font-semibold truncate pr-2">{event.title}</span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 border border-white/20">
+                            {getEventDomain(event.image)}
+                          </span>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full border ${event.isFlagship ? 'bg-yellow-500/10 text-yellow-300 border-yellow-500/30' : 'bg-white/10 text-white border-white/20'}`}>
                             {event.isFlagship ? 'Flagship' : 'Regular'}
                           </span>
-                        </div>
-                        {/* Fallback gradient background */}
-                        <div className={`absolute inset-0 ${event.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`} style={{ display: 'none' }} id={`fallback-${event.id}`}>
-                          <div className="absolute inset-0 bg-black/20" />
-                        </div>
-                        <div className="absolute inset-0 bg-black/20" />
-                        
-                        {/* Click for more info overlay */}
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                          <div className="text-center text-white">
-                            <div className="text-2xl mb-2">👆</div>
-                            <div className="text-sm font-medium">Click for more info</div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Bottom Details Bar */}
-                      <div className="p-3 md:p-4 bg-black/60">
-                        <div className="flex items-center justify-between text-gray-300 text-xs md:text-sm mb-2">
-                          <span className="font-medium">{event.title}</span>
-                          <span className={`px-1 md:px-2 py-1 rounded text-xs font-medium ${
-                            event.isFlagship 
-                              ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-300 border border-yellow-500/30' 
-                              : 'bg-blue-500/20 text-blue-300'
-                          }`}>
-                            {event.genre}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-gray-400 text-xs">
-                          <span>{event.date} • {event.time}</span>
-                          <span className="hidden sm:inline">{event.venue}</span>
-                        </div>
-                        {/* Click hint */}
-                        <div className="mt-2 text-center">
-                          <span className="text-gray-500 text-xs">👆 Click for details</span>
                         </div>
                       </div>
                     </div>
                   </motion.div>
-                );
-                })}
+                ))}
               </div>
             </div>
           </motion.main>
@@ -837,8 +796,6 @@ export default function EventsPage() {
             transition={{ duration: 0.4 }}
             className="fixed inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 z-50 overflow-hidden"
           >
-            <div className="flex h-full">
-              {/* Left Side - Poster Image only (no card UI) */}
             <div className="flex flex-col lg:flex-row h-full">
               {/* Left Side - Event Card */}
               <motion.div
@@ -848,15 +805,6 @@ export default function EventsPage() {
                 className="w-full lg:w-1/2 p-4 lg:p-8 flex items-center justify-center"
               >
                 <div className="w-full max-w-md">
-                  <img
-                    src={selectedEvent.image}
-                    alt={selectedEvent.title}
-                    className="rounded-2xl shadow-2xl border border-white/10 w-full h-auto"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                    }}
-                  />
                   <motion.div
                     layoutId={`card-${selectedEvent.id}`}
                     className={`${selectedEvent.isFlagship ? 'bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 border-yellow-500/50' : 'bg-black/40'} backdrop-blur-sm rounded-lg overflow-hidden border border-white/20`}
@@ -864,21 +812,11 @@ export default function EventsPage() {
                     animate={{ scale: 1 }}
                     transition={{ duration: 0.5, ease: "easeOut" }}
                   >
-                    {/* Flagship Badge in Modal */}
-                    {selectedEvent.isFlagship && (
-                      <div className="absolute top-4 left-4 z-10">
-                        <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-pulse">
-                          ⭐ FLAGSHIP EVENT
-                        </div>
-                      </div>
-                    )}
-                    
-                                        <div className="relative h-64 lg:h-80">
-                      {/* Event Image in Modal */}
+                    <div className="relative w-full aspect-[3/4] bg-black/20">
                       <img 
                         src={selectedEvent.image} 
                         alt={selectedEvent.title}
-                        className="w-full h-full object-contain"
+                        className="absolute inset-0 w-full h-full object-cover"
                         onError={(e) => {
                           console.error(`Failed to load modal image: ${selectedEvent.image}`);
                           const target = e.target as HTMLImageElement;
@@ -886,36 +824,8 @@ export default function EventsPage() {
                           const fallback = document.getElementById(`modal-fallback-${selectedEvent.id}`);
                           if (fallback) fallback.style.display = 'block';
                         }}
-                        onLoad={() => console.log(`Successfully loaded modal image: ${selectedEvent.image}`)}
                       />
-                      {/* Fallback gradient background for modal */}
-                      <div className={`absolute inset-0 ${selectedEvent.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`} style={{ display: 'none' }} id={`modal-fallback-${selectedEvent.id}`}>
-                        <div className="absolute inset-0 bg-black/20" />
-                      </div>
-                      <div className="absolute inset-0 bg-black/20" />
-                    </div>
-                    <div className="p-6">
-                      <div className="space-y-3">
-                        <div className="flex items-center text-gray-300">
-                          <Clock className="w-4 h-4 mr-2" />
-                          <span>{selectedEvent.time}</span>
-                        </div>
-                        <div className="flex items-center text-gray-300">
-                          <MapPin className="w-4 h-4 mr-2" />
-                          <span>{selectedEvent.venue}</span>
-                        </div>
-                        <div className="flex items-center text-gray-300">
-                          <Users className="w-4 h-4 mr-2" />
-                          <span>{selectedEvent.capacity}</span>
-                        </div>
-                        {/* Flagship Event Priority */}
-                        {selectedEvent.isFlagship && (
-                          <div className="flex items-center text-yellow-400 font-medium">
-                            <span className="mr-2">🎯</span>
-                            <span>High Priority Event</span>
-                          </div>
-                        )}
-                      </div>
+                      <div className={`absolute inset-0 ${selectedEvent.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`} style={{ display: 'none' }} id={`modal-fallback-${selectedEvent.id}`} />
                     </div>
                   </motion.div>
                 </div>
@@ -1014,12 +924,12 @@ export default function EventsPage() {
                         <button className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
                           BUY TICKETS
                         </button>
-                        <a
-                          href={getRulesPath(selectedEvent)}
-                          className="px-6 py-3 border border-white/30 text-white rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
+                        <button 
+                          onClick={() => router.push('/coming-soon')}
+                          className="px-6 py-3 border border-white/30 text-white rounded-lg hover:bg-white/10 transition-all duration-300"
                         >
-                          <span>RULES</span>
-                        </a>
+                          RULES
+                        </button>
                         <button 
                           onClick={handleShare}
                           className="px-6 py-3 border border-white/30 text-white rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"

@@ -16,28 +16,22 @@ interface Person {
 const HolographicCard = ({ 
   person, 
   cardId,
-  animationDelay = 0,
-  onMouseEnter,
-  onMouseLeave
+  animationDelay = 0
 }: { 
   person: Person; 
   cardId: string;
   animationDelay?: number;
-  onMouseEnter: (e: React.MouseEvent<HTMLDivElement>) => void;
-  onMouseLeave: () => void;
 }) => {
   const [hoveredCard, setHoveredCard] = useState(false);
   const [activeCard, setActiveCard] = useState(false);
 
-  // Handle mouse events for the expanded card functionality
+  // Handle mouse events for flip card functionality
   const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
     setHoveredCard(true);
-    onMouseEnter(e);
   };
 
   const handleMouseLeave = () => {
     setHoveredCard(false);
-    onMouseLeave();
   };
 
   // Generate hologram colors based on person's role
@@ -86,137 +80,114 @@ const HolographicCard = ({
           ${hoveredCard ? 'animate-pulse' : ''}
         `} />
 
-        {/* Glass Morphism Card */}
-         <div className="relative h-96 w-64 rounded-lg backdrop-blur-xl bg-white/10 border border-white/20 overflow-hidden shadow-2xl">
-          {/* Liquid Animation Background */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className={`
-              absolute inset-0 bg-gradient-to-br ${hologram} opacity-20
-              transition-all duration-1000 ease-out
-              ${hoveredCard ? 'scale-150 rotate-12' : 'scale-100'}
-            `} />
-            
-            {/* Morphing Shapes */}
-            <div className={`
-              absolute top-4 right-4 w-16 h-16 bg-white/10 rounded-full
-              transition-all duration-700 ease-out
-              ${hoveredCard ? 'scale-150 translate-x-4 -translate-y-2' : 'scale-100'}
-            `} />
-            <div className={`
-              absolute bottom-4 left-4 w-12 h-12 bg-white/5 rounded-full
-              transition-all duration-500 ease-out
-              ${hoveredCard ? 'scale-200 translate-x-8 translate-y-4' : 'scale-100'}
-            `} />
-          </div>
-
-          {/* Card Content */}
-          <div className="relative z-10 p-6 h-full flex flex-col">
-            {/* Avatar Section */}
-            <div className="relative mx-auto mb-4">
-              <div className={`
-                 relative w-36 h-36 rounded-lg overflow-hidden
-                transition-all duration-500 ease-out transform-gpu
-                ${hoveredCard ? 'scale-110 rotate-3' : 'scale-100'}
-              `}>
-                <img 
-                  src={person.img} 
-                  alt={person.name}
-                  className="w-full h-full object-cover transition-all duration-500"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-tr from-transparent to-white/20" />
+        {/* Flip Card Container */}
+        <div className="relative h-96 w-64 perspective-1000">
+          <div
+            className="relative w-full h-full transition-transform duration-700 ease-out transform-style-preserve-3d"
+            style={{ 
+              transform: hoveredCard ? 'rotateY(180deg)' : 'rotateY(0deg)'
+            }}
+          >
+            {/* FRONT */}
+            <div className="absolute inset-0 w-full h-full rounded-lg backdrop-blur-xl bg-white/10 border border-white/20 overflow-hidden shadow-2xl backface-hidden">
+              {/* Liquid Animation Background */}
+              <div className="absolute inset-0 overflow-hidden">
+                <div className={`${
+                  'absolute inset-0 bg-gradient-to-br ' + hologram + ' opacity-20'
+                } transition-all duration-1000 ease-out ${hoveredCard ? 'scale-150 rotate-12' : 'scale-100'}`} />
+                {/* Morphing Shapes */}
+                <div className={`absolute top-4 right-4 w-16 h-16 bg-white/10 rounded-full transition-all duration-700 ease-out ${hoveredCard ? 'scale-150 translate-x-4 -translate-y-2' : 'scale-100'}`} />
+                <div className={`absolute bottom-4 left-4 w-12 h-12 bg-white/5 rounded-full transition-all duration-500 ease-out ${hoveredCard ? 'scale-200 translate-x-8 translate-y-4' : 'scale-100'}`} />
               </div>
-              
-              {/* Floating Ring */}
-              <div className={`
-                 absolute -inset-3 border-2 border-white/30 rounded-lg
-                transition-all duration-700 ease-out
-                ${hoveredCard ? 'scale-125 rotate-12 opacity-100' : 'scale-100 opacity-0'}
-              `} />
-            </div>
 
-            {/* Member Info */}
-            <div className="text-center text-white flex-grow flex flex-col justify-center">
-              <h3 className={`
-                text-lg font-bold mb-2 transition-all duration-300
-                ${hoveredCard ? 'text-white scale-105' : 'text-white/90'}
-              `}>
-                {person.name}
-              </h3>
-              <p className="text-xs font-semibold opacity-80 mb-3 uppercase tracking-widest text-purple-200">
-                {person.role}
-              </p>
-              <p className="text-xs opacity-70 leading-relaxed line-clamp-2">
-                Leading the charge in making our annual fest unforgettable with creative vision and seamless execution.
-              </p>
-            </div>
-
-            {/* Magnetic Hover Indicator */}
-            <div className={`
-              absolute bottom-4 right-4 w-6 h-6 rounded-full bg-white/20 backdrop-blur-sm
-              border border-white/30 flex items-center justify-center text-white text-xs
-              transition-all duration-300 transform-gpu
-              ${hoveredCard ? 'scale-125 bg-white/30' : 'scale-100'}
-            `}>
-              {activeCard ? '×' : '↗'}
-            </div>
-          </div>
-
-          {/* Shimmer Effect */}
-          <div className={`
-            absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent
-            -skew-x-12 transition-all duration-700 ease-out
-            ${hoveredCard ? 'translate-x-full' : '-translate-x-full'}
-          `} />
-        </div>
-
-        {/* Floating Contact Panel */}
-        <div className={`
-          absolute -bottom-4 left-1/2 -translate-x-1/2 w-72 max-w-sm
-           bg-black/40 backdrop-blur-2xl rounded-lg border border-white/20
-          transition-all duration-500 ease-out transform-gpu origin-top
-          ${activeCard 
-            ? 'opacity-100 scale-100 translate-y-8 z-50' 
-            : 'opacity-0 scale-90 translate-y-0 pointer-events-none z-0'
-          }
-        `}>
-          <div className="p-4 text-white">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="font-bold text-base bg-clip-text text-transparent bg-gradient-to-r from-white to-purple-200">
-                Contact Information
-              </h4>
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setActiveCard(false);
-                }}
-                className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all duration-200 backdrop-blur-sm border border-white/20"
-              >
-                <span className="text-xs">×</span>
-              </button>
-            </div>
-            
-            <div className="space-y-3 text-xs">
-              {[
-                { icon: '✉', label: 'Email', value: person.contact },
-                { icon: '📱', label: 'Phone', value: person.phone },
-                { icon: '🏛', label: 'Committee', value: person.committee }
-              ].map((contact, idx) => (
-                <div key={idx} className="flex items-center space-x-3 group/item cursor-pointer">
-                  <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center backdrop-blur-sm group-hover/item:bg-white/20 transition-all duration-200">
-                    <span className="text-xs">{contact.icon}</span>
+              {/* Card Content */}
+              <div className="relative z-10 p-6 h-full flex flex-col">
+                {/* Avatar Section */}
+                <div className="relative mx-auto mb-4">
+                  <div className={`relative w-36 h-36 rounded-lg overflow-hidden transition-all duration-500 ease-out transform-gpu ${hoveredCard ? 'scale-110 rotate-3' : 'scale-100'}`}>
+                    <img
+                      src={person.img}
+                      alt={person.name}
+                      className="w-full h-full object-cover transition-all duration-500"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent to-white/20" />
                   </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-white/60 uppercase tracking-wide font-medium">{contact.label}</p>
-                    <p className="text-white/90 font-medium text-xs">{contact.value}</p>
+
+                  {/* Floating Ring */}
+                  <div className={`absolute -inset-3 border-2 border-white/30 rounded-lg transition-all duration-700 ease-out ${hoveredCard ? 'scale-125 rotate-12 opacity-100' : 'scale-100 opacity-0'}`} />
+                </div>
+
+                {/* Member Info */}
+                <div className="text-center text-white flex-grow flex flex-col justify-center">
+                  <h3 className={`text-lg font-bold mb-2 transition-all duration-300 ${hoveredCard ? 'text-white scale-105' : 'text-white/90'}`}>
+                    {person.name}
+                  </h3>
+                  <p className="text-xs font-semibold opacity-80 mb-3 uppercase tracking-widest text-purple-200">
+                    {person.role}
+                  </p>
+                  <p className="text-xs opacity-70 leading-relaxed line-clamp-2">
+                    Leading the charge in making our annual fest unforgettable with creative vision and seamless execution.
+                  </p>
+                </div>
+
+                {/* Magnetic Hover Indicator */}
+                <div className={`absolute bottom-4 right-4 w-6 h-6 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center text-white text-xs transition-all duration-300 transform-gpu ${hoveredCard ? 'scale-125 bg-white/30' : 'scale-100'}`}>
+                  {activeCard ? '×' : '↗'}
+                </div>
+              </div>
+
+              {/* Shimmer Effect */}
+              <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 transition-all duration-700 ease-out ${hoveredCard ? 'translate-x-full' : '-translate-x-full'}`} />
+            </div>
+
+            {/* BACK */}
+            <div className="absolute bg-black/10 inset-0 w-full h-full rounded-lg backdrop-blur-xl bg-gradient-to-br from-purple-600/40 via-pink-600/40 to-blue-600/40 border border-white/30 overflow-hidden shadow-2xl text-white p-6 backface-hidden rotate-y-180" style={{ transform: 'rotateY(180deg)' }}>
+              {/* Enhanced background pattern */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-black/20" />
+              
+              <div className="relative z-10 flex flex-col h-full items-center justify-center gap-4 text-center">
+                {/* Person's name - larger and more prominent */}
+                <h3 className="text-xl font-bold text-white drop-shadow-lg">{person.name}</h3>
+                
+                {/* Role with better styling */}
+                <div className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg border border-white/30">
+                  <p className="text-sm font-semibold uppercase tracking-widest text-white">{person.role}</p>
+                </div>
+                
+                {/* Divider */}
+                <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+                
+                {/* Contact information with better layout */}
+                <div className="space-y-3 w-full max-w-48">
+                  <div className="flex items-center justify-center gap-3 p-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
+                    <span className="text-lg">✉</span>
+                    <p className="text-sm font-medium text-white break-all">{person.contact}</p>
+                  </div>
+                  
+                  <div className="flex items-center justify-center gap-3 p-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
+                    <span className="text-lg">📱</span>
+                    <p className="text-sm font-medium text-white">{person.phone}</p>
+                  </div>
+                  
+                  <div className="flex items-center justify-center gap-3 p-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
+                    <span className="text-lg">🏛</span>
+                    <p className="text-sm font-medium text-white">{person.committee}</p>
                   </div>
                 </div>
-              ))}
+                
+                {/* Hover indicator */}
+                <div className="absolute bottom-4 text-xs opacity-60 text-center">
+                  <p>Hover to flip back</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Removed bottom contact panel; info appears on flip back */}
       </div>
     </div>
   );
@@ -860,13 +831,7 @@ export default function PeopleStrip() {
     isCommitteeCard?: boolean;
     isOH?: boolean;
   }) => {
-    const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
-      handleCardHover(e, person);
-    };
-
-    const handleMouseLeave = () => {
-      handleCardHoverOut();
-    };
+    // Removed hover handlers for expanded card
 
     const sizeClasses = {
       small: "w-[160px] sm:w-[180px] md:w-[200px]",
@@ -896,8 +861,6 @@ export default function PeopleStrip() {
           person={person}
           cardId={cardId}
           animationDelay={animationDelay}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
         />
       );
     }
@@ -910,8 +873,6 @@ export default function PeopleStrip() {
           cardRefs.current[cardId] = el;
         }}
         className={`relative ${sizeClasses[size]} ${className} ${transformClass} cursor-pointer transition-all duration-700 ease-out group hover:scale-110 hover:z-20`}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
         style={cardStyle}
       >
            {/* Enhanced Glow Effect for OH */}
@@ -989,10 +950,8 @@ export default function PeopleStrip() {
          ref={(el) => {
            cardRefs.current[cardId] = el;
          }}
-         className={`relative ${sizeClasses[size]} ${className} ${transformClass} cursor-pointer transition-all duration-700 ease-out group hover:scale-110 hover:z-20`}
-         onMouseEnter={handleMouseEnter}
-         onMouseLeave={handleMouseLeave}
-         style={cardStyle}
+                 className={`relative ${sizeClasses[size]} ${className} ${transformClass} cursor-pointer transition-all duration-700 ease-out group hover:scale-110 hover:z-20`}
+        style={cardStyle}
        >
          <div className={`relative w-full h-full rounded-lg overflow-hidden shadow-lg`}>
           {/* Solid background color for Core Committee Members */}
@@ -1417,21 +1376,7 @@ export default function PeopleStrip() {
         </div>
       </div>
 
-      {/* Expanded Card that appears on hover */}
-      <ExpandedCard 
-        hoveredPerson={hoveredPerson} 
-        isVisible={!!hoveredPerson} // Use !!hoveredPerson to control visibility
-        cardPosition={cardPosition} 
-        onClose={handleCloseExpandedCard}
-        onMouseEnter={handleExpandedCardHover}
-        onMouseLeave={handleExpandedCardHoverOut}
-        clearCloseTimeout={() => {
-          if (closeTimeoutRef.current) {
-            clearTimeout(closeTimeoutRef.current);
-            closeTimeoutRef.current = null;
-          }
-        }}
-      />
+      {/* Removed expanded card - only flip cards remain */}
 
              {/* Special Floating Action Button */}
        <motion.div
@@ -1457,6 +1402,28 @@ export default function PeopleStrip() {
 
        {/* Enhanced CSS for animations and styling */}
       <style jsx>{`
+        /* Flip card base */
+        .perspective-1000 {
+          perspective: 1000px;
+        }
+        
+        .transform-style-preserve-3d {
+          transform-style: preserve-3d;
+        }
+        
+        .backface-hidden {
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+        }
+        
+        .rotate-y-180 {
+          transform: rotateY(180deg);
+        }
+        
+        /* Ensure proper 3D rendering */
+        .perspective-1000 * {
+          transform-style: preserve-3d;
+        }
         @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }
@@ -1486,13 +1453,7 @@ export default function PeopleStrip() {
           text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
         }
         
-                          /* Optimized transitions for expanded card */
-         .expanded-card {
-           will-change: transform, left, top, width, height, opacity, scale;
-           backface-visibility: hidden;
-           transform: translateZ(0);
-           -webkit-transform: translateZ(0);
-         }
+                          /* Removed expanded card styles */
          
          /* Smooth backdrop animation */
          .backdrop-blur-sm {
