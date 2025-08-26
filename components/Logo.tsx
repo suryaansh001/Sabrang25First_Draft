@@ -13,7 +13,7 @@ const Logo: React.FC<LogoProps> = ({ className = '' }) => {
           <img 
             src="/images/Logo@2x.png" 
             alt="Logo" 
-            className="h-10 w-auto lg:h-25 lg:w-36 cursor-pointer" 
+            className="h-8 w-auto lg:h-16 lg:w-28 cursor-pointer" 
             onError={(e) => { 
               (e.target as HTMLImageElement).src = '/images/Logo.svg'; 
             }} 

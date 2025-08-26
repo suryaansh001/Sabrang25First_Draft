@@ -79,7 +79,7 @@ const Navbar: React.FC = () => {
       {/* Left: Logo */}
       <div className="flex items-center ml-4 sm:ml-14">
         <Link href="/?skipLoading=true" className="mr-4"></Link>
-        <Image src={Logo} alt="Logo" width={70} height={70} />
+        <Image src={Logo} alt="Logo" width={56} height={56} />
       </div>
 
       {/* Center: Main Navbar Links */}

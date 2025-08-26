@@ -334,7 +334,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               <img
                 src="/images/Logo@2x.png"
                 alt="Logo"
-                className="h-10 w-auto cursor-pointer"
+                className="h-9 w-auto cursor-pointer"
                 loading="eager"
                 fetchPriority="high"
                 onError={(e) => {
@@ -588,7 +588,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
             <img
               src="/images/Logo@2x.png"
               alt="Logo"
-              className="h-32 w-auto"
+              className="h-24 w-auto"
               loading="eager"
               fetchPriority="high"
               onError={(e) => {

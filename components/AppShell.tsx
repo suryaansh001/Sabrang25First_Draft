@@ -89,7 +89,7 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
         onComplete={handleTransitionComplete}
       />
       <div className="relative z-30 flex-grow">
-        {mounted && !hideChrome && <Logo />}
+        {mounted && !hideChrome && pathname !== "/why-sponsor-us" && <Logo />}
         <main 
           key={pathname}
           className={`${
