@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useRef, useCallback } from 'react';
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, MotionValue } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { 
   Calendar, 
@@ -18,6 +18,7 @@ import {
 
 interface SidebarDockProps {
   className?: string;
+  onNavigate?: (href: string) => void;
 }
 
 const navigationItems = [
@@ -32,15 +33,7 @@ const navigationItems = [
   { title: 'Contact', icon: <Mail className="w-5 h-5" />, href: '/Contact' },
 ];
 
-// Add a global state to track pending navigation
-let pendingNavigation: string | null = null;
-let navigationCallback: ((href: string) => void) | null = null;
-
-export const setNavigationCallback = (callback: (href: string) => void) => {
-  navigationCallback = callback;
-};
-
-export const SidebarDock: React.FC<SidebarDockProps> = ({ className = '' }) => {
+export const SidebarDock: React.FC<SidebarDockProps> = ({ className = '', onNavigate }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const router = useRouter();
   const mouseY = useMotionValue(Infinity);
@@ -50,7 +43,7 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({ className = '' }) => {
     setIsExpanded(false);
     mouseY.set(Infinity);
   }, [mouseY]);
-  const handleMouseMove = useCallback((e: React.MouseEvent) => mouseY.set(e.pageY), [mouseY]);
+  const handleMouseMove = useCallback((e: React.MouseEvent) => mouseY.set(e.clientY), [mouseY]);
 
   return (
     <motion.div
@@ -74,6 +67,7 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({ className = '' }) => {
             index={index} 
             mouseY={mouseY}
             isExpanded={isExpanded}
+            onNavigate={onNavigate}
             router={router}
           />
         ))}
@@ -87,25 +81,26 @@ function IconContainer({
   index, 
   mouseY, 
   isExpanded,
-  router
-}: { 
+  router,
+  onNavigate
+}: {
   item: { title: string; icon: React.ReactNode; href: string };
   index: number;
-  mouseY: any;
+  mouseY: MotionValue<number>;
   isExpanded: boolean;
-  router: any;
+  router: ReturnType<typeof useRouter>;
+  onNavigate?: (href: string) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const [bounds, setBounds] = useState({ y: 0, height: 0 });
 
   const distance = useTransform(mouseY, (val: number) => {
-    const bounds = ref.current?.getBoundingClientRect() ?? { y: 0, height: 0 };
     return val - bounds.y - bounds.height / 2;
   });
 
+  // The use of `useTransform` here creates a "magnetic" or "fisheye" effect on the icons.
   const widthTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
   const heightTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
-  const widthTransformIcon = useTransform(distance, [-150, 0, 150], [20, 40, 20]);
-  const heightTransformIcon = useTransform(distance, [-150, 0, 150], [20, 40, 20]);
 
   const width = useSpring(widthTransform, {
     mass: 0.1,
@@ -117,35 +112,29 @@ function IconContainer({
     stiffness: 150,
     damping: 12,
   });
-  const widthIcon = useSpring(widthTransformIcon, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  });
-  const heightIcon = useSpring(widthTransformIcon, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
-  });
 
-  const handleClick = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    
-    // Store the pending navigation
-    pendingNavigation = item.href;
-    
-    // Trigger the transition first
-    if (navigationCallback) {
-      navigationCallback(item.href);
+  // Derive icon size from the container's animated size for better performance.
+  const widthIcon = useTransform(width, (w) => w * 0.5);
+  const heightIcon = useTransform(height, (h) => h * 0.5);
+
+  useEffect(() => {
+    if (ref.current) {
+      setBounds(ref.current.getBoundingClientRect());
+    }
+  }, []); // Empty dependency array ensures this runs only once on mount.
+
+  const handleClick = useCallback(() => {
+    if (onNavigate) {
+      onNavigate(item.href);
     } else {
-      // Fallback to direct navigation if callback not set
+      // Fallback to direct navigation if no handler is provided.
       router.push(item.href);
     }
-  }, [item.href, router]);
-
+  }, [item.href, router, onNavigate]);
   return (
     <motion.button
       onClick={handleClick}
+      aria-label={item.title}
       className="group flex items-center gap-3 w-full text-white hover:text-white/80 transition-colors transform-gpu"
       initial={{ opacity: 0, x: -20 }}
       animate={{ 

@@ -550,6 +550,9 @@ export default function EventsPage() {
     return categoryMatch && flagshipMatch;
   });
 
+  // Temporary: route all rules to Coming Soon
+  const getRulesPath = (_event: any) => '/coming-soon';
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Background Image */}
@@ -730,6 +733,8 @@ export default function EventsPage() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
+                    <div className=" overflow-hidden border border-white/0 bg-black/40 shadow-2xl hover:border-white/30 transition-all duration-300">
+                      <div className="relative">
                     <div className="bg-black/40 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 hover:border-white/30 transition-all duration-300 relative">
                       {/* Category Badge */}
                       <div className="absolute top-2 md:top-3 left-2 md:left-3 z-10">
@@ -758,16 +763,28 @@ export default function EventsPage() {
                         <img 
                           src={event.image} 
                           alt={event.title}
+                          className="block w-full h-auto"
                           className="w-full h-full object-contain"
                           onError={(e) => {
-                            console.error(`Failed to load image: ${event.image}`);
                             const target = e.target as HTMLImageElement;
                             target.style.display = 'none';
-                            const fallback = document.getElementById(`fallback-${event.id}`);
-                            if (fallback) fallback.style.display = 'block';
                           }}
-                          onLoad={() => console.log(`Successfully loaded image: ${event.image}`)}
                         />
+                      </div>
+                      <div className="p-4 space-y-2">
+                        <div className="flex items-center justify-between gap-3">
+                          <h3 className="text-white font-semibold text-lg leading-tight line-clamp-2">{event.title}</h3>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {event.category && (
+                            <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold text-white bg-white/10 border border-white/20">
+                              {event.category}
+                            </span>
+                          )}
+                          <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border ${event.isFlagship ? 'text-yellow-300 bg-yellow-500/10 border-yellow-500/30' : 'text-blue-300 bg-blue-500/10 border-blue-500/30'}`}>
+                            {event.isFlagship ? 'Flagship' : 'Regular'}
+                          </span>
+                        </div>
                         {/* Fallback gradient background */}
                         <div className={`absolute inset-0 ${event.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`} style={{ display: 'none' }} id={`fallback-${event.id}`}>
                           <div className="absolute inset-0 bg-black/20" />
@@ -820,6 +837,8 @@ export default function EventsPage() {
             transition={{ duration: 0.4 }}
             className="fixed inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 z-50 overflow-hidden"
           >
+            <div className="flex h-full">
+              {/* Left Side - Poster Image only (no card UI) */}
             <div className="flex flex-col lg:flex-row h-full">
               {/* Left Side - Event Card */}
               <motion.div
@@ -829,6 +848,15 @@ export default function EventsPage() {
                 className="w-full lg:w-1/2 p-4 lg:p-8 flex items-center justify-center"
               >
                 <div className="w-full max-w-md">
+                  <img
+                    src={selectedEvent.image}
+                    alt={selectedEvent.title}
+                    className="rounded-2xl shadow-2xl border border-white/10 w-full h-auto"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                    }}
+                  />
                   <motion.div
                     layoutId={`card-${selectedEvent.id}`}
                     className={`${selectedEvent.isFlagship ? 'bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 border-yellow-500/50' : 'bg-black/40'} backdrop-blur-sm rounded-lg overflow-hidden border border-white/20`}
@@ -986,6 +1014,12 @@ export default function EventsPage() {
                         <button className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
                           BUY TICKETS
                         </button>
+                        <a
+                          href={getRulesPath(selectedEvent)}
+                          className="px-6 py-3 border border-white/30 text-white rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
+                        >
+                          <span>RULES</span>
+                        </a>
                         <button 
                           onClick={handleShare}
                           className="px-6 py-3 border border-white/30 text-white rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"

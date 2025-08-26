@@ -1,7 +1,5 @@
 "use client";
 
-import EventCard from "../EventCard";
-
 type EventItem = {
   title: string;
   image: string;
@@ -50,7 +48,11 @@ export default function NonFlagshipEventsPage() {
         {nonFlagshipEvents.map((event) => (
           <div key={event.title} className="flex flex-col gap-4">
             <div className="flex justify-center">
-              <EventCard event={event} outline="silver" variant="glass" />
+              <img
+                src={event.image}
+                alt={event.title}
+                className="rounded-2xl shadow-2xl border border-white/10 w-full h-auto max-w-sm"
+              />
             </div>
             <div className="relative w-full overflow-hidden rounded-2xl border border-white/10 bg-black/30">
               <video

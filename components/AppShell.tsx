@@ -3,10 +3,10 @@
 import { usePathname } from "next/navigation";
 import Background from "./Background";
 import SplashCursor from "./SplashCursor";
-import SidebarDock, { setNavigationCallback } from "./SidebarDock";
+import { SidebarDock } from "./SidebarDock";
 import Logo from "./Logo";
 import InfinityTransition from "./InfinityTransition";
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 
 // Separate component that uses usePathname
@@ -48,17 +48,12 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
     }
   }, [pathname, isTransitioning, showTransition]);
 
-  // Set up navigation callback
-  useEffect(() => {
-    setNavigationCallback((href: string) => {
-      setPendingNavigation(href);
-      setIsTransitioning(true); // Hide current page content immediately
-      setShowTransition(true);
-      
-      // Navigate immediately but keep content hidden
-      router.push(href);
-    });
-  }, [router]);
+  const handleSidebarNavigate = (href: string) => {
+    setPendingNavigation(href);
+    setIsTransitioning(true);
+    setShowTransition(true);
+    router.push(href);
+  };
 
   const handleTransitionComplete = () => {
     // Reveal new content first, then remove overlay to avoid any visual gap
@@ -98,7 +93,7 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
         >
           {!isTransitioning && children}
         </main>
-        {!hideChrome && <SidebarDock />}
+        {!hideChrome && <SidebarDock onNavigate={handleSidebarNavigate} />}
       </div>
       
     </div>
