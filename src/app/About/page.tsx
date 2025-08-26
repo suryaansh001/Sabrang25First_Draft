@@ -1,27 +1,87 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import Logo from '../../../components/Logo';
 import SidebarDock from '../../../components/SidebarDock';
-import Footer from '../../../components/Footer';
+import { useRouter } from 'next/navigation';
+import { Home, Info, Calendar, Star, Clock, Users, HelpCircle, Handshake, Mail, X } from 'lucide-react';
+ 
 
 const AboutPage = () => {
+  // mobile menu state
+  const router = useRouter();
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
+    { title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
+    { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
+    { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
+    { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
+    { title: 'Schedule', href: '/schedule', icon: <Clock className="w-5 h-5" /> },
+    { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
+    { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
+    { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
+    { title: 'Contact', href: '/Contact', icon: <Mail className="w-5 h-5" /> },
+  ];
+
   return (
     <div className="min-h-screen text-white relative overflow-hidden flex flex-col">
       {/* Background Image */}
       <div 
         className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: 'url(/images/backgrounds/aboutpage.webp)'
+          backgroundImage: 'url(/images/about-section/about_back.webp)'
         }}
       />
       
-      {/* Black Overlay for better text readability */}
-      <div className="fixed inset-0 -z-10 bg-black/45" />
+      {/* Black Overlay for better text readability with subtle glass blur */}
+      <div className="fixed inset-0 -z-10 bg-black/70 backdrop-blur-sm md:backdrop-blur" />
       
       <Logo />
       <SidebarDock />
-      
+
+      {/* Mobile hamburger */}
+      <button
+        aria-label="Open menu"
+        onClick={() => setMobileMenuOpen(true)}
+        className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
+      >
+        <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
+        <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
+        <span className="block h-0.5 bg-white/80 rounded-full w-4" />
+      </button>
+
+      {/* Mobile menu overlay */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
+          <div className="absolute top-4 right-4">
+            <button
+              aria-label="Close menu"
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
+            >
+              <X className="w-6 h-6 text-white" />
+            </button>
+          </div>
+          <div className="pt-20 px-6 h-full overflow-y-auto">
+            <div className="grid grid-cols-1 gap-3 pb-8">
+              {mobileNavItems.map((item) => (
+                <button
+                  key={item.title}
+                  onClick={() => { setMobileMenuOpen(false); router.push(item.href); }}
+                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                >
+                  <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
+                    {item.icon}
+                  </span>
+                  <span className="font-medium">{item.title}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Content Container */}
       <div className="relative z-10 pb-16 flex-grow">
         {/* Hero Section */}
@@ -62,11 +122,14 @@ const AboutPage = () => {
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               {/* Left: Image */}
               <div className="relative group">
-                <div className="relative overflow-hidden rounded-2xl">
-                  <img 
+                <div className="relative overflow-hidden rounded-2xl h-[500px]">
+                  <Image 
                     src="/images/about-section/what_is_sabrang.webp" 
                     alt="What is Sabrang - Cultural Fest Celebration"
-                    className="w-full h-[500px] object-cover transform group-hover:scale-105 transition-transform duration-700"
+                    fill
+                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    priority={false}
+                    className="object-cover transform group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                 </div>
@@ -104,6 +167,7 @@ const AboutPage = () => {
           <div className="absolute inset-0 -z-10">
                          {/* Image Fallback - Always visible */}
              <img 
+               loading="lazy" decoding="async"
                src="/images/backgrounds/about-page/WhatsApp Image 2025-08-13 at 20.04.40_42fe13c8.jpg" 
                alt="Why It's OP Background"
                className="w-full h-full object-cover"
@@ -283,6 +347,49 @@ const AboutPage = () => {
                  </div>
                </div>
             </div>
+
+            {/* Additional Flagship Cards */}
+            <div className="mt-12 grid md:grid-cols-4 gap-6">
+              {/* Nukkad Natak */}
+              <div className="relative group h-[280px] bg-gradient-to-br from-orange-600 to-red-600 rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-black/25" />
+                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
+                  <h3 className="text-2xl font-bold text-white mb-2">Nukkad Natak</h3>
+                  <p className="text-sm text-gray-200">Street theatre showcase</p>
+                </div>
+              </div>
+
+              {/* Spotlight */}
+              <div className="relative group h-[280px] bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-black/25" />
+                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
+                  <h3 className="text-2xl font-bold text-white mb-2">Spotlight</h3>
+                  <p className="text-sm text-gray-200">Acting excellence</p>
+                </div>
+              </div>
+
+              {/* Singing Palooza */}
+              <div className="relative group h-[280px] bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-black/25" />
+                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
+                  <h3 className="text-2xl font-bold text-white mb-2">Singing Palooza</h3>
+                  <p className="text-sm text-gray-200">Vocal mastery</p>
+                </div>
+              </div>
+
+              {/* Step Up */}
+              <div className="relative group h-[280px] bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-black/25" />
+                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
+                  <h3 className="text-2xl font-bold text-white mb-2">Step Up</h3>
+                  <p className="text-sm text-gray-200">Group dance energy</p>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -365,10 +472,7 @@ const AboutPage = () => {
         </section>
       </div>
 
-      {/* Footer with proper z-index */}
-      <div className="relative z-10">
-        <Footer />
-      </div>
+      
 
       <style jsx>{`
         /* Custom scrollbar */

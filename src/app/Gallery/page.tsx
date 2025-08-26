@@ -81,8 +81,8 @@ const Gallery = () => {
       setShowScrollTop(window.scrollY > 300);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll as any);
   }, []);
 
   const scrollToTop = () => {
@@ -109,8 +109,9 @@ const Gallery = () => {
   // Auto-advance slides every 6 seconds
   useEffect(() => {
     const interval = setInterval(() => {
+      if (document.hidden) return;
       if (!isTransitioning) {
-        setCurrentImageIndex((prevIndex) => 
+        setCurrentImageIndex((prevIndex) =>
           prevIndex === images.length - 1 ? 0 : prevIndex + 1
         );
       }
@@ -203,14 +204,27 @@ const Gallery = () => {
         </div>
       )}
 
-      {/* Starry Space Background - optimized for mobile */}
-      <div className="fixed inset-0 bg-gradient-to-br from-indigo-950 via-purple-950 via-pink-900 to-black -z-10">
-        {/* Hero background image */}
-        <img
-          src="/images/hero.webp"
-          alt="Hero background"
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
-        />
+      {/* Starry Space Background - enhanced layering */}
+      <div className="fixed inset-0 bg-gradient-to-br from-[#0a0b1a] via-[#140a2a] via-[#240a33] to-black -z-10">
+        {/* Hero background image (responsive) */}
+        <picture>
+          <source media="(max-width: 640px)" srcSet="/images/herobg.webp" />
+          <img
+            loading="lazy" decoding="async"
+            src="/images/hero.webp"
+            alt="Hero background"
+            className="absolute inset-0 w-full h-full object-cover opacity-15"
+          />
+        </picture>
+
+        {/* Soft aurora overlay */}
+        <div className="absolute inset-0 pointer-events-none opacity-25 mix-blend-screen">
+          <div className="absolute -top-20 -left-10 w-[55vw] h-[55vw] bg-gradient-to-tr from-cyan-500/30 via-fuchsia-500/25 to-transparent blur-3xl animate-pulse" style={{animationDuration:'9s'}} />
+          <div className="absolute bottom-0 right-0 w-[45vw] h-[45vw] bg-gradient-to-tl from-purple-500/25 via-blue-500/20 to-transparent blur-3xl animate-pulse" style={{animationDuration:'11s', animationDelay:'1.5s'}} />
+        </div>
+
+        {/* Vignette for better focus */}
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0)_60%,rgba(0,0,0,0.65)_100%)]" />
         
         {/* Animated Stars - reduced count on mobile */}
         {stars.map((star) => (
@@ -229,7 +243,7 @@ const Gallery = () => {
         ))}
         
         {/* Nebula Effects - simplified for mobile */}
-        <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0 opacity-10">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-blue-400 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
           <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-pink-400 rounded-full blur-2xl animate-pulse" style={{animationDelay: '2s'}}></div>
@@ -248,8 +262,8 @@ const Gallery = () => {
       </div>
       
       {/* Main Image Display - mobile optimized */}
-      <div className="relative w-full flex items-center justify-center p-2 lg:p-4 z-10 h-[calc(100vh-200px)] sm:h-[calc(100vh-180px)]">
-        <div className="relative w-full max-w-6xl h-full rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+      <div className="relative w-full flex items-center justify-center p-0 lg:p-0 z-10 h-[calc(100vh-200px)] sm:h-[calc(100vh-180px)]">
+        <div className="relative w-full max-w-7xl h-full">
           {images.map((image, index) => (
             <div
               key={index}
@@ -268,13 +282,15 @@ const Gallery = () => {
               }}
             >
               <img
+                loading="lazy" decoding="async" fetchPriority="low" draggable={false}
+                sizes="100vw"
                 src={image}
                 alt={`Gallery Image ${index + 1}`}
                 className="w-full h-full object-contain transition-all duration-1000 ease-in-out"
                 style={{
                   transform: index === currentImageIndex 
-                    ? 'scale(1.05)' 
-                    : 'scale(1.1)',
+                    ? 'scale(1.12)' 
+                    : 'scale(1.15)',
                 }}
               />
             </div>
