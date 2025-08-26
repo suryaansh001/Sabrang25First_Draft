@@ -89,7 +89,7 @@ const HolographicCard = ({
             }}
           >
             {/* FRONT */}
-            <div className="absolute inset-0 w-full h-full rounded-lg backdrop-blur-xl bg-white/10 border border-white/20 overflow-hidden shadow-2xl backface-hidden">
+            <div className={`absolute inset-0 w-full h-full rounded-lg backdrop-blur-xl bg-white/10 border border-white/20 overflow-hidden shadow-2xl backface-hidden transition-opacity duration-300 ${hoveredCard ? 'opacity-0' : 'opacity-100'}`}>
               {/* Liquid Animation Background */}
               <div className="absolute inset-0 overflow-hidden">
                 <div className={`${
@@ -144,7 +144,7 @@ const HolographicCard = ({
             </div>
 
             {/* BACK */}
-            <div className="absolute bg-black/10 inset-0 w-full h-full rounded-lg backdrop-blur-xl bg-gradient-to-br from-purple-600/40 via-pink-600/40 to-blue-600/40 border border-white/30 overflow-hidden shadow-2xl text-white p-6 backface-hidden rotate-y-180" style={{ transform: 'rotateY(180deg)' }}>
+            <div className={`absolute inset-0 w-full h-full rounded-lg backdrop-blur-xl bg-gradient-to-br from-purple-600/40 via-pink-600/40 to-blue-600/40 border border-white/30 overflow-hidden shadow-2xl text-white p-6 rotate-y-180 transition-opacity duration-300 relative z-999 ${hoveredCard ? 'opacity-100' : 'opacity-0'}`} style={{ transform: 'rotateY(180deg)' }}>
               {/* Enhanced background pattern */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-black/20" />
               
@@ -1421,9 +1421,7 @@ export default function PeopleStrip() {
         }
         
         /* Ensure proper 3D rendering */
-        .perspective-1000 * {
-          transform-style: preserve-3d;
-        }
+        /* Removed universal transform-style rule to prevent text rendering issues on back face */
         @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }
