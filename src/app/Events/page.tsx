@@ -921,7 +921,10 @@ export default function EventsPage() {
                       </div>
 
                       <div className="flex space-x-4 pt-6">
-                        <button className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+                        <button 
+                          onClick={() => router.push('/coming-soon')}
+                          className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+                        >
                           BUY TICKETS
                         </button>
                         <button 
