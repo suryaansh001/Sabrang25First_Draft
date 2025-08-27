@@ -1,60 +1,95 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, ReactNode } from "react";
 import { motion } from "framer-motion";
 
-export default function CulturalComingSoon() {
+// Drunk text effect for late night coding vibes
+const DrunkText = ({ children, delay = 0 }: { children: ReactNode, delay?: number }) => {
+  const [wobble, setWobble] = useState(false);
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (Math.random() > 0.93) {
+        setWobble(true);
+        setTimeout(() => setWobble(false), 200);
+      }
+    }, 1500);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 50, rotateZ: -5 }}
+      animate={{ 
+        opacity: 1, 
+        y: 0, 
+        rotateZ: wobble ? [0, 2, -1, 0] : 0,
+        x: wobble ? [0, 1, -1, 0] : 0
+      }}
+      transition={{ 
+        delay, 
+        duration: 0.6, 
+        type: "spring",
+        rotateZ: { duration: 0.2 },
+        x: { duration: 0.2 }
+      }}
+      className="relative"
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+export default function ComingSoon() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
   const [konami, setKonami] = useState<number[]>([]);
   const [easterEgg, setEasterEgg] = useState(false);
-  const [rehearsalCount, setRehearsalCount] = useState(0);
-  const [eventCount, setEventCount] = useState(0);
+  const [coffeeCount, setCoffeeCount] = useState(Math.floor(Math.random() * 47) + 15);
+  const [bugCount, setBugCount] = useState(Math.floor(Math.random() * 12) + 1);
   const [currentMessage, setCurrentMessage] = useState(0);
   const [timeOfDay, setTimeOfDay] = useState('');
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
-  const [glitchDots, setGlitchDots] = useState<{ left: number; top: number }[]>([]);
-  const [mounted, setMounted] = useState(false);
 
-  const culturalMessages = [
-    "choreographing dance battles that'll make you question reality 💃",
-    "tuning instruments for the most epic musical showdown 🎵",
-    "designing stage setups that'll blow your mind ✨",
-    "rehearsing performances until 3am (worth every second)",
-    "crafting art installations that speak to your soul 🎨",
-    "writing poetry that'll give you goosebumps 📝",
-    "practicing drama pieces that'll leave you speechless 🎭",
-    "organizing fashion shows that'll redefine style 👗",
-    "planning cultural fusion events you've never seen before",
-    "creating memories that'll last a lifetime... almost ready! 🌟"
+  const devMessages = [
+    "just fixed a bug that created two more bugs... classic",
+    "why does this work in dev but not prod?? 🤔",
+    "refactored the entire codebase at 3am (bad idea)",
+    "added a feature nobody asked for but everyone will love",
+    "spent 6 hours debugging... it was a missing semicolon",
+    "the code is now 69% more chaotic (nice)",
+    "TODO: remove debug console.logs (narrator: they never did)",
+    "accidentally deleted production DB... jk it was staging",
+    "this component has gained consciousness, send help",
+    "css is a mystery and i am but a humble peasant"
   ];
 
   // Set time-based greeting
   useEffect(() => {
     const hour = new Date().getHours();
-    if (hour < 6) setTimeOfDay('night owl');
+    if (hour < 6) setTimeOfDay('still awake??');
     else if (hour < 12) setTimeOfDay('morning');
     else if (hour < 17) setTimeOfDay('afternoon');
     else if (hour < 22) setTimeOfDay('evening');
-    else setTimeOfDay('creative soul');
+    else setTimeOfDay('night owl');
   }, []);
 
-  // Cycle through cultural messages
+  // Cycle through dev messages
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentMessage(prev => (prev + 1) % culturalMessages.length);
+      setCurrentMessage(prev => (prev + 1) % devMessages.length);
     }, 4000);
     return () => clearInterval(interval);
   }, []);
 
-  // Rehearsal count that occasionally updates
+  // Coffee count that occasionally updates
   useEffect(() => {
-    setRehearsalCount(Math.floor(Math.random() * 127) + 45);
     const interval = setInterval(() => {
-      if (Math.random() > 0.6) {
-        setRehearsalCount(prev => prev + 1);
+      if (Math.random() > 0.7) {
+        setCoffeeCount(prev => prev + 1);
       }
-    }, 25000);
+    }, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -62,28 +97,28 @@ export default function CulturalComingSoon() {
   const konamiCode = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // up up down down left right left right B A
   
   useEffect(() => {
+    // Using e.keyCode is deprecated, but we'll keep it to match the konamiCode array.
     const handleKeyDown = (e: KeyboardEvent) => {
-      const newKonami = [...konami, e.keyCode];
-      if (newKonami.length > konamiCode.length) {
-        newKonami.splice(0, newKonami.length - konamiCode.length);
-      }
-      setKonami(newKonami);
-      
-      if (JSON.stringify(newKonami) === JSON.stringify(konamiCode)) {
-        setEasterEgg(true);
-        setTimeout(() => setEasterEgg(false), 5000);
-      }
+      setKonami((currentKonami) => {
+        const newKonami = [...currentKonami, e.keyCode];
+        if (newKonami.length > konamiCode.length) {
+          newKonami.splice(0, newKonami.length - konamiCode.length);
+        }
+
+        if (JSON.stringify(newKonami) === JSON.stringify(konamiCode)) {
+          setEasterEgg(true);
+          setTimeout(() => setEasterEgg(false), 5000);
+        }
+        return newKonami;
+      });
     };
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [konami]);
+  }, [konamiCode]);
 
   useEffect(() => {
     setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-    setEventCount(Math.floor(Math.random() * 8) + 15);
-    setGlitchDots(Array.from({ length: 40 }, () => ({ left: Math.random() * 100, top: Math.random() * 100 })));
-    setMounted(true);
     
     const handleResize = () => {
       setWindowSize({ width: window.innerWidth, height: window.innerHeight });
@@ -105,58 +140,16 @@ export default function CulturalComingSoon() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Smooth text animation for cultural vibes
-  const CulturalText = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => {
-    const [glow, setGlow] = useState(false);
-    
-    useEffect(() => {
-      const interval = setInterval(() => {
-        if (Math.random() > 0.88) {
-          setGlow(true);
-          setTimeout(() => setGlow(false), 400);
-        }
-      }, 2000);
-      
-      return () => clearInterval(interval);
-    }, []);
-
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 50, scale: 0.9 }}
-        animate={{ 
-          opacity: 1, 
-          y: 0, 
-          scale: glow ? [1, 1.02, 1] : 1,
-          textShadow: glow ? "0 0 20px rgba(168, 85, 247, 0.5)" : "0 0 0px rgba(168, 85, 247, 0)"
-        }}
-        transition={{ 
-          delay, 
-          duration: 0.8, 
-          type: "spring",
-          scale: { duration: 0.3 },
-          textShadow: { duration: 0.3 }
-        }}
-        className="relative"
-      >
-        {children}
-      </motion.div>
-    );
+  // Click to multiply bugs (because that's how it works)
+  const handleBugClick = () => {
+    setBugCount(prev => prev + Math.floor(Math.random() * 3) + 1);
   };
-
-  // Click to add more events (because culture is infinite)
-  const handleEventClick = () => {
-    setEventCount(prev => prev + Math.floor(Math.random() * 2) + 1);
-  };
-
-  if (!mounted) {
-    return null;
-  }
 
   return (
     <div 
       ref={containerRef}
-      className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black relative overflow-hidden cursor-none selection:bg-purple-500/30"
-      style={{ fontFamily: "'Inter', 'SF Pro Display', system-ui, sans-serif" }}
+      className="min-h-screen bg-black relative overflow-hidden cursor-none selection:bg-purple-500/30"
+      style={{ fontFamily: "'JetBrains Mono', 'Fira Code', monospace" }}
     >
       {/* Easter egg mode */}
       {easterEgg && (
@@ -166,66 +159,55 @@ export default function CulturalComingSoon() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur"
         >
           <div className="text-center">
-            <div className="text-6xl mb-4">🎭</div>
-            <div className="text-2xl text-purple-400 font-bold">SABRANG SUPER FAN DETECTED!</div>
-            <div className="text-white/80 mt-2">you're definitely getting VIP access 👑</div>
+            <div className="text-6xl mb-4">🎉</div>
+            <div className="text-2xl text-green-400 font-bold">KONAMI CODE ACTIVATED!</div>
+            <div className="text-white/80 mt-2">you absolute legend</div>
           </div>
         </motion.div>
       )}
 
-      {/* Custom cursor with cultural flair */}
+      {/* Custom cursor with personality */}
       <motion.div
         className="fixed mix-blend-difference pointer-events-none z-50 flex items-center justify-center"
         style={{
-          left: mousePos.x * windowSize.width / 100 - 20,
-          top: mousePos.y * windowSize.height / 100 - 20,
+          left: mousePos.x * windowSize.width / 100 - 15,
+          top: mousePos.y * windowSize.height / 100 - 15,
         }}
         animate={{
-          scale: isHovering ? 1.8 : 1,
+          scale: isHovering ? 1.5 : 1,
           rotate: isHovering ? [0, 180] : [0, 360],
         }}
         transition={{
-          scale: { duration: 0.3 },
-          rotate: { duration: isHovering ? 1 : 12, repeat: Infinity, ease: "linear" }
+          scale: { duration: 0.2 },
+          rotate: { duration: isHovering ? 0.5 : 8, repeat: Infinity, ease: "linear" }
         }}
       >
-        <div className="w-8 h-8 border-2 border-white rounded-full relative flex items-center justify-center">
-          <motion.div 
-            animate={{ 
-              scale: [1, 1.5, 1],
-              opacity: [0.5, 1, 0.5]
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="text-sm"
-          >
-            ✨
-          </motion.div>
+        <div className="w-6 h-6 border-2 border-white rounded-full relative">
+          <div className="absolute -top-2 -right-2 w-2 h-2 bg-green-400 rounded-full animate-pulse" />
         </div>
       </motion.div>
 
-      {/* Floating cultural elements background */}
+      {/* Glitchy matrix-ish background */}
       <div className="absolute inset-0 opacity-10">
-        {['🎭', '🎵', '💃', '🎨', '🎪', '🌟'].map((emoji, i) => (
+        {[...Array(50)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute text-2xl"
+            className="absolute text-green-500 text-xs font-mono"
             style={{
-              left: `${15 + (i * 15)}%`,
-              top: `${20 + (i * 12)}%`,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
             }}
             animate={{
-              y: [-20, 20, -20],
-              x: [-10, 10, -10],
-              rotate: [-15, 15, -15],
-              opacity: [0.1, 0.3, 0.1],
+              opacity: [0, 1, 0],
+              y: [-10, 10, -10],
             }}
             transition={{
-              duration: 4 + i,
+              duration: Math.random() * 3 + 2,
               repeat: Infinity,
-              delay: i * 0.8,
+              delay: Math.random() * 2,
             }}
           >
-            {emoji}
+            {Math.random() > 0.5 ? '1' : '0'}
           </motion.div>
         ))}
       </div>
@@ -237,17 +219,16 @@ export default function CulturalComingSoon() {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute top-8 left-8 text-white/60 text-sm flex items-center gap-2"
+          className="absolute top-8 left-8 text-white/50 text-sm"
         >
-          <span className="text-purple-400">✨</span>
-          hello {timeOfDay} 👋
+          good {timeOfDay} 👋
         </motion.div>
 
-        {/* Cultural loading animation */}
+        {/* Chaotic loading animation */}
         <motion.div
           initial={{ scale: 0, rotate: -360 }}
           animate={{ scale: 1, rotate: 0 }}
-          transition={{ duration: 1.5, type: "spring", bounce: 0.6 }}
+          transition={{ duration: 1.2, type: "spring", bounce: 0.8 }}
           className="mb-16 relative"
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
@@ -255,288 +236,284 @@ export default function CulturalComingSoon() {
           <motion.div
             animate={{ 
               rotate: [0, 360],
-              scale: isHovering ? [1, 1.2, 1] : 1
+              scale: isHovering ? [1, 1.3, 1] : 1
             }}
             transition={{
-              rotate: { duration: 25, repeat: Infinity, ease: "linear" },
-              scale: { duration: 0.8 }
+              rotate: { duration: 20, repeat: Infinity, ease: "linear" },
+              scale: { duration: 0.6 }
             }}
-            className="w-40 h-40 relative"
+            className="w-32 h-32 relative"
           >
-            {/* Cultural themed spinning rings */}
-            <div className="absolute inset-0 border-2 border-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-spin opacity-30" style={{ animationDuration: '20s' }} />
-            <div className="absolute inset-3 border-2 border-yellow-400/40 rounded-full animate-spin" style={{ animationDuration: '15s', animationDirection: 'reverse' }} />
-            <div className="absolute inset-6 border border-green-400/50 rounded-full animate-spin" style={{ animationDuration: '10s' }} />
-            <div className="absolute inset-9 border border-blue-400/60 rounded-full animate-spin" style={{ animationDuration: '5s', animationDirection: 'reverse' }} />
+            {/* Multiple spinning rings with different speeds */}
+            <div className="absolute inset-0 border-2 border-white/20 rounded-full animate-spin" style={{ animationDuration: '15s' }} />
+            <div className="absolute inset-2 border-2 border-purple-400/30 rounded-full animate-spin" style={{ animationDuration: '10s', animationDirection: 'reverse' }} />
+            <div className="absolute inset-4 border border-pink-400/40 rounded-full animate-spin" style={{ animationDuration: '5s' }} />
+            <div className="absolute inset-6 border border-green-400/50 rounded-full animate-spin" style={{ animationDuration: '3s', animationDirection: 'reverse' }} />
             
             <div className="absolute inset-0 flex items-center justify-center">
               <motion.div
                 animate={{ 
                   rotateY: [0, 360],
-                  scale: [1, 1.3, 1]
+                  scale: [1, 1.2, 1]
                 }}
                 transition={{ 
-                  rotateY: { duration: 3, repeat: Infinity },
-                  scale: { duration: 2, repeat: Infinity }
+                  rotateY: { duration: 2, repeat: Infinity },
+                  scale: { duration: 1, repeat: Infinity }
                 }}
-                className="text-4xl"
+                className="text-3xl"
               >
-                {isHovering ? '🎭' : '🎪'}
+                {isHovering ? '🔥' : '⚡'}
               </motion.div>
             </div>
           </motion.div>
         </motion.div>
 
-        {/* Main cultural title */}
+        {/* Main chaotic title */}
         <div className="text-center mb-8">
           <div className="mb-6">
-            {['S', 'A', 'B', 'R', 'A', 'N', 'G'].map((letter, i) => (
+            {['S', 'H', 'I', 'P', 'P', 'I', 'N', 'G'].map((letter, i) => (
               <motion.span
                 key={i}
-                initial={{ y: 300, opacity: 0, rotateZ: Math.random() * 60 - 30 }}
+                initial={{ y: 200, opacity: 0, rotateZ: Math.random() * 90 - 45 }}
                 animate={{ y: 0, opacity: 1, rotateZ: 0 }}
                 transition={{ 
-                  delay: i * 0.15,
-                  duration: 1,
+                  delay: i * 0.1,
+                  duration: 0.8,
                   type: "spring",
-                  stiffness: 80 + Math.random() * 40
+                  stiffness: 100 + Math.random() * 100
                 }}
-                className="inline-block text-6xl md:text-9xl font-black bg-gradient-to-r from-purple-400 via-pink-500 to-yellow-400 bg-clip-text text-transparent mr-2 hover:from-yellow-400 hover:via-purple-500 hover:to-pink-400 transition-all duration-500 cursor-pointer"
+                className="inline-block text-6xl md:text-9xl font-black text-white mr-1 hover:text-purple-400 transition-colors cursor-pointer"
                 whileHover={{ 
-                  scale: 1.3, 
-                  rotateZ: Math.random() * 15 - 7.5,
-                  y: -10
+                  scale: 1.2, 
+                  rotateZ: Math.random() * 20 - 10,
+                  color: '#8b5cf6'
                 }}
-                onClick={() => console.log(`You clicked ${letter}! Cultural vibes activated 🎭`)}
+                onClick={() => console.log(`You clicked ${letter}! Easter egg developer here 👋`)}
               >
                 {letter}
               </motion.span>
             ))}
           </div>
           
-          <CulturalText delay={1}>
-            <h2 className="text-2xl md:text-4xl text-transparent bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 bg-clip-text mb-2">
-              the cultural extravaganza{' '}
+          <DrunkText delay={0.8}>
+            <h2 className="text-2xl md:text-4xl text-green-400 mb-2">
+              something absolutely{' '}
               <motion.span
                 animate={{ 
-                  scale: [1, 1.2, 1],
-                  rotateZ: [0, 5, -5, 0]
+                  color: ['#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#10b981'],
+                  scale: [1, 1.1, 1]
                 }}
                 transition={{ 
                   duration: 3, 
                   repeat: Infinity,
+                  scale: { duration: 0.5, repeat: Infinity }
                 }}
-                className="inline-block text-yellow-400"
+                className="font-bold"
               >
-                is brewing
+                unhinged
               </motion.span>
             </h2>
-          </CulturalText>
+          </DrunkText>
         </div>
 
-        {/* Cultural commentary */}
+        {/* Developer commentary */}
         <motion.div
           initial={{ opacity: 0, x: -100 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 1.5, duration: 0.8 }}
-          className="max-w-2xl mb-12 p-8 border border-purple-500/20 rounded-2xl bg-gray-900/40 backdrop-blur-xl shadow-2xl"
+          transition={{ delay: 1.2, duration: 0.8 }}
+          className="max-w-2xl mb-12 p-6 border border-white/10 rounded-lg bg-gray-900/30 backdrop-blur"
         >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
-            <div className="w-4 h-4 bg-yellow-500 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-            <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
-            <span className="text-white/50 text-sm ml-3">~/sabrang-prep.log</span>
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <span className="text-white/40 text-sm ml-2">~/dev-thoughts.log</span>
           </div>
           
           <motion.p 
             key={currentMessage}
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-white/80 text-base leading-relaxed mb-6"
+            className="text-white/70 text-sm font-mono leading-relaxed"
           >
-            <span className="text-purple-400">🎭</span> {culturalMessages[currentMessage]}
+            <span className="text-green-400">$</span> {devMessages[currentMessage]}
           </motion.p>
           
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-            <div className="flex items-center gap-3 p-3 bg-purple-500/10 rounded-lg border border-purple-500/20">
-              <span className="text-2xl">🎪</span>
-              <div>
-                <motion.div 
-                  key={rehearsalCount}
-                  initial={{ scale: 1.3, color: '#a855f7' }}
-                  animate={{ scale: 1, color: '#d1d5db' }}
-                  className="font-bold text-white"
-                >
-                  {rehearsalCount}
-                </motion.div>
-                <div className="text-gray-400 text-xs">hours rehearsed</div>
-              </div>
+          <div className="mt-4 flex flex-wrap gap-4 text-xs">
+            <div className="flex items-center gap-2">
+              <span className="text-purple-400">☕</span>
+              <motion.span 
+                key={coffeeCount}
+                initial={{ scale: 1.5, color: '#8b5cf6' }}
+                animate={{ scale: 1, color: '#9ca3af' }}
+                className="text-gray-400"
+              >
+                {coffeeCount} cups of coffee consumed
+              </motion.span>
             </div>
-            
-            <div className="flex items-center gap-3 p-3 bg-pink-500/10 rounded-lg border border-pink-500/20">
-              <span className="text-2xl">🎨</span>
-              <div>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={handleEventClick}
-                  className="font-bold text-white hover:text-pink-400 transition-colors cursor-pointer"
-                >
-                  {eventCount}
-                </motion.button>
-                <div className="text-gray-400 text-xs">events planned</div>
-              </div>
+            <div className="flex items-center gap-2">
+              <span className="text-red-400">🐛</span>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={handleBugClick}
+                className="text-gray-400 hover:text-red-400 transition-colors cursor-pointer"
+              >
+                {bugCount} bugs squashed (click me!)
+              </motion.button>
             </div>
-            
-            <div className="flex items-center gap-3 p-3 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
+            <div className="flex items-center gap-2">
               <motion.span
                 animate={{ rotate: [0, 360] }}
-                transition={{ duration: 3, repeat: Infinity }}
-                className="text-2xl"
+                transition={{ duration: 2, repeat: Infinity }}
+                className="text-blue-400"
               >
-                ✨
+                ⚙️
               </motion.span>
-              <div>
-                <div className="font-bold text-white">∞</div>
-                <div className="text-gray-400 text-xs">memories incoming</div>
-              </div>
+              <span className="text-gray-400">47 features nobody asked for</span>
             </div>
           </div>
         </motion.div>
 
-        {/* Cultural CTA button */}
+        {/* Chaotic CTA button */}
         <motion.button
-          initial={{ opacity: 0, y: 100, rotateZ: -5 }}
+          initial={{ opacity: 0, y: 100, rotateZ: -10 }}
           animate={{ opacity: 1, y: 0, rotateZ: 0 }}
-          transition={{ delay: 2, duration: 0.8, type: "spring" }}
+          transition={{ delay: 1.5, duration: 0.6, type: "spring" }}
           whileHover={{ 
-            scale: 1.08,
-            rotateZ: [0, -1, 1, 0],
-            boxShadow: "0 25px 50px rgba(168, 85, 247, 0.4)",
+            scale: 1.05,
+            rotateZ: [0, -2, 2, 0],
+            boxShadow: "0 20px 40px rgba(139, 69, 255, 0.4)",
           }}
-          whileTap={{ scale: 0.95, rotateZ: 3 }}
+          whileTap={{ scale: 0.95, rotateZ: 5 }}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
-          className="group relative px-10 py-5 bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 text-white font-bold text-lg rounded-2xl overflow-hidden transition-all duration-500 shadow-2xl"
+          className="group relative px-8 py-4 bg-transparent border-2 border-white text-white font-bold text-lg overflow-hidden transition-all duration-500 hover:border-purple-400"
+          style={{ 
+            clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
+            fontFamily: "'JetBrains Mono', monospace"
+          }}
           onClick={() => {
-            console.log('Get notified clicked! You\'re now on the VIP cultural list 🎭');
-            // Add a celebratory effect
-            document.body.style.animation = 'celebrate 1s ease-in-out';
+            console.log('Button clicked! You\'re now on the list of cool people 😎');
+            // Add a little screen shake effect
+            document.body.style.animation = 'shake 0.5s ease-in-out';
             setTimeout(() => {
               document.body.style.animation = '';
-            }, 1000);
+            }, 500);
           }}
         >
           <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-yellow-500 via-green-500 to-blue-500 opacity-0"
-            whileHover={{ opacity: 1 }}
+            className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600"
+            initial={{ x: '-100%', skewX: 45 }}
+            whileHover={{ x: '0%' }}
             transition={{ duration: 0.6 }}
           />
           
-          <span className="relative flex items-center justify-center gap-3">
+          <span className="relative flex items-center gap-2">
             <motion.span
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
+              animate={{ opacity: [1, 0, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
             >
-              🎭
+              $
             </motion.span>
-            notify me when magic begins
+            sudo notify --me --immediately
             <motion.span
               animate={{ 
-                rotate: [0, 360]
+                opacity: [1, 0, 1],
+                x: [0, 3, 0]
               }}
               transition={{ 
-                duration: 3, 
-                repeat: Infinity,
-                ease: "linear"
+                opacity: { duration: 1, repeat: Infinity },
+                x: { duration: 2, repeat: Infinity }
               }}
             >
-              ✨
+              █
             </motion.span>
           </span>
         </motion.button>
 
-        {/* Cultural status messages */}
+        {/* Ridiculous status messages */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 2.5 }}
-          className="mt-16 text-center space-y-3"
+          transition={{ delay: 2 }}
+          className="mt-16 text-center space-y-2"
         >
           <motion.div
             animate={{ 
-              opacity: [0.6, 1, 0.6],
+              opacity: [0.5, 1, 0.5],
             }}
             transition={{ 
-              duration: 3, 
+              duration: 2, 
               repeat: Infinity,
             }}
-            className="flex items-center justify-center gap-3 text-sm"
+            className="flex items-center justify-center gap-3 text-sm font-mono"
           >
             <motion.div
               animate={{ 
-                backgroundColor: ['#a855f7', '#ec4899', '#10b981', '#f59e0b', '#a855f7'],
-                scale: [1, 1.4, 1],
-                boxShadow: ['0 0 0 rgba(168, 85, 247, 0)', '0 0 25px rgba(168, 85, 247, 0.6)', '0 0 0 rgba(168, 85, 247, 0)']
+                backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#10b981'],
+                scale: [1, 1.3, 1],
+                boxShadow: ['0 0 0 rgba(16, 185, 129, 0)', '0 0 20px rgba(16, 185, 129, 0.5)', '0 0 0 rgba(16, 185, 129, 0)']
               }}
               transition={{ 
-                backgroundColor: { duration: 5, repeat: Infinity },
-                scale: { duration: 1.5, repeat: Infinity },
-                boxShadow: { duration: 2.5, repeat: Infinity }
+                backgroundColor: { duration: 4, repeat: Infinity },
+                scale: { duration: 1, repeat: Infinity },
+                boxShadow: { duration: 2, repeat: Infinity }
               }}
               className="w-3 h-3 rounded-full"
             />
-            <span className="text-white/80 font-medium">
-              cultural status: absolutely phenomenal
+            <span className="text-white/70">
+              system status: probably working
             </span>
           </motion.div>
           
-          <div className="text-white/60 text-sm flex items-center justify-center gap-2">
-            <span className="text-yellow-400">🌟</span> 
-            prepare for: talent overload, jaw-dropping performances, unforgettable moments
+          <div className="text-white/50 text-xs">
+            <span className="text-yellow-400">⚠️</span> side effects may include: mind blown, socks knocked off, existential crisis
           </div>
           
-          <div className="text-white/50 text-xs">
-            <span className="text-purple-400">💫</span> pro tip: try the konami code for a special surprise
+          <div className="text-white/40 text-xs font-mono">
+            hint: try the konami code 👀
           </div>
         </motion.div>
       </div>
 
-      {/* Floating interactive cultural elements */}
-      {['🎭', '🎵', '💃', '🎨', '🎪', '✨'].map((emoji, i) => (
-        <motion.div
-          key={i}
-          className="absolute text-2xl cursor-pointer opacity-30 hover:opacity-100 transition-opacity"
-          style={{
-            left: `${10 + (i * 15)}%`,
-            top: `${15 + (i * 15)}%`,
-          }}
-          animate={{
-            scale: [0.8, 1.3, 0.8],
-            rotate: [0, 360],
-            x: (mousePos.x - 50) * (0.03 + i * 0.002),
-            y: (mousePos.y - 50) * (0.03 + i * 0.002),
-          }}
-          transition={{
-            scale: { duration: 3 + i * 0.2, repeat: Infinity },
-            rotate: { duration: 8 + i * 0.5, repeat: Infinity, ease: "linear" },
-            x: { duration: 1.5 },
-            y: { duration: 1.5 },
-          }}
-          whileHover={{ scale: 2, rotate: 720 }}
-          onClick={() => console.log(`Cultural element ${emoji} activated! 🎉`)}
-        >
-          {emoji}
-        </motion.div>
-      ))}
+      {/* Scattered interactive dots */}
+      {[...Array(30)].map((_, i) => {
+        const randomX = Math.random() * 100;
+        const randomY = Math.random() * 100;
+        return (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 rounded-full cursor-pointer"
+            style={{
+              left: `${randomX}%`,
+              top: `${randomY}%`,
+              backgroundColor: ['#8b5cf6', '#ec4899', '#10b981', '#f59e0b'][Math.floor(Math.random() * 4)]
+            }}
+            animate={{
+              scale: [0.3, 1.2, 0.3],
+              opacity: [0.2, 0.8, 0.2],
+              x: (mousePos.x - 50) * (0.01 + i * 0.0005),
+              y: (mousePos.y - 50) * (0.01 + i * 0.0005),
+            }}
+            transition={{
+              scale: { duration: 2 + i * 0.1, repeat: Infinity },
+              opacity: { duration: 2 + i * 0.1, repeat: Infinity },
+              x: { duration: 2, ease: "easeOut" },
+              y: { duration: 2, ease: "easeOut" },
+            }}
+            whileHover={{ scale: 2, opacity: 1 }}
+            onClick={() => console.log(`Dot ${i} says hi! 🎉`)}
+          />
+        );
+      })}
 
-      {/* CSS for celebrate animation */}
+      {/* CSS for shake animation */}
       <style jsx>{`
-        @keyframes celebrate {
-          0%, 100% { transform: scale(1) rotate(0deg); }
-          25% { transform: scale(1.02) rotate(1deg); }
-          50% { transform: scale(0.98) rotate(-1deg); }
-          75% { transform: scale(1.01) rotate(0.5deg); }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-2px) rotate(-0.5deg); }
+          75% { transform: translateX(2px) rotate(0.5deg); }
         }
       `}</style>
     </div>
