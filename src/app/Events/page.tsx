@@ -7,6 +7,7 @@ import SidebarDock from '../../../components/SidebarDock';
 import Logo from '../../../components/Logo';
 import { useRouter } from 'next/navigation';
 import InfinityTransition from '../../../components/InfinityTransition';
+import ComingSoonOverlay from '../../../components/ComingSoonOverlay';
 
 interface Event {
   id: number;
@@ -472,6 +473,16 @@ export default function EventsPage() {
   const [showTransition, setShowTransition] = useState(false);
   const [targetHref, setTargetHref] = useState<string | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showComingSoon, setShowComingSoon] = useState(true);
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
+
+  // Prevent flash of content by setting loaded state after a brief delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsPageLoaded(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Derive high-level domain (Cultural, Technical, Business, Design, Literary, Mini Event)
   const getEventDomain = (imagePath: string): string => {
@@ -572,472 +583,479 @@ export default function EventsPage() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Background Image */}
-      <div 
-        className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: 'url(/images/backgrounds/eventpage.webp)'
-        }}
-      />
+      {/* Coming Soon Overlay - Show immediately to prevent flash */}
+      {showComingSoon && <ComingSoonOverlay />}
       
-      {/* Glassy Translucent Overlay with 0.4 opacity */}
-      <div className="fixed inset-0 -z-10 bg-black/40 backdrop-blur-sm" />
-      {/* Logo and sidebar */}
-      <Logo className="block" />
-      <SidebarDock className="hidden lg:block" />
-
-      {/* Mobile hamburger */}
-      <button
-        aria-label="Open menu"
-        onClick={() => setMobileMenuOpen(true)}
-        className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
-      >
-        <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
-        <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
-        <span className="block h-0.5 bg-white/80 rounded-full w-4" />
-      </button>
-      
-      {/* Flagship Events Toggle - hide on mobile to avoid overlapping navbar */}
-      <motion.div 
-        initial={{ opacity: 0, x: 50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 0.5 }}
-        className="hidden lg:fixed lg:top-6 lg:right-6 lg:z-50 lg:block"
-      >
-        <div className="relative">
-          {/* Main toggle container */}
+      {/* Main content - only show if page is loaded and overlay is not visible */}
+      {isPageLoaded && !showComingSoon && (
+        <>
+          {/* Background Image */}
           <div 
-            onClick={() => setShowFlagshipOnly(!showFlagshipOnly)}
-            className="cursor-pointer group"
+            className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: 'url(/images/backgrounds/eventpage.webp)'
+            }}
+          />
+      
+          {/* Glassy Translucent Overlay with 0.4 opacity */}
+          <div className="fixed inset-0 -z-10 bg-black/40 backdrop-blur-sm" />
+          {/* Logo and sidebar */}
+          <Logo className="block" />
+          <SidebarDock className="hidden lg:block" />
+
+          {/* Mobile hamburger */}
+          <button
+            aria-label="Open menu"
+            onClick={() => setMobileMenuOpen(true)}
+            className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
           >
-            {/* Background card */}
-            <div className="bg-black/60 backdrop-blur-md rounded-2xl p-4 border border-white/20 shadow-2xl">
-              {/* Icon and text container */}
-              <div className="flex items-center space-x-3">
-                {/* Crown icon with animation */}
-                <div className="relative">
-                  <Crown className={`w-6 h-6 ${showFlagshipOnly ? 'text-yellow-400' : 'text-gray-400'} transition-colors duration-300`} />
-                  {showFlagshipOnly && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full"
-                    />
-                  )}
+            <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
+            <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
+            <span className="block h-0.5 bg-white/80 rounded-full w-4" />
+          </button>
+          
+          {/* Flagship Events Toggle - hide on mobile to avoid overlapping navbar */}
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="hidden lg:fixed lg:top-6 lg:right-6 lg:z-50 lg:block"
+          >
+            <div className="relative">
+              {/* Main toggle container */}
+              <div 
+                onClick={() => setShowFlagshipOnly(!showFlagshipOnly)}
+                className="cursor-pointer group"
+              >
+                {/* Background card */}
+                <div className="bg-black/60 backdrop-blur-md rounded-2xl p-4 border border-white/20 shadow-2xl">
+                  {/* Icon and text container */}
+                  <div className="flex items-center space-x-3">
+                    {/* Crown icon with animation */}
+                    <div className="relative">
+                      <Crown className={`w-6 h-6 ${showFlagshipOnly ? 'text-yellow-400' : 'text-gray-400'} transition-colors duration-300`} />
+                      {showFlagshipOnly && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full"
+                        />
+                      )}
+                    </div>
+                    
+                    {/* Text content */}
+                    <div className="text-white">
+                      <div className="text-sm font-semibold">
+                        {showFlagshipOnly ? 'All Events' : 'Flagship Only'}
+                      </div>
+                      <div className="text-xs text-gray-300">
+                        {showFlagshipOnly ? 'View all events' : 'Premium events only'}
+                      </div>
+                    </div>
+                    
+                    {/* Toggle indicator */}
+                    <div className={`w-8 h-4 rounded-full transition-all duration-300 ${
+                      showFlagshipOnly ? 'bg-yellow-400' : 'bg-gray-600'
+                    }`}>
+                      <motion.div
+                        animate={{ x: showFlagshipOnly ? 16 : 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="w-4 h-4 bg-white rounded-full shadow-md"
+                      />
+                    </div>
+                  </div>
                 </div>
                 
-                {/* Text content */}
-                <div className="text-white">
-                  <div className="text-sm font-semibold">
-                    {showFlagshipOnly ? 'All Events' : 'Flagship Only'}
-                  </div>
-                  <div className="text-xs text-gray-300">
-                    {showFlagshipOnly ? 'View all events' : 'Premium events only'}
-                  </div>
-                </div>
-                
-                {/* Toggle indicator */}
-                <div className={`w-8 h-4 rounded-full transition-all duration-300 ${
-                  showFlagshipOnly ? 'bg-yellow-400' : 'bg-gray-600'
-                }`}>
-                  <motion.div
-                    animate={{ x: showFlagshipOnly ? 16 : 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="w-4 h-4 bg-white rounded-full shadow-md"
-                  />
-                </div>
+                {/* Hover effect overlay */}
+                <div className="absolute inset-0 bg-white/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
             </div>
-            
-            {/* Hover effect overlay */}
-            <div className="absolute inset-0 bg-white/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          </div>
-        </div>
-      </motion.div>
+          </motion.div>
 
-      <AnimatePresence mode="wait">
-        {!selectedEvent ? (
-          <motion.main
-            key="main"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.6, ease: "easeInOut" }}
-            className="px-6 py-12"
-          >
-            <div className="max-w-7xl mx-auto">
-              {/* Title Section */}
-              <div className="mb-12 lg:mb-16 text-center pt-8 lg:pt-12">
-                <motion.h1 
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                  className="text-6xl md:text-8xl font-bold text-white mb-4"
-                >
-                  SABRANG 2025
-                </motion.h1>
-                {/* Mobile subtitle only */}
-                <motion.div
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: 0.3 }}
-                  className="lg:hidden -mt-2 mb-4"
-                >
-                  <p className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-pink-400 to-cyan-300">
-                    Noorwana & Color to Cosmos
-                  </p>
-                </motion.div>
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: "100px" }}
-                  transition={{ duration: 0.8, delay: 0.4 }}
-                  className="h-1 bg-gradient-to-r from-pink-400 to-purple-400 mb-6 lg:mb-8 mx-auto"
-                />
-                <motion.p 
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: 0.6 }}
-                  className="text-gray-300 text-lg max-w-md mx-auto"
-                >
-                  It is a long established fact that a reader will be distracted by
-                </motion.p>
-              </div>
-
-              {/* Category Filters */}
-              <motion.div 
+          <AnimatePresence mode="wait">
+            {!selectedEvent ? (
+              <motion.main
+                key="main"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 1 }}
-                className="mb-8 lg:mb-12"
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.6, ease: "easeInOut" }}
+                className="px-6 py-12"
               >
-                <div className="text-center mb-4 lg:mb-6">
-                  <h3 className="text-xl lg:text-2xl font-bold text-white mb-3 lg:mb-4 flex items-center justify-center">
-                    <Filter className="w-5 h-5 lg:w-6 lg:h-6 mr-2" />
-                    Filter by Category
-                  </h3>
-                </div>
-                <div className="grid grid-cols-2 lg:flex lg:flex-wrap justify-center gap-2 lg:gap-4 px-4 lg:px-0">
-                  {categories.map((category) => (
-                    <motion.button
-                      key={category.value}
-                      onClick={() => setSelectedCategory(category.value)}
-                      className={`px-3 lg:px-6 py-2 lg:py-3 rounded-full text-sm lg:text-base font-medium transition-all duration-300 transform hover:scale-105 ${
-                        selectedCategory === category.value
-                          ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
-                          : 'bg-white/20 text-white border border-white/30 hover:bg-white/30'
-                      }`}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                <div className="max-w-7xl mx-auto">
+                  {/* Title Section */}
+                  <div className="mb-12 lg:mb-16 text-center pt-8 lg:pt-12">
+                    <motion.h1 
+                      initial={{ opacity: 0, x: -50 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.8, delay: 0.2 }}
+                      className="text-6xl md:text-8xl font-bold text-white mb-4"
                     >
-                      {category.name}
-                    </motion.button>
-                  ))}
-                </div>
-              </motion.div>
-
-              {/* Events Grid - card with image and bottom info */}
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
-                {filteredEvents.map((event, index) => (
-                  <motion.div
-                    key={event.id}
-                    initial={{ opacity: 0, y: 24 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.35, delay: index * 0.04 }}
-                    className="bg-black/40 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 group cursor-pointer"
-                    onClick={() => handleCardClick(event)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(event); } }}
-                    tabIndex={0}
-                    whileHover={{ scale: 1.005 }}
-                    whileTap={{ scale: 0.995 }}
-                  >
-                    <div className="relative w-full aspect-[2/3] bg-black/20">
-                      <img
-                        loading="lazy"
-                        decoding="async"
-                        sizes="(min-width:1024px) 25vw, (min-width:768px) 33vw, 50vw"
-                        fetchPriority="low"
-                        draggable={false}
-                        src={event.image}
-                        alt={event.title}
-                        className="absolute inset-0 w-full h-full object-cover"
-                        onError={(e) => {
-                          console.error(`Failed to load image: ${event.image}`);
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const fallback = document.getElementById(`fallback-${event.id}`);
-                          if (fallback) fallback.style.display = 'block';
-                        }}
-                      />
-                      <div
-                        className={`absolute inset-0 ${event.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`}
-                        style={{ display: 'none' }}
-                        id={`fallback-${event.id}`}
-                      />
-                    </div>
-                    <div className="p-2 bg-black/60">
-                      <div className="flex items-center justify-between text-white">
-                        <span className="text-xs font-semibold truncate pr-2">{event.title}</span>
-                        <div className="flex items-center gap-1">
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 border border-white/20">
-                            {getEventDomain(event.image)}
-                          </span>
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full border ${event.isFlagship ? 'bg-yellow-500/10 text-yellow-300 border-yellow-500/30' : 'bg-white/10 text-white border-white/20'}`}>
-                            {event.isFlagship ? 'Flagship' : 'Regular'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </motion.main>
-        ) : (
-          <motion.div
-            key="detail"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="fixed inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 z-50 overflow-hidden"
-          >
-            <div className="flex flex-col lg:flex-row h-full">
-              {/* Left Side - Event Card */}
-              <motion.div
-                initial={{ x: -100, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-                className="w-full lg:w-1/2 p-4 lg:p-8 flex items-center justify-center"
-              >
-                <div className="w-full max-w-md">
-                  <motion.div
-                    layoutId={`card-${selectedEvent.id}`}
-                    className={`${selectedEvent.isFlagship ? 'bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 border-yellow-500/50' : 'bg-black/40'} backdrop-blur-sm rounded-lg overflow-hidden border border-white/20`}
-                    initial={{ scale: 0.8 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
-                  >
-                    <div className="relative w-full aspect-[2/3] bg-black/20">
-                      <img 
-                        loading="lazy"
-                        decoding="async"
-                        sizes="(min-width:1024px) 33vw, 90vw"
-                        fetchPriority="low"
-                        draggable={false}
-                        src={selectedEvent.image} 
-                        alt={selectedEvent.title}
-                        className="absolute inset-0 w-full h-full object-cover"
-                        onError={(e) => {
-                          console.error(`Failed to load modal image: ${selectedEvent.image}`);
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const fallback = document.getElementById(`modal-fallback-${selectedEvent.id}`);
-                          if (fallback) fallback.style.display = 'block';
-                        }}
-                      />
-                      <div className={`absolute inset-0 ${selectedEvent.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`} style={{ display: 'none' }} id={`modal-fallback-${selectedEvent.id}`} />
-                    </div>
-                  </motion.div>
-                </div>
-              </motion.div>
-
-              {/* Right Side - Event Details */}
-              <motion.div
-                initial={{ x: 100, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-                className="w-full lg:w-1/2 p-4 lg:p-8 overflow-y-auto"
-              >
-                <div className="max-w-lg mx-auto lg:mx-0">
-                  {/* Close Button */}
-                  <motion.button
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.4 }}
-                    onClick={handleClose}
-                    className="absolute top-4 lg:top-8 right-4 lg:right-8 w-10 h-10 lg:w-12 lg:h-12 bg-black/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-black/40 transition-colors border border-white/20"
-                  >
-                    <X className="w-5 h-5 lg:w-6 lg:h-6" />
-                  </motion.button>
-
-                  {/* Event Details Content */}
-                  <motion.div
-                    initial={{ y: 30, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.3, duration: 0.5 }}
-                  >
-                    <div className="mb-6">
-                      <span className="inline-block px-3 py-1 bg-pink-500/20 text-pink-300 rounded-full text-sm mb-4">
-                        {selectedEvent.genre}
-                      </span>
-                      <h2 className="text-2xl lg:text-4xl font-bold text-white mb-4">
-                        {selectedEvent.title}
-                      </h2>
-                      <p className="text-gray-300 text-base lg:text-lg leading-relaxed mb-6">
-                        {selectedEvent.description}
+                      SABRANG 2025
+                    </motion.h1>
+                    {/* Mobile subtitle only */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -50 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.8, delay: 0.3 }}
+                      className="lg:hidden -mt-2 mb-4"
+                    >
+                      <p className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-pink-400 to-cyan-300">
+                        Noorwana & Color to Cosmos
                       </p>
-                    </div>
+                    </motion.div>
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: "100px" }}
+                      transition={{ duration: 0.8, delay: 0.4 }}
+                      className="h-1 bg-gradient-to-r from-pink-400 to-purple-400 mb-6 lg:mb-8 mx-auto"
+                    />
+                    <motion.p 
+                      initial={{ opacity: 0, x: -50 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.8, delay: 0.6 }}
+                      className="text-gray-300 text-lg max-w-md mx-auto"
+                    >
+                      It is a long established fact that a reader will be distracted by
+                    </motion.p>
+                  </div>
 
-                    <div className="space-y-4 lg:space-y-6">
-                      <div>
-                        <h3 className="text-lg lg:text-xl font-semibold text-white mb-3">Event Details</h3>
-                        {/* Flagship Event Info */}
-                        {selectedEvent.isFlagship && (
-                          <div className="mb-4 p-3 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-lg">
-                            <div className="flex items-center space-x-2 text-yellow-300">
-                              <span className="text-lg">⭐</span>
-                              <span className="font-semibold">This is a Flagship Event</span>
+                  {/* Category Filters */}
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 1 }}
+                    className="mb-8 lg:mb-12"
+                  >
+                    <div className="text-center mb-4 lg:mb-6">
+                      <h3 className="text-xl lg:text-2xl font-bold text-white mb-3 lg:mb-4 flex items-center justify-center">
+                        <Filter className="w-5 h-5 lg:w-6 lg:h-6 mr-2" />
+                        Filter by Category
+                      </h3>
+                    </div>
+                    <div className="grid grid-cols-2 lg:flex lg:flex-wrap justify-center gap-2 lg:gap-4 px-4 lg:px-0">
+                      {categories.map((category) => (
+                        <motion.button
+                          key={category.value}
+                          onClick={() => setSelectedCategory(category.value)}
+                          className={`px-3 lg:px-6 py-2 lg:py-3 rounded-full text-sm lg:text-base font-medium transition-all duration-300 transform hover:scale-105 ${
+                            selectedCategory === category.value
+                              ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                              : 'bg-white/20 text-white border border-white/30 hover:bg-white/30'
+                          }`}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          {category.name}
+                        </motion.button>
+                      ))}
+                    </div>
+                  </motion.div>
+
+                  {/* Events Grid - card with image and bottom info */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
+                    {filteredEvents.map((event, index) => (
+                      <motion.div
+                        key={event.id}
+                        initial={{ opacity: 0, y: 24 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.35, delay: index * 0.04 }}
+                        className="bg-black/40 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 group cursor-pointer"
+                        onClick={() => handleCardClick(event)}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(event); } }}
+                        tabIndex={0}
+                        whileHover={{ scale: 1.005 }}
+                        whileTap={{ scale: 0.995 }}
+                      >
+                        <div className="relative w-full aspect-[2/3] bg-black/20">
+                          <img
+                            loading="lazy"
+                            decoding="async"
+                            sizes="(min-width:1024px) 25vw, (min-width:768px) 33vw, 50vw"
+                            fetchPriority="low"
+                            draggable={false}
+                            src={event.image}
+                            alt={event.title}
+                            className="absolute inset-0 w-full h-full object-cover"
+                            onError={(e) => {
+                              console.error(`Failed to load image: ${event.image}`);
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              const fallback = document.getElementById(`fallback-${event.id}`);
+                              if (fallback) fallback.style.display = 'block';
+                            }}
+                          />
+                          <div
+                            className={`absolute inset-0 ${event.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`}
+                            style={{ display: 'none' }}
+                            id={`fallback-${event.id}`}
+                          />
+                        </div>
+                        <div className="p-2 bg-black/60">
+                          <div className="flex items-center justify-between text-white">
+                            <span className="text-xs font-semibold truncate pr-2">{event.title}</span>
+                            <div className="flex items-center gap-1">
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 border border-white/20">
+                                {getEventDomain(event.image)}
+                              </span>
+                              <span className={`text-[10px] px-2 py-0.5 rounded-full border ${event.isFlagship ? 'bg-yellow-500/10 text-yellow-300 border-yellow-500/30' : 'bg-white/10 text-white border-white/20'}`}>
+                                {event.isFlagship ? 'Flagship' : 'Regular'}
+                              </span>
                             </div>
-                            <p className="text-yellow-200 text-sm mt-1">
-                              Flagship events are our most prestigious and high-priority events featuring top-tier content and exclusive experiences.
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </motion.main>
+            ) : (
+              <motion.div
+                key="detail"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                className="fixed inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 z-50 overflow-hidden"
+              >
+                <div className="flex flex-col lg:flex-row h-full">
+                  {/* Left Side - Event Card */}
+                  <motion.div
+                    initial={{ x: -100, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    className="w-full lg:w-1/2 p-4 lg:p-8 flex items-center justify-center"
+                  >
+                    <div className="w-full max-w-md">
+                      <motion.div
+                        layoutId={`card-${selectedEvent.id}`}
+                        className={`${selectedEvent.isFlagship ? 'bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 border-yellow-500/50' : 'bg-black/40'} backdrop-blur-sm rounded-lg overflow-hidden border border-white/20`}
+                        initial={{ scale: 0.8 }}
+                        animate={{ scale: 1 }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                      >
+                        <div className="relative w-full aspect-[2/3] bg-black/20">
+                          <img 
+                            loading="lazy"
+                            decoding="async"
+                            sizes="(min-width:1024px) 33vw, 90vw"
+                            fetchPriority="low"
+                            draggable={false}
+                            src={selectedEvent.image} 
+                            alt={selectedEvent.title}
+                            className="absolute inset-0 w-full h-full object-cover"
+                            onError={(e) => {
+                              console.error(`Failed to load modal image: ${selectedEvent.image}`);
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              const fallback = document.getElementById(`modal-fallback-${selectedEvent.id}`);
+                              if (fallback) fallback.style.display = 'block';
+                            }}
+                          />
+                          <div className={`absolute inset-0 ${selectedEvent.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`} style={{ display: 'none' }} id={`modal-fallback-${selectedEvent.id}`} />
+                        </div>
+                      </motion.div>
+                    </div>
+                  </motion.div>
+
+                  {/* Right Side - Event Details */}
+                  <motion.div
+                    initial={{ x: 100, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+                    className="w-full lg:w-1/2 p-4 lg:p-8 overflow-y-auto"
+                  >
+                    <div className="max-w-lg mx-auto lg:mx-0">
+                      {/* Close Button */}
+                      <motion.button
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.4 }}
+                        onClick={handleClose}
+                        className="absolute top-4 lg:top-8 right-4 lg:right-8 w-10 h-10 lg:w-12 lg:h-12 bg-black/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-black/40 transition-colors border border-white/20"
+                      >
+                        <X className="w-5 h-5 lg:w-6 lg:h-6" />
+                      </motion.button>
+
+                      {/* Event Details Content */}
+                      <motion.div
+                        initial={{ y: 30, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.3, duration: 0.5 }}
+                      >
+                        <div className="mb-6">
+                          <span className="inline-block px-3 py-1 bg-pink-500/20 text-pink-300 rounded-full text-sm mb-4">
+                            {selectedEvent.genre}
+                          </span>
+                          <h2 className="text-2xl lg:text-4xl font-bold text-white mb-4">
+                            {selectedEvent.title}
+                          </h2>
+                          <p className="text-gray-300 text-base lg:text-lg leading-relaxed mb-6">
+                            {selectedEvent.description}
+                          </p>
+                        </div>
+
+                        <div className="space-y-4 lg:space-y-6">
+                          <div>
+                            <h3 className="text-lg lg:text-xl font-semibold text-white mb-3">Event Details</h3>
+                            {/* Flagship Event Info */}
+                            {selectedEvent.isFlagship && (
+                              <div className="mb-4 p-3 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-lg">
+                                <div className="flex items-center space-x-2 text-yellow-300">
+                                  <span className="text-lg">⭐</span>
+                                  <span className="font-semibold">This is a Flagship Event</span>
+                                </div>
+                                <p className="text-yellow-200 text-sm mt-1">
+                                  Flagship events are our most prestigious and high-priority events featuring top-tier content and exclusive experiences.
+                                </p>
+                              </div>
+                            )}
+                            <div className="space-y-3">
+                              <div className="flex items-center justify-between py-2 border-b border-white/10">
+                                <span className="text-gray-300">Date & Time</span>
+                                <span className="text-white">{selectedEvent.date} at {selectedEvent.time}</span>
+                              </div>
+                              <div className="flex items-center justify-between py-2 border-b border-white/10">
+                                <span className="text-gray-300">Venue</span>
+                                <span className="text-white">{selectedEvent.venue}</span>
+                              </div>
+                              <div className="flex items-center justify-between py-2 border-b border-white/10">
+                                <span className="text-gray-300">Price</span>
+                                <span className="text-white font-semibold">{selectedEvent.price}</span>
+                              </div>
+                              <div className="flex items-center justify-between py-2 border-b border-white/10">
+                                <span className="text-gray-300">Capacity</span>
+                                <span className="text-white">{selectedEvent.capacity}</span>
+                              </div>
+                              <div className="flex items-center justify-between py-2 border-b border-white/10">
+                                <span className="text-gray-300">Event Type</span>
+                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                  selectedEvent.isFlagship 
+                                    ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-300 border border-yellow-500/30' 
+                                    : 'bg-blue-500/20 text-blue-300'
+                                }`}>
+                                  {selectedEvent.isFlagship ? '⭐ Flagship' : 'Regular Event'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div>
+                            <h3 className="text-xl font-semibold text-white mb-3">About This Event</h3>
+                            <p className="text-gray-300 leading-relaxed">
+                              {selectedEvent.details}
                             </p>
                           </div>
-                        )}
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between py-2 border-b border-white/10">
-                            <span className="text-gray-300">Date & Time</span>
-                            <span className="text-white">{selectedEvent.date} at {selectedEvent.time}</span>
-                          </div>
-                          <div className="flex items-center justify-between py-2 border-b border-white/10">
-                            <span className="text-gray-300">Venue</span>
-                            <span className="text-white">{selectedEvent.venue}</span>
-                          </div>
-                          <div className="flex items-center justify-between py-2 border-b border-white/10">
-                            <span className="text-gray-300">Price</span>
-                            <span className="text-white font-semibold">{selectedEvent.price}</span>
-                          </div>
-                          <div className="flex items-center justify-between py-2 border-b border-white/10">
-                            <span className="text-gray-300">Capacity</span>
-                            <span className="text-white">{selectedEvent.capacity}</span>
-                          </div>
-                          <div className="flex items-center justify-between py-2 border-b border-white/10">
-                            <span className="text-gray-300">Event Type</span>
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              selectedEvent.isFlagship 
-                                ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-300 border border-yellow-500/30' 
-                                : 'bg-blue-500/20 text-blue-300'
-                            }`}>
-                              {selectedEvent.isFlagship ? '⭐ Flagship' : 'Regular Event'}
-                            </span>
+
+                          <div className="flex space-x-4 pt-6">
+                            <button 
+                              onClick={() => router.push('/coming-soon')}
+                              className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+                            >
+                              BUY TICKETS
+                            </button>
+                            <button 
+                              onClick={() => router.push('/coming-soon')}
+                              className="px-6 py-3 border border-white/30 text-white rounded-lg hover:bg-white/10 transition-all duration-300"
+                            >
+                              RULES
+                            </button>
+                            <button 
+                              onClick={handleShare}
+                              className="px-6 py-3 border border-white/30 text-white rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
+                            >
+                              <Share2 className="w-4 h-4" />
+                              <span>SHARE</span>
+                            </button>
                           </div>
                         </div>
-                      </div>
-
-                      <div>
-                        <h3 className="text-xl font-semibold text-white mb-3">About This Event</h3>
-                        <p className="text-gray-300 leading-relaxed">
-                          {selectedEvent.details}
-                        </p>
-                      </div>
-
-                      <div className="flex space-x-4 pt-6">
-                        <button 
-                          onClick={() => router.push('/coming-soon')}
-                          className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
-                        >
-                          BUY TICKETS
-                        </button>
-                        <button 
-                          onClick={() => router.push('/coming-soon')}
-                          className="px-6 py-3 border border-white/30 text-white rounded-lg hover:bg-white/10 transition-all duration-300"
-                        >
-                          RULES
-                        </button>
-                        <button 
-                          onClick={handleShare}
-                          className="px-6 py-3 border border-white/30 text-white rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
-                        >
-                          <Share2 className="w-4 h-4" />
-                          <span>SHARE</span>
-                        </button>
-                      </div>
+                      </motion.div>
                     </div>
                   </motion.div>
                 </div>
+
+                {/* Copy Success Message */}
+                <AnimatePresence>
+                  {showCopyMessage && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 50, scale: 0.9 }}
+                      transition={{ duration: 0.3, ease: "easeOut" }}
+                      className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-60"
+                    >
+                      <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3">
+                        <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                          <Check className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="font-medium">Link copied to clipboard!</span>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
-            </div>
+            )}
+          </AnimatePresence>
 
-            {/* Copy Success Message */}
-            <AnimatePresence>
-              {showCopyMessage && (
-                <motion.div
-                  initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 50, scale: 0.9 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-60"
+          {/* Mobile menu overlay */}
+          {mobileMenuOpen && (
+            <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
+              <div className="absolute top-4 right-4">
+                <button
+                  aria-label="Close menu"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
                 >
-                  <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3">
-                    <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
-                      <Check className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="font-medium">Link copied to clipboard!</span>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                  <X className="w-6 h-6 text-white" />
+                </button>
+              </div>
+              <div className="pt-20 px-6 h-full overflow-y-auto">
+                <div className="grid grid-cols-1 gap-3 pb-8">
+                  {mobileNavItems.map((item) => (
+                    <button
+                      key={item.title}
+                      onClick={() => { setMobileMenuOpen(false); setTargetHref(item.href); setShowTransition(true); }}
+                      className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                    >
+                      <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
+                        {item.icon}
+                      </span>
+                      <span className="font-medium">{item.title}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
 
+          {/* Infinity transition for mobile nav */}
+          <InfinityTransition
+            isActive={showTransition}
+            onComplete={() => {
+              if (targetHref) router.push(targetHref);
+              setShowTransition(false);
+              setTargetHref(null);
+            }}
+          />
 
-             {/* Mobile menu overlay */}
-       {mobileMenuOpen && (
-         <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
-           <div className="absolute top-4 right-4">
-             <button
-               aria-label="Close menu"
-               onClick={() => setMobileMenuOpen(false)}
-               className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
-             >
-               <X className="w-6 h-6 text-white" />
-             </button>
-           </div>
-           <div className="pt-20 px-6 h-full overflow-y-auto">
-             <div className="grid grid-cols-1 gap-3 pb-8">
-               {mobileNavItems.map((item) => (
-                 <button
-                   key={item.title}
-                   onClick={() => { setMobileMenuOpen(false); setTargetHref(item.href); setShowTransition(true); }}
-                   className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
-                 >
-                   <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
-                     {item.icon}
-                   </span>
-                   <span className="font-medium">{item.title}</span>
-                 </button>
-               ))}
-             </div>
-           </div>
-         </div>
-       )}
-
-      {/* Infinity transition for mobile nav */}
-      <InfinityTransition
-        isActive={showTransition}
-        onComplete={() => {
-          if (targetHref) router.push(targetHref);
-          setShowTransition(false);
-          setTargetHref(null);
-        }}
-      />
-
-      {/* Scroll to Top Button */}
-      <AnimatePresence>
-        {showScrollTop && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0 }}
-            onClick={scrollToTop}
-            className="fixed bottom-6 right-6 z-40 w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white shadow-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-110 active:scale-95"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <ChevronUp className="w-6 h-6" />
-          </motion.button>
-        )}
-      </AnimatePresence>
+          {/* Scroll to Top Button */}
+          <AnimatePresence>
+            {showScrollTop && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0 }}
+                onClick={scrollToTop}
+                className="fixed bottom-6 right-6 z-40 w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white shadow-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-110 active:scale-95"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ChevronUp className="w-6 h-6" />
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </>
+      )}
     </div>
   );
 }
