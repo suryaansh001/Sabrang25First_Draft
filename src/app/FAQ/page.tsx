@@ -149,7 +149,7 @@ const FAQ = () => {
         }}
       />
       
-      {/* Black Overlay for better text readability */}
+      {/* Black Overlay for better text readability - Applied to entire page */}
       <div className="fixed inset-0 -z-10 bg-black/60" />
 
       {/* Logo and sidebar */}
@@ -216,8 +216,6 @@ const FAQ = () => {
         <section 
           className="min-h-screen flex items-center justify-center relative px-4 sm:px-6"
         >
-          {/* Hero Background Overlay */}
-          <div className="absolute inset-0 bg-black/60" />
           <div className="max-w-7xl mx-auto text-center relative z-10 px-4 sm:px-6">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold mb-6 sm:mb-8 leading-tight">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-300">
@@ -235,16 +233,7 @@ const FAQ = () => {
             
             {/* Search Bar */}
             <div className="max-w-2xl mx-auto px-4 sm:px-0">
-          <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
-                <input
-                  type="text"
-                  placeholder="Search questions or keywords..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 sm:pl-12 pr-4 py-3 sm:py-4 bg-white/10  border border-white/20 rounded-xl sm:rounded-2xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 text-sm sm:text-base"
-                />
-          </div>
+          
         </div>
       </div>
         </section>
