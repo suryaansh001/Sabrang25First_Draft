@@ -110,7 +110,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
               // Phase 5: Final transition
               setCurrentPhase('final');
               
-              const finalDelay = isMobile ? 150 : 200;
+              const finalDelay = isMobile ? 800 : 900;
               phaseTimersRef.current.final = setTimeout(() => {
                 onComplete();
               }, finalDelay);
@@ -162,8 +162,9 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
           className="absolute inset-0 w-full h-full object-cover"
           style={{ 
             filter: 'brightness(0.6) contrast(1.1)',
-            opacity: (videoReady && currentPhase !== 'final') ? 1 : 0,
-            transition: 'opacity 0.3s ease-in-out'
+            opacity: videoReady ? (currentPhase === 'final' ? 0 : 1) : 0,
+            transition: 'opacity 0.8s ease-in-out',
+            willChange: 'opacity'
           }}
         >
           <source src="/videos/infinty_transition.mp4" type="video/mp4" />
@@ -380,21 +381,18 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
               <motion.div
                 key="zoom"
                 className="absolute inset-0 w-full h-full"
-                initial={{ scale: 1 }}
-                animate={{ scale: isMobile ? 60 : 85 }}
+                initial={{ scale: 1, opacity: 1 }}
+                animate={{ scale: isMobile ? 30 : 40, opacity: 0 }}
                 transition={{ 
-                  duration: isMobile ? 0.5 : 0.6, 
+                  duration: isMobile ? 0.45 : 0.5, 
                   ease: "easeIn" 
                 }}
+                style={{ willChange: 'transform, opacity', backfaceVisibility: 'hidden', transformOrigin: '50% 50%', contain: 'layout paint' }}
               >
                 <svg
                   viewBox="0 0 302.73 467.06"
                   className="w-full h-full"
-                  style={{ 
-                    filter: isMobile 
-                      ? 'drop-shadow(0 0 50px rgba(17, 79, 238, 0.95))'
-                      : 'drop-shadow(0 0 80px rgba(17, 79, 238, 1))'
-                  }}
+                  style={{ filter: 'none' }}
                 >
                   <defs>
                     <linearGradient id="zoom-main" x1="-225.6" y1="2357.64" x2="-96.05" y2="1908.83" gradientTransform="translate(-819.63 -1648.32) rotate(-31.96)" gradientUnits="userSpaceOnUse">
