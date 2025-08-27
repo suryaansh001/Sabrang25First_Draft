@@ -455,7 +455,7 @@ const events: Event[] = [
 
 const categories = [
   { name: "All", value: "all" },
-  { name: "Flagship", value: "Flagship" },
+  { name: "Cultural", value: "Flagship" },
   { name: "Fun & Games", value: "Fun & Games" },
   { name: "Creative Arts", value: "Creative Arts" },
   { name: "Workshops & Talks", value: "Workshops & Talks" },
