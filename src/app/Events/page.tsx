@@ -455,7 +455,7 @@ const events: Event[] = [
 
 const categories = [
   { name: "All", value: "all" },
-  { name: "Flagship", value: "Flagship" },
+  { name: "Cultural", value: "Flagship" },
   { name: "Fun & Games", value: "Fun & Games" },
   { name: "Creative Arts", value: "Creative Arts" },
   { name: "Workshops & Talks", value: "Workshops & Talks" },
@@ -736,22 +736,27 @@ export default function EventsPage() {
               </motion.div>
 
               {/* Events Grid - card with image and bottom info */}
-              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
                 {filteredEvents.map((event, index) => (
                   <motion.div
                     key={event.id}
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.05 }}
+                    transition={{ duration: 0.35, delay: index * 0.04 }}
                     className="bg-black/40 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 group cursor-pointer"
                     onClick={() => handleCardClick(event)}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(event); } }}
                     tabIndex={0}
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
+                    whileHover={{ scale: 1.005 }}
+                    whileTap={{ scale: 0.995 }}
                   >
-                    <div className="relative w-full aspect-[3/4] bg-black/20">
+                    <div className="relative w-full aspect-[2/3] bg-black/20">
                       <img
+                        loading="lazy"
+                        decoding="async"
+                        sizes="(min-width:1024px) 25vw, (min-width:768px) 33vw, 50vw"
+                        fetchPriority="low"
+                        draggable={false}
                         src={event.image}
                         alt={event.title}
                         className="absolute inset-0 w-full h-full object-cover"
@@ -812,8 +817,13 @@ export default function EventsPage() {
                     animate={{ scale: 1 }}
                     transition={{ duration: 0.5, ease: "easeOut" }}
                   >
-                    <div className="relative w-full aspect-[3/4] bg-black/20">
+                    <div className="relative w-full aspect-[2/3] bg-black/20">
                       <img 
+                        loading="lazy"
+                        decoding="async"
+                        sizes="(min-width:1024px) 33vw, 90vw"
+                        fetchPriority="low"
+                        draggable={false}
                         src={selectedEvent.image} 
                         alt={selectedEvent.title}
                         className="absolute inset-0 w-full h-full object-cover"

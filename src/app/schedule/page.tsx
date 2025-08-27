@@ -28,6 +28,40 @@ export default function SchedulePage() {
 	const [isMobile, setIsMobile] = useState(false);
 	const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
+	// Per-day timeline design (path shape, colors, stroke width, duration)
+	const getDayDesign = (day: number) => {
+		switch (day) {
+			case 1:
+				return {
+					stops: { start: '#8b5cf6', mid1: '#ec4899', mid2: '#6366f1', end: '#8b5cf6' },
+					pathD: 'M 100,400 Q 300,300 500,400 T 900,300 T 1300,400 T 1700,300 T 2100,400 T 2300,300',
+					strokeWidth: 15,
+					duration: 5
+				};
+			case 2:
+				return {
+					stops: { start: '#06b6d4', mid1: '#10b981', mid2: '#84cc16', end: '#06b6d4' },
+					pathD: 'M 100,420 Q 300,340 500,380 T 900,320 T 1300,420 T 1700,360 T 2100,400 T 2300,340',
+					strokeWidth: 18,
+					duration: 4.5
+				};
+			case 3:
+				return {
+					stops: { start: '#f59e0b', mid1: '#f97316', mid2: '#ef4444', end: '#f59e0b' },
+					pathD: 'M 100,380 Q 300,460 500,380 T 900,460 T 1300,380 T 1700,460 T 2100,380 T 2300,460',
+					strokeWidth: 16,
+					duration: 5.5
+				};
+			default:
+				return {
+					stops: { start: '#8b5cf6', mid1: '#ec4899', mid2: '#6366f1', end: '#8b5cf6' },
+					pathD: 'M 100,400 Q 300,300 500,400 T 900,300 T 1300,400 T 1700,300 T 2100,400 T 2300,300',
+					strokeWidth: 15,
+					duration: 5
+				};
+		}
+	};
+
 	const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
 		{ title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
 		{ title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
@@ -94,6 +128,14 @@ export default function SchedulePage() {
 		return colors[category] || 'from-gray-500 to-gray-600';
 	};
 
+	// Derived UI values for current day
+	const design = getDayDesign(activeDay);
+	const mobileGradientClass = activeDay === 1
+		? 'from-purple-500 via-pink-500 to-indigo-600'
+		: activeDay === 2
+			? 'from-cyan-500 via-emerald-500 to-lime-500'
+			: 'from-amber-500 via-orange-500 to-rose-500';
+
 	return (
 		<div className="min-h-screen text-white font-sans relative overflow-hidden flex flex-col">
 			{/* Background Image */}
@@ -115,7 +157,7 @@ export default function SchedulePage() {
 			<button
 				aria-label="Open menu"
 				onClick={() => setMobileMenuOpen(true)}
-				className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition bg-white/15 backdrop-blur-md border border-white/25 hover:bg-white/25"
+				className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
 			>
 				<span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
 				<span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
@@ -222,24 +264,25 @@ export default function SchedulePage() {
 								>
 									<defs>
 										<linearGradient id="timelineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-											<stop offset="0%" stopColor="#8b5cf6" />
-											<stop offset="25%" stopColor="#ec4899" />
-											<stop offset="50%" stopColor="#6366f1" />
-											<stop offset="75%" stopColor="#ec4899" />
-											<stop offset="100%" stopColor="#8b5cf6" />
+											<stop offset="0%" stopColor={design.stops.start} />
+											<stop offset="25%" stopColor={design.stops.mid1} />
+											<stop offset="50%" stopColor={design.stops.mid2} />
+											<stop offset="75%" stopColor={design.stops.mid1} />
+											<stop offset="100%" stopColor={design.stops.end} />
 										</linearGradient>
 									</defs>
 
 									{/* Horizontal Timeline Path */}
 									<motion.path
-										d="M 100,400 Q 300,300 500,400 T 900,300 T 1300,400 T 1700,300 T 2100,400 T 2300,300"
+										key={activeDay}
+										d={design.pathD}
 										fill="none"
 										stroke="url(#timelineGradient)"
-										strokeWidth="15"
+										strokeWidth={design.strokeWidth}
 										strokeLinecap="round"
 										initial={{ strokeDasharray: 3000, strokeDashoffset: 3000 }}
 										animate={{ strokeDashoffset: 0 }}
-										transition={{ duration: 5, ease: 'easeInOut' }}
+										transition={{ duration: design.duration, ease: 'easeInOut' }}
 									/>
 
 									{/* Timeline Events */}
@@ -339,9 +382,10 @@ export default function SchedulePage() {
 						<div className="lg:hidden">
 							<div className="relative">
 								{/* Vertical Timeline Line */}
-								<div className="absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 via-pink-500 to-indigo-600 rounded-full">
+								<div className={`absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b ${mobileGradientClass} rounded-full`}>
 									<motion.div
-										className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-purple-500 via-pink-500 to-indigo-600 rounded-full origin-top"
+										key={activeDay}
+										className={`absolute top-0 left-0 w-full h-full bg-gradient-to-b ${mobileGradientClass} rounded-full origin-top`}
 										initial={{ scaleY: 0 }}
 										animate={{ scaleY: 1 }}
 										transition={{ duration: 2, ease: "easeInOut" }}
@@ -349,30 +393,38 @@ export default function SchedulePage() {
 								</div>
 
 								{/* Timeline Events */}
-								<div className="space-y-6 ml-16">
+								<motion.div
+									key={`mobile-list-${activeDay}`}
+									className="space-y-6 ml-16"
+									initial={{ opacity: 0, y: 10 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ duration: 0.3 }}
+								>
 									{timelineData[activeDay].map((event, index) => (
 										<motion.div
 											key={index}
-											initial={{ opacity: 0, x: -50 }}
-											animate={{ opacity: 1, x: 0 }}
-											transition={{ delay: index * 0.2, duration: 0.6 }}
+											initial={{ opacity: 0, y: 24, scale: 0.98 }}
+											whileInView={{ opacity: 1, y: 0, scale: 1 }}
+											viewport={{ amount: 0.2, once: false }}
+											transition={{ type: 'spring', stiffness: 220, damping: 20, delay: index * 0.1 }}
+											whileTap={{ scale: 0.985 }}
 											className="relative group"
 										>
 											{/* Event Circle */}
-											<div className="absolute -left-12 top-6 w-6 h-6 bg-white rounded-full border-4 border-purple-500 shadow-lg shadow-purple-500/50 group-hover:scale-125 transition-transform duration-300" />
+											<div className="absolute -left-12 top-6 w-6 h-6 bg-white rounded-full border-4 border-purple-500 shadow-lg shadow-purple-500/50" />
 
 											{/* Event Card */}
-											<div className="bg-gray-900/80 backdrop-blur-md border border-gray-600/50 rounded-2xl p-4 sm:p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
+											<div className="bg-gray-900/80 backdrop-blur-md border border-gray-600/50 rounded-2xl p-4 sm:p-6 shadow-xl">
 												{/* Category Badge */}
 												<div className="flex items-center justify-between mb-3">
 													<span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${getCategoryColor(event.category || '')} text-white`}>
 														{event.category}
 													</span>
-													<ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-purple-400 transition-colors" />
+													<ChevronRight className="w-4 h-4 text-gray-400" />
 												</div>
 
 												{/* Event Title */}
-												<h3 className="text-lg sm:text-xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
+												<h3 className="text-lg sm:text-xl font-bold text-white mb-2">
 													{event.event}
 												</h3>
 
@@ -393,12 +445,12 @@ export default function SchedulePage() {
 													<span className="text-pink-300 text-sm">{event.location}</span>
 												</div>
 
-												{/* Hover Effect */}
-												<div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+												{/* Overlay */}
+												<div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 rounded-2xl pointer-events-none" />
 											</div>
 										</motion.div>
 									))}
-								</div>
+								</motion.div>
 							</div>
 						</div>
 					)}
