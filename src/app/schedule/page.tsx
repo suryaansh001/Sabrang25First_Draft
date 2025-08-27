@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Clock, MapPin, ChevronRight, ChevronDown, Home, Info, Star, Users, HelpCircle, Handshake, Mail } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -27,6 +27,9 @@ export default function SchedulePage() {
 	const [targetHref, setTargetHref] = useState<string | null>(null);
 	const [isMobile, setIsMobile] = useState(false);
 	const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+	const [scrollX, setScrollX] = useState(0);
+	const timelineContainerRef = useRef<HTMLDivElement>(null);
+	const scrollContainerRef = useRef<HTMLDivElement>(null);
 
 	// Per-day timeline design (path shape, colors, stroke width, duration)
 	const getDayDesign = (day: number) => {
@@ -111,6 +114,99 @@ export default function SchedulePage() {
 		
 		return () => window.removeEventListener('resize', checkMobile);
 	}, []);
+
+	// Horizontal scroll effect for desktop
+	useEffect(() => {
+		if (isMobile) return;
+
+		const handleScroll = (e: WheelEvent) => {
+			// Only handle horizontal scrolling for the timeline section
+			if (!timelineContainerRef.current?.contains(e.target as Node)) return;
+			
+			e.preventDefault();
+			
+			const container = scrollContainerRef.current;
+			if (!container) return;
+
+			const maxScrollLeft = container.scrollWidth - container.clientWidth;
+			const scrollSpeed = 2; // Adjust this value to control scroll sensitivity
+			
+			setScrollX(prevScrollX => {
+				const newScrollX = Math.max(0, Math.min(maxScrollLeft, prevScrollX + e.deltaY * scrollSpeed));
+				container.scrollLeft = newScrollX;
+				return newScrollX;
+			});
+		};
+
+		// Add scroll listener to timeline container
+		const timelineContainer = timelineContainerRef.current;
+		if (timelineContainer) {
+			timelineContainer.addEventListener('wheel', handleScroll, { passive: false });
+			
+			return () => {
+				timelineContainer.removeEventListener('wheel', handleScroll);
+			};
+		}
+	}, [isMobile]);
+
+	// Handle touch/drag scrolling for desktop
+	useEffect(() => {
+		if (isMobile) return;
+
+		let isMouseDown = false;
+		let startX = 0;
+		let scrollLeft = 0;
+
+		const handleMouseDown = (e: MouseEvent) => {
+			if (!scrollContainerRef.current?.contains(e.target as Node)) return;
+			isMouseDown = true;
+			startX = e.pageX - (scrollContainerRef.current?.offsetLeft || 0);
+			scrollLeft = scrollContainerRef.current?.scrollLeft || 0;
+			if (scrollContainerRef.current) {
+				scrollContainerRef.current.style.cursor = 'grabbing';
+			}
+		};
+
+		const handleMouseLeave = () => {
+			isMouseDown = false;
+			if (scrollContainerRef.current) {
+				scrollContainerRef.current.style.cursor = 'grab';
+			}
+		};
+
+		const handleMouseUp = () => {
+			isMouseDown = false;
+			if (scrollContainerRef.current) {
+				scrollContainerRef.current.style.cursor = 'grab';
+			}
+		};
+
+		const handleMouseMove = (e: MouseEvent) => {
+			if (!isMouseDown || !scrollContainerRef.current) return;
+			e.preventDefault();
+			const x = e.pageX - (scrollContainerRef.current.offsetLeft || 0);
+			const walk = (x - startX) * 2; // Scroll speed multiplier
+			const newScrollLeft = scrollLeft - walk;
+			scrollContainerRef.current.scrollLeft = newScrollLeft;
+			setScrollX(newScrollLeft);
+		};
+
+		const container = scrollContainerRef.current;
+		if (container) {
+			container.style.cursor = 'grab';
+			container.addEventListener('mousedown', handleMouseDown);
+			container.addEventListener('mouseleave', handleMouseLeave);
+			container.addEventListener('mouseup', handleMouseUp);
+			container.addEventListener('mousemove', handleMouseMove);
+
+			return () => {
+				container.removeEventListener('mousedown', handleMouseDown);
+				container.removeEventListener('mouseleave', handleMouseLeave);
+				container.removeEventListener('mouseup', handleMouseUp);
+				container.removeEventListener('mousemove', handleMouseMove);
+			};
+		}
+	}, [isMobile]);
 
 	const getCategoryColor = (category: string) => {
 		const colors: { [key: string]: string } = {
@@ -249,18 +345,38 @@ export default function SchedulePage() {
 					</div>
 				</div>
 
+				{/* Scroll Hint for Desktop */}
+				{!isMobile && (
+					<div className="hidden lg:flex justify-center mb-6">
+						<div className="flex items-center space-x-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
+							
+							<motion.div
+								animate={{ y: [0, 3, 0] }}
+								transition={{ duration: 1.5, repeat: Infinity }}
+							>
+								<ChevronDown className="w-4 h-4 text-purple-400" />
+							</motion.div>
+						</div>
+					</div>
+				)}
+
 				{/* Timeline Content */}
-				<div className="px-4 sm:px-6">
+				<div className="px-4 sm:px-6" ref={timelineContainerRef}>
 					{/* Desktop: Horizontal Timeline */}
 					{!isMobile && (
 						<div className="hidden lg:block">
-							<div className="w-full overflow-x-auto">
+							<div 
+								ref={scrollContainerRef}
+								className="w-full overflow-x-auto scrollbar-hide"
+								style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+							>
 								<motion.svg
 									viewBox="0 0 2400 800"
-									className="w-[2400px] h-[600px] min-w-full"
+									className="w-[2400px] h-[600px] min-w-full select-none"
 									initial={{ opacity: 0 }}
 									animate={{ opacity: 1 }}
 									transition={{ duration: 0.8 }}
+									style={{ pointerEvents: 'none' }}
 								>
 									<defs>
 										<linearGradient id="timelineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -296,6 +412,7 @@ export default function SchedulePage() {
 												className="cursor-pointer"
 												onMouseEnter={() => setHoveredIndex(index)}
 												onMouseLeave={() => setHoveredIndex(null)}
+												style={{ pointerEvents: 'all' }}
 											>
 												<motion.circle
 													cx={x}
@@ -373,6 +490,13 @@ export default function SchedulePage() {
 										);
 									})}
 								</motion.svg>
+								
+								{/* Custom scrollbar styles */}
+								<style jsx>{`
+									.scrollbar-hide::-webkit-scrollbar {
+										display: none;
+									}
+								`}</style>
 							</div>
 						</div>
 					)}
