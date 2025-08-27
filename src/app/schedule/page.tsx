@@ -349,7 +349,7 @@ export default function SchedulePage() {
 				{!isMobile && (
 					<div className="hidden lg:flex justify-center mb-6">
 						<div className="flex items-center space-x-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
-							
+							<span className="text-sm text-gray-300">Scroll down to navigate timeline</span>
 							<motion.div
 								animate={{ y: [0, 3, 0] }}
 								transition={{ duration: 1.5, repeat: Infinity }}
