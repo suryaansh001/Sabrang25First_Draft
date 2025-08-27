@@ -7,17 +7,18 @@ interface LogoProps {
 
 const Logo: React.FC<LogoProps> = ({ className = '' }) => {
   return (
-    <div className={`fixed top-2 left-2 sm:top-3 sm:left-3 z-[40] ${className}`}>
+    <div className={`fixed top-4 left-4 z-[40] ${className}`}>
       <div className="flex items-center justify-center">
-        <Image
-          src="/images/Logo@2x.png"
-          alt="Sabrang Festival Logo"
-          width={112}
-          height={76}
-          sizes="(max-width: 480px) 64px, (max-width: 640px) 80px, (max-width: 768px) 112px, 144px"
-          priority
-          className="w-16 h-auto xs:w-20 sm:w-24 md:w-32"
-        />
+        <a href="/" aria-label="Go to homepage">
+          <img 
+            src="/images/Logo@2x.png" 
+            alt="Logo" 
+            className="h-10 w-auto lg:h-25 lg:w-36 cursor-pointer" 
+            onError={(e) => { 
+              (e.target as HTMLImageElement).src = '/images/Logo.svg'; 
+            }} 
+          />
+        </a>
       </div>
     </div>
   );
