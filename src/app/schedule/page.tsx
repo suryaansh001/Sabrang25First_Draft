@@ -426,10 +426,10 @@ export default function SchedulePage() {
 												/>
 												
 												<motion.rect
-													x={x - 180}
-													y={y + (index % 2 === 0 ? 50 : -210)}
-													width="360"
-													height="160"
+													x={x - 220}
+													y={y + (index % 2 === 0 ? 50 : -250)}
+													width="440"
+													height="200"
 													rx="20"
 													fill="rgba(0,0,0,0.75)"
 													stroke={hoveredIndex === index ? '#ec4899' : 'url(#timelineGradient)'}
@@ -441,9 +441,9 @@ export default function SchedulePage() {
 												
 												<motion.text
 													x={x}
-													y={y + (index % 2 === 0 ? 85 : -175)}
+													y={y + (index % 2 === 0 ? 95 : -205)}
 													textAnchor="middle"
-													className="text-base font-bold fill-white"
+													className="text-xl font-bold fill-white"
 													initial={{ opacity: 0 }}
 													animate={{ opacity: 1 }}
 													transition={{ delay: 1.2 + index * 0.2 }}
@@ -453,9 +453,9 @@ export default function SchedulePage() {
 												
 												<motion.text
 													x={x}
-													y={y + (index % 2 === 0 ? 115 : -145)}
+													y={y + (index % 2 === 0 ? 130 : -170)}
 													textAnchor="middle"
-													className="text-base font-semibold fill-purple-300"
+													className="text-lg font-semibold fill-purple-300"
 													initial={{ opacity: 0 }}
 													animate={{ opacity: 1 }}
 													transition={{ delay: 1.3 + index * 0.2 }}
@@ -465,9 +465,9 @@ export default function SchedulePage() {
 												
 												<motion.text
 													x={x}
-													y={y + (index % 2 === 0 ? 140 : -120)}
+													y={y + (index % 2 === 0 ? 165 : -135)}
 													textAnchor="middle"
-													className="text-sm fill-gray-300"
+													className="text-base fill-gray-300"
 													initial={{ opacity: 0 }}
 													animate={{ opacity: 1 }}
 													transition={{ delay: 1.4 + index * 0.2 }}
@@ -477,9 +477,9 @@ export default function SchedulePage() {
 												
 												<motion.text
 													x={x}
-													y={y + (index % 2 === 0 ? 165 : -95)}
+													y={y + (index % 2 === 0 ? 200 : -100)}
 													textAnchor="middle"
-													className="text-sm fill-pink-300"
+													className="text-base fill-pink-300"
 													initial={{ opacity: 0 }}
 													animate={{ opacity: 1 }}
 													transition={{ delay: 1.5 + index * 0.2 }}
