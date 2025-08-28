@@ -62,7 +62,7 @@ export default function EventCard({ event, outline, variant = 'default' }: Event
               )}
             </div>
             <a
-              href="/Signup"
+              href="/coming-soon"
               className="inline-block px-8 py-4 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white text-lg font-semibold shadow-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
             >
               {event.registration || "Register Now"}
