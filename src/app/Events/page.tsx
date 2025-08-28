@@ -7,7 +7,7 @@ import SidebarDock from '../../../components/SidebarDock';
 import Logo from '../../../components/Logo';
 import { useRouter } from 'next/navigation';
 import InfinityTransition from '../../../components/InfinityTransition';
-import ComingSoonOverlay from '../../../components/ComingSoonOverlay';
+// import ComingSoonOverlay from '../../../components/ComingSoonOverlay';
 
 interface Event {
   id: number;
@@ -473,16 +473,9 @@ export default function EventsPage() {
   const [showTransition, setShowTransition] = useState(false);
   const [targetHref, setTargetHref] = useState<string | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [showComingSoon, setShowComingSoon] = useState(true);
-  const [isPageLoaded, setIsPageLoaded] = useState(false);
-
-  // Prevent flash of content by setting loaded state after a brief delay
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsPageLoaded(true);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, []);
+  // ComingSoonOverlay removed – show main content directly
+  const [isPageLoaded, setIsPageLoaded] = useState(true);
+  const showComingSoon = false;
 
   // Derive high-level domain (Cultural, Technical, Business, Design, Literary, Mini Event)
   const getEventDomain = (imagePath: string): string => {
@@ -583,11 +576,8 @@ export default function EventsPage() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Coming Soon Overlay - Show immediately to prevent flash */}
-      {showComingSoon && <ComingSoonOverlay />}
-      
-      {/* Main content - only show if page is loaded and overlay is not visible */}
-      {isPageLoaded && !showComingSoon && (
+      {/* Main content */}
+      {isPageLoaded && (
         <>
           {/* Background Image */}
           <div 
