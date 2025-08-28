@@ -97,7 +97,7 @@ const Contact = () => {
       />
       
       {/* Main Content Container */}
-      <div className="relative z-10 pt-24 pb-16 flex-grow">
+      <div className="relative z-10 pt-24 flex-grow">
         {/* Hero Section */}
         <section className="py-0 px-6">
           <div className="max-w-7xl mx-auto text-center">
@@ -380,7 +380,7 @@ const Contact = () => {
           </div>
         </section>
 
-        {/* Footer with proper z-index */}
+        Footer with proper z-index
         <div className="relative z-10">
           <Footer />
         </div>
