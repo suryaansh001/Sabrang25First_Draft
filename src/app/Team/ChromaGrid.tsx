@@ -1281,59 +1281,6 @@ export default function PeopleStrip() {
          </div>
       </div>
 
-             {/* Special Interactive Section */}
-       <motion.div 
-         initial={{ opacity: 0, y: 30 }}
-         whileInView={{ opacity: 1, y: 0 }}
-         transition={{ duration: 1, delay: 0.2 }}
-         viewport={{ once: true }}
-         className="text-center mb-16 sm:mb-20 relative"
-       >
-         {/* Animated background elements */}
-         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-           <motion.div
-            className="w-64 h-1 bg-purple-400 opacity-30"
-             initial={{ scaleX: 0 }}
-             whileInView={{ scaleX: 1 }}
-             transition={{ duration: 1.5, delay: 0.5 }}
-             viewport={{ once: true }}
-           />
-         </div>
-         
-                    {/* Interactive stats counter */}
-           <div className="flex justify-center items-center gap-8 sm:gap-12 mb-8">
-             {[
-               { number: 25, label: "Committee Members", icon: "👥" },
-               { number: 14, label: "Departments", icon: "🏢" },
-               { number: 100, label: "Success Rate", icon: "🎯", suffix: "%" }
-             ].map((stat, index) => (
-             <motion.div
-               key={index}
-               initial={{ opacity: 0, scale: 0.5 }}
-               whileInView={{ opacity: 1, scale: 1 }}
-               transition={{ duration: 0.6, delay: 0.8 + index * 0.2 }}
-               viewport={{ once: true }}
-               className="text-center group cursor-pointer"
-               whileHover={{ scale: 1.1 }}
-             >
-               <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">
-                 {stat.icon}
-               </div>
-               <motion.div
-                 className="text-3xl sm:text-4xl md:text-5xl font-black text-purple-400 mb-1"
-                 initial={{ opacity: 0 }}
-                 whileInView={{ opacity: 1 }}
-                 transition={{ duration: 1, delay: 1.2 + index * 0.2 }}
-                 viewport={{ once: true }}
-               >
-                 {stat.number}{stat.suffix || ''}
-               </motion.div>
-               <p className="text-sm text-gray-400 font-medium">{stat.label}</p>
-             </motion.div>
-           ))}
-         </div>
-       </motion.div>
-
        {/* Enhanced "Core Committee Members" heading */}
        <motion.div 
          initial={{ opacity: 0, y: 30 }}

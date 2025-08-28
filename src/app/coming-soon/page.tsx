@@ -7,7 +7,7 @@ export default function ComingSoon() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showCursor, setShowCursor] = useState(true);
   
-  const text = "COMING SOON";
+  const text = "Registration Start Soon";
   const [progress, setProgress] = useState(0);
 
   // Generate consistent random values for floating orbs

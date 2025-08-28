@@ -200,7 +200,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
     { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
     { title: 'Schedule', href: '/schedule/progress', icon: <Clock className="w-5 h-5" /> },
-    { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
+    { title: 'Team', href: '/Team/team-reveal', icon: <Users className="w-5 h-5" /> },
     { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
     { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
     { title: 'Contact', href: '/Contact', icon: <Mail className="w-5 h-5" /> },
@@ -610,8 +610,13 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
           </div>
         )}
         
-        {/* SidebarDock */}
-        {!isLoading && <SidebarDock className="hidden lg:block" />}
+        {/* SidebarDock with InfinityTransition navigation */}
+        {!isLoading && (
+          <SidebarDock 
+            className="hidden lg:block"
+            onNavigate={(href) => { setTargetHref(href); setShowTransition(true); }}
+          />
+        )}
         
         {/* Right Panel */}
         <div 
