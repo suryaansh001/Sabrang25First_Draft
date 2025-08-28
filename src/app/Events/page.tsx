@@ -509,7 +509,7 @@ export default function EventsPage() {
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
     { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
-    { title: 'Schedule', href: '/schedule', icon: <Clock className="w-5 h-5" /> },
+    { title: 'Schedule', href: '/schedule/progress', icon: <Clock className="w-5 h-5" /> },
     { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
     { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
     { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
@@ -603,17 +603,6 @@ export default function EventsPage() {
           <Logo className="block" />
           <SidebarDock className="hidden lg:block" />
 
-          {/* Mobile hamburger */}
-          <button
-            aria-label="Open menu"
-            onClick={() => setMobileMenuOpen(true)}
-            className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
-          >
-            <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
-            <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
-            <span className="block h-0.5 bg-white/80 rounded-full w-4" />
-          </button>
-          
           {/* Flagship Events Toggle - hide on mobile to avoid overlapping navbar */}
           <motion.div 
             initial={{ opacity: 0, x: 50 }}
@@ -996,6 +985,17 @@ export default function EventsPage() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Mobile hamburger */}
+          <button
+            aria-label="Open menu"
+            onClick={() => setMobileMenuOpen(true)}
+            className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
+          >
+            <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
+            <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
+            <span className="block h-0.5 bg-white/80 rounded-full w-4" />
+          </button>
 
           {/* Mobile menu overlay */}
           {mobileMenuOpen && (

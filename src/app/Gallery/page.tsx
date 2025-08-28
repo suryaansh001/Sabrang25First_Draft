@@ -61,7 +61,7 @@ const Gallery = () => {
     { href: '/About', label: 'About', icon: <IconInfoCircle className="w-5 h-5" /> },
     { href: '/Events', label: 'Events', icon: <IconCalendar className="w-5 h-5" /> },
     { href: '/Gallery', label: 'Highlights', icon: <IconStar className="w-5 h-5" /> },
-    { href: '/schedule', label: 'Schedule', icon: <IconClock className="w-5 h-5" /> },
+    { href: '/schedule/progress', label: 'Schedule', icon: <IconClock className="w-5 h-5" /> },
     { href: '/Team', label: 'Team', icon: <IconUsers className="w-5 h-5" /> },
     { href: '/FAQ', label: 'FAQ', icon: <IconHelpCircle className="w-5 h-5" /> },
     { href: '/why-sponsor-us', label: 'Why Sponsor Us', icon: <Handshake className="w-5 h-5" /> },
