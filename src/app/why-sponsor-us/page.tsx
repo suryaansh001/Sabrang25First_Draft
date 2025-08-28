@@ -4,11 +4,22 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Phone, Building, Clock, MessageCircle, Send } from 'lucide-react';
 
+interface FormData {
+  companyName: string;
+  contactPerson: string;
+  email: string;
+  phone: string;
+  sponsorshipAmount: string;
+  preferredTiming: string;
+  eventInterests: string[];
+  additionalRequests: string;
+}
+
 const WhySponsorUs = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     companyName: '',
     contactPerson: '',
     email: '',
@@ -43,7 +54,7 @@ const WhySponsorUs = () => {
     'Overall Event'
   ];
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -51,7 +62,7 @@ const WhySponsorUs = () => {
     }));
   };
 
-  const handleCheckboxChange = (event) => {
+  const handleCheckboxChange = (event: string) => {
     setFormData(prev => ({
       ...prev,
       eventInterests: prev.eventInterests.includes(event)
@@ -60,7 +71,7 @@ const WhySponsorUs = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     

@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
   // Performance optimizations
   experimental: {
     optimizeCss: true,
-    optimizePackageImports: ['lucide-react', 'framer-motion'],
+    // Removed optimizePackageImports to fix deployment issues
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
