@@ -477,7 +477,7 @@ export default function PeopleStrip() {
       name: "Mr. Deepak Sogani",
       role: "Head-Student Affairs",
       committee: "Organizing Committee",
-      contact: "chetesh.sharma@email.com",
+      contact: "",
       phone: "+91 98765 43210"
     },
     { 
@@ -486,17 +486,8 @@ export default function PeopleStrip() {
       name: "Dr.Alka Mahajan",
       role: "Pro Vice Chancellor",
       committee: "Organizing Committee",
-      contact: "diya.garg@email.com",
+      contact: "",
       phone: "+91 98765 43211"
-    },
-    { 
-      img: "/images/OH_images_home/Anushka_Pathak.png", 
-      bg: "bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500",
-      name: "Anushka Pathak",
-      role: "Executive - Student Affairs",
-      committee: "Organizing Committee",
-      contact: "anirudh.saini@email.com",
-      phone: "+91 98765 43212"
     },
     // Core Committee Members
     { 
