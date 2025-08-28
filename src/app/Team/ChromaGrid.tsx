@@ -472,28 +472,28 @@ export default function PeopleStrip() {
   const people: Person[] = [
     // Organizing Committee
     { 
-      img: "/images/Team/OH/Chetesh Sharma.png", 
+      img: "/images/OH_images_home/Deepak_Sogani.png", 
       bg: "bg-gradient-to-br from-orange-500 via-rose-500 to-yellow-400",
-      name: "Chetesh Sharma",
-      role: "Organizing Committee",
+      name: "Mr. Deepak Sogani",
+      role: "Head-Student Affairs",
       committee: "Organizing Committee",
       contact: "chetesh.sharma@email.com",
       phone: "+91 98765 43210"
     },
     { 
-      img: "/images/Team/OH/Diya Garg.png", 
+      img: "/images/OH_images_home/Pro_VC.png", 
       bg: "bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-400",
-      name: "Diya Garg",
-      role: "Organizing Committee",
+      name: "Dr.Alka Mahajan",
+      role: "Pro Vice Chancellor",
       committee: "Organizing Committee",
       contact: "diya.garg@email.com",
       phone: "+91 98765 43211"
     },
     { 
-      img: "/images/Team/OH/Anirudh Saini.png", 
+      img: "/images/OH_images_home/Anushka_Pathak.png", 
       bg: "bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500",
-      name: "Anirudh Saini",
-      role: "Organizing Committee",
+      name: "Anushka Pathak",
+      role: "Executive - Student Affairs",
       committee: "Organizing Committee",
       contact: "anirudh.saini@email.com",
       phone: "+91 98765 43212"
@@ -590,7 +590,7 @@ export default function PeopleStrip() {
        phone: "+91 98765 43223"
     },
     { 
-      img: "/images/OH_images_home/tanvi.jpeg", 
+      img: "/images/OH_images_home/", 
       bg: "bg-amber-500",
       name: "Suryaansh Sharma",
        role: "Technical",
