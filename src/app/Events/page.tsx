@@ -7,7 +7,7 @@ import SidebarDock from '../../../components/SidebarDock';
 import Logo from '../../../components/Logo';
 import { useRouter } from 'next/navigation';
 import InfinityTransition from '../../../components/InfinityTransition';
-// import ComingSoonOverlay from '../../../components/ComingSoonOverlay';
+import ComingSoonOverlay from '../../../components/ComingSoonOverlay';
 
 interface Event {
   id: number;
@@ -477,6 +477,7 @@ export default function EventsPage() {
   const [isPageLoaded, setIsPageLoaded] = useState(true);
   const showComingSoon = false;
 
+
   // Derive high-level domain (Cultural, Technical, Business, Design, Literary, Mini Event)
   const getEventDomain = (imagePath: string): string => {
     try {
@@ -574,6 +575,23 @@ export default function EventsPage() {
     return categoryMatch && flagshipMatch;
   });
 
+  // If any event is selected, immediately show the overlay and hide everything else
+  if (selectedEvent) {
+    return (
+      <div className="min-h-screen relative overflow-hidden">
+        {/* Close overlay button to return to events list */}
+        <button
+          aria-label="Close overlay"
+          onClick={handleClose}
+          className="fixed top-4 right-4 z-[10000] w-12 h-12 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-white hover:bg-white/20 transition"
+        >
+          <X className="w-6 h-6 mx-auto" />
+        </button>
+        <ComingSoonOverlay />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Main content */}
@@ -652,7 +670,7 @@ export default function EventsPage() {
           </motion.div>
 
           <AnimatePresence mode="wait">
-            {!selectedEvent ? (
+            {
               <motion.main
                 key="main"
                 initial={{ opacity: 0, y: 20 }}
@@ -739,13 +757,12 @@ export default function EventsPage() {
                         initial={{ opacity: 0, y: 24 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.35, delay: index * 0.04 }}
-                        className="bg-black/40 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 group cursor-pointer"
+                        className="relative rounded-lg overflow-hidden border border-white/10 group cursor-pointer shadow-lg"
                         onClick={() => handleCardClick(event)}
                         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(event); } }}
                         tabIndex={0}
-                        whileHover={{ scale: 1.005 }}
-                        whileTap={{ scale: 0.995 }}
                       >
+                        {/* Image container */}
                         <div className="relative w-full aspect-[2/3] bg-black/20">
                           <img
                             loading="lazy"
@@ -755,7 +772,7 @@ export default function EventsPage() {
                             draggable={false}
                             src={event.image}
                             alt={event.title}
-                            className="absolute inset-0 w-full h-full object-cover"
+                            className="absolute inset-0 w-full h-full object-cover opacity-0"
                             onError={(e) => {
                               console.error(`Failed to load image: ${event.image}`);
                               const target = e.target as HTMLImageElement;
@@ -770,17 +787,34 @@ export default function EventsPage() {
                             id={`fallback-${event.id}`}
                           />
                         </div>
-                        <div className="p-2 bg-black/60">
-                          <div className="flex items-center justify-between text-white">
-                            <span className="text-xs font-semibold truncate pr-2">{event.title}</span>
-                            <div className="flex items-center gap-1">
-                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 border border-white/20">
-                                {getEventDomain(event.image)}
-                              </span>
-                              <span className={`text-[10px] px-2 py-0.5 rounded-full border ${event.isFlagship ? 'bg-yellow-500/10 text-yellow-300 border-yellow-500/30' : 'bg-white/10 text-white border-white/20'}`}>
-                                {event.isFlagship ? 'Flagship' : 'Regular'}
-                              </span>
-                            </div>
+
+                        {/* --- NEW UNIFIED "GLITCHING GRID" OVERLAY --- */}
+                        <div className="absolute inset-0 flex flex-col justify-between bg-gradient-to-t from-black/95 via-black/70 to-transparent transition-opacity duration-500 overflow-hidden p-4">
+                          {/* Animated Grid Background */}
+                          <div className="absolute inset-0 opacity-10" style={{
+                            backgroundImage: 'linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)',
+                            backgroundSize: '20px 20px',
+                          }} />
+
+                          {/* Corner Brackets */}
+                          <div className="absolute top-3 left-3 w-5 h-5 border-t-2 border-l-2 border-cyan-400 transition-all duration-300" />
+                          <div className="absolute bottom-3 right-3 w-5 h-5 border-b-2 border-r-2 border-cyan-400 transition-all duration-300" />
+
+                          {/* Glitch Line */}
+                          <div className="absolute top-1/2 left-0 w-full h-0.5 bg-cyan-400/50 animate-pulse opacity-50" />
+
+                          {/* Event Title - Centered */}
+                          <div className="flex-grow flex items-center justify-center text-center pt-4">
+                            <h3 className="font-bold text-lg md:text-xl text-white px-2 uppercase" style={{ textShadow: '0 0 8px rgba(255, 255, 255, 0.3)' }}>
+                              {event.title}
+                            </h3>
+                          </div>
+
+                          {/* "Details Coming Soon" Text - At the bottom */}
+                          <div className="text-center pb-2">
+                            <p className="text-xs font-mono text-cyan-300 animate-pulse">
+                              Details Coming Soon
+                            </p>
                           </div>
                         </div>
                       </motion.div>
@@ -788,192 +822,7 @@ export default function EventsPage() {
                   </div>
                 </div>
               </motion.main>
-            ) : (
-              <motion.div
-                key="detail"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
-                className="fixed inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 z-50 overflow-hidden"
-              >
-                <div className="flex flex-col lg:flex-row h-full">
-                  {/* Left Side - Event Card */}
-                  <motion.div
-                    initial={{ x: -100, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
-                    className="w-full lg:w-1/2 p-4 lg:p-8 flex items-center justify-center"
-                  >
-                    <div className="w-full max-w-md">
-                      <motion.div
-                        layoutId={`card-${selectedEvent.id}`}
-                        className={`${selectedEvent.isFlagship ? 'bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 border-yellow-500/50' : 'bg-black/40'} backdrop-blur-sm rounded-lg overflow-hidden border border-white/20`}
-                        initial={{ scale: 0.8 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 0.5, ease: "easeOut" }}
-                      >
-                        <div className="relative w-full aspect-[2/3] bg-black/20">
-                          <img 
-                            loading="lazy"
-                            decoding="async"
-                            sizes="(min-width:1024px) 33vw, 90vw"
-                            fetchPriority="low"
-                            draggable={false}
-                            src={selectedEvent.image} 
-                            alt={selectedEvent.title}
-                            className="absolute inset-0 w-full h-full object-cover"
-                            onError={(e) => {
-                              console.error(`Failed to load modal image: ${selectedEvent.image}`);
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                              const fallback = document.getElementById(`modal-fallback-${selectedEvent.id}`);
-                              if (fallback) fallback.style.display = 'block';
-                            }}
-                          />
-                          <div className={`absolute inset-0 ${selectedEvent.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`} style={{ display: 'none' }} id={`modal-fallback-${selectedEvent.id}`} />
-                        </div>
-                      </motion.div>
-                    </div>
-                  </motion.div>
-
-                  {/* Right Side - Event Details */}
-                  <motion.div
-                    initial={{ x: 100, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-                    className="w-full lg:w-1/2 p-4 lg:p-8 overflow-y-auto"
-                  >
-                    <div className="max-w-lg mx-auto lg:mx-0">
-                      {/* Close Button */}
-                      <motion.button
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 0.4 }}
-                        onClick={handleClose}
-                        className="absolute top-4 lg:top-8 right-4 lg:right-8 w-10 h-10 lg:w-12 lg:h-12 bg-black/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-black/40 transition-colors border border-white/20"
-                      >
-                        <X className="w-5 h-5 lg:w-6 lg:h-6" />
-                      </motion.button>
-
-                      {/* Event Details Content */}
-                      <motion.div
-                        initial={{ y: 30, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.3, duration: 0.5 }}
-                      >
-                        <div className="mb-6">
-                          <span className="inline-block px-3 py-1 bg-pink-500/20 text-pink-300 rounded-full text-sm mb-4">
-                            {selectedEvent.genre}
-                          </span>
-                          <h2 className="text-2xl lg:text-4xl font-bold text-white mb-4">
-                            {selectedEvent.title}
-                          </h2>
-                          <p className="text-gray-300 text-base lg:text-lg leading-relaxed mb-6">
-                            {selectedEvent.description}
-                          </p>
-                        </div>
-
-                        <div className="space-y-4 lg:space-y-6">
-                          <div>
-                            <h3 className="text-lg lg:text-xl font-semibold text-white mb-3">Event Details</h3>
-                            {/* Flagship Event Info */}
-                            {selectedEvent.isFlagship && (
-                              <div className="mb-4 p-3 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-lg">
-                                <div className="flex items-center space-x-2 text-yellow-300">
-                                  <span className="text-lg">⭐</span>
-                                  <span className="font-semibold">This is a Flagship Event</span>
-                                </div>
-                                <p className="text-yellow-200 text-sm mt-1">
-                                  Flagship events are our most prestigious and high-priority events featuring top-tier content and exclusive experiences.
-                                </p>
-                              </div>
-                            )}
-                            <div className="space-y-3">
-                              <div className="flex items-center justify-between py-2 border-b border-white/10">
-                                <span className="text-gray-300">Date & Time</span>
-                                <span className="text-white">{selectedEvent.date} at {selectedEvent.time}</span>
-                              </div>
-                              <div className="flex items-center justify-between py-2 border-b border-white/10">
-                                <span className="text-gray-300">Venue</span>
-                                <span className="text-white">{selectedEvent.venue}</span>
-                              </div>
-                              <div className="flex items-center justify-between py-2 border-b border-white/10">
-                                <span className="text-gray-300">Price</span>
-                                <span className="text-white font-semibold">{selectedEvent.price}</span>
-                              </div>
-                              <div className="flex items-center justify-between py-2 border-b border-white/10">
-                                <span className="text-gray-300">Capacity</span>
-                                <span className="text-white">{selectedEvent.capacity}</span>
-                              </div>
-                              <div className="flex items-center justify-between py-2 border-b border-white/10">
-                                <span className="text-gray-300">Event Type</span>
-                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                  selectedEvent.isFlagship 
-                                    ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-300 border border-yellow-500/30' 
-                                    : 'bg-blue-500/20 text-blue-300'
-                                }`}>
-                                  {selectedEvent.isFlagship ? '⭐ Flagship' : 'Regular Event'}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div>
-                            <h3 className="text-xl font-semibold text-white mb-3">About This Event</h3>
-                            <p className="text-gray-300 leading-relaxed">
-                              {selectedEvent.details}
-                            </p>
-                          </div>
-
-                          <div className="flex space-x-4 pt-6">
-                            <button 
-                              onClick={() => router.push('/coming-soon')}
-                              className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
-                            >
-                              BUY TICKETS
-                            </button>
-                            <button 
-                              onClick={() => router.push('/coming-soon')}
-                              className="px-6 py-3 border border-white/30 text-white rounded-lg hover:bg-white/10 transition-all duration-300"
-                            >
-                              RULES
-                            </button>
-                            <button 
-                              onClick={handleShare}
-                              className="px-6 py-3 border border-white/30 text-white rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
-                            >
-                              <Share2 className="w-4 h-4" />
-                              <span>SHARE</span>
-                            </button>
-                          </div>
-                        </div>
-                      </motion.div>
-                    </div>
-                  </motion.div>
-                </div>
-
-                {/* Copy Success Message */}
-                <AnimatePresence>
-                  {showCopyMessage && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 50, scale: 0.9 }}
-                      transition={{ duration: 0.3, ease: "easeOut" }}
-                      className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-60"
-                    >
-                      <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3">
-                        <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
-                          <Check className="w-4 h-4 text-white" />
-                        </div>
-                        <span className="font-medium">Link copied to clipboard!</span>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            )}
+            }
           </AnimatePresence>
 
           {/* Mobile hamburger */}

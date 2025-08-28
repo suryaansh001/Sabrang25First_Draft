@@ -13,82 +13,34 @@ const phases = [
   'Get ready for the reveal...',
 ];
 
-const encryptedChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
-
-function getRandomChar() {
-  return encryptedChars[Math.floor(Math.random() * encryptedChars.length)];
-}
-
-function encryptText(text: string) {
-  return text
-    .split('')
-    .map(() => getRandomChar())
-    .join('');
-}
-
 export default function ComingSoonOverlay() {
   const [currentPhase, setCurrentPhase] = useState(0);
-  const [revealedText, setRevealedText] = useState('');
-  const [isRevealing, setIsRevealing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showGlitch, setShowGlitch] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | undefined>(undefined);
-  const glitchIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Set client flag after component mounts
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // Initialize encrypted text after component mounts (prevents hydration mismatch)
-  useEffect(() => {
-    if (isClient) {
-      setRevealedText(encryptText(phases[0]));
-    }
-  }, [isClient]);
-
-  // Phase cycling and text reveal
+  // Phase cycling
   useEffect(() => {
     if (!isClient) return;
     
-    let revealCount = 0;
     const interval = setInterval(() => {
-      setCurrentPhase((prev) => {
-        const nextPhase = (prev + 1) % phases.length;
-        revealCount = 0;
-        setRevealedText(encryptText(phases[nextPhase]));
-        setIsRevealing(true);
-        return nextPhase;
-      });
+      // Trigger glitch effect on text change
+      setShowGlitch(true);
+      setTimeout(() => setShowGlitch(false), 200);
+      setCurrentPhase((prev) => (prev + 1) % phases.length);
     }, 6000);
-
-    const revealInterval = setInterval(() => {
-      if (isRevealing && revealCount < phases[currentPhase].length) {
-        setRevealedText((prev) => {
-          const original = phases[currentPhase];
-          return original
-            .split('')
-            .map((char, i) => (i <= revealCount ? char : getRandomChar()))
-            .join('');
-        });
-        revealCount++;
-        
-        if (revealCount >= phases[currentPhase].length) {
-          setIsRevealing(false);
-          // Trigger glitch effect when text is fully revealed
-          setShowGlitch(true);
-          setTimeout(() => setShowGlitch(false), 200);
-        }
-      }
-    }, 80);
 
     return () => {
       clearInterval(interval);
-      clearInterval(revealInterval);
     };
-  }, [currentPhase, isRevealing, isClient]);
+  }, [isClient]);
 
   // Progress animation
   useEffect(() => {
@@ -294,41 +246,39 @@ export default function ComingSoonOverlay() {
           </motion.p>
         </motion.div>
 
-        {/* Encryption Reveal Text - Only show after client loads */}
+        {/* Text Reveal - Only show after client loads */}
         {isClient ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1.5, delay: 0.5, ease: 'easeOut' }}
-            className="mb-12"
+            className="mb-12 h-24 md:h-32 flex items-center justify-center"
           >
-            <motion.h2 
-              className={`text-2xl md:text-4xl lg:text-5xl font-bold font-mono ${
-                showGlitch ? 'animate-pulse' : ''
-              }`}
-              animate={{
-                textShadow: showGlitch 
-                  ? [
-                      '2px 0 0 rgba(255, 0, 0, 0.5)',
-                      '-2px 0 0 rgba(0, 255, 255, 0.5)',
-                      '2px 0 0 rgba(255, 0, 0, 0.5)',
-                    ]
-                  : [
-                      '0 0 20px rgba(255, 105, 180, 0.3)',
-                      '0 0 40px rgba(255, 105, 180, 0.2)',
-                      '0 0 20px rgba(255, 105, 180, 0.3)',
-                    ]
-              }}
-              transition={{ duration: showGlitch ? 0.1 : 3, repeat: showGlitch ? 5 : Infinity, ease: 'easeInOut' }}
-            >
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400">
-                {revealedText}
-              </span>
-            </motion.h2>
+            <AnimatePresence mode="wait">
+              <motion.h2 
+                key={currentPhase}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className={`text-2xl md:text-4xl lg:text-5xl font-bold font-mono ${
+                  showGlitch ? 'animate-pulse' : ''
+                }`}
+                style={{
+                  textShadow: showGlitch 
+                    ? '2px 0 0 rgba(255, 0, 0, 0.5), -2px 0 0 rgba(0, 255, 255, 0.5)'
+                    : '0 0 20px rgba(255, 105, 180, 0.3)'
+                }}
+              >
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400">
+                  {phases[currentPhase]}
+                </span>
+              </motion.h2>
+            </AnimatePresence>
           </motion.div>
         ) : (
           // Loading placeholder to prevent layout shift
-          <div className="mb-12">
+          <div className="mb-12 h-24 md:h-32 flex items-center justify-center">
             <div className="text-2xl md:text-4xl lg:text-5xl font-bold font-mono text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400">
               Loading...
             </div>
