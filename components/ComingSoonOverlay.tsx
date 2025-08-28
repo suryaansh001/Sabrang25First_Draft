@@ -28,16 +28,31 @@ function encryptText(text: string) {
 
 export default function ComingSoonOverlay() {
   const [currentPhase, setCurrentPhase] = useState(0);
-  const [revealedText, setRevealedText] = useState(encryptText(phases[0]));
+  const [revealedText, setRevealedText] = useState('');
   const [isRevealing, setIsRevealing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showGlitch, setShowGlitch] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | undefined>(undefined);
   const glitchIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Set client flag after component mounts
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Initialize encrypted text after component mounts (prevents hydration mismatch)
+  useEffect(() => {
+    if (isClient) {
+      setRevealedText(encryptText(phases[0]));
+    }
+  }, [isClient]);
+
   // Phase cycling and text reveal
   useEffect(() => {
+    if (!isClient) return;
+    
     let revealCount = 0;
     const interval = setInterval(() => {
       setCurrentPhase((prev) => {
@@ -73,10 +88,12 @@ export default function ComingSoonOverlay() {
       clearInterval(interval);
       clearInterval(revealInterval);
     };
-  }, [currentPhase, isRevealing]);
+  }, [currentPhase, isRevealing, isClient]);
 
   // Progress animation
   useEffect(() => {
+    if (!isClient) return;
+    
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 95) return prev;
@@ -85,11 +102,11 @@ export default function ComingSoonOverlay() {
     }, 100);
 
     return () => clearInterval(progressInterval);
-  }, []);
+  }, [isClient]);
 
   // Canvas particle animation
   useEffect(() => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || !isClient) return;
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
@@ -213,8 +230,8 @@ export default function ComingSoonOverlay() {
 
   return (
     <div className="fixed inset-0 z-[9999] overflow-hidden bg-gradient-to-br from-gray-900 via-black to-gray-900">
-      {/* Animated Canvas Background */}
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" style={{ opacity: 0.6 }} />
+      {/* Animated Canvas Background - Only render on client */}
+      {isClient && <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" style={{ opacity: 0.6 }} />}
 
       {/* Gradient Overlays */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-transparent to-pink-900/20" />
@@ -277,69 +294,95 @@ export default function ComingSoonOverlay() {
           </motion.p>
         </motion.div>
 
-        {/* Encryption Reveal Text */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.5, delay: 0.5, ease: 'easeOut' }}
-          className="mb-12"
-        >
-          <motion.h2 
-            className={`text-2xl md:text-4xl lg:text-5xl font-bold font-mono ${
-              showGlitch ? 'animate-pulse' : ''
-            }`}
-            animate={{
-              textShadow: showGlitch 
-                ? [
-                    '2px 0 0 rgba(255, 0, 0, 0.5)',
-                    '-2px 0 0 rgba(0, 255, 255, 0.5)',
-                    '2px 0 0 rgba(255, 0, 0, 0.5)',
-                  ]
-                : [
-                    '0 0 20px rgba(255, 105, 180, 0.3)',
-                    '0 0 40px rgba(255, 105, 180, 0.2)',
-                    '0 0 20px rgba(255, 105, 180, 0.3)',
-                  ]
-            }}
-            transition={{ duration: showGlitch ? 0.1 : 3, repeat: showGlitch ? 5 : Infinity, ease: 'easeInOut' }}
+        {/* Encryption Reveal Text - Only show after client loads */}
+        {isClient ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.5, delay: 0.5, ease: 'easeOut' }}
+            className="mb-12"
           >
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400">
-              {revealedText}
-            </span>
-          </motion.h2>
-        </motion.div>
-
-        {/* Progress Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.5, delay: 1, ease: 'easeOut' }}
-          className="mb-12"
-        >
-          <motion.p className="text-white/70 font-medium text-lg mb-4">
-            Preparing Experience
-          </motion.p>
-          
-          {/* Progress Bar */}
-          <motion.div className="w-80 md:w-96 h-3 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm border border-white/20">
-            <motion.div
-              className="h-full bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 rounded-full relative"
-              initial={{ width: '0%' }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 2, ease: 'easeOut' }}
+            <motion.h2 
+              className={`text-2xl md:text-4xl lg:text-5xl font-bold font-mono ${
+                showGlitch ? 'animate-pulse' : ''
+              }`}
+              animate={{
+                textShadow: showGlitch 
+                  ? [
+                      '2px 0 0 rgba(255, 0, 0, 0.5)',
+                      '-2px 0 0 rgba(0, 255, 255, 0.5)',
+                      '2px 0 0 rgba(255, 0, 0, 0.5)',
+                    ]
+                  : [
+                      '0 0 20px rgba(255, 105, 180, 0.3)',
+                      '0 0 40px rgba(255, 105, 180, 0.2)',
+                      '0 0 20px rgba(255, 105, 180, 0.3)',
+                    ]
+              }}
+              transition={{ duration: showGlitch ? 0.1 : 3, repeat: showGlitch ? 5 : Infinity, ease: 'easeInOut' }}
             >
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                animate={{ x: ['-100%', '100%'] }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-              />
-            </motion.div>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400">
+                {revealedText}
+              </span>
+            </motion.h2>
           </motion.div>
-          
-          <motion.p className="text-white/50 text-sm mt-2">
-            {Math.round(progress)}% Complete
-          </motion.p>
-        </motion.div>
+        ) : (
+          // Loading placeholder to prevent layout shift
+          <div className="mb-12">
+            <div className="text-2xl md:text-4xl lg:text-5xl font-bold font-mono text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400">
+              Loading...
+            </div>
+          </div>
+        )}
+
+        {/* Progress Section - Only show after client loads */}
+        {isClient ? (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.5, delay: 1, ease: 'easeOut' }}
+            className="mb-12"
+          >
+            <motion.p className="text-white/70 font-medium text-lg mb-4">
+              Preparing Experience
+            </motion.p>
+            
+            {/* Progress Bar */}
+            <motion.div className="w-80 md:w-96 h-3 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm border border-white/20">
+              <motion.div
+                className="h-full bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 rounded-full relative"
+                initial={{ width: '0%' }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 2, ease: 'easeOut' }}
+              >
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                  animate={{ x: ['-100%', '100%'] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+                />
+              </motion.div>
+            </motion.div>
+            
+            <motion.p className="text-white/50 text-sm mt-2">
+              {Math.round(progress)}% Complete
+            </motion.p>
+          </motion.div>
+        ) : (
+          // Loading placeholder to prevent layout shift
+          <div className="mb-12">
+            <div className="text-white/70 font-medium text-lg mb-4">
+              Preparing Experience
+            </div>
+            <div className="w-80 md:w-96 h-3 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm border border-white/20">
+              <div className="h-full bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 rounded-full relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse" />
+              </div>
+            </div>
+            <div className="text-white/50 text-sm mt-2">
+              Loading...
+            </div>
+          </div>
+        )}
 
         {/* Fun Elements */}
         <motion.div
