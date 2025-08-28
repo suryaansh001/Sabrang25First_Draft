@@ -34,21 +34,8 @@ const HolographicCard = ({
     setHoveredCard(false);
   };
 
-  // Generate hologram colors based on person's role
-  const getHologramColors = (role: string) => {
-    const colors = [
-      "from-cyan-400 via-purple-500 to-pink-500",
-      "from-emerald-400 via-teal-500 to-blue-500",
-      "from-orange-400 via-red-500 to-pink-500",
-      "from-violet-400 via-purple-500 to-indigo-500",
-      "from-lime-400 via-green-500 to-emerald-500",
-      "from-rose-400 via-pink-500 to-fuchsia-500"
-    ];
-    const hash = role.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return colors[hash % colors.length];
-  };
-
-  const hologram = getHologramColors(person.role);
+  // Set a consistent glossy black color for the hologram effect
+  const hologram = "from-neutral-800 via-black to-neutral-800";
 
   const handleCardClick = () => {
     setActiveCard(!activeCard);
@@ -90,11 +77,8 @@ const HolographicCard = ({
           >
             {/* FRONT */}
             <div className={`absolute inset-0 w-full h-full rounded-lg backdrop-blur-xl bg-white/10 border border-white/20 overflow-hidden shadow-2xl backface-hidden transition-opacity duration-300 ${hoveredCard ? 'opacity-0' : 'opacity-100'}`}>
-              {/* Liquid Animation Background */}
+              {/* Animated Background Elements */}
               <div className="absolute inset-0 overflow-hidden">
-                <div className={`${
-                  'absolute inset-0 bg-gradient-to-br ' + hologram + ' opacity-20'
-                } transition-all duration-1000 ease-out ${hoveredCard ? 'scale-150 rotate-12' : 'scale-100'}`} />
                 {/* Morphing Shapes */}
                 <div className={`absolute top-4 right-4 w-16 h-16 bg-white/10 rounded-full transition-all duration-700 ease-out ${hoveredCard ? 'scale-150 translate-x-4 -translate-y-2' : 'scale-100'}`} />
                 <div className={`absolute bottom-4 left-4 w-12 h-12 bg-white/5 rounded-full transition-all duration-500 ease-out ${hoveredCard ? 'scale-200 translate-x-8 translate-y-4' : 'scale-100'}`} />
@@ -144,7 +128,7 @@ const HolographicCard = ({
             </div>
 
             {/* BACK */}
-            <div className={`absolute inset-0 w-full h-full rounded-lg backdrop-blur-xl bg-gradient-to-br from-purple-600/40 via-pink-600/40 to-blue-600/40 border border-white/30 overflow-hidden shadow-2xl text-white p-6 rotate-y-180 transition-opacity duration-300 relative z-999 ${hoveredCard ? 'opacity-100' : 'opacity-0'}`} style={{ transform: 'rotateY(180deg)' }}>
+            <div className={`absolute inset-0 w-full h-full rounded-lg border border-white/30 overflow-hidden shadow-2xl text-white p-6 rotate-y-180 transition-opacity duration-300 relative z-999 ${hoveredCard ? 'opacity-100' : 'opacity-0'}`} style={{ transform: 'rotateY(180deg)' }}>
               {/* Enhanced background pattern */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-black/20" />
               
@@ -253,9 +237,7 @@ const ExpandedCard = ({
           height: isExpanded ? '70vh' : `${cardPosition.height}px`,
           transform: isExpanded ? 'translate(-50%, -50%)' : 'none',
           transformOrigin: `${cardPosition.x + cardPosition.width/2}px ${cardPosition.y + cardPosition.height/2}px`,
-          boxShadow: isExpanded 
-            ? '0 25px 50px -12px rgba(0, 0, 0, 0.3)' 
-            : '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+          
           opacity: isExpanded ? 1 : 0.95,
           scale: isExpanded ? 1 : 0.98,
         }}

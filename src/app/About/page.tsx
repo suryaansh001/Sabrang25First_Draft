@@ -17,7 +17,7 @@ const AboutPage = () => {
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
     { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
-    { title: 'Schedule', href: '/schedule', icon: <Clock className="w-5 h-5" /> },
+    { title: 'Schedule', href: '/schedule/progress', icon: <Clock className="w-5 h-5" /> },
     { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
     { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
     { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
@@ -35,7 +35,7 @@ const AboutPage = () => {
       />
       
       {/* Black Overlay for better text readability with subtle glass blur */}
-      <div className="fixed inset-0 -z-10 bg-black/70 backdrop-blur-sm md:backdrop-blur" />
+      <div className="fixed inset-0 -z-10 bg-black/40 backdrop-blur-sm md:backdrop-blur" />
       
       <Logo />
       <SidebarDock />
@@ -398,7 +398,7 @@ const AboutPage = () => {
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               {/* Left: Content */}
-              <div className="space-y-6 bg-white/5 py-6 px-6 rounded-xl">
+              <div className="space-y-6 bg-white/15 py-6 px-6 rounded-xl">
                 <h2 className="text-4xl md:text-5xl font-bold">
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500">
                     Beyond Competitions

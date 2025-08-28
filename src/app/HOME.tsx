@@ -199,7 +199,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
     { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
-    { title: 'Schedule', href: '/schedule', icon: <Clock className="w-5 h-5" /> },
+    { title: 'Schedule', href: '/schedule/progress', icon: <Clock className="w-5 h-5" /> },
     { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
     { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
     { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
@@ -384,7 +384,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               
               {/* CTA Button */}
               <div className="flex items-center justify-center">
-                <a href="/Signup" className="btn-prism pointer-events-auto transform hover:scale-105 transition-transform duration-300">
+                <a href="/coming-soon" className="btn-prism pointer-events-auto transform hover:scale-105 transition-transform duration-300">
                   <span className="text-lg font-semibold">Register Now</span>
                 </a>
               </div>
@@ -470,7 +470,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                 { title: 'About', icon: <Info className="w-6 h-6" />, href: '/About', color: 'from-blue-500 to-cyan-500' },
                 { title: 'Events', icon: <Calendar className="w-6 h-6" />, href: '/Events', color: 'from-purple-500 to-pink-500' },
                 { title: 'Highlights', icon: <Star className="w-6 h-6" />, href: '/Gallery', color: 'from-yellow-500 to-orange-500' },
-                { title: 'Schedule', icon: <Clock className="w-6 h-6" />, href: '/schedule', color: 'from-green-500 to-emerald-500' }
+                { title: 'Schedule', icon: <Clock className="w-6 h-6" />, href: '/schedule/progress', color: 'from-green-500 to-emerald-500' }
               ].map((item, index) => (
                 <button
                   key={item.title}
@@ -508,7 +508,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               {/* Enhanced Register Button */}
               <div className="relative group">
                 <a 
-                  href="/Signup" 
+                  href="/coming-soon" 
                   className="relative inline-block px-10 py-5 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-full text-white font-bold text-lg hover:from-purple-700 hover:via-pink-700 hover:to-blue-700 transition-all duration-500 transform hover:scale-105 active:scale-95 shadow-2xl hover:shadow-purple-500/25"
                 >
                   <span className="relative z-10">Register Now</span>
@@ -601,7 +601,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         {/* Register Now Button */}
         {!isLoading && (
           <div className="absolute top-2.5 right-2 z-50 flex items-center space-x-5">
-            <a href="/Signup" className="px-24 py-4 bg-black/40 backdrop-blur-sm rounded-full text-white text-sm font-medium hover:bg-black/60 transition-all duration-300 border border-white/30">
+            <a href="/coming-soon" className="px-24 py-4 bg-black/40 backdrop-blur-sm rounded-full text-white text-sm font-medium hover:bg-black/60 transition-all duration-300 border border-white/30">
               Register Now
             </a>
             <a href="/dashboard" className="w-12 h-12 bg-purple-600/60 hover:bg-purple-600/80 rounded-full text-white transition-all duration-300 border border-purple-400/40 flex items-center justify-center">

@@ -31,7 +31,7 @@ const FAQ = () => {
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
     { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
-    { title: 'Schedule', href: '/schedule', icon: <Clock className="w-5 h-5" /> },
+    { title: 'Schedule', href: '/schedule/progress', icon: <Clock className="w-5 h-5" /> },
     { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
     { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
     { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
@@ -141,14 +141,15 @@ const FAQ = () => {
   return (
     <div className="min-h-screen text-white font-sans relative overflow-hidden flex flex-col">
       {/* Background Image */}
-    <div 
-        className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
-      style={{
-          backgroundImage: 'url(/images/backgrounds/faq.webp)'
+      <div 
+        className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat bg-attachment-fixed"
+        style={{
+          backgroundImage: 'url(/images/backgrounds/faq.webp)',
+          backgroundAttachment: 'fixed'
         }}
       />
       
-      {/* Black Overlay for better text readability */}
+      {/* Black Overlay for better text readability - Applied to entire page */}
       <div className="fixed inset-0 -z-10 bg-black/60" />
 
       {/* Logo and sidebar */}
@@ -214,15 +215,7 @@ const FAQ = () => {
         {/* Hero Section */}
         <section 
           className="min-h-screen flex items-center justify-center relative px-4 sm:px-6"
-          style={{
-            backgroundImage: 'url(/images/backgrounds/faq.webp)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
-          }}
         >
-          {/* Hero Background Overlay */}
-          <div className="absolute inset-0 bg-black/60" />
           <div className="max-w-7xl mx-auto text-center relative z-10 px-4 sm:px-6">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold mb-6 sm:mb-8 leading-tight">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-300">
@@ -240,16 +233,7 @@ const FAQ = () => {
             
             {/* Search Bar */}
             <div className="max-w-2xl mx-auto px-4 sm:px-0">
-          <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
-                <input
-                  type="text"
-                  placeholder="Search questions or keywords..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 sm:pl-12 pr-4 py-3 sm:py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl sm:rounded-2xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 text-sm sm:text-base"
-                />
-          </div>
+          
         </div>
       </div>
         </section>
@@ -275,28 +259,28 @@ const FAQ = () => {
             {/* FAQ Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
               {filteredFaqs.map((faq, index) => (
-            <div
-              key={index}
-                  className="group relative"
-            >
-              {/* Glowing Border Effect */}
+                <div
+                  key={index}
+                  className="group relative h-full"
+                >
+                  {/* Glowing Border Effect */}
                   <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-300"></div>
               
-                  <div className="relative bg-gradient-to-br from-gray-900/90 via-gray-800/90 to-gray-900/90 backdrop-blur-sm border border-gray-700/50 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl sm:shadow-2xl transition-all duration-500 transform hover:scale-[1.01] sm:hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] sm:hover:shadow-[0_0_40px_rgba(168,85,247,0.3)]">
+                  <div className="relative bg-gradient-to-br from-gray-900/90 via-gray-800/90 to-gray-900/90 backdrop-blur-sm border border-gray-700/50 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl sm:shadow-2xl transition-all duration-500 transform hover:scale-[1.01] sm:hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] sm:hover:shadow-[0_0_40px_rgba(168,85,247,0.3)] h-full flex flex-col">
                     {/* Question Header */}
-                <button
-                  onClick={() => toggle(index)}
-                      className="w-full text-left p-4 sm:p-6 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:ring-inset group active:scale-[0.98] transition-transform duration-150 touch-manipulation"
-                  aria-expanded={openIndex === index}
-                  aria-controls={`faq-answer-${index}`}
-                >
-                      <div className="flex items-start justify-between">
+                    <button
+                      onClick={() => toggle(index)}
+                      className="w-full text-left p-4 sm:p-6 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:ring-inset group active:scale-[0.98] transition-transform duration-150 touch-manipulation flex-shrink-0"
+                      aria-expanded={openIndex === index}
+                      aria-controls={`faq-answer-${index}`}
+                    >
+                      <div className="flex items-start justify-between min-h-[80px]">
                         <div className="flex items-start space-x-3 sm:space-x-4 flex-1">
-                          <span className="text-2xl sm:text-3xl">{faq.icon}</span>
+                          <span className="text-2xl sm:text-3xl flex-shrink-0">{faq.icon}</span>
                           <div className="flex-1">
                             <h3 className="text-base sm:text-lg md:text-xl font-bold text-white group-hover:text-purple-300 transition-colors duration-300 leading-relaxed">
                               {faq.question}
-                  </h3>
+                            </h3>
                             <div className="flex items-center space-x-2 mt-2">
                               <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
                                 {faq.category}
@@ -304,33 +288,33 @@ const FAQ = () => {
                             </div>
                           </div>
                         </div>
-                  <span
+                        <span
                           className={`transform transition-all duration-500 text-xl sm:text-2xl flex-shrink-0 ml-3 sm:ml-4 ${
-                      openIndex === index 
-                              ? 'rotate-180 text-purple-400 scale-110' 
-                              : 'text-gray-400 group-hover:text-purple-400 group-hover:scale-105'
-                    }`}
-                    aria-hidden="true"
-                  >
+                            openIndex === index 
+                              ? 'rotate-0 text-purple-400 scale-110' 
+                              : 'rotate-180 text-gray-400 group-hover:text-purple-400 group-hover:scale-105'
+                          }`}
+                          aria-hidden="true"
+                        >
                           <ChevronUp className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </span>
+                        </span>
                       </div>
-                </button>
+                    </button>
 
                     {/* Answer Container */}
-                <div
-                  id={`faq-answer-${index}`}
-                  className={`px-4 sm:px-6 transition-all duration-500 ease-in-out overflow-hidden ${
-                    openIndex === index 
+                    <div
+                      id={`faq-answer-${index}`}
+                      className={`px-4 sm:px-6 transition-all duration-500 ease-in-out overflow-hidden flex-1 ${
+                        openIndex === index 
                           ? 'max-h-96 opacity-100 pb-4 sm:pb-6' 
-                      : 'max-h-0 opacity-0 pb-0'
-                  }`}
-                  aria-hidden={openIndex !== index}
-                >
+                          : 'max-h-0 opacity-0 pb-0'
+                      }`}
+                      aria-hidden={openIndex !== index}
+                    >
                       <div className="border-t border-gray-700/50 pt-3 sm:pt-4">
                         <p className="text-gray-300 leading-relaxed text-sm sm:text-base md:text-lg">
-                      {faq.answer}
-                    </p>
+                          {faq.answer}
+                        </p>
                         <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-700/30">
                           <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-400">
                             <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -339,13 +323,13 @@ const FAQ = () => {
                           <button className="text-purple-400 hover:text-purple-300 text-xs sm:text-sm font-medium transition-colors">
                             Contact Support
                           </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
 
             {/* No Results Message */}
             {filteredFaqs.length === 0 && searchTerm && (
