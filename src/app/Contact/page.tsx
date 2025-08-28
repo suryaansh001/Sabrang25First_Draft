@@ -19,7 +19,7 @@ const Contact = () => {
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
     { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
-    { title: 'Schedule', href: '/schedule/progress', icon: <Calendar className="w-5 h-5" /> },
+    { title: 'Schedule', href: '/schedule', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
     { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
     { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
@@ -97,7 +97,7 @@ const Contact = () => {
       />
       
       {/* Main Content Container */}
-      <div className="relative z-10 pt-24 pb-16 flex-grow">
+      <div className="relative z-10 pt-24 flex-grow">
         {/* Hero Section */}
         <section className="py-0 px-6">
           <div className="max-w-7xl mx-auto text-center">
@@ -380,7 +380,7 @@ const Contact = () => {
           </div>
         </section>
 
-        {/* Footer with proper z-index */}
+        Footer with proper z-index
         <div className="relative z-10">
           <Footer />
         </div>
