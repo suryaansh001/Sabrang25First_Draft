@@ -114,14 +114,20 @@ const AboutPage = () => {
         </section>
 
         {/* What is Sabrang Section */}
-        <section className="py-20 px-6">
+        <section className="py-20 px-6 relative">
+          {/* Mobile background image with overlay */}
+          <div
+            className="absolute inset-0 lg:hidden -z-20 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: 'url(/images/about-section/what_is_sabrang.webp)' }}
+          />
+          <div className="absolute inset-0 lg:hidden -z-10 bg-black/60" />
           <div className="max-w-7xl mx-auto">
             {/* Hero Image for What is Sabrang */}
             
             
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="grid lg:grid-cols-2 gap-16 items-center relative">
               {/* Left: Image */}
-              <div className="relative group">
+              <div className="relative group hidden lg:block">
                 <div className="relative overflow-hidden rounded-2xl h-[500px]">
                   <Image 
                     src="/images/about-section/what_is_sabrang.webp" 
@@ -137,7 +143,7 @@ const AboutPage = () => {
               </div>
               
               {/* Right: Content */}
-              <div className="space-y-6 bg-black/30 py-6 px-6 rounded-xl">
+              <div className="space-y-6 bg-black/40 py-6 px-6 rounded-xl relative z-10">
                 <h2 className="text-4xl md:text-5xl font-bold">
                   <span className="text-[#f1e4fe]">
                     What is Sabrang?
@@ -394,11 +400,17 @@ const AboutPage = () => {
         </section>
 
         {/* Beyond Competitions Section */}
-        <section className="py-20 px-6 bg-black/30">
+        <section className="py-20 px-6 bg-black/30 relative">
+          {/* Mobile background image with overlay */}
+          <div
+            className="absolute inset-0 lg:hidden -z-20 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: 'url(/images/backgrounds/about-page/WhatsApp Image 2025-08-13 at 20.04.37_b514dcc5.jpg)' }}
+          />
+          <div className="absolute inset-0 lg:hidden -z-10 bg-black/60" />
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               {/* Left: Content */}
-              <div className="space-y-6 bg-white/15 py-6 px-6 rounded-xl">
+              <div className="space-y-6 bg-white/15 py-6 px-6 rounded-xl relative z-10">
                 <h2 className="text-4xl md:text-5xl font-bold">
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500">
                     Beyond Competitions
@@ -419,7 +431,7 @@ const AboutPage = () => {
               </div>
               
               {/* Right: Image */}
-              <div className="relative group">
+              <div className="relative group hidden lg:block">
                 <div className="relative overflow-hidden rounded-2xl">
                   <img 
                     src="/images/backgrounds/about-page/WhatsApp Image 2025-08-13 at 20.04.37_b514dcc5.jpg" 
@@ -435,11 +447,17 @@ const AboutPage = () => {
         </section>
 
         {/* Final Vibe Section */}
-        <section className="py-20 px-6 bg-black/20 backdrop-blur-sm">
+        <section className="py-20 px-6 bg-black/20 backdrop-blur-sm relative">
+          {/* Mobile background image with overlay */}
+          <div
+            className="absolute inset-0 lg:hidden -z-20 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: 'url(/images/backgrounds/about-page/WhatsApp Image 2025-08-13 at 20.04.40_42fe13c8.jpg)' }}
+          />
+          <div className="absolute inset-0 lg:hidden -z-10 bg-black/60" />
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               {/* Left: Image */}
-              <div className="relative group">
+              <div className="relative group hidden lg:block">
                 <div className="relative overflow-hidden rounded-2xl">
                   <img 
                     src="/images/backgrounds/about-page/WhatsApp Image 2025-08-13 at 20.04.40_42fe13c8.jpg" 
@@ -451,7 +469,7 @@ const AboutPage = () => {
               </div>
               
               {/* Right: Content */}
-              <div className="space-y-6">
+              <div className="space-y-6 relative z-10 bg-black/40 p-6 rounded-xl lg:bg-transparent lg:p-0">
                 <h2 className="text-4xl md:text-5xl font-bold">
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-500 to-indigo-600">
                     The Final Vibe

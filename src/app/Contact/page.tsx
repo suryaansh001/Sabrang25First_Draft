@@ -118,54 +118,15 @@ const Contact = () => {
               </h2>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-              {/* Anni */}
-              <div className="group relative overflow-hidden rounded-2xl bg-black/20 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-500">
-                <div className="relative h-64 sm:h-72 md:h-80 overflow-hidden">
-                  <img 
-                    src="/images/OH_images_home/anni.jpeg" 
-                    alt="Anni - Organizing Head"
-                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                </div>
-                
-                <div className="p-5 sm:p-6">
-                  <h3 className="text-xl sm:text-2xl font-bold mb-2 bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-                    Anni
-                  </h3>
-                  <p className="text-purple-300 font-medium mb-3">Organizing Head</p>
-                  <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-4">
-                    Leading the charge with creativity and innovation. Your go-to person for all things Sabrang.
-                  </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2 text-sm">
-                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                      <span className="text-green-300">Available for queries</span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-sm">
-                      <span className="text-gray-400">📧</span>
-                      <a href="mailto:anni@jklu.ac.in" className="text-gray-300 underline decoration-white/30 hover:decoration-white">anni@jklu.ac.in</a>
-                    </div>
-                    <div className="flex items-center space-x-2 text-sm">
-                      <span className="text-gray-400">📱</span>
-                      <a href="tel:+919876543210" className="text-gray-300 underline decoration-white/30 hover:decoration-white">+91 98765 43210</a>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="absolute top-4 right-4 w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="text-white text-lg">👑</span>
-                </div>
-              </div>
-
+            <div className="grid grid-cols-1 gap-6 lg:gap-8 place-items-center">
+            
               {/* Diya */}
               <div className="group relative overflow-hidden rounded-2xl bg-black/20 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-500">
-                <div className="relative h-64 sm:h-72 md:h-80 overflow-hidden">
+                <div className="relative h-80 sm:h-96 md:h-[28rem] overflow-hidden">
                   <img 
                     src="/images/OH_images_home/diya.jpeg" 
                     alt="Diya - Organizing Head"
-                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                    className="w-full h-full object-cover transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                 </div>
@@ -185,59 +146,18 @@ const Contact = () => {
                     </div>
                     <div className="flex items-center space-x-2 text-sm">
                       <span className="text-gray-400">📧</span>
-                      <a href="mailto:diya@jklu.ac.in" className="text-gray-300 underline decoration-white/30 hover:decoration-white">diya@jklu.ac.in</a>
+                      <a href="mailto:diyagarg@jklu.edu.in" className="text-gray-300 underline decoration-white/30 hover:decoration-white">diyagarg@jklu.edu.in</a>
                     </div>
                     <div className="flex items-center space-x-2 text-sm">
                       <span className="text-gray-400">📱</span>
-                      <a href="tel:+919876543211" className="text-gray-300 underline decoration-white/30 hover:decoration-white">+91 98765 43211</a>
+                      <a href="tel:+917296859397" className="text-gray-300 underline decoration-white/30 hover:decoration-white">+91 72968 59397</a>
                     </div>
                   </div>
                 </div>
                 
-                <div className="absolute top-4 right-4 w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-full flex items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="text-white text-lg">⚡</span>
-                </div>
+                
               </div>
 
-              {/* Chetesh */}
-              <div className="group relative overflow-hidden rounded-2xl bg-black/20 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-500">
-                <div className="relative h-64 sm:h-72 md:h-80 overflow-hidden">
-                  <img 
-                    src="/images/OH_images_home/chetesh.jpeg" 
-                    alt="Chetesh Sharma - Organizing Head"
-                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                </div>
-                
-                <div className="p-5 sm:p-6">
-                  <h3 className="text-xl sm:text-2xl font-bold mb-2 bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">
-                    Chetesh Sharma
-                  </h3>
-                  <p className="text-green-300 font-medium mb-3">Organizing Head</p>
-                  <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-4">
-                    Strategic planner and execution expert. Making sure every detail is perfect for the ultimate experience.
-                  </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2 text-sm">
-                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                      <span className="text-green-300">Available for queries</span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-sm">
-                      <span className="text-gray-400">📧</span>
-                      <a href="mailto:chetesh@jklu.ac.in" className="text-gray-300 underline decoration-white/30 hover:decoration-white">chetesh@jklu.ac.in</a>
-                    </div>
-                    <div className="flex items-center space-x-2 text-sm">
-                      <span className="text-gray-400">📱</span>
-                      <a href="tel:+919876543212" className="text-gray-300 underline decoration-white/30 hover:decoration-white">+91 98765 43212</a>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="absolute top-4 right-4 w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="text-white text-lg">🎯</span>
-                </div>
-              </div>
             </div>
           </div>
         </section>
@@ -256,124 +176,56 @@ const Contact = () => {
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {/* Rahul Sharma */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+              {/* Ayushi Kabra */}
               <div className="group relative overflow-hidden rounded-2xl bg-black/20 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-500">
                 <div className="p-6 text-center">
                   <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-2xl font-bold">RS</span>
+                    <span className="text-white text-2xl font-bold">AK</span>
                   </div>
                   <h3 className="text-lg sm:text-xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-                    Rahul Sharma
+                    Ayushi Kabra
                   </h3>
-                  <p className="text-blue-300 font-medium mb-3">Registration Lead</p>
-                  <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                    Handles all registration processes and event coordination
-                  </p>
+                  <p className="text-blue-300 font-medium mb-3">Registrations</p>
                   <div className="space-y-2">
                     <div className="flex items-center justify-center space-x-2 text-sm">
                       <span className="text-gray-400">📧</span>
-                      <a href="mailto:rahul@jklu.ac.in" className="text-gray-300 underline decoration-white/30 hover:decoration-white">rahul@jklu.ac.in</a>
+                      <a href="mailto:ayushikabra@jklu.edu.in" className="text-gray-300 underline decoration-white/30 hover:decoration-white">ayushikabra@jklu.edu.in</a>
                     </div>
                     <div className="flex items-center justify-center space-x-2 text-sm">
                       <span className="text-gray-400">📱</span>
-                      <a href="tel:+919876543213" className="text-gray-300 underline decoration-white/30 hover:decoration-white">+91 98765 43213</a>
+                      <a href="tel:+918949941985" className="text-gray-300 underline decoration-white/30 hover:decoration-white">+91 89499 41985</a>
                     </div>
                   </div>
                 </div>
-                
                 <div className="absolute top-4 right-4 w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <span className="text-white text-sm">📋</span>
                 </div>
               </div>
 
-              {/* Priya Patel */}
+              {/* Jayash Gehlot */}
               <div className="group relative overflow-hidden rounded-2xl bg-black/20 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-500">
                 <div className="p-6 text-center">
                   <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-pink-500 to-red-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-2xl font-bold">PP</span>
+                    <span className="text-white text-2xl font-bold">JG</span>
                   </div>
                   <h3 className="text-lg sm:text-xl font-bold mb-2 bg-gradient-to-r from-pink-400 to-red-500 bg-clip-text text-transparent">
-                    Priya Patel
+                    Jayash Gehlot
                   </h3>
-                  <p className="text-pink-300 font-medium mb-3">Event Coordinator</p>
-                  <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                    Manages event logistics and participant communications
-                  </p>
+                  <p className="text-pink-300 font-medium mb-3">Registrations</p>
                   <div className="space-y-2">
                     <div className="flex items-center justify-center space-x-2 text-sm">
                       <span className="text-gray-400">📧</span>
-                      <a href="mailto:priya@jklu.ac.in" className="text-gray-300 underline decoration-white/30 hover:decoration-white">priya@jklu.ac.in</a>
+                      <a href="mailto:jayashgehlot@jklu.edu.in" className="text-gray-300 underline decoration-white/30 hover:decoration-white">jayashgehlot@jklu.edu.in</a>
                     </div>
                     <div className="flex items-center justify-center space-x-2 text-sm">
                       <span className="text-gray-400">📱</span>
-                      <a href="tel:+919876543214" className="text-gray-300 underline decoration-white/30 hover:decoration-white">+91 98765 43214</a>
+                      <a href="tel:+918306274199" className="text-gray-300 underline decoration-white/30 hover:decoration-white">+91 83062 74199</a>
                     </div>
                   </div>
                 </div>
-                
                 <div className="absolute top-4 right-4 w-10 h-10 bg-gradient-to-br from-pink-500 to-red-500 rounded-full flex items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <span className="text-white text-sm">🎯</span>
-                </div>
-              </div>
-
-              {/* Arjun Singh */}
-              <div className="group relative overflow-hidden rounded-2xl bg-black/20 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-500">
-                <div className="p-6 text-center">
-                  <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-2xl font-bold">AS</span>
-                  </div>
-                  <h3 className="text-lg sm:text-xl font-bold mb-2 bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">
-                    Arjun Singh
-                  </h3>
-                  <p className="text-green-300 font-medium mb-3">Support Specialist</p>
-                  <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                    Provides technical support and registration assistance
-                  </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-center space-x-2 text-sm">
-                      <span className="text-gray-400">📧</span>
-                      <a href="mailto:arjun@jklu.ac.in" className="text-gray-300 underline decoration-white/30 hover:decoration-white">arjun@jklu.ac.in</a>
-                    </div>
-                    <div className="flex items-center justify-center space-x-2 text-sm">
-                      <span className="text-gray-400">📱</span>
-                      <a href="tel:+919876543215" className="text-gray-300 underline decoration-white/30 hover:decoration-white">+91 98765 43215</a>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="absolute top-4 right-4 w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="text-white text-sm">🛠️</span>
-                </div>
-              </div>
-
-              {/* Meera Kapoor */}
-              <div className="group relative overflow-hidden rounded-2xl bg-black/20 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-500">
-                <div className="p-6 text-center">
-                  <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-orange-500 to-yellow-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-2xl font-bold">MK</span>
-                  </div>
-                  <h3 className="text-lg sm:text-xl font-bold mb-2 bg-gradient-to-r from-orange-400 to-yellow-500 bg-clip-text text-transparent">
-                    Meera Kapoor
-                  </h3>
-                  <p className="text-orange-300 font-medium mb-3">Query Handler</p>
-                  <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                    Addresses all participant queries and concerns
-                  </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-center space-x-2 text-sm">
-                      <span className="text-gray-400">📧</span>
-                      <a href="mailto:meera@jklu.ac.in" className="text-gray-300 underline decoration-white/30 hover:decoration-white">meera@jklu.ac.in</a>
-                    </div>
-                    <div className="flex items-center justify-center space-x-2 text-sm">
-                      <span className="text-gray-400">📱</span>
-                      <a href="tel:+919876543216" className="text-gray-300 underline decoration-white/30 hover:decoration-white">+91 98765 43216</a>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="absolute top-4 right-4 w-10 h-10 bg-gradient-to-br from-orange-500 to-yellow-500 rounded-full flex items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="text-white text-sm">💬</span>
                 </div>
               </div>
             </div>
