@@ -62,8 +62,8 @@ const HolographicCard = ({
       >
         {/* Holographic Border */}
         <div className={`
-          absolute -inset-0.5 rounded-3xl opacity-75 transition-all duration-500
-          bg-gradient-to-r ${hologram} blur-sm
+          absolute -inset-0.5 rounded-3xl opacity-75 transition-all duration-500 
+          bg-neutral-800 blur-sm
           ${hoveredCard ? 'animate-pulse' : ''}
         `} />
 
@@ -129,8 +129,8 @@ const HolographicCard = ({
 
             {/* BACK */}
             <div className={`absolute inset-0 w-full h-full rounded-lg border border-white/30 overflow-hidden shadow-2xl text-white p-6 rotate-y-180 transition-opacity duration-300 relative z-999 ${hoveredCard ? 'opacity-100' : 'opacity-0'}`} style={{ transform: 'rotateY(180deg)' }}>
-              {/* Enhanced background pattern */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-black/20" />
+              {/* Enhanced background pattern */} 
+              <div className="absolute inset-0 bg-black/20" />
               
               <div className="relative z-10 flex flex-col h-full items-center justify-center gap-4 text-center">
                 {/* Person's name - larger and more prominent */}
@@ -142,7 +142,7 @@ const HolographicCard = ({
                 </div>
                 
                 {/* Divider */}
-                <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+                <div className="w-24 h-0.5 bg-white/50" />
                 
                 {/* Contact information with better layout */}
                 <div className="space-y-3 w-full max-w-48">
@@ -371,7 +371,7 @@ const ExpandedCard = ({
                   opacity: isExpanded ? 1 : 0 
                 }}
               >
-                <button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                <button className="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
                   Send Message
                 </button>
               </div>
@@ -705,85 +705,85 @@ export default function PeopleStrip() {
        name: "Photography",
        people: [people[9], people[10]],
        layout: "time-vortex",
-       color: "from-yellow-500 via-orange-500 to-red-500"
+       color: "bg-neutral-700"
      },
      {
        name: "Cultural",
        people: [people[11], people[12]],
        layout: "cosmic-dance",
-       color: "from-pink-500 via-rose-500 to-red-500"
+       color: "bg-neutral-700"
      },
      {
        name: "Technical",
        people: [people[13]],
        layout: "matrix-code",
-       color: "from-amber-500 via-orange-500 to-red-500"
+       color: "bg-neutral-700"
      },
      {
        name: "Media & Report",
        people: [people[7], people[8]],
        layout: "holographic",
-       color: "from-indigo-500 via-purple-500 to-pink-500"
+       color: "bg-neutral-700"
      },
      {
        name: "Discipline",
        people: [people[3], people[4]],
        layout: "dna-helix",
-       color: "from-red-500 via-orange-500 to-yellow-500"
+       color: "bg-neutral-700"
      },
      {
        name: "Decor",
        people: [people[5], people[6]],
        layout: "fractal-tree",
-       color: "from-blue-500 via-cyan-500 to-teal-500"
+       color: "bg-neutral-700"
      },
      {
        name: "Internal Arrangements",
        people: [people[14], people[15]],
        layout: "galaxy-cluster",
-       color: "from-emerald-500 via-green-500 to-lime-500"
+       color: "bg-neutral-700"
      },
      {
        name: "Transport",
        people: [people[16]],
        layout: "wormhole",
-       color: "from-neutral-500 via-gray-500 to-stone-500"
+       color: "bg-neutral-700"
      },
      {
        name: "Social Media",
        people: [people[17]],
        layout: "digital-rain",
-       color: "from-sky-500 via-blue-500 to-indigo-500"
+       color: "bg-neutral-700"
      },
      {
        name: "Prize & Certificates",
        people: [people[18]],
        layout: "crystal-lattice",
-       color: "from-slate-500 via-gray-500 to-zinc-500"
+       color: "bg-neutral-700"
      },
      {
        name: "Hospitality",
        people: [people[19]],
        layout: "energy-field",
-       color: "from-zinc-500 via-gray-500 to-slate-500"
+       color: "bg-neutral-700"
      },
      {
        name: "Stage & Venue",
        people: [people[20], people[21]],
        layout: "magnetic-field",
-       color: "from-neutral-500 via-stone-500 to-gray-500"
+       color: "bg-neutral-700"
      },
      {
        name: "Registrations",
        people: [people[22], people[23]],
        layout: "particle-system",
-       color: "from-red-600 via-pink-600 to-rose-600"
+       color: "bg-neutral-700"
      },
      {
        name: "Sponsorship & Promotion",
        people: [people[24]],
        layout: "cosmic-field",
-       color: "from-blue-600 via-indigo-600 to-purple-600"
+       color: "bg-neutral-700"
      }
    ];
 
@@ -976,15 +976,15 @@ export default function PeopleStrip() {
       return (
         <div key={committee.name} className="flex flex-col items-center mb-24 relative min-h-[400px] w-full">
                    {/* Enhanced background effects */}
-         <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-20 rounded-lg blur-3xl`}></div>
-         <div className={`absolute inset-0 bg-gradient-to-br ${committee.color} opacity-10 rounded-lg blur-2xl scale-150`}></div>
+         <div className={`absolute inset-0 ${committee.color} opacity-20 rounded-lg blur-3xl`}></div>
+         <div className={`absolute inset-0 ${committee.color} opacity-10 rounded-lg blur-2xl scale-150`}></div>
           
           {/* Enhanced committee header */}
           <div className="relative z-10 text-center mb-8 sm:mb-12">
             <div className="inline-flex items-center px-6 py-3 bg-black/40 backdrop-blur-sm rounded-lg border border-white/20 mb-4">
               <span className="text-sm text-white/80 uppercase tracking-wider">Committee</span>
             </div>
-            <h3 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest px-4`}>
+            <h3 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-white uppercase tracking-widest px-4`}>
             {committee.name}
           </h3>
             <p className="text-sm text-gray-400 mt-2 max-w-md mx-auto">
@@ -1017,8 +1017,8 @@ export default function PeopleStrip() {
     return (
       <div key={committee.name} className="flex flex-col items-center mb-24 relative min-h-[400px] w-full group">
                  {/* Enhanced background effects with animations */}
-         <div className={`absolute inset-0 bg-gradient-to-r ${committee.color} opacity-20 rounded-lg blur-3xl transition-all duration-1000 group-hover:opacity-30`}></div>
-         <div className={`absolute inset-0 bg-gradient-to-br ${committee.color} opacity-10 rounded-lg blur-2xl scale-150 transition-all duration-1000 group-hover:scale-175`}></div>
+         <div className={`absolute inset-0 ${committee.color} opacity-20 rounded-lg blur-3xl transition-all duration-1000 group-hover:opacity-30`}></div>
+         <div className={`absolute inset-0 ${committee.color} opacity-10 rounded-lg blur-2xl scale-150 transition-all duration-1000 group-hover:scale-175`}></div>
         
                  {/* Enhanced committee header with animations */}
          <motion.div 
@@ -1045,7 +1045,7 @@ export default function PeopleStrip() {
                ⚡
              </motion.span>
            </motion.div>
-           <h3 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black bg-gradient-to-r ${committee.color} bg-clip-text text-transparent uppercase tracking-widest px-4`}>
+           <h3 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-white uppercase tracking-widest px-4`}>
           {committee.name}
         </h3>
            <motion.p 
@@ -1146,7 +1146,7 @@ export default function PeopleStrip() {
            ))}
          </div>
 
-         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 sm:mb-6 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent drop-shadow-2xl tracking-widest uppercase relative z-10" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
+        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 sm:mb-6 text-white drop-shadow-2xl tracking-widest uppercase relative z-10" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
            <motion.span
              initial={{ opacity: 0, scale: 0.5 }}
              animate={{ opacity: 1, scale: 1 }}
@@ -1171,9 +1171,9 @@ export default function PeopleStrip() {
            transition={{ duration: 1.2, delay: 1 }}
            className="flex justify-center items-center gap-4 mb-6"
          >
-           <div className="w-16 h-1 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full" />
+          <div className="w-16 h-1 bg-purple-400 rounded-full" />
            <motion.div 
-             className="w-4 h-4 bg-gradient-to-r from-pink-400 to-blue-400 rounded-full"
+            className="w-4 h-4 bg-pink-400 rounded-full"
              animate={{ 
                scale: [1, 1.2, 1],
                rotate: [0, 180, 360]
@@ -1202,7 +1202,7 @@ export default function PeopleStrip() {
            className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto mb-8 relative z-10"
          >
            Meet the visionary leaders who orchestrate the magic of{' '}
-           <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent font-bold">
+          <span className="text-purple-400 font-bold">
              SABRANG'25
            </span>
          </motion.p>
@@ -1292,7 +1292,7 @@ export default function PeopleStrip() {
          {/* Animated background elements */}
          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
            <motion.div
-             className="w-64 h-1 bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-30"
+            className="w-64 h-1 bg-purple-400 opacity-30"
              initial={{ scaleX: 0 }}
              whileInView={{ scaleX: 1 }}
              transition={{ duration: 1.5, delay: 0.5 }}
@@ -1320,7 +1320,7 @@ export default function PeopleStrip() {
                  {stat.icon}
                </div>
                <motion.div
-                 className="text-3xl sm:text-4xl md:text-5xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-1"
+                 className="text-3xl sm:text-4xl md:text-5xl font-black text-purple-400 mb-1"
                  initial={{ opacity: 0 }}
                  whileInView={{ opacity: 1 }}
                  transition={{ duration: 1, delay: 1.2 + index * 0.2 }}
@@ -1342,7 +1342,7 @@ export default function PeopleStrip() {
          viewport={{ once: true }}
          className="text-center mb-8 sm:mb-12"
        >
-         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent drop-shadow-2xl tracking-widest uppercase px-4" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-white drop-shadow-2xl tracking-widest uppercase px-4" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
            Core Committee Members
       </h2>
          <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto mt-4">
@@ -1368,7 +1368,7 @@ export default function PeopleStrip() {
          transition={{ duration: 0.8, delay: 2, type: "spring" }}
        >
          <motion.button
-           className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-2xl border-2 border-white/20 flex items-center justify-center text-white text-2xl backdrop-blur-sm"
+          className="w-16 h-16 bg-purple-500 rounded-full shadow-2xl border-2 border-white/20 flex items-center justify-center text-white text-2xl backdrop-blur-sm"
            whileHover={{ scale: 1.1, rotate: 180 }}
            whileTap={{ scale: 0.9 }}
            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
