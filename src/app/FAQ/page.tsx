@@ -16,6 +16,42 @@ interface Star {
   duration: number;
 }
 
+// Minimal geometric icon (no emojis). Varies by seed for uniqueness
+const DecorativeIcon = ({ seed = 0 }: { seed?: number }) => {
+  const variant = seed % 3;
+  const stroke = '#C084FC';
+  const fill = 'url(#grad)';
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
+      <defs>
+        <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#C084FC" />
+          <stop offset="100%" stopColor="#60A5FA" />
+        </linearGradient>
+      </defs>
+      {variant === 0 && (
+        <g>
+          <circle cx="14" cy="14" r="8" stroke={stroke} strokeWidth="2" fill="none" />
+          <circle cx="14" cy="14" r="4" fill={fill} opacity="0.8" />
+        </g>
+      )}
+      {variant === 1 && (
+        <g>
+          <rect x="6" y="6" width="16" height="16" rx="4" stroke={stroke} strokeWidth="2" fill="none" />
+          <path d="M10 18 L18 10" stroke={stroke} strokeWidth="2" />
+          <path d="M10 10 L18 18" stroke={stroke} strokeWidth="2" />
+        </g>
+      )}
+      {variant === 2 && (
+        <g>
+          <polygon points="14,5 23,21 5,21" fill={fill} opacity="0.85" />
+          <polygon points="14,8 20,19 8,19" stroke={stroke} strokeWidth="1.5" fill="none" />
+        </g>
+      )}
+    </svg>
+  );
+};
+
 const FAQ = () => {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -239,10 +275,10 @@ const FAQ = () => {
         </section>
 
         {/* FAQ Section */}
-        <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6">
+        <section className="py-8 sm:py-16 md:py-12 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
-            {/* Section Header */}
-            <div className="text-center mb-12 sm:mb-16">
+            {/* Section Header + divider */}
+            <div className="text-center mb-10 sm:mb-14">
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
                   Got Questions?
@@ -254,7 +290,10 @@ const FAQ = () => {
                   Contact us directly
                 </button>
               </p>
-         </div>
+              <div className="mt-8 flex items-center justify-center">
+                <div className="h-px w-24 bg-gradient-to-r from-transparent via-purple-400/70 to-transparent" />
+              </div>
+            </div>
 
             {/* FAQ Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
@@ -263,28 +302,33 @@ const FAQ = () => {
                   key={index}
                   className="group relative h-full"
                 >
-                  {/* Glowing Border Effect */}
-                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-300"></div>
-              
-                  <div className="relative bg-gradient-to-br from-gray-900/90 via-gray-800/90 to-gray-900/90 backdrop-blur-sm border border-gray-700/50 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl sm:shadow-2xl transition-all duration-500 transform hover:scale-[1.01] sm:hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] sm:hover:shadow-[0_0_40px_rgba(168,85,247,0.3)] h-full flex flex-col">
+                  {/* Layered glow and accent edge */}
+                  <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-indigo-500/20 blur opacity-40 group-hover:opacity-60 transition" />
+                  <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl bg-gradient-to-b from-purple-400 via-pink-400 to-blue-400 opacity-70" />
+               
+                  <div className="relative bg-gradient-to-br from-gray-900/85 via-gray-900/70 to-gray-900/85 backdrop-blur-md border border-white/10 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl transition-all duration-500 transform hover:translate-y-[-2px] hover:shadow-[0_10px_40px_rgba(0,0,0,0.5)] h-full flex flex-col">
+                    {/* Subtle grid texture */}
+                    <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,.2) 1px, transparent 1px), linear-gradient(0deg, rgba(255,255,255,.2) 1px, transparent 1px)', backgroundSize: '18px 18px' }} />
+                    {/* Corner cut */}
+                    <div className="absolute -right-6 -top-6 w-16 h-16 rotate-45 bg-gradient-to-br from-white/10 to-transparent" />
                     {/* Question Header */}
                     <button
                       onClick={() => toggle(index)}
-                      className="w-full text-left p-4 sm:p-6 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:ring-inset group active:scale-[0.98] transition-transform duration-150 touch-manipulation flex-shrink-0"
+                      className="w-full text-left p-5 sm:p-6 focus:outline-none focus:ring-2 focus:ring-purple-500/40 focus:ring-inset group active:scale-[0.99] transition-transform duration-150 touch-manipulation flex-shrink-0"
                       aria-expanded={openIndex === index}
                       aria-controls={`faq-answer-${index}`}
                     >
-                      <div className="flex items-start justify-between min-h-[80px]">
-                        <div className="flex items-start space-x-3 sm:space-x-4 flex-1">
-                          <span className="text-2xl sm:text-3xl flex-shrink-0">{faq.icon}</span>
+                      <div className="flex items-start justify-between min-h-[72px]">
+                        <div className="flex items-start gap-3 sm:gap-4 flex-1">
+                          <div className="flex-shrink-0 rounded-lg bg-white/5 border border-white/10 p-2 shadow-sm">
+                            <DecorativeIcon seed={index} />
+                          </div>
                           <div className="flex-1">
-                            <h3 className="text-base sm:text-lg md:text-xl font-bold text-white group-hover:text-purple-300 transition-colors duration-300 leading-relaxed">
+                            <h3 className="text-base sm:text-lg md:text-xl font-semibold text-white group-hover:text-purple-200 transition-colors duration-300 leading-relaxed">
                               {faq.question}
                             </h3>
-                            <div className="flex items-center space-x-2 mt-2">
-                              <span className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                                {faq.category}
-                              </span>
+                            <div className="mt-1.5 inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-white/5 text-purple-200 border border-white/10">
+                              {faq.category}
                             </div>
                           </div>
                         </div>
@@ -300,22 +344,22 @@ const FAQ = () => {
                         </span>
                       </div>
                     </button>
-
+ 
                     {/* Answer Container */}
                     <div
                       id={`faq-answer-${index}`}
-                      className={`px-4 sm:px-6 transition-all duration-500 ease-in-out overflow-hidden flex-1 ${
+                      className={`px-5 sm:px-6 transition-all duration-500 ease-in-out overflow-hidden flex-1 ${
                         openIndex === index 
-                          ? 'max-h-96 opacity-100 pb-4 sm:pb-6' 
+                          ? 'max-h-96 opacity-100 pb-5 sm:pb-6' 
                           : 'max-h-0 opacity-0 pb-0'
                       }`}
                       aria-hidden={openIndex !== index}
                     >
-                      <div className="border-t border-gray-700/50 pt-3 sm:pt-4">
-                        <p className="text-gray-300 leading-relaxed text-sm sm:text-base md:text-lg">
+                      <div className="border-t border-white/10 pt-3 sm:pt-4">
+                        <p className="text-gray-200 leading-relaxed text-sm sm:text-base md:text-lg">
                           {faq.answer}
                         </p>
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-700/30">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-white/10">
                           <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-400">
                             <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4" />
                             <span>Need more help?</span>
@@ -330,11 +374,10 @@ const FAQ = () => {
                 </div>
               ))}
             </div>
-
-            {/* No Results Message */}
+ 
+            {/* No Results Message (no emoji) */}
             {filteredFaqs.length === 0 && searchTerm && (
               <div className="text-center py-16">
-                <div className="text-6xl mb-4">🔍</div>
                 <h3 className="text-2xl font-bold text-gray-300 mb-4">No questions found</h3>
                 <p className="text-gray-400 mb-6">
                   Try searching with different keywords or browse all questions above.

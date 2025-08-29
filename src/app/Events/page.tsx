@@ -27,23 +27,24 @@ interface Event {
 }
 
 const events: Event[] = [
-  // Flagship Events (First 8 events)
+  // 1. Rampwalk – Panache – Theme Based
   {
     id: 1,
-    title: "PANACHE - FASHION SHOW",
-    date: "25-26.12.2024",
-    time: "Day 1: 19:00 | Day 2: 21:00",
+    title: "RAMPWALK - PANACHE - THEME BASED",
+    date: "25.12.2024",
+    time: "19:00",
     shares: "567 Shares",
     image: "/images/Events/Cultural/Panache.jpg",
-    description: "Sabrang's grandest fashion extravaganza spanning two spectacular days. Day 1 features THEME WALK where fashion meets narrative, while Day 2 showcases the ultimate PANACHE runway with original collections and full choreography.",
+    description: "Sabrang's grandest fashion extravaganza. This year's theme-based rampwalk challenges participants to blend narrative with high fashion, showcasing creativity and stage presence.",
     venue: "Main Auditorium",
     price: "₹85-120",
     capacity: "3,000 people",
     genre: "Fashion Show",
     category: "Flagship",
-    details: "A two-day fashion spectacle where Day 1 focuses on thematic costume interpretation and Day 2 showcases original collections with full choreography, soundtrack, and fashion narratives. Judging criteria include costume design, thematic relevance, stage presence, group coordination, and overall runway impact.",
+    details: "A single-day fashion spectacle focusing on thematic costume interpretation and runway impact. Judging criteria include costume design, thematic relevance, stage presence, and overall narrative.",
     isFlagship: true
   },
+  // 2. Bandjam
   {
     id: 2,
     title: "BANDJAM",
@@ -60,6 +61,7 @@ const events: Event[] = [
     details: "Bands are judged on creativity, technical prowess, audience engagement, and stage presence. Bandjam is the sonic pulse of Sabrang.",
     isFlagship: true
   },
+  // 3. Dance Battle
   {
     id: 3,
     title: "DANCE BATTLE",
@@ -76,56 +78,9 @@ const events: Event[] = [
     details: "Each round challenges rhythm, originality, and intensity. It's not just about dancing – it's about commanding the floor.",
     isFlagship: true
   },
+  // 4. Step Up
   {
     id: 4,
-    title: "NUKKAD NATAK",
-    date: "29.12.2024",
-    time: "19:00",
-    shares: "78 Shares",
-    image: "/images/Events/Cultural/Nukkad Natak.jpg",
-    description: "A raw, high-impact street play competition where teams perform powerful acts in open spaces.",
-    venue: "Open Air Stage",
-    price: "Free",
-    capacity: "800 people",
-    genre: "Street Theater",
-    category: "Flagship",
-    details: "These performances focus on social awareness, political commentary, or cultural satire. Props are minimal – the message is everything.",
-    isFlagship: true
-  },
-  {
-    id: 5,
-    title: "SPOTLIGHT",
-    date: "30.12.2024",
-    time: "16:00",
-    shares: "92 Shares",
-    image: "/images/Events/Cultural/spotlight.jpg",
-    description: "A solo and duet acting competition testing an actor's range, expression, and stage dynamism.",
-    venue: "Performance Hall",
-    price: "₹25",
-    capacity: "500 people",
-    genre: "Acting Competition",
-    category: "Flagship",
-    details: "Participants can choose original scripts or well-known dramatic pieces. This is the stage where emotions are unfiltered, and performances, unforgettable.",
-    isFlagship: true
-  },
-  {
-    id: 6,
-    title: "SINGING PALOOZA",
-    date: "31.12.2024",
-    time: "20:00",
-    shares: "123 Shares",
-    image: "/images/Events/Cultural/Singing.jpg",
-    description: "A vocal competition celebrating musical talent across genres like Bollywood, Indie, Western Classical, and more.",
-    venue: "Music Hall",
-    price: "₹35",
-    capacity: "2,000 people",
-    genre: "Singing Competition",
-    category: "Flagship",
-    details: "Solo and duet performances are allowed. Judging considers pitch, modulation, emotive expression, and creativity.",
-    isFlagship: true
-  },
-  {
-    id: 7,
     title: "STEP UP",
     date: "01.01.2025",
     time: "18:00",
@@ -140,26 +95,43 @@ const events: Event[] = [
     details: "Teams bring pre-prepared routines and must light up the stage with drama, unity, and movement.",
     isFlagship: true
   },
-
-  // Fun & Games Events
+  // 5. Echoes of Noor
   {
-    id: 8,
-    title: "DUMB SHOW",
+    id: 5,
+    title: "ECHOES OF NOOR",
     date: "02.01.2025",
-    time: "19:00",
-    shares: "67 Shares",
-    image: "/images/Events/Cultural/Dumb Show.jpg",
-    description: "A classic non-verbal guessing game with a Sabrang twist. Teams mime phrases, movie titles, or idioms under time pressure.",
-    venue: "Theater Hall",
+    time: "16:00",
+    shares: "95 Shares",
+    image: "/images/Events/literary/dialectic.jpg", // Reusing an image
+    description: "A spoken word and poetry event celebrating the festival's theme, 'Noorwana'. Artists perform original pieces reflecting on light, cosmos, and inner luminescence.",
+    venue: "Literature Hall",
     price: "Free",
-    capacity: "300 people",
-    genre: "Mime Acting",
-    category: "Fun & Games",
-    details: "It's fast, funny, and tests how well you know your teammates – and your acting chops.",
+    capacity: "150 people",
+    genre: "Spoken Word",
+    category: "Creative Arts",
+    details: "Performances are judged on lyrical content, emotional delivery, and thematic relevance. A platform for the voices of tomorrow.",
     isFlagship: false
   },
+  // 6. Sutradhar
   {
-    id: 9,
+    id: 6,
+    title: "SUTRADHAR",
+    date: "03.01.2025",
+    time: "17:00",
+    shares: "88 Shares",
+    image: "/images/Events/Cultural/Nukkad Natak.jpg", // Reusing an image
+    description: "A mono-acting competition where a single actor, the 'Sutradhar' (narrator), brings a story to life. A test of versatility, expression, and stage command.",
+    venue: "Performance Hall",
+    price: "₹25",
+    capacity: "400 people",
+    genre: "Mono-acting",
+    category: "Creative Arts",
+    details: "Participants perform a short, self-scripted or adapted monologue. Judged on acting prowess, script quality, and audience engagement.",
+    isFlagship: false
+  },
+  // 7. Bidding Before Wicket
+  {
+    id: 7,
     title: "BIDDING BEFORE WICKET",
     date: "03.01.2025",
     time: "20:00",
@@ -174,8 +146,9 @@ const events: Event[] = [
     details: "Based on IPL stats and records. The goal? Build the most powerful team and outscore opponents in cricket-themed questions.",
     isFlagship: false
   },
+  // 8. Seal the Deal
   {
-    id: 10,
+    id: 8,
     title: "SEAL THE DEAL",
     date: "04.01.2025",
     time: "18:00",
@@ -190,124 +163,26 @@ const events: Event[] = [
     details: "Creativity, persuasion, and comic timing are key to winning the deal.",
     isFlagship: false
   },
+  // 9. VerseVaad
   {
-    id: 11,
-    title: "UNKNOWN BATTLEGROUND",
+    id: 9,
+    title: "VERSEVAAD",
     date: "05.01.2025",
-    time: "18:00",
-    shares: "134 Shares",
-    image: "/images/Events/Technical/Battleground.jpg",
-    description: "A campus-based survival game with elements of physical tasks, strategic decisions, and mental challenges.",
-    venue: "Campus Grounds",
-    price: "₹30",
-    capacity: "400 people",
-    genre: "Survival Game",
-    category: "Fun & Games",
-    details: "Inspired by battle royale video games, participants face a new surprise at each level. Only the sharpest survive till the end.",
-    isFlagship: false
-  },
-
-  // Creative Arts Events
-  {
-    id: 12,
-    title: "FOCUS",
-    date: "06.01.2025",
-    time: "14:00",
-    shares: "78 Shares",
-    image: "/images/Events/Technical/Focus.jpg",
-    description: "A photography competition capturing 'Sabrang in Motion' — the moods, events, and essence of the fest.",
-    venue: "Photo Studio",
-    price: "Free",
-    capacity: "150 people",
-    genre: "Photography",
-    category: "Creative Arts",
-    details: "Categories include portrait, candid, and creative photography. Submissions are judged on composition, storytelling, and innovation.",
-    isFlagship: false
-  },
-  {
-    id: 13,
-    title: "COLOR & CONTOUR",
-    date: "07.01.2025",
-    time: "16:00",
-    shares: "89 Shares",
-    image: "/images/Events/Design/COLOR&CONTOUR.jpg",
-    description: "A live painting competition. Participants interpret a surprise theme through visual storytelling.",
-    venue: "Art Studio",
-    price: "₹30",
-    capacity: "100 people",
-    genre: "Live Painting",
-    category: "Creative Arts",
-    details: "Using acrylics, pastels, or watercolors. Technique, interpretation, and aesthetics will be judged.",
-    isFlagship: false
-  },
-  {
-    id: 14,
-    title: "MINDSCAPE",
-    date: "08.01.2025",
-    time: "14:00",
-    shares: "123 Shares",
-    image: "/images/Events/Design/MINDSCAPE.jpg",
-    description: "A literary challenge involving short story writing, flash fiction, or spoken word poetry based on prompts.",
+    time: "15:00",
+    shares: "110 Shares",
+    image: "/images/Events/literary/dialectic.jpg", // Reusing image
+    description: "A unique debate competition where arguments must be presented in poetic verse. A battle of wits and words, rhythm and reason.",
     venue: "Literature Hall",
     price: "Free",
-    capacity: "80 people",
-    genre: "Creative Writing",
-    category: "Creative Arts",
-    details: "Participants are evaluated on imagination, language, and narrative impact.",
-    isFlagship: false
-  },
-  {
-    id: 15,
-    title: "FRAME BY FRAME",
-    date: "09.01.2025",
-    time: "16:00",
-    shares: "67 Shares",
-    image: "/images/Events/Design/FRAMEBYFRAME.jpg",
-    description: "A digital art event for animation enthusiasts. Participants create 10–60 second original 2D or 3D animation clips.",
-    venue: "Digital Studio",
-    price: "₹20",
     capacity: "100 people",
-    genre: "Animation",
+    genre: "Poetic Debate",
     category: "Creative Arts",
-    details: "That convey a story or emotion. Judged on frame transitions, visual storytelling, and technical finesse.",
+    details: "Teams are given topics and must construct their arguments in rhyming couplets or free verse. Judged on content, poetic quality, and delivery.",
     isFlagship: false
   },
+  // 10. In Conversation With
   {
-    id: 16,
-    title: "RECREATION",
-    date: "10.01.2025",
-    time: "18:00",
-    shares: "92 Shares",
-    image: "/images/Events/Design/RECREATION.jpg",
-    description: "Artists are challenged to recreate iconic artworks, photos, or scenes either traditionally or digitally.",
-    venue: "Art Workshop",
-    price: "Free",
-    capacity: "80 people",
-    genre: "Art Recreation",
-    category: "Creative Arts",
-    details: "Evaluation is based on accuracy, attention to detail, and medium mastery.",
-    isFlagship: false
-  },
-  {
-    id: 17,
-    title: "RAP BATTLE",
-    date: "11.01.2025",
-    time: "18:00",
-    shares: "156 Shares",
-    image: "/images/Events/Cultural/BandJam.jpg",
-    description: "Participants spit bars in head-to-head freestyle and pre-written rap battles.",
-    venue: "Music Hall",
-    price: "₹25",
-    capacity: "300 people",
-    genre: "Rap Competition",
-    category: "Creative Arts",
-    details: "Creativity, rhythm, rhyme schemes, and crowd engagement all matter. Originality and message-heavy content get extra points.",
-    isFlagship: false
-  },
-
-  // Workshops & Talks Events
-  {
-    id: 18,
+    id: 10,
     title: "IN CONVERSATION WITH",
     date: "12.01.2025",
     time: "16:00",
@@ -322,134 +197,123 @@ const events: Event[] = [
     details: "Live Q&A sessions. This is where ideas spark and inspire the next generation.",
     isFlagship: false
   },
+  // 11. Clay Modelling
   {
-    id: 19,
-    title: "CREATIVE WORKSHOPS",
-    date: "13.01.2025",
+    id: 11,
+    title: "CLAY MODELLING",
+    date: "06.01.2025",
     time: "14:00",
-    shares: "189 Shares",
-    image: "/images/Events/Technical/Synergy.jpg",
-    description: "Themed workshops ranging from storytelling, beatboxing, photography, to theatre and graffiti.",
-    venue: "Workshop Rooms",
-    price: "₹50",
-    capacity: "200 people",
-    genre: "Skill Building",
-    category: "Workshops & Talks",
-    details: "Conducted by professionals, these sessions offer hands-on guidance and skill-building for participants.",
-    isFlagship: false
-  },
-  {
-    id: 20,
-    title: "MAKE A FILM ON CAMPUS",
-    date: "14.01.2025",
-    time: "10:00",
-    shares: "145 Shares",
-    image: "/images/Events/Technical/Codeureka.jpg",
-    description: "A 48-hour filmmaking challenge where teams must script, shoot, and edit a short film entirely within the university campus.",
-    venue: "Campus Wide",
-    price: "₹75",
-    capacity: "100 people",
-    genre: "Filmmaking",
-    category: "Workshops & Talks",
-    details: "Themes will be disclosed at kickoff. Creativity under time pressure is the game.",
-    isFlagship: false
-  },
-  {
-    id: 21,
-    title: "GROUP CANVAS PAINTING",
-    date: "15.01.2025",
-    time: "16:00",
-    shares: "78 Shares",
-    image: "/images/Events/Design/CHAMELON_CANVAS.jpg",
-    description: "A collaborative art installation where teams work on a large canvas divided into sections.",
+    shares: "70 Shares",
+    image: "/images/Events/Design/RECREATION.jpg", // Reusing image
+    description: "A hands-on workshop and competition where participants shape their imagination out of clay. The theme will be revealed on the spot.",
     venue: "Art Studio",
-    price: "Free",
-    capacity: "120 people",
-    genre: "Collaborative Art",
-    category: "Workshops & Talks",
-    details: "Each section must reflect part of a larger theme, resulting in a unified piece of art representing the fest.",
-    isFlagship: false
-  },
-
-  // Special Events
-  {
-    id: 22,
-    title: "TREASURE HUNT",
-    date: "16.01.2025",
-    time: "14:00",
-    shares: "167 Shares",
-    image: "/images/Events/minievent/HouseFull.jpg",
-    description: "A fast-paced, multi-clue campus hunt where logic, teamwork, and stamina are tested.",
-    venue: "Campus Wide",
-    price: "₹20",
-    capacity: "300 people",
-    genre: "Adventure Game",
-    category: "Special Events",
-    details: "Teams decipher riddles, complete mini-tasks, and race to the final prize. Expect twists and a lot of running.",
-    isFlagship: false
-  },
-  {
-    id: 23,
-    title: "FOOD COMPETITION",
-    date: "17.01.2025",
-    time: "16:00",
-    shares: "134 Shares",
-    image: "/images/Events/minievent/QFACTOR.jpg",
-    description: "A culinary showdown where participants compete in taste, presentation, or creativity.",
-    venue: "Food Court",
     price: "₹40",
-    capacity: "200 people",
-    genre: "Culinary Arts",
-    category: "Special Events",
-    details: "Categories may include 'No-Fire Dishes,' 'Fusion Experiments,' or 'Snack on a Budget.' Judging balances taste and innovation.",
+    capacity: "80 people",
+    genre: "Sculpture",
+    category: "Creative Arts",
+    details: "Participants will be provided with clay and basic tools. Judged on creativity, technique, and interpretation of the theme.",
     isFlagship: false
   },
+  // 12. Focus (film)
   {
-    id: 24,
-    title: "DIGITAL 2D/3D COMPETITION",
-    date: "18.01.2025",
-    time: "14:00",
-    shares: "89 Shares",
-    image: "/images/Events/Design/E-TEE.jpg",
-    description: "A design event inviting submissions of illustrations, concept art, or models in 2D/3D.",
-    venue: "Digital Lab",
-    price: "Free",
-    capacity: "100 people",
-    genre: "Digital Design",
-    category: "Special Events",
-    details: "Participants are expected to interpret a theme using digital tools. Scoring emphasizes creativity and technique.",
-    isFlagship: false
-  },
-  {
-    id: 25,
-    title: "ORIGAMI WORKSHOP",
-    date: "19.01.2025",
-    time: "16:00",
-    shares: "67 Shares",
-    image: "/images/Events/minievent/DAREANDCHAIR.jpg",
-    description: "A calming and precision-focused session teaching participants the intricate Japanese art of paper folding.",
-    venue: "Workshop Room",
-    price: "₹15",
-    capacity: "60 people",
-    genre: "Paper Art",
-    category: "Special Events",
-    details: "From basic cranes to complex floral designs, participants will walk away with skills and creations.",
-    isFlagship: false
-  },
-  {
-    id: 26,
-    title: "2-DAY RIDDLE RUSH",
-    date: "20.01.2025",
+    id: 12,
+    title: "FOCUS (FILM)",
+    date: "09.01.2025",
     time: "10:00",
-    shares: "123 Shares",
-    image: "/images/Events/minievent/METaphor.jpg",
-    description: "A fest-wide riddle and puzzle challenge hosted in stages across two days.",
+    shares: "115 Shares",
+    image: "/images/Events/Technical/Codeureka.jpg", // Reusing image
+    description: "A short filmmaking competition. Capture the essence of 'Sabrang' in a 3-5 minute film. A challenge of storytelling through the cinematic lens.",
     venue: "Campus Wide",
-    price: "Free",
-    capacity: "500 people",
-    genre: "Puzzle Challenge",
+    price: "₹50",
+    capacity: "150 people",
+    genre: "Short Film",
+    category: "Creative Arts",
+    details: "Submissions are judged on cinematography, editing, narrative, and overall impact. All genres are welcome.",
+    isFlagship: false
+  },
+  // 13. BGMI
+  {
+    id: 13,
+    title: "BGMI TOURNAMENT",
+    date: "07.01.2025",
+    time: "12:00",
+    shares: "350 Shares",
+    image: "/images/Events/Technical/Battleground.jpg", // Reusing image
+    description: "Drop into the battlegrounds in Sabrang's official BGMI tournament. Squad up and fight for the chicken dinner and ultimate bragging rights.",
+    venue: "Online / E-Sports Arena",
+    price: "₹50/squad",
+    capacity: "256 players",
+    genre: "E-Sports",
+    category: "Fun & Games",
+    details: "A multi-round tournament for squads of four. Points are awarded for placement and kills. The final rounds will be live-streamed.",
+    isFlagship: false
+  },
+  // 14. Valorant
+  {
+    id: 14,
+    title: "VALORANT TOURNAMENT",
+    date: "08.01.2025",
+    time: "12:00",
+    shares: "410 Shares",
+    image: "/images/Events/Technical/Battleground.jpg", // Reusing image
+    description: "Assemble your team of five and compete in a high-stakes Valorant tournament. Strategy, aim, and teamwork will decide the champions.",
+    venue: "E-Sports Arena",
+    price: "₹100/team",
+    capacity: "160 players",
+    genre: "E-Sports",
+    category: "Fun & Games",
+    details: "A 5v5, single-elimination bracket tournament. Matches are played on standard competitive settings. Defy the limits!",
+    isFlagship: false
+  },
+  // 15. Free Fire
+  {
+    id: 15,
+    title: "FREE FIRE TOURNAMENT",
+    date: "09.01.2025",
+    time: "12:00",
+    shares: "290 Shares",
+    image: "/images/Events/Technical/Battleground.jpg", // Reusing image
+    description: "The ultimate survival shooter on mobile. Join the Free Fire tournament and prove your squad is the best. Booyah!",
+    venue: "Online / E-Sports Arena",
+    price: "₹40/squad",
+    capacity: "192 players",
+    genre: "E-Sports",
+    category: "Fun & Games",
+    details: "Squad-based battle royale. The tournament will consist of multiple qualifying rounds leading to a grand final.",
+    isFlagship: false
+  },
+  // 16. RoboSoccer
+  {
+    id: 16,
+    title: "ROBOSOCCER",
+    date: "10.01.2025",
+    time: "11:00",
+    shares: "180 Shares",
+    image: "/images/Events/Technical/Synergy.jpg", // Reusing image
+    description: "Build and code your autonomous robot to compete in a thrilling game of soccer. A fusion of engineering, coding, and strategy.",
+    venue: "Technical Block",
+    price: "₹150/team",
+    capacity: "32 teams",
+    genre: "Robotics",
     category: "Special Events",
-    details: "Participants solve physical, verbal, and digital clues in real-time to accumulate points. A leaderboard keeps the pressure high.",
+    details: "Teams of up to 4 members design and build a robot to play soccer against an opponent. The arena and rules will be provided beforehand.",
+    isFlagship: false
+  },
+  // 17. Dumb Show
+  {
+    id: 17,
+    title: "DUMB SHOW",
+    date: "02.01.2025",
+    time: "19:00",
+    shares: "67 Shares",
+    image: "/images/Events/Cultural/Dumb Show.jpg",
+    description: "A classic non-verbal guessing game with a Sabrang twist. Teams mime phrases, movie titles, or idioms under time pressure.",
+    venue: "Theater Hall",
+    price: "Free",
+    capacity: "300 people",
+    genre: "Mime Acting",
+    category: "Fun & Games",
+    details: "It's fast, funny, and tests how well you know your teammates – and your acting chops.",
     isFlagship: false
   }
 ];
@@ -788,34 +652,85 @@ export default function EventsPage() {
                           />
                         </div>
 
-                        {/* --- NEW UNIFIED "GLITCHING GRID" OVERLAY --- */}
-                        <div className="absolute inset-0 flex flex-col justify-between bg-gradient-to-t from-black/95 via-black/70 to-transparent transition-opacity duration-500 overflow-hidden p-4">
-                          {/* Animated Grid Background */}
-                          <div className="absolute inset-0 opacity-10" style={{
-                            backgroundImage: 'linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)',
+                        {/* --- MYSTERIOUS & SUSPENSEFUL OVERLAY --- */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-slate-800 overflow-hidden p-4 flex flex-col justify-between">
+                          
+                          {/* Mysterious grid pattern */}
+                          <div className="absolute inset-0 opacity-5" style={{
+                            backgroundImage: 'radial-gradient(circle at 1px 1px, #00ff88 1px, transparent 0)',
                             backgroundSize: '20px 20px',
                           }} />
 
-                          {/* Corner Brackets */}
-                          <div className="absolute top-3 left-3 w-5 h-5 border-t-2 border-l-2 border-cyan-400 transition-all duration-300" />
-                          <div className="absolute bottom-3 right-3 w-5 h-5 border-b-2 border-r-2 border-cyan-400 transition-all duration-300" />
+                          {/* Glitch effect lines */}
+                          <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-pulse opacity-30" />
+                          <div className="absolute bottom-0 right-0 w-full h-0.5 bg-gradient-to-l from-transparent via-red-400 to-transparent animate-pulse opacity-30 delay-1000" />
 
-                          {/* Glitch Line */}
-                          <div className="absolute top-1/2 left-0 w-full h-0.5 bg-cyan-400/50 animate-pulse opacity-50" />
-
-                          {/* Event Title - Centered */}
-                          <div className="flex-grow flex items-center justify-center text-center pt-4">
-                            <h3 className="font-bold text-lg md:text-xl text-white px-2 uppercase" style={{ textShadow: '0 0 8px rgba(255, 255, 255, 0.3)' }}>
-                              {event.title}
-                            </h3>
+                          {/* Top section - Mysterious badge */}
+                          <div className="relative z-10 flex justify-between items-start">
+                            <div className="px-3 py-1 bg-black/50 border border-green-400/50 rounded-sm backdrop-blur-sm">
+                              <span className="text-xs font-bold text-green-400 uppercase tracking-widest" style={{ fontFamily: 'monospace' }}>
+                                {event.isFlagship ? '⚡ CLASSIFIED' : event.category}
+                              </span>
+                            </div>
+                            {event.isFlagship && (
+                              <div className="w-6 h-6 bg-gradient-to-r from-green-400 to-blue-400 rounded-sm border border-green-400/50 flex items-center justify-center animate-pulse">
+                                <span className="text-xs">🔒</span>
+                              </div>
+                            )}
                           </div>
 
-                          {/* "Details Coming Soon" Text - At the bottom */}
-                          <div className="text-center pb-2">
-                            <p className="text-xs font-mono text-cyan-300 animate-pulse">
-                              Details Coming Soon
-                            </p>
+                          {/* Center - Mysterious title with glitch effect */}
+                          <div className="flex-grow flex items-center justify-center text-center relative z-10">
+                            <div className="relative">
+                              {/* Glitch overlay effect */}
+                              <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 via-transparent to-red-400/20 animate-pulse opacity-50" />
+                              
+                              {/* Main title with neon effect */}
+                              <h3 className="relative font-bold text-lg md:text-xl text-white px-2 uppercase tracking-widest leading-tight" 
+                                  style={{ 
+                                    textShadow: '0 0 10px rgba(0, 255, 136, 0.8), 0 0 20px rgba(0, 255, 136, 0.4)',
+                                    fontFamily: 'monospace',
+                                    letterSpacing: '0.3em'
+                                  }}>
+                                {event.title}
+                              </h3>
+                              
+                              {/* Scanning line effect */}
+                              <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-pulse" />
+                            </div>
                           </div>
+
+                          {/* Bottom section - Suspenseful elements */}
+                          <div className="relative z-10 text-center space-y-3">
+                            {/* Mysterious status */}
+                            <div className="flex items-center justify-center space-x-2">
+                              <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-ping" />
+                              <span className="text-xs font-mono text-green-400 uppercase tracking-widest animate-pulse">
+                                [REDACTED]
+                              </span>
+                            </div>
+                            
+                            {/* Mysterious button */}
+                            <div className="inline-block px-4 py-2 bg-black/50 border border-green-400/50 rounded-sm backdrop-blur-sm hover:bg-green-400/20 transition-all duration-300 transform hover:scale-105 group">
+                              <span className="text-xs font-bold text-green-400 uppercase tracking-widest" style={{ fontFamily: 'monospace' }}>
+                                ACCESS DENIED
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Mysterious border with glitch */}
+                          <div className="absolute inset-0 border border-green-400/30 rounded-lg" />
+                          <div className="absolute inset-0 border border-red-400/20 rounded-lg animate-pulse opacity-50" />
+                          
+                          {/* Mysterious corner elements */}
+                          <div className="absolute top-2 left-2 w-2 h-2 border-l border-t border-green-400" />
+                          <div className="absolute top-2 right-2 w-2 h-2 border-r border-t border-red-400" />
+                          <div className="absolute bottom-2 left-2 w-2 h-2 border-l border-b border-red-400" />
+                          <div className="absolute bottom-2 right-2 w-2 h-2 border-r border-b border-green-400" />
+                          
+                          {/* Floating particles */}
+                          <div className="absolute top-1/3 left-1/4 w-1 h-1 bg-green-400 rounded-full animate-ping delay-500" />
+                          <div className="absolute bottom-1/3 right-1/4 w-1 h-1 bg-red-400 rounded-full animate-ping delay-1000" />
                         </div>
                       </motion.div>
                     ))}
@@ -897,4 +812,50 @@ export default function EventsPage() {
       )}
     </div>
   );
+}
+
+// Custom CSS animations for enhanced visual effects
+const customStyles = `
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(5deg); }
+  }
+  
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 5px rgba(236, 72, 153, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(236, 72, 153, 0.8), 0 0 30px rgba(236, 72, 153, 0.6); }
+  }
+  
+  @keyframes sparkle {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+  
+  @keyframes wave {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(10px); }
+  }
+  
+  .event-card-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .event-card-glow {
+    animation: glow 3s ease-in-out infinite;
+  }
+  
+  .event-card-sparkle {
+    animation: sparkle 2s ease-in-out infinite;
+  }
+  
+  .event-card-wave {
+    animation: wave 4s ease-in-out infinite;
+  }
+`;
+
+// Add styles to document head
+if (typeof document !== 'undefined') {
+  const styleElement = document.createElement('style');
+  styleElement.textContent = customStyles;
+  document.head.appendChild(styleElement);
 }

@@ -16,12 +16,26 @@ interface Person {
 const HolographicCard = ({ 
   person, 
   cardId,
-  animationDelay = 0
+  animationDelay = 0,
+  description
 }: { 
   person: Person; 
   cardId: string;
   animationDelay?: number;
+  description?: string;
 }) => {
+  // Add error handling for undefined person
+  if (!person) {
+    return (
+      <div className="group relative">
+        <div className="relative h-96 w-64 rounded-lg backdrop-blur-xl bg-white/10 border border-white/20 overflow-hidden shadow-2xl">
+          <div className="flex items-center justify-center h-full text-white">
+            <p>Loading...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
   const [hoveredCard, setHoveredCard] = useState(false);
   const [activeCard, setActiveCard] = useState(false);
 
@@ -68,7 +82,7 @@ const HolographicCard = ({
         `} />
 
         {/* Flip Card Container */}
-        <div className="relative h-96 w-64 perspective-1000">
+        <div className="relative h-96 w-72 sm:w-80 md:w-96 perspective-1000">
           <div
             className="relative w-full h-full transition-transform duration-700 ease-out transform-style-preserve-3d"
             style={{ 
@@ -88,13 +102,15 @@ const HolographicCard = ({
               <div className="relative z-10 p-6 h-full flex flex-col">
                 {/* Avatar Section */}
                 <div className="relative mx-auto mb-4">
-                  <div className={`relative w-36 h-36 rounded-lg overflow-hidden transition-all duration-500 ease-out transform-gpu ${hoveredCard ? 'scale-110 rotate-3' : 'scale-100'}`}>
+                  <div className={`relative w-40 h-40 sm:w-44 sm:h-44 md:w-48 md:h-48 rounded-lg overflow-hidden transition-all duration-500 ease-out transform-gpu ${hoveredCard ? 'scale-110 rotate-3' : 'scale-100'}`}>
                     <img
-                      src={person.img}
-                      alt={person.name}
+                      src={person.img || '/images/building-6011756_1280.jpg'}
+                      alt={person.name || 'Team Member'}
                       className="w-full h-full object-cover transition-all duration-500"
                       onError={(e) => {
-                        e.currentTarget.style.display = 'none';
+                        (e.currentTarget as HTMLImageElement).src = '/images/Logo.svg';
+                        e.currentTarget.classList.remove('object-cover');
+                        e.currentTarget.classList.add('object-contain');
                       }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-tr from-transparent to-white/20" />
@@ -107,13 +123,13 @@ const HolographicCard = ({
                 {/* Member Info */}
                 <div className="text-center text-white flex-grow flex flex-col justify-center">
                   <h3 className={`text-lg font-bold mb-2 transition-all duration-300 ${hoveredCard ? 'text-white scale-105' : 'text-white/90'}`}>
-                    {person.name}
+                    {person.name || 'Unknown'}
                   </h3>
                   <p className="text-xs font-semibold opacity-80 mb-3 uppercase tracking-widest text-purple-200">
-                    {person.role}
+                    {person.role || 'Member'}
                   </p>
                   <p className="text-xs opacity-70 leading-relaxed line-clamp-2">
-                    Leading the charge in making our annual fest unforgettable with creative vision and seamless execution.
+                    {description || 'Leading the charge in making our annual fest unforgettable with creative vision and seamless execution.'}
                   </p>
                 </div>
 
@@ -134,11 +150,11 @@ const HolographicCard = ({
               
               <div className="relative z-10 flex flex-col h-full items-center justify-center gap-4 text-center">
                 {/* Person's name - larger and more prominent */}
-                <h3 className="text-xl font-bold text-white drop-shadow-lg">{person.name}</h3>
+                <h3 className="text-xl font-bold text-white drop-shadow-lg">{person.name || 'Unknown'}</h3>
                 
                 {/* Role with better styling */}
                 <div className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg border border-white/30">
-                  <p className="text-sm font-semibold uppercase tracking-widest text-white">{person.role}</p>
+                  <p className="text-sm font-semibold uppercase tracking-widest text-white">{person.role || 'Member'}</p>
                 </div>
                 
                 {/* Divider */}
@@ -148,17 +164,17 @@ const HolographicCard = ({
                 <div className="space-y-3 w-full max-w-48">
                   <div className="flex items-center justify-center gap-3 p-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
                     <span className="text-lg">✉</span>
-                    <p className="text-sm font-medium text-white break-all">{person.contact}</p>
+                    <p className="text-sm font-medium text-white break-all">{person.contact || 'N/A'}</p>
                   </div>
                   
                   <div className="flex items-center justify-center gap-3 p-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
                     <span className="text-lg">📱</span>
-                    <p className="text-sm font-medium text-white">{person.phone}</p>
+                    <p className="text-sm font-medium text-white">{person.phone || 'N/A'}</p>
                   </div>
                   
                   <div className="flex items-center justify-center gap-3 p-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
                     <span className="text-lg">🏛</span>
-                    <p className="text-sm font-medium text-white">{person.committee}</p>
+                    <p className="text-sm font-medium text-white">{person.committee || 'General'}</p>
                   </div>
                 </div>
                 
@@ -263,11 +279,16 @@ const ExpandedCard = ({
          <div className="flex flex-col lg:flex-row h-full">
            {/* Expanded Image Section */}
            <div className="lg:w-3/5 relative">
-            <div className={`w-full h-full ${hoveredPerson.bg}`}>
-              <img
-                src={hoveredPerson.img}
-                alt={hoveredPerson.name}
+                            <div className={`w-full h-full ${hoveredPerson.bg || 'bg-gray-500'}`}>
+                  <img
+                    src={hoveredPerson.img || '/images/building-6011756_1280.jpg'}
+                    alt={hoveredPerson.name || 'Team Member'}
                 className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = '/images/Logo.svg';
+                  e.currentTarget.classList.remove('object-cover');
+                  e.currentTarget.classList.add('object-contain');
+                }}
               />
             </div>
             
@@ -280,7 +301,7 @@ const ExpandedCard = ({
                    opacity: isExpanded ? 1 : 0 
                  }}
                >
-                 {hoveredPerson.name}
+                 {hoveredPerson.name || 'Unknown'}
                </h2>
                <p 
                  className="text-lg lg:text-xl text-blue-300 mb-1 transition-all duration-700 ease-out delay-100 break-words"
@@ -289,7 +310,7 @@ const ExpandedCard = ({
                    opacity: isExpanded ? 1 : 0 
                  }}
                >
-                 {hoveredPerson.role}
+                 {hoveredPerson.role || 'Member'}
                </p>
                <p 
                  className="text-base text-gray-300 transition-all duration-700 ease-out delay-200 break-words"
@@ -298,7 +319,7 @@ const ExpandedCard = ({
                    opacity: isExpanded ? 1 : 0 
                  }}
                >
-                 {hoveredPerson.committee}
+                 {hoveredPerson.committee || 'General'}
                </p>
              </div>
           </div>
@@ -324,7 +345,7 @@ const ExpandedCard = ({
                      </div>
                      <div className="min-w-0 flex-1">
                        <p className="text-sm text-gray-600">Email</p>
-                       <p className="text-blue-600 font-medium break-all">{hoveredPerson.contact}</p>
+                       <p className="text-blue-600 font-medium break-all">{hoveredPerson.contact || 'N/A'}</p>
                      </div>
                    </div>
                   
@@ -336,7 +357,7 @@ const ExpandedCard = ({
                      </div>
                      <div className="min-w-0 flex-1">
                        <p className="text-sm text-gray-600">Phone</p>
-                       <p className="text-green-600 font-medium break-all">{hoveredPerson.phone}</p>
+                       <p className="text-green-600 font-medium break-all">{hoveredPerson.phone || 'N/A'}</p>
                      </div>
                    </div>
                 </div>
@@ -354,11 +375,11 @@ const ExpandedCard = ({
                 <div className="space-y-3">
                                      <div className="p-3 bg-gray-50 rounded-lg">
                      <p className="text-sm text-gray-600">Position</p>
-                     <p className="text-gray-800 font-medium break-words">{hoveredPerson.role}</p>
+                     <p className="text-gray-800 font-medium break-words">{hoveredPerson.role || 'Member'}</p>
                    </div>
                    <div className="p-3 bg-gray-50 rounded-lg">
                      <p className="text-sm text-gray-600">Committee</p>
-                     <p className="text-gray-800 font-medium break-words">{hoveredPerson.committee}</p>
+                     <p className="text-gray-800 font-medium break-words">{hoveredPerson.committee || 'General'}</p>
                    </div>
                 </div>
               </div>
@@ -476,7 +497,7 @@ export default function PeopleStrip() {
       bg: "bg-gradient-to-br from-orange-500 via-rose-500 to-yellow-400",
       name: "Mr. Deepak Sogani",
       role: "Head-Student Affairs",
-      committee: "Organizing Committee",
+      committee: "Student Affairs",
       contact: "",
       phone: "+91 98765 43210"
     },
@@ -485,7 +506,7 @@ export default function PeopleStrip() {
       bg: "bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-400",
       name: "Dr.Alka Mahajan",
       role: "Pro Vice Chancellor",
-      committee: "Organizing Committee",
+      committee: "Student Affairs",
       contact: "",
       phone: "+91 98765 43211"
     },
@@ -509,7 +530,7 @@ export default function PeopleStrip() {
       phone: "+91 98765 43215"
     },
     { 
-      img: "/images/OH_images_home/sneha.jpeg", 
+      img: "/images/Team/Jinal Lodha.webp", 
       bg: "bg-blue-500",
       name: "Jinal Lodha",
       role: "Decor",
@@ -518,7 +539,7 @@ export default function PeopleStrip() {
        phone: "+91 98765 43216"
     },
     { 
-      img: "/images/OH_images_home/arjun.jpeg", 
+      img: "/images/Team/Jigeesha Agarawal.webp", 
       bg: "bg-green-500",
       name: "Jigeesha Agarawal",
       role: "Decor",
@@ -536,7 +557,7 @@ export default function PeopleStrip() {
        phone: "+91 98765 43218"
     },
     { 
-      img: "/images/OH_images_home/aditya.jpeg", 
+      img: "/images/Team/Prabal agrawal.webp", 
       bg: "bg-indigo-500",
       name: "Prabal Agarwal",
       role: "Report",
@@ -572,16 +593,16 @@ export default function PeopleStrip() {
        phone: "+91 98765 43222"
     },
     { 
-      img: "/images/OH_images_home/dev.jpeg", 
+      img: "/images/Team/Satvik vaid.webp", 
       bg: "bg-lime-500",
-      name: "Satvick Vaid",
+      name: "Satvik Vaid",
       role: "Cultural",
       committee: "Cultural",
       contact: "satvick.vaid@email.com",
        phone: "+91 98765 43223"
     },
     { 
-      img: "/images/OH_images_home/", 
+      img: "/images/Team/Suryaansh Sharma.webp", 
       bg: "bg-amber-500",
       name: "Suryaansh Sharma",
        role: "Technical",
@@ -626,7 +647,7 @@ export default function PeopleStrip() {
       phone: "+91 98765 43229"
     },
     { 
-      img: "/images/OH_images_home/shaurya.jpeg", 
+      img: "/images/Team/Tanveer Kanderiya.webp", 
       bg: "bg-slate-500",
       name: "Tanveer Kanderiya",
       role: "Prize & Certificates",
@@ -635,7 +656,7 @@ export default function PeopleStrip() {
       phone: "+91 98765 43230"
     },
     { 
-      img: "/images/OH_images_home/aisha.jpeg", 
+      img: "/images/Team/Aayushi Meel.webp", 
       bg: "bg-zinc-500",
       name: "Aayushi Meel",
       role: "Hospitality",
@@ -644,7 +665,7 @@ export default function PeopleStrip() {
       phone: "+91 98765 43231"
     },
     { 
-      img: "/images/OH_images_home/dhruv.jpeg", 
+      img: "/images/Team/Suryansh Khandelwal.webp", 
       bg: "bg-neutral-500",
       name: "Suryansh Khandelwal",
       role: "Stage & Venue",
@@ -687,100 +708,154 @@ export default function PeopleStrip() {
       committee: "Sponsorship & Promotion",
       contact: "lead.oh@email.com",
       phone: "+91 98765 43236"
+    },
+    {
+      img: "/images/Team/Chahat Khandelwal.webp",
+      bg: "bg-fuchsia-600",
+      name: "Chahat Khandelwal",
+      role: "Anchor",
+      committee: "anchorz",
+      contact: "",
+      phone: ""
+    },
+    {
+      img: "/images/Team/Anushka_Pathak.webp",
+      bg: "bg-purple-600",
+      name: "Anushka Pathak",
+      role: "Executive Student Affairs",
+      committee: "Student Affairs",
+      contact: "",
+      phone: ""
     }
   ];
 
-        // Committee data with ultra-creative layouts - reorganized as requested
+  // Student Affairs people (rendered using OH card style)
+  const studentAffairsPeople: Person[] = people.filter((p) => p.committee === 'Student Affairs');
+
+  // Single OH card (Diya Garg)
+  const ohPeople: Person[] = [
+    {
+      img: "/images/OH_images_home/diya.jpeg",
+      bg: "bg-gradient-to-br from-fuchsia-500 via-pink-500 to-rose-400",
+      name: "Diya Garg",
+      role: "Organizing Head",
+      committee: "Organizing Committee",
+      contact: "",
+      phone: ""
+    }
+  ];
+
+  // Committee data with ultra-creative layouts - reorganized as requested
    const committeeData = [
      {
        name: "Photography",
-       people: [people[9], people[10]],
+       people: [people[8], people[9]],
+       description: "Capturing the vibrant moments and timeless memories of Sabrang'25 through a creative lens.",
        layout: "time-vortex",
        color: "bg-neutral-700"
      },
      {
        name: "Cultural",
-       people: [people[11], people[12]],
+       people: [people[11]],
+       description: "Orchestrating the artistic heartbeat of the fest with captivating performances and cultural showcases.",
        layout: "cosmic-dance",
        color: "bg-neutral-700"
      },
      {
        name: "Technical",
-       people: [people[13]],
+       people: [people[12]],
+       description: "Powering the fest's digital and on-ground experiences with cutting-edge technology and seamless execution.",
        layout: "matrix-code",
        color: "bg-neutral-700"
      },
      {
        name: "Media & Report",
-       people: [people[7], people[8]],
+       people: [people[6], people[7]],
+       description: "Crafting the narrative of Sabrang'25 and documenting its legacy for the world to see.",
        layout: "holographic",
        color: "bg-neutral-700"
      },
      {
        name: "Discipline",
-       people: [people[3], people[4]],
+       people: [people[2], people[3]],
+       description: "Ensuring a safe, smooth, and enjoyable experience for all attendees with professionalism and care.",
        layout: "dna-helix",
        color: "bg-neutral-700"
      },
      {
        name: "Decor",
-       people: [people[5], people[6]],
+       people: [people[4], people[5]],
+       description: "Transforming campus spaces into breathtaking thematic wonderlands that define the fest's atmosphere.",
        layout: "fractal-tree",
        color: "bg-neutral-700"
      },
      {
        name: "Internal Arrangements",
-       people: [people[14], people[15]],
+       people: [people[13], people[14]],
+       description: "Managing the logistical backbone of the fest to ensure every event runs flawlessly behind the scenes.",
        layout: "galaxy-cluster",
        color: "bg-neutral-700"
      },
      {
        name: "Transport",
-       people: [people[16]],
+       people: [people[15]],
+       description: "Coordinating the seamless movement of guests, participants, and materials to keep the fest on schedule.",
        layout: "wormhole",
        color: "bg-neutral-700"
      },
      {
        name: "Social Media",
-       people: [people[17]],
+       people: [people[16]],
+       description: "Amplifying the fest's buzz and engaging our online community with creative and timely content.",
        layout: "digital-rain",
        color: "bg-neutral-700"
      },
      {
        name: "Prize & Certificates",
-       people: [people[18]],
+       people: [people[17]],
+       description: "Recognizing and celebrating the incredible talent and achievement of all our participants.",
        layout: "crystal-lattice",
        color: "bg-neutral-700"
      },
      {
        name: "Hospitality",
-       people: [people[19]],
+       people: [people[18]],
+       description: "Providing a warm welcome and impeccable support to our esteemed guests, judges, and artists.",
        layout: "energy-field",
        color: "bg-neutral-700"
      },
      {
        name: "Stage & Venue",
-       people: [people[20], people[21]],
+       people: [people[19]],
+       description: "Setting the stage for unforgettable moments and managing the core infrastructure of our event spaces.",
        layout: "magnetic-field",
        color: "bg-neutral-700"
      },
      {
        name: "Registrations",
-       people: [people[22], people[23]],
+       people: [people[21], people[22]],
+       description: "Streamlining the entry point for all participants, ensuring a smooth and welcoming start to their fest journey.",
        layout: "particle-system",
        color: "bg-neutral-700"
      },
      {
        name: "Sponsorship & Promotion",
-       people: [people[24]],
+       people: [people[23]],
+       description: "Forging key partnerships and driving the promotional strategies that elevate the fest's reach and impact.",
        layout: "cosmic-field",
+       color: "bg-neutral-700"
+     },
+     {
+       name: "anchorz",
+       people: [people[24]],
+       description: "Commanding the stage with charisma and energy, guiding the audience through the spectacular journey of Sabrang'25.",
+       layout: "energy-field",
        color: "bg-neutral-700"
      }
    ];
 
   // Organizing Heads section - uses first 3 people
-  const totalCards = 3;
-  const cards = Array.from({ length: totalCards }, (_, i) => people[i % people.length]);
+  const cards = ohPeople;
 
   // Person Card Component with Hover to Expand
   const PersonCard = ({ 
@@ -792,7 +867,8 @@ export default function PeopleStrip() {
     size = "normal",
     style = {},
     isCommitteeCard = false,
-    isOH = false
+    isOH = false,
+    description
   }: { 
     person: Person; 
     className?: string; 
@@ -803,6 +879,7 @@ export default function PeopleStrip() {
     style?: React.CSSProperties;
     isCommitteeCard?: boolean;
     isOH?: boolean;
+    description?: string;
   }) => {
     // Removed hover handlers for expanded card
 
@@ -834,6 +911,7 @@ export default function PeopleStrip() {
           person={person}
           cardId={cardId}
           animationDelay={animationDelay}
+          description={description}
         />
       );
     }
@@ -855,15 +933,12 @@ export default function PeopleStrip() {
              {/* Enhanced Background with multiple layers */}
              <div className="absolute inset-0">
                {/* Primary gradient background */}
-               <div className={`absolute inset-0 ${person.bg} rounded-lg opacity-90`} />
+               <div className={`absolute inset-0 ${person.bg || 'bg-gray-500'} rounded-lg opacity-90`} />
                
                {/* Animated overlay pattern */}
                <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/20 rounded-lg" />
                
-               {/* Floating geometric shapes */}
-               <div className="absolute top-4 right-4 w-8 h-8 bg-white/20 rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
-               <div className="absolute bottom-6 left-6 w-6 h-6 bg-white/15 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }} />
-               <div className="absolute top-1/2 left-4 w-4 h-4 bg-white/25 rounded-full animate-bounce" style={{ animationDelay: '1s' }} />
+               {/* Removed floating geometric shapes */}
              </div>
 
              {/* Enhanced splash background */}
@@ -876,12 +951,14 @@ export default function PeopleStrip() {
              {/* Main Image with enhanced styling */}
              <div className="relative z-10 w-full h-full flex items-center justify-center p-4">
                <img
-                 src={person.img}
-                 alt={person.name}
+                 src={person.img || '/images/building-6011756_1280.jpg'}
+                 alt={person.name || 'Team Member'}
                  className="w-full h-full object-cover rounded-lg transition-all duration-500 ease-out group-hover:scale-105 group-hover:rotate-1 relative z-20"
                  onError={(e) => {
-                   console.error('Image failed to load:', person.img);
-                   e.currentTarget.style.display = 'none';
+                   console.error('Image failed to load:', person.img || 'default');
+                   (e.currentTarget as HTMLImageElement).src = '/images/Logo.svg';
+                   e.currentTarget.classList.remove('object-cover');
+                   e.currentTarget.classList.add('object-contain');
                  }}
                />
                
@@ -897,16 +974,11 @@ export default function PeopleStrip() {
                {/* Text content */}
                <div className="relative z-10 text-center">
                  <h3 className="text-lg lg:text-xl font-bold mb-1 text-shadow-lg group-hover:text-white transition-all duration-300 truncate">
-                   {person.name}
+                   {person.name || 'Unknown'}
                  </h3>
                  <p className="text-sm opacity-90 font-medium text-shadow-md group-hover:text-white/90 transition-all duration-300 truncate">
-                   {person.role}
+                   {person.role || 'Member'}
                  </p>
-                 
-                 {/* Enhanced role indicator */}
-                 <div className="mt-2 inline-flex items-center px-2 py-1 bg-white/20 backdrop-blur-sm rounded-md border border-white/30">
-                   <span className="text-xs font-semibold text-white">⭐ Organizing Head</span>
-                 </div>
                </div>
              </div>
            </div>
@@ -928,16 +1000,18 @@ export default function PeopleStrip() {
        >
          <div className={`relative w-full h-full rounded-lg overflow-hidden shadow-lg`}>
           {/* Solid background color for Core Committee Members */}
-           <div className={`absolute inset-0 ${person.bg} rounded-lg`} />
+                          <div className={`absolute inset-0 ${person.bg || 'bg-gray-500'} rounded-lg`} />
 
           {/* Main Image */}
           <img
-            src={person.img}
-            alt={person.name}
+            src={person.img || '/images/building-6011756_1280.jpg'}
+            alt={person.name || 'Team Member'}
              className={`w-full h-full object-contain p-4 transition-transform duration-500 ease-out group-hover:scale-105 relative z-10`}
             onError={(e) => {
-              console.error('Image failed to load:', person.img);
-              e.currentTarget.style.display = 'none';
+              console.error('Image failed to load:', person.img || 'default');
+              (e.currentTarget as HTMLImageElement).src = '/images/Logo.svg';
+              e.currentTarget.classList.remove('object-contain');
+              e.currentTarget.classList.add('object-contain');
             }}
           />
           
@@ -949,8 +1023,8 @@ export default function PeopleStrip() {
           
           {/* Text overlay */}
            <div className="absolute bottom-0 left-0 right-0 p-3 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out">
-             <h3 className="text-sm font-bold mb-1 truncate">{person.name}</h3>
-             <p className="text-xs opacity-90 truncate">{person.role}</p>
+             <h3 className="text-sm font-bold mb-1 truncate">{person.name || 'Unknown'}</h3>
+             <p className="text-xs opacity-90 truncate">{person.role || 'Member'}</p>
           </div>
         </div>
         
@@ -972,9 +1046,6 @@ export default function PeopleStrip() {
           
           {/* Enhanced committee header */}
           <div className="relative z-10 text-center mb-8 sm:mb-12">
-            <div className="inline-flex items-center px-6 py-3 bg-black/40 backdrop-blur-sm rounded-lg border border-white/20 mb-4">
-              <span className="text-sm text-white/80 uppercase tracking-wider">Committee</span>
-            </div>
             <h3 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-white uppercase tracking-widest px-4`}>
             {committee.name}
           </h3>
@@ -984,7 +1055,7 @@ export default function PeopleStrip() {
           </div>
           
           {/* Enhanced cards layout */}
-          <div className="relative flex justify-center items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 w-full px-2 sm:px-4">
+          <div className="relative flex justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-12 w-full px-2 sm:px-4">
             {/* Connecting lines between cards */}
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-[300px] h-0.5 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-40" />
             
@@ -997,6 +1068,7 @@ export default function PeopleStrip() {
                  animationDelay={idx * 400}
                  size="normal"
                  isCommitteeCard={true}
+                 description={committee.description}
                />
              ))}
            </div>
@@ -1019,23 +1091,6 @@ export default function PeopleStrip() {
            viewport={{ once: true }}
            className="relative z-10 text-center mb-8 sm:mb-12"
          >
-           <motion.div 
-             initial={{ scale: 0.8, opacity: 0 }}
-             whileInView={{ scale: 1, opacity: 1 }}
-             transition={{ duration: 0.6, delay: 0.4 }}
-             viewport={{ once: true }}
-             className="inline-flex items-center px-6 py-3 bg-black/40 backdrop-blur-sm rounded-lg border border-white/20 mb-4 hover:bg-black/60 transition-all duration-300 cursor-pointer group"
-             whileHover={{ scale: 1.05 }}
-           >
-             <span className="text-sm text-white/80 uppercase tracking-wider group-hover:text-white transition-colors duration-300">Committee</span>
-             <motion.span
-               className="ml-2 text-xs opacity-60 group-hover:opacity-100"
-               animate={{ rotate: [0, 180, 360] }}
-               transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-             >
-               ⚡
-             </motion.span>
-           </motion.div>
            <h3 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-white uppercase tracking-widest px-4`}>
           {committee.name}
         </h3>
@@ -1048,26 +1103,10 @@ export default function PeopleStrip() {
            >
              Dedicated team members working together to deliver excellence
            </motion.p>
-           
-           {/* Special committee indicator */}
-           <motion.div
-             className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20"
-             initial={{ opacity: 0, scale: 0.8 }}
-             whileInView={{ opacity: 1, scale: 1 }}
-             transition={{ duration: 0.6, delay: 0.8 }}
-             viewport={{ once: true }}
-           >
-             <motion.div
-               className="w-2 h-2 bg-green-400 rounded-full"
-               animate={{ scale: [1, 1.5, 1] }}
-               transition={{ duration: 1.5, repeat: Infinity }}
-             />
-             <span className="text-xs text-green-400 font-medium">Active Team</span>
-           </motion.div>
          </motion.div>
         
         {/* Enhanced cards layout with connecting elements */}
-        <div className="relative flex flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 w-full max-w-7xl mx-auto px-2 sm:px-4">
+        <div className="relative flex flex-wrap justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-12 w-full max-w-7xl mx-auto px-2 sm:px-4">
           {/* Animated connecting lines */}
           <motion.div 
             initial={{ scaleX: 0 }}
@@ -1094,6 +1133,7 @@ export default function PeopleStrip() {
                animationDelay={idx * 200}
                size="normal"
                isCommitteeCard={true}
+               description={committee.description}
              />
             </motion.div>
            ))}
@@ -1198,7 +1238,58 @@ export default function PeopleStrip() {
            </span>
          </motion.p>
        </motion.div>
-      
+ 
+      {/* Student Affairs heading */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.1 }}
+        viewport={{ once: true }}
+        className="text-center"
+      >
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-2xl tracking-widest uppercase px-4" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
+          Student Affairs
+        </h2>
+      </motion.div>
+
+      {/* Student Affairs cards - styled like OH and placed above OH */}
+      <div className="relative mt-6 mb-12">
+        <div className="flex flex-wrap justify-center lg:justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 w-full max-w-7xl mx-auto px-2 sm:px-4 relative z-10">
+          {studentAffairsPeople.map((person, index) => (
+            <motion.div
+              key={`student-affairs-${index}`}
+              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 + index * 0.15 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -10, transition: { duration: 0.3 } }}
+              className="relative"
+            >
+              <PersonCard
+                person={person}
+                cardId={`student-affairs-${index}`}
+                className={`w-[120px] sm:w-[180px] md:w-[240px] lg:w-[280px] xl:w-[320px] h-[200px] sm:h-[300px] md:h-[400px] lg:h-[480px] xl:h-[540px] overflow-hidden rounded-lg shadow-2xl flex-shrink-0 relative`}
+                transformClass=""
+                isOH
+              />
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Organizing Head heading */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.1 }}
+        viewport={{ once: true }}
+        className="text-center"
+      >
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-2xl tracking-widest uppercase px-4" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
+          Organizing Head
+        </h2>
+      </motion.div>
+
              {/* Organizing Heads cards - enhanced layout and styling */}
        <div className="relative mt-8 mb-16 sm:mb-20 lg:mb-24">
                  {/* Background decorative elements */}
@@ -1216,7 +1307,7 @@ export default function PeopleStrip() {
                  {/* Cards container with enhanced spacing */}
          <div className="flex flex-wrap justify-center lg:justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 mt-8 sm:mt-12 lg:mt-20 w-full max-w-7xl mx-auto px-2 sm:px-4 relative z-10">
         {cards.map((person, index) => {
-          console.log(`Rendering organizing head ${index}:`, person.name, 'Image path:', person.img);
+          console.log(`Rendering organizing head ${index}:`, person.name || 'Unknown', 'Image path:', person.img || 'default');
           return (
                <motion.div
               key={index}
@@ -1241,45 +1332,25 @@ export default function PeopleStrip() {
               person={person}
               cardId={`organizing-head-${index}`}
                    className={`w-[120px] sm:w-[180px] md:w-[240px] lg:w-[280px] xl:w-[320px] h-[200px] sm:h-[300px] md:h-[400px] lg:h-[480px] xl:h-[540px] overflow-hidden rounded-lg shadow-2xl flex-shrink-0 relative`}
-              transformClass={
-                index === 1 
-                       ? 'lg:relative lg:top-[-80px] xl:top-[-100px] z-30 lg:scale-110 xl:scale-125' 
-                  : index === 0 
-                         ? 'lg:relative lg:top-[60px] xl:top-[80px] lg:left-[-30px] xl:left-[-40px] z-20 lg:scale-95 xl:scale-100' 
-                         : 'lg:relative lg:top-[60px] xl:top-[80px] lg:right-[-30px] xl:right-[-40px] z-20 lg:scale-95 xl:scale-100'
-              }
+              transformClass=""
               isOH
             />
                  
-                 {/* Floating achievement badges */}
-                 <motion.div
-                   className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg"
-                   animate={{ 
-                     rotate: [0, 10, -10, 0],
-                     scale: [1, 1.1, 1]
-                   }}
-                   transition={{ 
-                     duration: 2,
-                     repeat: Infinity,
-                     delay: index * 0.5
-                   }}
-                 >
-                   ⭐
-                 </motion.div>
+                 {/* Removed floating achievement badge blob */}
                </motion.div>
           );
         })}
          </div>
       </div>
 
-       {/* Enhanced "Core Committee Members" heading */}
-       <motion.div 
-         initial={{ opacity: 0, y: 30 }}
-         whileInView={{ opacity: 1, y: 0 }}
-         transition={{ duration: 1, delay: 0.2 }}
-         viewport={{ once: true }}
-         className="text-center mb-8 sm:mb-12"
-       >
+      {/* Enhanced "Core Committee Members" heading */}
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, delay: 0.2 }}
+        viewport={{ once: true }}
+        className="text-center mb-8 sm:mb-12"
+      >
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-white drop-shadow-2xl tracking-widest uppercase px-4" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
            Core Committee Members
       </h2>

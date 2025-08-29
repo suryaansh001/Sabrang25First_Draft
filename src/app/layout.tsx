@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import AppShell from "../../components/AppShell";
 import { VideoProvider } from "../../components/VideoContext";
+import DesignedByStrip from "../../components/DesignedByStrip";
 
 export const metadata: Metadata = {
   title: "Sabrang",
@@ -27,6 +28,7 @@ export default function RootLayout({
       <body className="antialiased">
         <VideoProvider>
           <AppShell>{children}</AppShell>
+          <DesignedByStrip />
         </VideoProvider>
       </body>
     </html>
