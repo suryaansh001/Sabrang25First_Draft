@@ -39,11 +39,11 @@ export default function EventCard({ event, outline, variant = 'default' }: Event
 
           {/* Event Content Overlay */}
           <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-            <h2 className="text-3xl font-bold mb-4 font-['Playfair_Display'] leading-tight drop-shadow-lg">
+            <h2 className="text-3xl font-bold mb-4 font-tan-nimbus leading-tight drop-shadow-lg">
               {event.title}
             </h2>
             {event.description && (
-              <p className="text-base text-white/90 mb-6 font-['Playfair_Display'] leading-relaxed drop-shadow-lg">
+              <p className="text-base text-white/90 mb-6 font-tan-nimbus leading-relaxed drop-shadow-lg">
                 {event.description}
               </p>
             )}

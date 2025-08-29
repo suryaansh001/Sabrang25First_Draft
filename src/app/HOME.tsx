@@ -364,10 +364,10 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
             <div className="max-w-sm mx-auto">
               {/* Main Title */}
               <h1 className="font-black leading-none mb-6">
-                <span className="block text-6xl sm:text-7xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 drop-shadow-2xl" style={{ fontFamily: "'Stardos Stencil', 'Orbitron', sans-serif" }}>
+                <span className="block text-6xl sm:text-7xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 drop-shadow-2xl" style={{ fontFamily: "'TAN Nimbus', sans-serif" }}>
                   SABRANG
                 </span>
-                <span className="inline-block text-5xl sm:text-6xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 drop-shadow-2xl ml-2 sm:ml-3 md:ml-4" style={{ fontFamily: "'Stardos Stencil', 'Orbitron', sans-serif" }}>
+                <span className="inline-block text-5xl sm:text-6xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 drop-shadow-2xl ml-2 sm:ml-3 md:ml-4" style={{ fontFamily: "'TAN Nimbus', sans-serif" }}>
                   25
                 </span>
               </h1>

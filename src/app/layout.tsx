@@ -19,6 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Preload custom fonts */}
+        <link rel="preload" href="/Font/TAN_Nimbus/TAN-NIMBUS.otf" as="font" type="font/otf" crossOrigin="anonymous" />
+        
         {/* Google Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
