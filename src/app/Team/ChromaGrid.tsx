@@ -492,13 +492,13 @@ export default function PeopleStrip() {
 
   // People array with detailed information for each person
   const people: Person[] = [
-    // Organizing Committee
+    // Student Affairs
     { 
       img: "/images/OH_images_home/Deepak_Sogani.png", 
       bg: "bg-gradient-to-br from-orange-500 via-rose-500 to-yellow-400",
       name: "Mr. Deepak Sogani",
       role: "Head-Student Affairs",
-      committee: "Organizing Committee",
+      committee: "Student Affairs",
       contact: "",
       phone: "+91 98765 43210"
     },
@@ -507,7 +507,7 @@ export default function PeopleStrip() {
       bg: "bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-400",
       name: "Dr.Alka Mahajan",
       role: "Pro Vice Chancellor",
-      committee: "Organizing Committee",
+      committee: "Student Affairs",
       contact: "",
       phone: "+91 98765 43211"
     },
@@ -720,7 +720,7 @@ export default function PeopleStrip() {
       phone: ""
     },
     {
-      img: "/images/Team/Anushka_Pathak.webp",
+      img: "/images/OH_images_home/Anushka_Pathak.png",
       bg: "bg-purple-600",
       name: "Anushka Pathak",
       role: "Executive Student Affairs",
@@ -1269,6 +1269,57 @@ export default function PeopleStrip() {
            </span>
          </motion.p>
        </motion.div>
+ 
+      {/* Student Affairs heading */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.1 }}
+        viewport={{ once: true }}
+        className="text-center"
+      >
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-2xl tracking-widest uppercase px-4" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
+          Student Affairs
+        </h2>
+      </motion.div>
+
+      {/* Student Affairs cards - styled like OH and placed above OH */}
+      <div className="relative mt-6 mb-12">
+        <div className="flex flex-wrap justify-center lg:justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 w-full max-w-7xl mx-auto px-2 sm:px-4 relative z-10">
+          {studentAffairsPeople.map((person, index) => (
+            <motion.div
+              key={`student-affairs-${index}`}
+              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 + index * 0.15 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -10, transition: { duration: 0.3 } }}
+              className="relative"
+            >
+              <PersonCard
+                person={person}
+                cardId={`student-affairs-${index}`}
+                className={`w-[120px] sm:w-[180px] md:w-[240px] lg:w-[280px] xl:w-[320px] h-[200px] sm:h-[300px] md:h-[400px] lg:h-[480px] xl:h-[540px] overflow-hidden rounded-lg shadow-2xl flex-shrink-0 relative`}
+                transformClass=""
+                isOH
+              />
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Organizing Head heading */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.1 }}
+        viewport={{ once: true }}
+        className="text-center"
+      >
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-2xl tracking-widest uppercase px-4" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
+          Organizing Head
+        </h2>
+      </motion.div>
       
              {/* Organizing Heads cards - enhanced layout and styling */}
        <div className="relative mt-8 mb-16 sm:mb-20 lg:mb-24">
