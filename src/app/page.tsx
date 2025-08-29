@@ -7,37 +7,17 @@ import LoadingPage from "../../components/LoadingPage";
 
 // Separate component that uses useSearchParams
 function PageContent() {
+  // Temporarily disable first-visit loading video
   const [showLoading, setShowLoading] = useState(false);
   const [hasShownLoading, setHasShownLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Check if this is a direct visit to the home page
-    const isDirectVisit = !document.referrer || 
-      document.referrer.includes(window.location.origin) === false;
-    
-    // Check if we're coming from another page on the same site
-    const isInternalNavigation = document.referrer.includes(window.location.origin);
-    
-    // Check if there's a skip parameter (for internal navigation)
-    const skipLoading = searchParams.get('skipLoading') === 'true';
-    
-    // Show loading only on direct visits and if we haven't shown it before
-    if (isDirectVisit && !hasShownLoading && !skipLoading) {
-      setShowLoading(true);
-      setHasShownLoading(true);
-      
-      // Store in session storage to remember we've shown the loading
-      sessionStorage.setItem('hasShownLoading', 'true');
-    } else {
-      // Check session storage for subsequent visits
-      const hasShown = sessionStorage.getItem('hasShownLoading');
-      if (hasShown) {
-        setHasShownLoading(true);
-      }
-    }
-  }, [searchParams, hasShownLoading]);
+    // Disabled: do not show the intro/loading video for now
+    setShowLoading(false);
+    setHasShownLoading(true);
+  }, []);
 
   const handleLoadingComplete = () => {
     setShowLoading(false);
@@ -45,11 +25,9 @@ function PageContent() {
 
   return (
     <>
-      <LoadingPage 
-        isVisible={showLoading} 
-        onComplete={handleLoadingComplete} 
-      />
-      <LayeredLandingPage isLoading={showLoading} />
+      {/* Intro video disabled */}
+      {/* <LoadingPage isVisible={showLoading} onComplete={handleLoadingComplete} /> */}
+      <LayeredLandingPage isLoading={false} />
     </>
   );
 }

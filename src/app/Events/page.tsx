@@ -341,27 +341,6 @@ export default function EventsPage() {
   const [isPageLoaded, setIsPageLoaded] = useState(true);
   const showComingSoon = false;
 
-
-  // Derive high-level domain (Cultural, Technical, Business, Design, Literary, Mini Event)
-  const getEventDomain = (imagePath: string): string => {
-    try {
-      const match = imagePath.match(/\/images\/Events\/([^/]+)\//i);
-      if (!match) return 'General';
-      const raw = match[1].toLowerCase();
-      const map: Record<string, string> = {
-        cultural: 'Cultural',
-        technical: 'Technical',
-        management: 'Business',
-        design: 'Design',
-        literary: 'Literary',
-        minievent: 'Mini Event'
-      };
-      return map[raw] || raw.replace(/\b\w/g, (c) => c.toUpperCase());
-    } catch {
-      return 'General';
-    }
-  };
-
   const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
     { title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },

@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
+import { Linkedin, Instagram, Twitter } from 'lucide-react';
 
 // Define the Person type interface
 interface Person {
@@ -10,6 +11,11 @@ interface Person {
   committee: string;
   contact: string;
   phone: string;
+  socials?: {
+    linkedin?: string;
+    instagram?: string;
+    twitter?: string;
+  };
 }
 
 // New Holographic Card Component for Committee Members
@@ -38,6 +44,12 @@ const HolographicCard = ({
   }
   const [hoveredCard, setHoveredCard] = useState(false);
   const [activeCard, setActiveCard] = useState(false);
+  const [hasPhoto, setHasPhoto] = useState(true);
+
+  // Guard against undefined person during prerender
+  if (!person) {
+    return null;
+  }
 
   // Handle mouse events for flip card functionality
   const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -111,6 +123,7 @@ const HolographicCard = ({
                         (e.currentTarget as HTMLImageElement).src = '/images/Logo.svg';
                         e.currentTarget.classList.remove('object-cover');
                         e.currentTarget.classList.add('object-contain');
+                        setHasPhoto(false);
                       }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-tr from-transparent to-white/20" />
@@ -148,39 +161,21 @@ const HolographicCard = ({
               {/* Enhanced background pattern */} 
               <div className="absolute inset-0 bg-black/20" />
               
-              <div className="relative z-10 flex flex-col h-full items-center justify-center gap-4 text-center">
-                {/* Person's name - larger and more prominent */}
-                <h3 className="text-xl font-bold text-white drop-shadow-lg">{person.name || 'Unknown'}</h3>
+              <div className="relative z-10 flex flex-col h-full items-center justify-center gap-2 text-center">
+                <h3 className="text-2xl font-bold text-white">{person.name || 'Unknown'}</h3>
+                <p className="text-md text-purple-200/90">{person.committee || 'General'}</p>
                 
-                {/* Role with better styling */}
-                <div className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg border border-white/30">
-                  <p className="text-sm font-semibold uppercase tracking-widest text-white">{person.role || 'Member'}</p>
-                </div>
-                
-                {/* Divider */}
-                <div className="w-24 h-0.5 bg-white/50" />
-                
-                {/* Contact information with better layout */}
-                <div className="space-y-3 w-full max-w-48">
-                  <div className="flex items-center justify-center gap-3 p-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
-                    <span className="text-lg">✉</span>
-                    <p className="text-sm font-medium text-white break-all">{person.contact || 'N/A'}</p>
-                  </div>
-                  
-                  <div className="flex items-center justify-center gap-3 p-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
-                    <span className="text-lg">📱</span>
-                    <p className="text-sm font-medium text-white">{person.phone || 'N/A'}</p>
-                  </div>
-                  
-                  <div className="flex items-center justify-center gap-3 p-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
-                    <span className="text-lg">🏛</span>
-                    <p className="text-sm font-medium text-white">{person.committee || 'General'}</p>
-                  </div>
-                </div>
-                
-                {/* Hover indicator */}
-                <div className="absolute bottom-4 text-xs opacity-60 text-center">
-                  <p>Hover to flip back</p>
+                <div className="w-28 h-0.5 bg-white/25 my-4" />
+
+                <div className="space-y-3">
+                    <p className="text-sm text-white/80 uppercase tracking-widest">Social Links</p>
+                    <div className="flex items-center justify-center gap-6">
+                        <a href={person.socials?.linkedin || "#"} target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-[#0077B5] transition-all duration-300 hover:scale-125"><Linkedin size={28} /></a>
+                        <a href={person.socials?.instagram || "#"} target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-[#E1306C] transition-all duration-300 hover:scale-125"><Instagram size={28} /></a>
+                        {person.socials?.twitter && (
+                        <a href={person.socials?.twitter} target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-[#1DA1F2] transition-all duration-300 hover:scale-125"><Twitter size={28} /></a>
+                        )}
+                    </div>
                 </div>
               </div>
             </div>
@@ -518,7 +513,11 @@ export default function PeopleStrip() {
       role: "Discipline",
       committee: "Discipline",
       contact: "rahul.verma@email.com",
-      phone: "+91 98765 43214"
+      phone: "+91 98765 43214",
+      socials: {
+        linkedin: "#",
+        instagram: "#",
+      }
     },
     { 
       img: "/images/Team/Discipline/Kriti_Gupta.png", 
@@ -527,7 +526,10 @@ export default function PeopleStrip() {
       role: "Discipline",
       committee: "Discipline",
       contact: "kriti.gupta@email.com",
-      phone: "+91 98765 43215"
+      phone: "+91 98765 43215",
+      socials: {
+        instagram: "#",
+      }
     },
     { 
       img: "/images/Team/Jinal Lodha.webp", 
@@ -536,7 +538,11 @@ export default function PeopleStrip() {
       role: "Decor",
       committee: "Decor",
       contact: "jinal.lodha@email.com",
-       phone: "+91 98765 43216"
+       phone: "+91 98765 43216",
+      socials: {
+        
+        instagram: "https://www.instagram.com/jinal_lodha7?igsh=MXVmajA1d25obWd1bg=="
+      }
     },
     { 
       img: "/images/Team/Jigeesha Agarawal.webp", 
@@ -545,14 +551,17 @@ export default function PeopleStrip() {
       role: "Decor",
       committee: "Decor",
       contact: "jigeesha.agarawal@email.com",
-       phone: "+91 98765 43217"
+       phone: "+91 98765 43217",
+      socials: {
+        instagram: "https://www.instagram.com/jigeeeshaaa?igsh=emNubTcyM28yNHVi"
+      }
     },
     { 
       img: "/images/OH_images_home/meera.jpeg", 
       bg: "bg-pink-500",
       name: "Chahat Khandelwal",
       role: "Media",
-      committee: "Media",
+      committee: "Media & Report",
       contact: "chahat.khandelwal@email.com",
        phone: "+91 98765 43218"
     },
@@ -561,9 +570,12 @@ export default function PeopleStrip() {
       bg: "bg-indigo-500",
       name: "Prabal Agarwal",
       role: "Report",
-      committee: "Report",
+      committee: "Media & Report",
       contact: "prabal.agarwal@email.com",
-       phone: "+91 98765 43219"
+       phone: "+91 98765 43219",
+       socials: {
+        instagram: "https://www.instagram.com/agrawal.prabal?igsh=cmoyMXU4NGQyZ3h0"
+      }
     },
     { 
       img: "/images/OH_images_home/kavya.jpeg", 
@@ -599,7 +611,11 @@ export default function PeopleStrip() {
       role: "Cultural",
       committee: "Cultural",
       contact: "satvick.vaid@email.com",
-       phone: "+91 98765 43223"
+       phone: "+91 98765 43223",
+       socials: {
+        instagram: "https://www.instagram.com/satvick_vaid?utm_source=qr&igsh=NHI2ZjE0c3VsNGY4"
+       }
+
     },
     { 
       img: "/images/Team/Suryaansh Sharma.webp", 
@@ -608,7 +624,10 @@ export default function PeopleStrip() {
        role: "Technical",
        committee: "Technical",
       contact: "suryaansh.sharma@email.com",
-       phone: "+91 98765 43224"
+       phone: "+91 98765 43224",
+       socials: {
+        linkedin: "https://www.linkedin.com/in/suryaansh-sharma-05a811284/"
+       }
     },
     { 
       img: "/images/OH_images_home/aryan.jpeg", 
@@ -653,7 +672,10 @@ export default function PeopleStrip() {
       role: "Prize & Certificates",
       committee: "Prize & Certificates",
       contact: "tanveer.kanderiya@email.com",
-      phone: "+91 98765 43230"
+      phone: "+91 98765 43230",
+      socials: {
+        instagram: "https://instagram.com/tanveer_kumawatt"
+      }
     },
     { 
       img: "/images/Team/Aayushi Meel.webp", 
@@ -662,7 +684,10 @@ export default function PeopleStrip() {
       role: "Hospitality",
       committee: "Hospitality",
       contact: "aayushi.meel@email.com",
-      phone: "+91 98765 43231"
+      phone: "+91 98765 43231",
+      socials: {
+        linkedin: "https://www.linkedin.com/in/aayushi-meel-01505a2b7 meelaayushi"
+      }
     },
     { 
       img: "/images/Team/Suryansh Khandelwal.webp", 
@@ -671,7 +696,11 @@ export default function PeopleStrip() {
       role: "Stage & Venue",
       committee: "Stage & Venue",
       contact: "suryansh.khandelwal@email.com",
-      phone: "+91 98765 43232"
+      phone: "+91 98765 43232",
+      socials: {
+        linkedin: "https://www.linkedin.com/in/suryansh-khandelwal-bb495b322",
+        instagram: "https://www.instagram.com/_.hrshhh?igsh=MTRnNHRwMjNqc3RmdQ=="
+      }
     },
     { 
       img: "/images/OH_images_home/kiara.jpeg", 
@@ -716,7 +745,10 @@ export default function PeopleStrip() {
       role: "Anchor",
       committee: "anchorz",
       contact: "",
-      phone: ""
+      phone: "",
+      socials: {
+        instagram: "https://www.instagram.com/okchahat_?igsh=YTR1am1ldXoxOThk&utm_source=qr"
+      }
     },
     {
       img: "/images/Team/Anushka_Pathak.webp",
@@ -726,6 +758,24 @@ export default function PeopleStrip() {
       committee: "Student Affairs",
       contact: "",
       phone: ""
+    },
+    {
+      img: "/images/Team/Dheevi_Fozdar.png",
+      bg: "bg-zinc-600",
+      name: "Dheevi Fozdar",
+      role: "Hospitality",
+      committee: "Hospitality",
+      contact: "dheevi.fozdar@email.com",
+      phone: "+91 98765 43238"
+    },
+    {
+      img: "/images/Team/Naman_Shukla.png",
+      bg: "bg-stone-600",
+      name: "Naman Shukla",
+      role: "Sponsorship & Promotion",
+      committee: "Sponsorship & Promotion",
+      contact: "naman.shukla@email.com",
+      phone: "+91 98765 43239"
     }
   ];
 
@@ -735,7 +785,7 @@ export default function PeopleStrip() {
   // Single OH card (Diya Garg)
   const ohPeople: Person[] = [
     {
-      img: "/images/OH_images_home/diya.jpeg",
+      img: "/images/Team/Oh/Diya Garg.webp",
       bg: "bg-gradient-to-br from-fuchsia-500 via-pink-500 to-rose-400",
       name: "Diya Garg",
       role: "Organizing Head",
@@ -749,105 +799,90 @@ export default function PeopleStrip() {
    const committeeData = [
      {
        name: "Photography",
-       people: [people[8], people[9]],
        description: "Capturing the vibrant moments and timeless memories of Sabrang'25 through a creative lens.",
        layout: "time-vortex",
        color: "bg-neutral-700"
      },
      {
        name: "Cultural",
-       people: [people[11]],
        description: "Orchestrating the artistic heartbeat of the fest with captivating performances and cultural showcases.",
        layout: "cosmic-dance",
        color: "bg-neutral-700"
      },
      {
        name: "Technical",
-       people: [people[12]],
        description: "Powering the fest's digital and on-ground experiences with cutting-edge technology and seamless execution.",
        layout: "matrix-code",
        color: "bg-neutral-700"
      },
      {
        name: "Media & Report",
-       people: [people[6], people[7]],
        description: "Crafting the narrative of Sabrang'25 and documenting its legacy for the world to see.",
        layout: "holographic",
        color: "bg-neutral-700"
      },
      {
        name: "Discipline",
-       people: [people[2], people[3]],
        description: "Ensuring a safe, smooth, and enjoyable experience for all attendees with professionalism and care.",
        layout: "dna-helix",
        color: "bg-neutral-700"
      },
      {
        name: "Decor",
-       people: [people[4], people[5]],
        description: "Transforming campus spaces into breathtaking thematic wonderlands that define the fest's atmosphere.",
        layout: "fractal-tree",
        color: "bg-neutral-700"
      },
      {
        name: "Internal Arrangements",
-       people: [people[13], people[14]],
        description: "Managing the logistical backbone of the fest to ensure every event runs flawlessly behind the scenes.",
        layout: "galaxy-cluster",
        color: "bg-neutral-700"
      },
      {
        name: "Transport",
-       people: [people[15]],
        description: "Coordinating the seamless movement of guests, participants, and materials to keep the fest on schedule.",
        layout: "wormhole",
        color: "bg-neutral-700"
      },
      {
        name: "Social Media",
-       people: [people[16]],
        description: "Amplifying the fest's buzz and engaging our online community with creative and timely content.",
        layout: "digital-rain",
        color: "bg-neutral-700"
      },
      {
        name: "Prize & Certificates",
-       people: [people[17]],
        description: "Recognizing and celebrating the incredible talent and achievement of all our participants.",
        layout: "crystal-lattice",
        color: "bg-neutral-700"
      },
      {
        name: "Hospitality",
-       people: [people[18]],
        description: "Providing a warm welcome and impeccable support to our esteemed guests, judges, and artists.",
        layout: "energy-field",
        color: "bg-neutral-700"
      },
      {
        name: "Stage & Venue",
-       people: [people[19]],
        description: "Setting the stage for unforgettable moments and managing the core infrastructure of our event spaces.",
        layout: "magnetic-field",
        color: "bg-neutral-700"
      },
      {
        name: "Registrations",
-       people: [people[21], people[22]],
        description: "Streamlining the entry point for all participants, ensuring a smooth and welcoming start to their fest journey.",
        layout: "particle-system",
        color: "bg-neutral-700"
      },
      {
        name: "Sponsorship & Promotion",
-       people: [people[23]],
        description: "Forging key partnerships and driving the promotional strategies that elevate the fest's reach and impact.",
        layout: "cosmic-field",
        color: "bg-neutral-700"
      },
      {
        name: "anchorz",
-       people: [people[24]],
        description: "Commanding the stage with charisma and energy, guiding the audience through the spectacular journey of Sabrang'25.",
        layout: "energy-field",
        color: "bg-neutral-700"
@@ -1058,12 +1093,11 @@ export default function PeopleStrip() {
           <div className="relative flex justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-12 w-full px-2 sm:px-4">
             {/* Connecting lines between cards */}
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-[300px] h-0.5 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-40" />
-            
-             {committee.people.map((person: Person, idx: number) => (
-               <PersonCard
-                 key={idx}
-                 person={person}
-                 cardId={`${committee.name}-${idx}`}
+            {(committee.people || []).filter(Boolean).map((person: Person, idx: number) => (
+              <PersonCard
+                key={idx}
+                person={person}
+                cardId={`${committee.name}-${idx}`}
                 className="w-[80px] sm:w-[100px] md:w-[120px] lg:w-[140px] xl:w-[160px] 2xl:w-[200px] flex-shrink-0 relative z-10"
                  animationDelay={idx * 400}
                  size="normal"
@@ -1115,10 +1149,9 @@ export default function PeopleStrip() {
             viewport={{ once: true }}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px] h-0.5 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-40 origin-center"
           />
-          
-           {committee.people.map((person: Person, idx: number) => (
+          {(committee.people || []).filter(Boolean).map((person: Person, idx: number) => (
             <motion.div
-               key={idx}
+              key={idx}
               initial={{ opacity: 0, y: 30, scale: 0.8 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 + idx * 0.2 }}
@@ -1136,8 +1169,8 @@ export default function PeopleStrip() {
                description={committee.description}
              />
             </motion.div>
-           ))}
-         </div>
+          ))}
+        </div>
       </div>
     );
   };
@@ -1155,26 +1188,33 @@ export default function PeopleStrip() {
        >
          {/* Floating particles background */}
          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-           {[...Array(20)].map((_, i) => (
-             <motion.div
-               key={i}
-               className="absolute w-2 h-2 bg-white/20 rounded-full"
-               style={{
-                 left: `${Math.random() * 100}%`,
-                 top: `${Math.random() * 100}%`,
-               }}
-               animate={{
-                 y: [0, -20, 0],
-                 opacity: [0.2, 0.8, 0.2],
-                 scale: [1, 1.5, 1],
-               }}
-               transition={{
-                 duration: 3 + Math.random() * 2,
-                 repeat: Infinity,
-                 delay: Math.random() * 2,
-               }}
-             />
-           ))}
+           {useMemo(() => {
+             let seed = 123456;
+             const rand = () => {
+               seed = (seed * 1664525 + 1013904223) % 4294967296;
+               return seed / 4294967296;
+             };
+             return Array.from({ length: 20 }).map((_, i) => (
+               <motion.div
+                 key={i}
+                 className="absolute w-2 h-2 bg-white/20 rounded-full"
+                 style={{
+                   left: `${rand() * 100}%`,
+                   top: `${rand() * 100}%`,
+                 }}
+                 animate={{
+                   y: [0, -20, 0],
+                   opacity: [0.2, 0.8, 0.2],
+                   scale: [1, 1.5, 1],
+                 }}
+                 transition={{
+                   duration: 3 + rand() * 2,
+                   repeat: Infinity,
+                   delay: rand() * 2,
+                 }}
+               />
+             ));
+           }, [])}
          </div>
 
         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 sm:mb-6 text-white drop-shadow-2xl tracking-widest uppercase relative z-10" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
@@ -1363,7 +1403,14 @@ export default function PeopleStrip() {
       {/* Committee Layouts - Row-based */}
       <div className="w-full max-w-7xl px-2 sm:px-4 space-y-16 relative z-10 perspective-1000 mx-auto">
         <div className="flex flex-col space-y-24">
-          {committeeData.map((committee) => renderCommitteeLayout(committee))}
+          {committeeData.map((committee) => {
+            const committeeWithPeople = {
+              ...committee,
+              people: people.filter(p => p.committee === committee.name)
+            };
+            if (committeeWithPeople.people.length === 0) return null;
+            return renderCommitteeLayout(committeeWithPeople);
+          })}
         </div>
       </div>
 
