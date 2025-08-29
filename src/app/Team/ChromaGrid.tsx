@@ -25,6 +25,11 @@ const HolographicCard = ({
   const [hoveredCard, setHoveredCard] = useState(false);
   const [activeCard, setActiveCard] = useState(false);
 
+  // Guard against undefined person during prerender
+  if (!person) {
+    return null;
+  }
+
   // Handle mouse events for flip card functionality
   const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
     setHoveredCard(true);
@@ -90,8 +95,8 @@ const HolographicCard = ({
                 <div className="relative mx-auto mb-4">
                   <div className={`relative w-36 h-36 rounded-lg overflow-hidden transition-all duration-500 ease-out transform-gpu ${hoveredCard ? 'scale-110 rotate-3' : 'scale-100'}`}>
                     <img
-                      src={person.img}
-                      alt={person.name}
+                      src={(person && person.img) ? person.img : '/images/Logo.svg'}
+                      alt={(person && person.name) ? person.name : 'Team member'}
                       className="w-full h-full object-cover transition-all duration-500"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
@@ -134,11 +139,11 @@ const HolographicCard = ({
               
               <div className="relative z-10 flex flex-col h-full items-center justify-center gap-4 text-center">
                 {/* Person's name - larger and more prominent */}
-                <h3 className="text-xl font-bold text-white drop-shadow-lg">{person.name}</h3>
+                <h3 className="text-xl font-bold text-white drop-shadow-lg">{person?.name ?? 'Team member'}</h3>
                 
                 {/* Role with better styling */}
                 <div className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg border border-white/30">
-                  <p className="text-sm font-semibold uppercase tracking-widest text-white">{person.role}</p>
+                  <p className="text-sm font-semibold uppercase tracking-widest text-white">{person?.role ?? ''}</p>
                 </div>
                 
                 {/* Divider */}
@@ -148,17 +153,17 @@ const HolographicCard = ({
                 <div className="space-y-3 w-full max-w-48">
                   <div className="flex items-center justify-center gap-3 p-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
                     <span className="text-lg">✉</span>
-                    <p className="text-sm font-medium text-white break-all">{person.contact}</p>
+                    <p className="text-sm font-medium text-white break-all">{person?.contact ?? ''}</p>
                   </div>
                   
                   <div className="flex items-center justify-center gap-3 p-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
                     <span className="text-lg">📱</span>
-                    <p className="text-sm font-medium text-white">{person.phone}</p>
+                    <p className="text-sm font-medium text-white">{person?.phone ?? ''}</p>
                   </div>
                   
                   <div className="flex items-center justify-center gap-3 p-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
                     <span className="text-lg">🏛</span>
-                    <p className="text-sm font-medium text-white">{person.committee}</p>
+                    <p className="text-sm font-medium text-white">{person?.committee ?? ''}</p>
                   </div>
                 </div>
                 
@@ -265,8 +270,8 @@ const ExpandedCard = ({
            <div className="lg:w-3/5 relative">
             <div className={`w-full h-full ${hoveredPerson.bg}`}>
               <img
-                src={hoveredPerson.img}
-                alt={hoveredPerson.name}
+                src={hoveredPerson?.img ?? '/images/Logo.svg'}
+                alt={hoveredPerson?.name ?? 'Team member'}
                 className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
               />
             </div>
@@ -280,7 +285,7 @@ const ExpandedCard = ({
                    opacity: isExpanded ? 1 : 0 
                  }}
                >
-                 {hoveredPerson.name}
+                 {hoveredPerson?.name ?? 'Team member'}
                </h2>
                <p 
                  className="text-lg lg:text-xl text-blue-300 mb-1 transition-all duration-700 ease-out delay-100 break-words"
@@ -289,7 +294,7 @@ const ExpandedCard = ({
                    opacity: isExpanded ? 1 : 0 
                  }}
                >
-                 {hoveredPerson.role}
+                 {hoveredPerson?.role ?? ''}
                </p>
                <p 
                  className="text-base text-gray-300 transition-all duration-700 ease-out delay-200 break-words"
@@ -298,7 +303,7 @@ const ExpandedCard = ({
                    opacity: isExpanded ? 1 : 0 
                  }}
                >
-                 {hoveredPerson.committee}
+                 {hoveredPerson?.committee ?? ''}
                </p>
              </div>
           </div>
@@ -324,7 +329,7 @@ const ExpandedCard = ({
                      </div>
                      <div className="min-w-0 flex-1">
                        <p className="text-sm text-gray-600">Email</p>
-                       <p className="text-blue-600 font-medium break-all">{hoveredPerson.contact}</p>
+                       <p className="text-blue-600 font-medium break-all">{hoveredPerson?.contact ?? ''}</p>
                      </div>
                    </div>
                   
@@ -336,7 +341,7 @@ const ExpandedCard = ({
                      </div>
                      <div className="min-w-0 flex-1">
                        <p className="text-sm text-gray-600">Phone</p>
-                       <p className="text-green-600 font-medium break-all">{hoveredPerson.phone}</p>
+                       <p className="text-green-600 font-medium break-all">{hoveredPerson?.phone ?? ''}</p>
                      </div>
                    </div>
                 </div>
@@ -354,11 +359,11 @@ const ExpandedCard = ({
                 <div className="space-y-3">
                                      <div className="p-3 bg-gray-50 rounded-lg">
                      <p className="text-sm text-gray-600">Position</p>
-                     <p className="text-gray-800 font-medium break-words">{hoveredPerson.role}</p>
+                     <p className="text-gray-800 font-medium break-words">{hoveredPerson?.role ?? ''}</p>
                    </div>
                    <div className="p-3 bg-gray-50 rounded-lg">
                      <p className="text-sm text-gray-600">Committee</p>
-                     <p className="text-gray-800 font-medium break-words">{hoveredPerson.committee}</p>
+                     <p className="text-gray-800 font-medium break-words">{hoveredPerson?.committee ?? ''}</p>
                    </div>
                 </div>
               </div>
@@ -780,7 +785,7 @@ export default function PeopleStrip() {
 
   // Organizing Heads section - uses first 3 people
   const totalCards = 3;
-  const cards = Array.from({ length: totalCards }, (_, i) => people[i % people.length]);
+  const cards = Array.from({ length: totalCards }, (_, i) => people[i % people.length]).filter(p => p && p.img);
 
   // Person Card Component with Hover to Expand
   const PersonCard = ({ 
@@ -987,19 +992,18 @@ export default function PeopleStrip() {
           <div className="relative flex justify-center items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 w-full px-2 sm:px-4">
             {/* Connecting lines between cards */}
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-[300px] h-0.5 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-40" />
-            
-             {committee.people.map((person: Person, idx: number) => (
-               <PersonCard
-                 key={idx}
-                 person={person}
-                 cardId={`${committee.name}-${idx}`}
+            {(committee.people || []).filter(Boolean).map((person: Person, idx: number) => (
+              <PersonCard
+                key={idx}
+                person={person}
+                cardId={`${committee.name}-${idx}`}
                 className="w-[80px] sm:w-[100px] md:w-[120px] lg:w-[140px] xl:w-[160px] 2xl:w-[200px] flex-shrink-0 relative z-10"
-                 animationDelay={idx * 400}
-                 size="normal"
-                 isCommitteeCard={true}
-               />
-             ))}
-           </div>
+                animationDelay={idx * 400}
+                size="normal"
+                isCommitteeCard={true}
+              />
+            ))}
+          </div>
         </div>
       );
     }
@@ -1076,10 +1080,9 @@ export default function PeopleStrip() {
             viewport={{ once: true }}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px] h-0.5 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-40 origin-center"
           />
-          
-           {committee.people.map((person: Person, idx: number) => (
+          {(committee.people || []).filter(Boolean).map((person: Person, idx: number) => (
             <motion.div
-               key={idx}
+              key={idx}
               initial={{ opacity: 0, y: 30, scale: 0.8 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 + idx * 0.2 }}
@@ -1088,16 +1091,16 @@ export default function PeopleStrip() {
               className="relative z-10"
             >
               <PersonCard
-               person={person}
-               cardId={`${committee.name}-${idx}`}
-               className="w-[80px] sm:w-[100px] md:w-[120px] lg:w-[140px] xl:w-[160px] 2xl:w-[200px] flex-shrink-0"
-               animationDelay={idx * 200}
-               size="normal"
-               isCommitteeCard={true}
-             />
+                person={person}
+                cardId={`${committee.name}-${idx}`}
+                className="w-[80px] sm:w-[100px] md:w-[120px] lg:w-[140px] xl:w-[160px] 2xl:w-[200px] flex-shrink-0"
+                animationDelay={idx * 200}
+                size="normal"
+                isCommitteeCard={true}
+              />
             </motion.div>
-           ))}
-         </div>
+          ))}
+        </div>
       </div>
     );
   };
