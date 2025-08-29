@@ -90,22 +90,23 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
       // Phase 1: Drawing the outline paths
       setCurrentPhase('drawing');
       
-      const drawingDuration = isMobile ? 1400 : 1800;
+      // On mobile, drastically reduce durations for near-instant navigation
+      const drawingDuration = isMobile ? 200 : 1800;
       phaseTimersRef.current.drawing = setTimeout(() => {
         // Phase 2: Filling the shapes
         setCurrentPhase('filling');
         
-        const fillingDuration = isMobile ? 1000 : 1200;
+        const fillingDuration = isMobile ? 200 : 1200;
         phaseTimersRef.current.filling = setTimeout(() => {
           // Phase 3: Complete infinity symbol
           setCurrentPhase('complete');
           
-          const completeDuration = isMobile ? 800 : 1000;
+          const completeDuration = isMobile ? 150 : 1000;
           phaseTimersRef.current.complete = setTimeout(() => {
             // Phase 4: Zoom effect
             setCurrentPhase('zoom');
             
-            const zoomDuration = isMobile ? 500 : 600;
+            const zoomDuration = isMobile ? 150 : 600;
             phaseTimersRef.current.zoom = setTimeout(() => {
               // Phase 5: Final transition
               setCurrentPhase('final');
@@ -120,7 +121,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
       }, drawingDuration);
     };
 
-    const startDelay = isMobile ? 200 : 250;
+    const startDelay = isMobile ? 50 : 250;
     animationRef.current = setTimeout(startAnimation, startDelay);
 
     return () => {
