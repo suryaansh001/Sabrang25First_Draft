@@ -540,9 +540,7 @@ export default function EventsPage() {
                       transition={{ duration: 0.8, delay: 0.3 }}
                       className="lg:hidden -mt-2 mb-4"
                     >
-                      <p className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-pink-400 to-cyan-300">
-                        Noorwana & Color to Cosmos
-                      </p>
+                     
                     </motion.div>
                     <motion.div 
                       initial={{ width: 0 }}
@@ -555,9 +553,7 @@ export default function EventsPage() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.8, delay: 0.6 }}
                       className="text-gray-300 text-lg max-w-md mx-auto"
-                    >
-                      It is a long established fact that a reader will be distracted by
-                    </motion.p>
+                    >Dive into the vibrant spirit of JKLU’s Cultural Fest – a celebration of art, music, dance, and creativity.</motion.p>
                   </div>
 
                   {/* Category Filters */}
@@ -684,15 +680,15 @@ export default function EventsPage() {
                             {/* Mysterious status */}
                             <div className="flex items-center justify-center space-x-2">
                               <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-ping" />
-                              <span className="text-xs font-mono text-green-400 uppercase tracking-widest animate-pulse">
+                              {/* <span className="text-xs font-mono text-green-400 uppercase tracking-widest animate-pulse">
                                 [REDACTED]
-                              </span>
+                              </span> */}
                             </div>
                             
                             {/* Mysterious button */}
                             <div className="inline-block px-4 py-2 bg-black/50 border border-green-400/50 rounded-sm backdrop-blur-sm hover:bg-green-400/20 transition-all duration-300 transform hover:scale-105 group">
                               <span className="text-xs font-bold text-green-400 uppercase tracking-widest" style={{ fontFamily: 'monospace' }}>
-                                ACCESS DENIED
+                                Coming Soon ..
                               </span>
                             </div>
                           </div>
