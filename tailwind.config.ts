@@ -8,6 +8,14 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'sans': ['TAN Nimbus', 'Poppins', 'ui-sans-serif', 'system-ui'],
+        'serif': ['TAN Nimbus', 'ui-serif', 'Georgia'],
+        'mono': ['TAN Nimbus', 'ui-monospace', 'SFMono-Regular'],
+        'tan-nimbus': ['TAN Nimbus', 'sans-serif'],
+        'display': ['TAN Nimbus', 'sans-serif'],
+        'body': ['TAN Nimbus', 'sans-serif'],
+      },
       animation: {
         'star-movement-bottom': 'star-movement-bottom linear infinite alternate',
         'star-movement-top': 'star-movement-top linear infinite alternate',

@@ -33,6 +33,54 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'TAN Nimbus';
+  src: url('/Font/TAN_Nimbus/TAN-NIMBUS.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TAN Nimbus';
+  src: url('/Font/TAN_Nimbus/TAN-NIMBUS.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TAN Nimbus';
+  src: url('/Font/TAN_Nimbus/TAN-NIMBUS.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TAN Nimbus';
+  src: url('/Font/TAN_Nimbus/TAN-NIMBUS.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TAN Nimbus';
+  src: url('/Font/TAN_Nimbus/TAN-NIMBUS.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TAN Nimbus';
+  src: url('/Font/TAN_Nimbus/TAN-NIMBUS.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 @import "tailwindcss";
 
 @tailwind base;
@@ -78,15 +126,47 @@
 body {
   background-color: #000000;
   color: var(--foreground);
-  font-family: 'Poppins', sans-serif;
+  font-family: 'TAN Nimbus', 'Poppins', sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
 }
 
+/* Apply TAN Nimbus font to all text elements */
+*, *::before, *::after {
+  font-family: 'TAN Nimbus', 'Poppins', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, label {
+  font-family: 'TAN Nimbus', 'Poppins', sans-serif;
+}
+
+/* Additional comprehensive font override */
+.font-tan-nimbus {
+  font-family: 'TAN Nimbus', sans-serif !important;
+}
+
+/* Override any specific font families that might be set elsewhere */
+.font-poppins,
+.font-unbounded,
+.font-bebas,
+.font-orbitron,
+.font-stardos,
+.font-anton,
+.font-tilt-neon {
+  font-family: 'TAN Nimbus', sans-serif !important;
+}
+
+/* Override Tailwind's default font families */
+.font-sans,
+.font-serif,
+.font-mono {
+  font-family: 'TAN Nimbus', 'Poppins', sans-serif !important;
+}
+
 /* Display font for big headers */
 .font-display {
-  font-family: 'Unbounded', cursive;
+  font-family: 'TAN Nimbus', cursive;
 }
 
 /* Soft neon text glow */
@@ -96,7 +176,7 @@ body {
 
 /* Hero title styles */
 .font-hero-main {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'TAN Nimbus', sans-serif;
   letter-spacing: 1px;
   line-height: 0.9;
 }
@@ -107,7 +187,7 @@ body {
 }
 
 .font-hero-year {
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'TAN Nimbus', sans-serif;
 }
 
 .hero-year-style {
