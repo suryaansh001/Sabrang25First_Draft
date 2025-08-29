@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 
 // Define the Person type interface
@@ -694,85 +694,85 @@ export default function PeopleStrip() {
    const committeeData = [
      {
        name: "Photography",
-       people: [people[9], people[10]],
+       people: [people[8], people[9]],
        layout: "time-vortex",
        color: "bg-neutral-700"
      },
      {
        name: "Cultural",
-       people: [people[11], people[12]],
+       people: [people[10], people[11]],
        layout: "cosmic-dance",
        color: "bg-neutral-700"
      },
      {
        name: "Technical",
-       people: [people[13]],
+       people: [people[12]],
        layout: "matrix-code",
        color: "bg-neutral-700"
      },
      {
        name: "Media & Report",
-       people: [people[7], people[8]],
+       people: [people[6], people[7]],
        layout: "holographic",
        color: "bg-neutral-700"
      },
      {
        name: "Discipline",
-       people: [people[3], people[4]],
+       people: [people[2], people[3]],
        layout: "dna-helix",
        color: "bg-neutral-700"
      },
      {
        name: "Decor",
-       people: [people[5], people[6]],
+       people: [people[4], people[5]],
        layout: "fractal-tree",
        color: "bg-neutral-700"
      },
      {
        name: "Internal Arrangements",
-       people: [people[14], people[15]],
+       people: [people[13], people[14]],
        layout: "galaxy-cluster",
        color: "bg-neutral-700"
      },
      {
        name: "Transport",
-       people: [people[16]],
+       people: [people[15]],
        layout: "wormhole",
        color: "bg-neutral-700"
      },
      {
        name: "Social Media",
-       people: [people[17]],
+       people: [people[16]],
        layout: "digital-rain",
        color: "bg-neutral-700"
      },
      {
        name: "Prize & Certificates",
-       people: [people[18]],
+       people: [people[17]],
        layout: "crystal-lattice",
        color: "bg-neutral-700"
      },
      {
        name: "Hospitality",
-       people: [people[19]],
+       people: [people[18]],
        layout: "energy-field",
        color: "bg-neutral-700"
      },
      {
        name: "Stage & Venue",
-       people: [people[20], people[21]],
+       people: [people[19], people[20]],
        layout: "magnetic-field",
        color: "bg-neutral-700"
      },
      {
        name: "Registrations",
-       people: [people[22], people[23]],
+       people: [people[21], people[22]],
        layout: "particle-system",
        color: "bg-neutral-700"
      },
      {
        name: "Sponsorship & Promotion",
-       people: [people[24]],
+       people: [people[23]],
        layout: "cosmic-field",
        color: "bg-neutral-700"
      }
@@ -1115,26 +1115,33 @@ export default function PeopleStrip() {
        >
          {/* Floating particles background */}
          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-           {[...Array(20)].map((_, i) => (
-             <motion.div
-               key={i}
-               className="absolute w-2 h-2 bg-white/20 rounded-full"
-               style={{
-                 left: `${Math.random() * 100}%`,
-                 top: `${Math.random() * 100}%`,
-               }}
-               animate={{
-                 y: [0, -20, 0],
-                 opacity: [0.2, 0.8, 0.2],
-                 scale: [1, 1.5, 1],
-               }}
-               transition={{
-                 duration: 3 + Math.random() * 2,
-                 repeat: Infinity,
-                 delay: Math.random() * 2,
-               }}
-             />
-           ))}
+           {useMemo(() => {
+             let seed = 123456;
+             const rand = () => {
+               seed = (seed * 1664525 + 1013904223) % 4294967296;
+               return seed / 4294967296;
+             };
+             return Array.from({ length: 20 }).map((_, i) => (
+               <motion.div
+                 key={i}
+                 className="absolute w-2 h-2 bg-white/20 rounded-full"
+                 style={{
+                   left: `${rand() * 100}%`,
+                   top: `${rand() * 100}%`,
+                 }}
+                 animate={{
+                   y: [0, -20, 0],
+                   opacity: [0.2, 0.8, 0.2],
+                   scale: [1, 1.5, 1],
+                 }}
+                 transition={{
+                   duration: 3 + rand() * 2,
+                   repeat: Infinity,
+                   delay: rand() * 2,
+                 }}
+               />
+             ));
+           }, [])}
          </div>
 
         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 sm:mb-6 text-white drop-shadow-2xl tracking-widest uppercase relative z-10" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>

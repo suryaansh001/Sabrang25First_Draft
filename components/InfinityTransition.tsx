@@ -110,7 +110,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
               // Phase 5: Final transition
               setCurrentPhase('final');
               
-              const finalDelay = isMobile ? 800 : 900;
+              const finalDelay = 0;
               phaseTimersRef.current.final = setTimeout(() => {
                 onComplete();
               }, finalDelay);
