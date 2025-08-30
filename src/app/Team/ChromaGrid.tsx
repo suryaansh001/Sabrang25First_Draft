@@ -61,12 +61,21 @@ const HolographicCard = ({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {/* Holographic Border */}
+        {/* Thick Holographic Border with Name */}
         <div className={`
-          absolute -inset-0.5 rounded-lg opacity-75 transition-all duration-500 
-          bg-gradient-to-r from-purple-500/30 via-pink-500/30 to-blue-500/30 blur-sm
+          absolute -inset-1 rounded-lg opacity-75 transition-all duration-500 
+          bg-gradient-to-r from-purple-500/40 via-pink-500/40 to-blue-500/40 blur-sm
           ${hoveredCard ? 'opacity-100 animate-pulse' : ''}
         `} />
+        
+        {/* Name on Border - Top */}
+        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
+          <div className="bg-gradient-to-r from-purple-500/90 via-pink-500/90 to-blue-500/90 px-3 py-1 rounded-full border-2 border-white/30 backdrop-blur-sm">
+            <h3 className={`text-xs sm:text-sm font-bold text-white whitespace-nowrap transition-all duration-300 ${hoveredCard ? 'scale-105' : ''}`}>
+              {person.name || 'Unknown'}
+            </h3>
+          </div>
+        </div>
 
         {/* Flip Card Container */}
         <div className="relative h-80 w-full sm:h-96 sm:w-72 perspective-1000">
@@ -76,8 +85,8 @@ const HolographicCard = ({
               transform: hoveredCard ? 'rotateY(180deg)' : 'rotateY(0deg)'
             }}
           >
-            {/* FRONT - Image with Name */}
-            <div className={`absolute inset-0 w-full h-full rounded-lg backdrop-blur-xl bg-white/10 border border-white/20 overflow-hidden shadow-2xl backface-hidden transition-opacity duration-300 ${hoveredCard ? 'opacity-0' : 'opacity-100'}`}>
+            {/* FRONT - Image Only */}
+            <div className={`absolute inset-0 w-full h-full rounded-lg backdrop-blur-xl bg-white/10 border-4 border-white/30 overflow-hidden shadow-2xl backface-hidden transition-opacity duration-300 ${hoveredCard ? 'opacity-0' : 'opacity-100'}`}>
               {/* Main Image */}
               <img
                 src={person.img || '/images/building-6011756_1280.jpg'}
@@ -90,11 +99,11 @@ const HolographicCard = ({
                 }}
               />
               
-              {/* Subtle overlay for better text contrast */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              {/* Subtle overlay for better image quality */}
+              <div className="absolute inset-0 bg-black/5" />
               
-              {/* Name overlay at bottom */}
-              <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
+              {/* Hidden name overlay - keeping in code but not displaying */}
+              <div className="hidden absolute bottom-0 left-0 right-0 p-3 text-white">
                 <div className="text-center">
                   <h3 className={`text-sm sm:text-base font-bold text-white transition-all duration-300 ${hoveredCard ? 'scale-105' : ''}`}>
                     {person.name || 'Unknown'}
@@ -119,7 +128,7 @@ const HolographicCard = ({
 
             {/* BACK */}
                         {/* BACK - Social Media Links */}
-            <div className={`absolute inset-0 w-full h-full rounded-lg border border-white/30 overflow-hidden shadow-2xl text-white p-4 sm:p-6 backface-hidden rotate-y-180 transition-opacity duration-300 ${hoveredCard ? 'opacity-100' : 'opacity-0'}`} style={{ transform: 'rotateY(180deg)' }}>
+            <div className={`absolute inset-0 w-full h-full rounded-lg border-4 border-white/40 overflow-hidden shadow-2xl text-white p-4 sm:p-6 backface-hidden rotate-y-180 transition-opacity duration-300 ${hoveredCard ? 'opacity-100' : 'opacity-0'}`} style={{ transform: 'rotateY(180deg)' }}>
               {/* Enhanced background with person's image as backdrop */}
               <div className="absolute inset-0">
                 <img
