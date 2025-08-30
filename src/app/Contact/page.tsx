@@ -233,7 +233,7 @@ const Contact = () => {
           </div>
         </section>
 
-        Footer with proper z-index
+       
         <div className="relative z-10">
           <Footer />
         </div>
