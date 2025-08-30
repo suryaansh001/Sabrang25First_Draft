@@ -300,7 +300,7 @@ const Gallery = () => {
         
         {/* Navigation Buttons - mobile optimized positioning */}
         {/* Left Navigation Button (Previous) */}
-        <div className="absolute left-2 sm:left-4 lg:left-8 top-1/2 transform -translate-y-1/2 z-20">
+        <div className="absolute left-2 sm:left-4 lg:left-auto lg:right-28 top-1/2 transform -translate-y-1/2 z-20">
           <button
             onClick={goToPrevious}
             disabled={isTransitioning}
