@@ -299,7 +299,8 @@ const Gallery = () => {
         </div>
         
         {/* Navigation Buttons - mobile optimized positioning */}
-        <div className="absolute right-2 sm:right-4 lg:right-8 top-1/2 transform -translate-y-1/2 flex flex-col space-y-2 lg:space-y-4 z-20">
+        {/* Left Navigation Button (Previous) */}
+        <div className="absolute left-2 sm:left-4 lg:left-8 top-1/2 transform -translate-y-1/2 z-20">
           <button
             onClick={goToPrevious}
             disabled={isTransitioning}
@@ -314,7 +315,10 @@ const Gallery = () => {
             </div>
             <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-500 rounded-full blur opacity-0 group-hover:opacity-75 transition-opacity duration-500 -z-10"></div>
           </button>
+        </div>
 
+        {/* Right Navigation Button (Next) */}
+        <div className="absolute right-2 sm:right-4 lg:right-8 top-1/2 transform -translate-y-1/2 z-20">
           <button
             onClick={goToNext}
             disabled={isTransitioning}

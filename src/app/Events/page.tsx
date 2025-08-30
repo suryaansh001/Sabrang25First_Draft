@@ -564,28 +564,28 @@ export default function EventsPage() {
                     className="mb-8 lg:mb-12"
                   >
                     <div className="text-center mb-4 lg:mb-6">
-                      <h3 className="text-xl lg:text-2xl font-bold text-white mb-3 lg:mb-4 flex items-center justify-center">
-                        <Filter className="w-5 h-5 lg:w-6 lg:h-6 mr-2" />
+                      <h3 className="text-base lg:text-2xl font-bold text-white mb-3 lg:mb-4 flex items-center justify-center">
+                        <Filter className="w-4 h-4 lg:w-6 lg:h-6 mr-2" />
                         Filter by Category
                       </h3>
                     </div>
-                    <div className="grid grid-cols-2 lg:flex lg:flex-wrap justify-center gap-2 lg:gap-4 px-4 lg:px-0">
-                      {categories.map((category) => (
-                        <motion.button
-                          key={category.value}
-                          onClick={() => setSelectedCategory(category.value)}
-                          className={`px-3 lg:px-6 py-2 lg:py-3 rounded-full text-sm lg:text-base font-medium transition-all duration-300 transform hover:scale-105 ${
-                            selectedCategory === category.value
-                              ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
-                              : 'bg-white/20 text-white border border-white/30 hover:bg-white/30'
-                          }`}
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          {category.name}
-                        </motion.button>
-                      ))}
-                    </div>
+                                         <div className="flex flex-nowrap justify-start lg:justify-center gap-1.5 lg:gap-4 px-4 lg:px-0 overflow-x-auto pb-2 lg:pb-0">
+                       {categories.map((category) => (
+                         <motion.button
+                           key={category.value}
+                           onClick={() => setSelectedCategory(category.value)}
+                           className={`filter-button-mobile flex-shrink-0 px-2 lg:px-6 py-1 lg:py-3 rounded-full text-xs lg:text-base font-medium transition-all duration-300 transform hover:scale-105 ${
+                             selectedCategory === category.value
+                               ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                               : 'bg-white/20 text-white border border-white/30 hover:bg-white/30'
+                           }`}
+                           whileHover={{ scale: 1.05 }}
+                           whileTap={{ scale: 0.95 }}
+                         >
+                           {category.name}
+                         </motion.button>
+                       ))}
+                     </div>
                   </motion.div>
 
                   {/* Events Grid - card with image and bottom info */}
@@ -628,7 +628,7 @@ export default function EventsPage() {
                         </div>
 
                         {/* --- MYSTERIOUS & SUSPENSEFUL OVERLAY --- */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-slate-800 overflow-hidden p-4 flex flex-col justify-between">
+                        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-slate-800 overflow-hidden p-2 md:p-4 flex flex-col justify-between">
                           
                           {/* Mysterious grid pattern */}
                           <div className="absolute inset-0 opacity-5" style={{
@@ -642,14 +642,14 @@ export default function EventsPage() {
 
                           {/* Top section - Mysterious badge */}
                           <div className="relative z-10 flex justify-between items-start">
-                            <div className="px-3 py-1 bg-black/50 border border-green-400/50 rounded-sm backdrop-blur-sm">
-                              <span className="text-xs font-bold text-green-400 uppercase tracking-widest" style={{ fontFamily: 'monospace' }}>
+                            <div className="px-2 md:px-3 py-0.5 md:py-1 bg-black/50 border border-green-400/50 rounded-sm backdrop-blur-sm">
+                              <span className="text-[10px] md:text-xs font-bold text-green-400 uppercase tracking-widest" style={{ fontFamily: 'monospace' }}>
                                 {event.isFlagship ? '⚡ CLASSIFIED' : event.category}
                               </span>
                             </div>
                             {event.isFlagship && (
-                              <div className="w-6 h-6 bg-gradient-to-r from-green-400 to-blue-400 rounded-sm border border-green-400/50 flex items-center justify-center animate-pulse">
-                                <span className="text-xs">🔒</span>
+                              <div className="w-4 h-4 md:w-6 md:h-6 bg-gradient-to-r from-green-400 to-blue-400 rounded-sm border border-green-400/50 flex items-center justify-center animate-pulse">
+                                <span className="text-[8px] md:text-xs">🔒</span>
                               </div>
                             )}
                           </div>
@@ -661,11 +661,11 @@ export default function EventsPage() {
                               <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 via-transparent to-red-400/20 animate-pulse opacity-50" />
                               
                               {/* Main title with neon effect */}
-                              <h3 className="relative font-bold text-lg md:text-xl text-white px-2 uppercase tracking-widest leading-tight" 
+                              <h3 className="relative font-bold text-sm md:text-lg lg:text-xl text-white px-1 md:px-2 uppercase tracking-widest leading-tight" 
                                   style={{ 
                                     textShadow: '0 0 10px rgba(0, 255, 136, 0.8), 0 0 20px rgba(0, 255, 136, 0.4)',
                                     fontFamily: 'monospace',
-                                    letterSpacing: '0.3em'
+                                    letterSpacing: '0.2em'
                                   }}>
                                 {event.title}
                               </h3>
@@ -676,18 +676,15 @@ export default function EventsPage() {
                           </div>
 
                           {/* Bottom section - Suspenseful elements */}
-                          <div className="relative z-10 text-center space-y-3">
+                          <div className="relative z-10 text-center space-y-2 md:space-y-3">
                             {/* Mysterious status */}
                             <div className="flex items-center justify-center space-x-2">
-                              <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-ping" />
-                              {/* <span className="text-xs font-mono text-green-400 uppercase tracking-widest animate-pulse">
-                                [REDACTED]
-                              </span> */}
+                              <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-green-400 rounded-full animate-ping" />
                             </div>
                             
                             {/* Mysterious button */}
-                            <div className="inline-block px-4 py-2 bg-black/50 border border-green-400/50 rounded-sm backdrop-blur-sm hover:bg-green-400/20 transition-all duration-300 transform hover:scale-105 group">
-                              <span className="text-xs font-bold text-green-400 uppercase tracking-widest" style={{ fontFamily: 'monospace' }}>
+                            <div className="inline-block px-2 md:px-4 py-1 md:py-2 bg-black/50 border border-green-400/50 rounded-sm backdrop-blur-sm hover:bg-green-400/20 transition-all duration-300 transform hover:scale-105 group">
+                              <span className="text-[10px] md:text-xs font-bold text-green-400 uppercase tracking-widest" style={{ fontFamily: 'monospace' }}>
                                 Coming Soon ..
                               </span>
                             </div>
@@ -698,14 +695,14 @@ export default function EventsPage() {
                           <div className="absolute inset-0 border border-red-400/20 rounded-lg animate-pulse opacity-50" />
                           
                           {/* Mysterious corner elements */}
-                          <div className="absolute top-2 left-2 w-2 h-2 border-l border-t border-green-400" />
-                          <div className="absolute top-2 right-2 w-2 h-2 border-r border-t border-red-400" />
-                          <div className="absolute bottom-2 left-2 w-2 h-2 border-l border-b border-red-400" />
-                          <div className="absolute bottom-2 right-2 w-2 h-2 border-r border-b border-green-400" />
+                          <div className="absolute top-1 md:top-2 left-1 md:left-2 w-1.5 md:w-2 h-1.5 md:h-2 border-l border-t border-green-400" />
+                          <div className="absolute top-1 md:top-2 right-1 md:right-2 w-1.5 md:w-2 h-1.5 md:h-2 border-r border-t border-red-400" />
+                          <div className="absolute bottom-1 md:bottom-2 left-1 md:left-2 w-1.5 md:w-2 h-1.5 md:h-2 border-l border-b border-red-400" />
+                          <div className="absolute bottom-1 md:bottom-2 right-1 md:right-2 w-1.5 md:w-2 h-1.5 md:h-2 border-r border-b border-green-400" />
                           
                           {/* Floating particles */}
-                          <div className="absolute top-1/3 left-1/4 w-1 h-1 bg-green-400 rounded-full animate-ping delay-500" />
-                          <div className="absolute bottom-1/3 right-1/4 w-1 h-1 bg-red-400 rounded-full animate-ping delay-1000" />
+                          <div className="absolute top-1/3 left-1/4 w-0.5 md:w-1 h-0.5 md:h-1 bg-green-400 rounded-full animate-ping delay-500" />
+                          <div className="absolute bottom-1/3 right-1/4 w-0.5 md:w-1 h-0.5 md:h-1 bg-red-400 rounded-full animate-ping delay-1000" />
                         </div>
                       </motion.div>
                     ))}
@@ -826,6 +823,30 @@ const customStyles = `
   
   .event-card-wave {
     animation: wave 4s ease-in-out infinite;
+  }
+  
+  /* Hide scrollbar for mobile filter buttons */
+  .overflow-x-auto::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .overflow-x-auto {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  /* Ensure buttons are properly sized for mobile scrolling */
+  @media (max-width: 768px) {
+    .filter-button-mobile {
+      min-width: auto;
+      white-space: nowrap;
+      scroll-snap-align: start;
+    }
+    
+    .overflow-x-auto {
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+    }
   }
 `;
 

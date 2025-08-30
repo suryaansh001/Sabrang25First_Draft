@@ -251,7 +251,7 @@ const FAQ = () => {
       <div className="relative z-10 pb-16 flex-grow">
         {/* Hero Section */}
         <section 
-          className="min-h-screen flex items-center justify-center relative px-4 sm:px-6"
+          className="min-h-[60vh] sm:min-h-screen flex items-center justify-center relative px-4 sm:px-6"
         >
           <div className="max-w-7xl mx-auto text-center relative z-10 px-4 sm:px-6">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold mb-6 sm:mb-8 leading-tight">
@@ -276,10 +276,10 @@ const FAQ = () => {
         </section>
 
         {/* FAQ Section */}
-        <section className="py-8 sm:py-16 md:py-12 px-4 sm:px-6">
+        <section className="py-4 sm:py-16 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
             {/* Section Header + divider */}
-            <div className="text-center mb-10 sm:mb-14">
+            <div className="text-center mb-8 sm:mb-14">
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
                   Got Questions?
@@ -291,7 +291,7 @@ const FAQ = () => {
                   Contact us directly
                 </button>
               </p>
-              <div className="mt-8 flex items-center justify-center">
+              <div className="mt-6 sm:mt-8 flex items-center justify-center">
                 <div className="h-px w-24 bg-gradient-to-r from-transparent via-purple-400/70 to-transparent" />
               </div>
             </div>

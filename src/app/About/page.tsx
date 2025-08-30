@@ -244,10 +244,10 @@ const AboutPage = () => {
             </div>
             
             {/* Three Vertical Parallel Videos with Image Fallbacks */}
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-3 gap-2 md:grid-cols-3 md:gap-8">
                              {/* Panache Video */}
-               <div className="relative group h-[600px]">
-                 <div className="absolute inset-0 overflow-hidden rounded-2xl">
+               <div className="relative group h-[300px] md:h-[600px]">
+                 <div className="absolute inset-0 overflow-hidden rounded-lg md:rounded-2xl">
                    {/* Image Fallback - Always visible */}
                    <img 
                      src="/images/about-section/Panache.png" 
@@ -276,14 +276,14 @@ const AboutPage = () => {
                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                  </div>
                  <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
-                   <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Panache</h3>
-                   <p className="text-xl text-gray-200 drop-shadow-lg">Glamorous fashion show</p>
+                   <h3 className="text-lg md:text-4xl font-bold text-white mb-2 md:mb-4 drop-shadow-lg">Panache</h3>
+                   <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg">Glamorous fashion show</p>
                  </div>
                </div>
                
                {/* Band Jam Video */}
-               <div className="relative group h-[600px]">
-                 <div className="absolute inset-0 overflow-hidden rounded-2xl">
+               <div className="relative group h-[300px] md:h-[600px]">
+                 <div className="absolute inset-0 overflow-hidden rounded-lg md:rounded-2xl">
                    {/* Image Fallback - Always visible */}
                    <img 
                      src="/images/about-section/Bandjam.png" 
@@ -312,14 +312,14 @@ const AboutPage = () => {
                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                  </div>
                  <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
-                   <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Band Jam</h3>
-                   <p className="text-xl text-gray-200 drop-shadow-lg">Electrifying music</p>
+                   <h3 className="text-lg md:text-4xl font-bold text-white mb-2 md:mb-4 drop-shadow-lg">Band Jam</h3>
+                   <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg">Electrifying music</p>
                  </div>
                </div>
                
                {/* Dance Battle Video */}
-               <div className="relative group h-[600px]">
-                 <div className="absolute inset-0 overflow-hidden rounded-2xl">
+               <div className="relative group h-[300px] md:h-[600px]">
+                 <div className="absolute inset-0 overflow-hidden rounded-lg md:rounded-2xl">
                    {/* Image Fallback - Always visible */}
                    <img 
                      src="/images/about-section/Dance.png" 
@@ -348,51 +348,51 @@ const AboutPage = () => {
                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                  </div>
                  <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
-                   <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg">Dance Battle</h3>
-                   <p className="text-xl text-gray-200 drop-shadow-lg">Ultimate dance glory</p>
+                   <h3 className="text-lg md:text-4xl font-bold text-white mb-2 md:mb-4 drop-shadow-lg">Dance Battle</h3>
+                   <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg">Ultimate dance glory</p>
                  </div>
                </div>
             </div>
 
             {/* Additional Flagship Cards */}
-            <div className="mt-12 grid md:grid-cols-4 gap-6">
+            <div className="mt-12 grid grid-cols-3 gap-4 md:grid-cols-4 md:gap-6">
               {/* Nukkad Natak */}
-              <div className="relative group h-[280px] bg-gradient-to-br from-orange-600 to-red-600 rounded-2xl overflow-hidden">
+              <div className="relative group h-[180px] md:h-[280px] bg-gradient-to-br from-orange-600 to-red-600 rounded-xl md:rounded-2xl overflow-hidden">
                 <div className="absolute inset-0 bg-black/25" />
                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
                   <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Nukkad Natak</h3>
-                  <p className="text-sm text-gray-200">Street theatre showcase</p>
+                  <h3 className="text-base md:text-2xl font-bold text-white mb-2">Nukkad Natak</h3>
+                  <p className="text-xs md:text-sm text-gray-200">Street theatre showcase</p>
                 </div>
               </div>
 
               {/* Spotlight */}
-              <div className="relative group h-[280px] bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl overflow-hidden">
+              <div className="relative group h-[180px] md:h-[280px] bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl md:rounded-2xl overflow-hidden">
                 <div className="absolute inset-0 bg-black/25" />
                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
                   <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Spotlight</h3>
-                  <p className="text-sm text-gray-200">Acting excellence</p>
+                  <h3 className="text-base md:text-2xl font-bold text-white mb-2">Spotlight</h3>
+                  <p className="text-xs md:text-sm text-gray-200">Acting excellence</p>
                 </div>
               </div>
 
               {/* Singing Palooza */}
-              <div className="relative group h-[280px] bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl overflow-hidden">
+              <div className="relative group h-[180px] md:h-[280px] bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl md:rounded-2xl overflow-hidden">
                 <div className="absolute inset-0 bg-black/25" />
                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
                   <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Singing Palooza</h3>
-                  <p className="text-sm text-gray-200">Vocal mastery</p>
+                  <h3 className="text-base md:text-2xl font-bold text-white mb-2">Singing Palooza</h3>
+                  <p className="text-xs md:text-sm text-gray-200">Vocal mastery</p>
                 </div>
               </div>
 
               {/* Step Up */}
-              <div className="relative group h-[280px] bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl overflow-hidden">
+              <div className="relative group h-[180px] md:h-[280px] bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl md:rounded-2xl overflow-hidden">
                 <div className="absolute inset-0 bg-black/25" />
                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
                   <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Step Up</h3>
-                  <p className="text-sm text-gray-200">Group dance energy</p>
+                  <h3 className="text-base md:text-2xl font-bold text-white mb-2">Step Up</h3>
+                  <p className="text-xs md:text-sm text-gray-200">Group dance energy</p>
                 </div>
               </div>
             </div>
@@ -420,7 +420,7 @@ const AboutPage = () => {
                   {[
                     'DJ Night: Dance till dawn',
                     'Mini Games Arena',
-                    'Wall of Goodness'
+                    'Pre Sabrang Events',
                   ].map((item, index) => (
                     <div key={index} className="flex items-center space-x-3 p-4">
                       <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
