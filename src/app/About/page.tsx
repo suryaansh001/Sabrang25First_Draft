@@ -213,19 +213,21 @@ const AboutPage = () => {
                     (Overpowered)
                   </span>
                 </h2>
-                <div className="space-y-4">
-                  {[
-                    '₹3,00,000+ in prizes for winners and top performers',
-                    'Flagship competitions that push creativity and skill',
-                    'National-level participation',
-                    'Immersive themes every year',
-                    'Epic nights with DJs, live bands, and celebrities'
-                  ].map((item, index) => (
-                    <div key={index} className="flex items-center justify-center space-x-3">
-                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                      <span className="text-gray-300 text-lg">{item}</span>
-                    </div>
-                  ))}
+                <div className="flex justify-center px-4">
+                  <div className="space-y-4 text-left">
+                    {[
+                      '₹3,00,000+ in prizes for winners and top performers',
+                      'Flagship competitions that push creativity and skill',
+                      'National-level participation',
+                      'Immersive themes every year',
+                      'Epic nights with DJs, live bands, and celebrities'
+                    ].map((item, index) => (
+                      <div key={index} className="flex items-start space-x-3">
+                        <div className="w-2 h-2 bg-green-400 rounded-full flex-shrink-0 mt-2"></div>
+                        <span className="text-gray-300 text-lg">{item}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -244,9 +246,9 @@ const AboutPage = () => {
             </div>
             
             {/* Three Vertical Parallel Videos with Image Fallbacks */}
-            <div className="grid grid-cols-3 gap-2 md:grid-cols-3 md:gap-8">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-8">
                              {/* Panache Video */}
-               <div className="relative group h-[300px] md:h-[600px]">
+               <div className="relative group h-[240px] md:h-[600px]">
                  <div className="absolute inset-0 overflow-hidden rounded-lg md:rounded-2xl">
                    {/* Image Fallback - Always visible */}
                    <img 
@@ -282,7 +284,7 @@ const AboutPage = () => {
                </div>
                
                {/* Band Jam Video */}
-               <div className="relative group h-[300px] md:h-[600px]">
+               <div className="relative group h-[240px] md:h-[600px]">
                  <div className="absolute inset-0 overflow-hidden rounded-lg md:rounded-2xl">
                    {/* Image Fallback - Always visible */}
                    <img 
@@ -318,7 +320,7 @@ const AboutPage = () => {
                </div>
                
                {/* Dance Battle Video */}
-               <div className="relative group h-[300px] md:h-[600px]">
+               <div className="relative group h-[240px] md:h-[600px]">
                  <div className="absolute inset-0 overflow-hidden rounded-lg md:rounded-2xl">
                    {/* Image Fallback - Always visible */}
                    <img 
@@ -355,7 +357,7 @@ const AboutPage = () => {
             </div>
 
             {/* Additional Flagship Cards */}
-            <div className="mt-12 grid grid-cols-3 gap-4 md:grid-cols-4 md:gap-6">
+            <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
               {/* Nukkad Natak */}
               <div className="relative group h-[180px] md:h-[280px] bg-gradient-to-br from-orange-600 to-red-600 rounded-xl md:rounded-2xl overflow-hidden">
                 <div className="absolute inset-0 bg-black/25" />
