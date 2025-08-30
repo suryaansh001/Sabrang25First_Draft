@@ -63,9 +63,9 @@ const HolographicCard = ({
       >
         {/* Holographic Border */}
         <div className={`
-          absolute -inset-0.5 rounded-3xl opacity-75 transition-all duration-500 
-          bg-neutral-800 blur-sm
-          ${hoveredCard ? 'animate-pulse' : ''}
+          absolute -inset-0.5 rounded-lg opacity-75 transition-all duration-500 
+          bg-gradient-to-r from-purple-500/30 via-pink-500/30 to-blue-500/30 blur-sm
+          ${hoveredCard ? 'opacity-100 animate-pulse' : ''}
         `} />
 
         {/* Flip Card Container */}
@@ -76,79 +76,98 @@ const HolographicCard = ({
               transform: hoveredCard ? 'rotateY(180deg)' : 'rotateY(0deg)'
             }}
           >
-            {/* FRONT */}
+            {/* FRONT - Image with Name */}
             <div className={`absolute inset-0 w-full h-full rounded-lg backdrop-blur-xl bg-white/10 border border-white/20 overflow-hidden shadow-2xl backface-hidden transition-opacity duration-300 ${hoveredCard ? 'opacity-0' : 'opacity-100'}`}>
-              {/* Animated Background Elements */}
-              <div className="absolute inset-0 overflow-hidden">
-                {/* Morphing Shapes */}
-                <div className={`absolute top-4 right-4 w-16 h-16 bg-white/10 rounded-full transition-all duration-700 ease-out ${hoveredCard ? 'scale-150 translate-x-4 -translate-y-2' : 'scale-100'}`} />
-                <div className={`absolute bottom-4 left-4 w-12 h-12 bg-white/5 rounded-full transition-all duration-500 ease-out ${hoveredCard ? 'scale-200 translate-x-8 translate-y-4' : 'scale-100'}`} />
-              </div>
-
-              {/* Card Content */}
-              <div className="relative z-10 p-4 sm:p-6 h-full flex flex-col items-center justify-center">
-                {/* Avatar Section */}
-                <div className="relative mb-2 sm:mb-4 flex-shrink-0">
-                  <div className={`relative w-24 h-24 sm:w-40 sm:h-40 rounded-lg overflow-hidden transition-all duration-500 ease-out transform-gpu ${hoveredCard ? 'scale-110 rotate-3' : 'scale-100'}`}>
-                    <img
-                      src={person.img || '/images/building-6011756_1280.jpg'}
-                      alt={person.name || 'Team Member'}
-                      className="w-full h-full object-cover transition-all duration-500"
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).src = '/images/Logo.svg';
-                        e.currentTarget.classList.remove('object-cover');
-                        e.currentTarget.classList.add('object-contain');
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent to-white/20" />
-                  </div>
-                  {/* Floating Ring */}
-                  <div className={`absolute -inset-3 border-2 border-white/30 rounded-lg transition-all duration-700 ease-out ${hoveredCard ? 'scale-125 rotate-12 opacity-100' : 'scale-100 opacity-0'}`} />
-                </div>
-
-                {/* Member Info */}
-                <div className="text-center text-white flex-grow flex flex-col justify-center">
-                  <h3 className={`text-sm sm:text-lg font-bold mb-1 sm:mb-2 transition-all duration-300 ${hoveredCard ? 'text-white scale-105' : 'text-white/90'}`}>
+              {/* Main Image */}
+              <img
+                src={person.img || '/images/building-6011756_1280.jpg'}
+                alt={person.name || 'Team Member'}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = '/images/Logo.svg';
+                  e.currentTarget.classList.remove('object-cover');
+                  e.currentTarget.classList.add('object-contain');
+                }}
+              />
+              
+              {/* Subtle overlay for better text contrast */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              
+              {/* Name overlay at bottom */}
+              <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
+                <div className="text-center">
+                  <h3 className={`text-sm sm:text-base font-bold text-white transition-all duration-300 ${hoveredCard ? 'scale-105' : ''}`}>
                     {person.name || 'Unknown'}
                   </h3>
-                  <p className="text-xs font-semibold opacity-80 mb-1 sm:mb-3 uppercase tracking-widest text-purple-200">
-                    {person.role || 'Member'}
-                  </p>
-                  {/* Responsive description for mobile (full) and desktop (clamped) */}
-                  <p className="text-[11px] opacity-80 leading-snug sm:hidden">
-                    {description || 'Leading the charge in making our annual fest unforgettable with creative vision and seamless execution.'}
-                  </p>
-                  <p className="hidden sm:block text-xs opacity-80 leading-relaxed line-clamp-2">
-                    {description || 'Leading the charge in making our annual fest unforgettable with creative vision and seamless execution.'}
-                  </p>
                 </div>
-
               </div>
-
-              {/* Shimmer Effect */}
-              <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 transition-all duration-700 ease-out ${hoveredCard ? 'translate-x-full' : '-translate-x-full'}`} />
+              
+              {/* Hidden description text - keeping in code but not displaying */}
+              <div className="hidden text-center text-white flex-grow flex-col justify-center">
+                <p className="text-xs font-semibold opacity-80 mb-1 sm:mb-3 uppercase tracking-widest text-purple-200">
+                  {person.role || 'Member'}
+                </p>
+                {/* Responsive description for mobile (full) and desktop (clamped) */}
+                <p className="text-[11px] opacity-80 leading-snug sm:hidden">
+                  Leading the charge in making our annual fest unforgettable with creative vision and seamless execution.
+                </p>
+                <p className="hidden sm:block text-xs opacity-80 leading-relaxed line-clamp-2">
+                  Leading the charge in making our annual fest unforgettable with creative vision and seamless execution.
+                </p>
+              </div>
             </div>
 
             {/* BACK */}
+                        {/* BACK - Social Media Links */}
             <div className={`absolute inset-0 w-full h-full rounded-lg border border-white/30 overflow-hidden shadow-2xl text-white p-4 sm:p-6 backface-hidden rotate-y-180 transition-opacity duration-300 ${hoveredCard ? 'opacity-100' : 'opacity-0'}`} style={{ transform: 'rotateY(180deg)' }}>
-              {/* Enhanced background pattern */} 
-              <div className="absolute inset-0 bg-black/30" />
+              {/* Enhanced background with person's image as backdrop */}
+              <div className="absolute inset-0">
+                <img
+                  src={person.img || '/images/building-6011756_1280.jpg'}
+                  alt={person.name || 'Team Member'}
+                  className="w-full h-full object-cover opacity-30 blur-sm"
+                />
+                <div className="absolute inset-0 bg-black/60" />
+              </div>
               
-              <div className="relative z-10 flex flex-col h-full items-center justify-center gap-2 text-center">
-                <h3 className="text-xl sm:text-2xl font-bold text-white">{person.name || 'Unknown'}</h3>
-                <p className="text-md text-purple-200/90">{person.committee || 'General'}</p>
-                
-                <div className="w-20 sm:w-28 h-0.5 bg-white/25 my-2 sm:my-4" />
+              <div className="relative z-10 flex flex-col h-full items-center justify-center gap-4 text-center">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">{person.name || 'Unknown'}</h3>
+                  <p className="text-md text-purple-200/90 mb-4">{person.role || 'Member'}</p>
+                  
+                  <div className="w-20 sm:w-28 h-0.5 bg-white/25 my-4 mx-auto" />
 
-                <div className="space-y-3">
-                    <p className="text-sm text-white/80 uppercase tracking-widest">Social Links</p>
-                    <div className="flex items-center justify-center gap-4 sm:gap-6">
-                        <a href={person.socials?.linkedin || "#"} target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-[#0077B5] transition-all duration-300 hover:scale-125"><Linkedin size={24} /></a>
-                        <a href={person.socials?.instagram || "#"} target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-[#E1306C] transition-all duration-300 hover:scale-125"><Instagram size={24} /></a>
-                        {person.socials?.twitter && (
-                        <a href={person.socials?.twitter} target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-[#1DA1F2] transition-all duration-300 hover:scale-125"><Twitter size={24} /></a>
-                        )}
+                  <div className="space-y-4">
+                    <p className="text-sm text-white/80 uppercase tracking-widest">Connect With Me</p>
+                    <div className="flex items-center justify-center gap-6">
+                      <a 
+                        href={person.socials?.linkedin || "#"} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="text-white/80 hover:text-[#0077B5] transition-all duration-300 hover:scale-125 p-2 rounded-full bg-white/10 hover:bg-white/20"
+                      >
+                        <Linkedin size={28} />
+                      </a>
+                      <a 
+                        href={person.socials?.instagram || "#"} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="text-white/80 hover:text-[#E1306C] transition-all duration-300 hover:scale-125 p-2 rounded-full bg-white/10 hover:bg-white/20"
+                      >
+                        <Instagram size={28} />
+                      </a>
+                      {person.socials?.twitter && (
+                        <a 
+                          href={person.socials?.twitter} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="text-white/80 hover:text-[#1DA1F2] transition-all duration-300 hover:scale-125 p-2 rounded-full bg-white/10 hover:bg-white/20"
+                        >
+                          <Twitter size={28} />
+                        </a>
+                      )}
                     </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -422,99 +441,24 @@ export default function PeopleStrip() {
     }
   ];
 
-        // Committee data with ultra-creative layouts - reorganized as requested
-   const committeeData = [
-     {
-       name: "Registrations",
-       description: "Streamlining the entry point for all participants, ensuring a smooth and welcoming start to their fest journey.",
-       layout: "particle-system",
-       color: "bg-neutral-700"
-     },
-     {
-       name: "Cultural",
-       description: "Orchestrating the artistic heartbeat of the fest with captivating performances and cultural showcases.",
-       layout: "cosmic-dance",
-       color: "bg-neutral-700"
-     },
-     {
-       name: "Technical",
-       description: "Powering the fest's digital and on-ground experiences with cutting-edge technology and seamless execution.",
-       layout: "matrix-code",
-       color: "bg-neutral-700"
-     },
-     {
-       name: "Stage & Venue",
-       description: "Setting the stage for unforgettable moments and managing the core infrastructure of our event spaces.",
-       layout: "magnetic-field",
-       color: "bg-neutral-700"
-     },
-     {
-       name: "Media & Report",
-       description: "Crafting the narrative of Sabrang'25 and documenting its legacy for the world to see.",
-       layout: "holographic",
-       color: "bg-neutral-700"
-     },
-     {
-       name: "Hospitality",
-       description: "Providing a warm welcome and impeccable support to our esteemed guests, judges, and artists.",
-       layout: "energy-field",
-       color: "bg-neutral-700"
-     },
-     {
-       name: "Internal Arrangements",
-       description: "Managing the logistical backbone of the fest to ensure every event runs flawlessly behind the scenes.",
-       layout: "galaxy-cluster",
-       color: "bg-neutral-700"
-     },
-     {
-       name: "Decor",
-       description: "Transforming campus spaces into breathtaking thematic wonderlands that define the fest's atmosphere.",
-       layout: "fractal-tree",
-       color: "bg-neutral-700"
-     },
-     {
-       name: "Sponsorship & Promotion",
-       description: "Forging key partnerships and driving the promotional strategies that elevate the fest's reach and impact.",
-       layout: "cosmic-field",
-       color: "bg-neutral-700"
-     },
-     {
-       name: "Photography",
-       description: "Capturing the vibrant moments and timeless memories of Sabrang'25 through a creative lens.",
-       layout: "time-vortex",
-       color: "bg-neutral-700"
-     },
-     {
-       name: "Social Media",
-       description: "Amplifying the fest's buzz and engaging our online community with creative and timely content.",
-       layout: "digital-rain",
-       color: "bg-neutral-700"
-     },
-     {
-       name: "anchorz",
-       description: "Commanding the stage with charisma and energy, guiding the audience through the spectacular journey of Sabrang'25.",
-       layout: "energy-field",
-       color: "bg-neutral-700"
-     },
-     {
-       name: "Prize & Certificates",
-       description: "Recognizing and celebrating the incredible talent and achievement of all our participants.",
-       layout: "crystal-lattice",
-       color: "bg-neutral-700"
-     },
-     {
-       name: "Transport",
-       description: "Coordinating the seamless movement of guests, participants, and materials to keep the fest on schedule.",
-       layout: "wormhole",
-       color: "bg-neutral-700"
-     },
-     {
-       name: "Discipline",
-       description: "Ensuring a safe, smooth, and enjoyable experience for all attendees with professionalism and care.",
-       layout: "dna-helix",
-       color: "bg-neutral-700"
-     },
-   ];
+  // Committee names for grouping - simple array
+  const committeeNames = [
+    "Registrations",
+    "Cultural", 
+    "Technical",
+    "Stage & Venue",
+    "Media & Report",
+    "Hospitality",
+    "Internal Arrangements",
+    "Decor",
+    "Sponsorship & Promotion",
+    "Photography",
+    "Social Media",
+    "anchorz",
+    "Prize & Certificates",
+    "Transport",
+    "Discipline"
+  ];
 
   // Organizing Heads section - uses ohPeople
   const cards = ohPeople;
@@ -652,23 +596,26 @@ export default function PeopleStrip() {
     }
   };
 
-  // Render different layouts based on committee layout type
-  const renderCommitteeLayout = (committee: any) => {
+  // Render different layouts based on committee name
+  const renderCommitteeLayout = (committeeName: string) => {
+    const committeeMembers = people.filter(p => p.committee === committeeName);
+    if (committeeMembers.length === 0) return null;
+    
     // Don't render animated layouts on server
-    const isSingleMember = committee.people && committee.people.length === 1;
+    const isSingleMember = committeeMembers.length === 1;
 
     if (!isClient) {
       return (
-        <div key={committee.name} className="flex flex-col items-center mb-24 relative min-h-[400px] w-full">
-                   {/* Enhanced background effects */}
-         <div className={`absolute inset-0 ${committee.color} opacity-20 rounded-lg blur-3xl`}></div>
-         <div className={`absolute inset-0 ${committee.color} opacity-10 rounded-lg blur-2xl scale-150`}></div>
+        <div key={committeeName} className="flex flex-col items-center mb-24 relative min-h-[400px] w-full">
+          {/* Enhanced background effects */}
+          <div className={`absolute inset-0 bg-neutral-700 opacity-20 rounded-lg blur-3xl`}></div>
+          <div className={`absolute inset-0 bg-neutral-700 opacity-10 rounded-lg blur-2xl scale-150`}></div>
           
           {/* Enhanced committee header */}
           <div className="relative z-10 text-center mb-8 sm:mb-12">
             <h3 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-white uppercase tracking-widest px-4`}>
-            {committee.name}
-          </h3>
+              {committeeName}
+            </h3>
             <p className="text-sm text-gray-400 mt-2 max-w-md mx-auto">
               Dedicated team members working together to deliver excellence
             </p>
@@ -676,16 +623,15 @@ export default function PeopleStrip() {
           
           {/* Enhanced cards layout */}
           <div className={`relative ${isSingleMember ? 'flex justify-center' : 'grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center'} gap-4 sm:gap-8 w-full max-w-7xl mx-auto px-2 sm:px-4`}>
-            {(committee.people || []).filter(Boolean).map((person: Person, idx: number) => (
+            {committeeMembers.filter(Boolean).map((person: Person, idx: number) => (
               <div key={idx} className={isSingleMember ? 'w-44 sm:w-auto' : 'w-full sm:w-auto'}>
                 <PersonCard
                   person={person}
-                  cardId={`${committee.name}-${idx}`}
+                  cardId={`${committeeName}-${idx}`}
                   className="relative z-10"
                   animationDelay={idx * 400}
                   size="normal"
                   isCommitteeCard={true}
-                  description={committee.description}
                 />
               </div>
             ))}
@@ -696,36 +642,36 @@ export default function PeopleStrip() {
 
     // Client-side animated layouts - Enhanced with better visual elements
     return (
-      <div key={committee.name} className="flex flex-col items-center mb-24 relative min-h-[400px] w-full group">
-                 {/* Enhanced background effects with animations */}
-         <div className={`absolute inset-0 ${committee.color} opacity-20 rounded-lg blur-3xl transition-all duration-1000 group-hover:opacity-30`}></div>
-         <div className={`absolute inset-0 ${committee.color} opacity-10 rounded-lg blur-2xl scale-150 transition-all duration-1000 group-hover:scale-175`}></div>
+      <div key={committeeName} className="flex flex-col items-center mb-24 relative min-h-[400px] w-full group">
+        {/* Enhanced background effects with animations */}
+        <div className={`absolute inset-0 bg-neutral-700 opacity-20 rounded-lg blur-3xl transition-all duration-1000 group-hover:opacity-30`}></div>
+        <div className={`absolute inset-0 bg-neutral-700 opacity-10 rounded-lg blur-2xl scale-150 transition-all duration-1000 group-hover:scale-175`}></div>
         
-                 {/* Enhanced committee header with animations */}
-         <motion.div 
-           initial={{ opacity: 0, y: 20 }}
-           whileInView={{ opacity: 1, y: 0 }}
-           transition={{ duration: 0.8, delay: 0.2 }}
-           viewport={{ once: true }}
-           className="relative z-10 text-center mb-8 sm:mb-12"
-         >
-           <h3 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-white uppercase tracking-widest px-4`}>
-          {committee.name}
-        </h3>
-           <motion.p 
-             initial={{ opacity: 0 }}
-             whileInView={{ opacity: 1 }}
-             transition={{ duration: 0.8, delay: 0.6 }}
-             viewport={{ once: true }}
-             className="text-sm text-gray-400 mt-2 max-w-md mx-auto"
-           >
-             Dedicated team members working together to deliver excellence
-           </motion.p>
-         </motion.div>
+        {/* Enhanced committee header with animations */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          viewport={{ once: true }}
+          className="relative z-10 text-center mb-8 sm:mb-12"
+        >
+          <h3 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-white uppercase tracking-widest px-4`}>
+            {committeeName}
+          </h3>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            viewport={{ once: true }}
+            className="text-sm text-gray-400 mt-2 max-w-md mx-auto"
+          >
+            Dedicated team members working together to deliver excellence
+          </motion.p>
+        </motion.div>
         
         {/* Enhanced cards layout with connecting elements */}
         <div className={`relative ${isSingleMember ? 'flex justify-center' : 'grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center'} gap-4 sm:gap-8 w-full max-w-7xl mx-auto px-2 sm:px-4`}>
-          {(committee.people || []).filter(Boolean).map((person: Person, idx: number) => (
+          {committeeMembers.filter(Boolean).map((person: Person, idx: number) => (
             <motion.div
               key={idx}
               initial={{ opacity: 0, y: 30, scale: 0.8 }}
@@ -737,11 +683,10 @@ export default function PeopleStrip() {
             >
               <PersonCard
                 person={person}
-                cardId={`${committee.name}-${idx}`}
+                cardId={`${committeeName}-${idx}`}
                 animationDelay={idx * 200}
                 size="normal"
                 isCommitteeCard={true}
-                description={committee.description}
               />
             </motion.div>
           ))}
@@ -979,11 +924,8 @@ export default function PeopleStrip() {
       {/* Committee Layouts - Row-based */}
       <div className="w-full max-w-7xl px-2 sm:px-4 space-y-16 relative z-10 perspective-1000 mx-auto">
         <div className="flex flex-col space-y-24">
-          {committeeData.map((committee) => {
-            const committeeMembers = people.filter(p => p.committee === committee.name);
-            if (committeeMembers.length === 0) return null;
-            const committeeWithPeople = { ...committee, people: committeeMembers };
-            return renderCommitteeLayout(committeeWithPeople);
+          {committeeNames.map((committeeName) => {
+            return renderCommitteeLayout(committeeName);
           })}
         </div>
       </div>
