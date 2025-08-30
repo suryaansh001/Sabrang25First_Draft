@@ -195,12 +195,12 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
   }, []);
 
   const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
-    { title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
+    { title: 'Home', href: '/', icon: <Home className="w-5 h-5" /> },
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
     { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
     { title: 'Schedule', href: '/schedule/progress', icon: <Clock className="w-5 h-5" /> },
-    { title: 'Team', href: '/Team/team-reveal', icon: <Users className="w-5 h-5" /> },
+    { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
     { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
     { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
     { title: 'Contact', href: '/Contact', icon: <Mail className="w-5 h-5" /> },
@@ -362,15 +362,15 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         {!isLoading && (
           <div className="absolute inset-0 z-20 flex items-center justify-center text-center px-6 pointer-events-none">
             <div className="max-w-sm mx-auto">
-              {/* Main Title */}
-              <h1 className="font-black leading-none mb-6">
-                <span className="block text-6xl sm:text-7xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 drop-shadow-2xl" style={{ fontFamily: "'TAN Nimbus', sans-serif" }}>
-                  SABRANG
-                </span>
-                <span className="inline-block text-5xl sm:text-6xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 drop-shadow-2xl ml-2 sm:ml-3 md:ml-4" style={{ fontFamily: "'TAN Nimbus', sans-serif" }}>
-                  25
-                </span>
-              </h1>
+                             {/* Main Title */}
+               <h1 className="font-black leading-none mb-6">
+                 <span className="block text-5xl sm:text-6xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 drop-shadow-2xl" style={{ fontFamily: "'Childstone Demo', sans-serif" }}>
+                   SABRANG
+                 </span>
+                 <span className="inline-block text-4xl sm:text-5xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 drop-shadow-2xl ml-2 sm:ml-3 md:ml-4" style={{ fontFamily: "'Childstone Demo', sans-serif" }}>
+                   25
+                 </span>
+               </h1>
               
               {/* Subtitle */}
               <p className="mt-4 text-lg sm:text-xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-pink-400 to-cyan-300 mb-8">
@@ -652,14 +652,14 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
           {!isLoading && (
             <div className="relative z-10 flex items-center justify-center h-full">
               <div className="text-center">
-                <h1 className="text-7xl md:text-8xl lg:text-9xl font-black text-white leading-none">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 drop-shadow-lg text-8xl md:text-9xl lg:text-[12rem]" style={{ fontFamily: "'TAN Nimbus', sans-serif", textShadow: '0 0 30px rgba(255,255,255,0.5)', letterSpacing: '0.02em' }}>
-                    SABRANG
-                  </span><br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 drop-shadow-2xl text-8xl md:text-9xl lg:text-[10rem]" style={{ fontFamily: "'TAN Nimbus', sans-serif", textShadow: '0 0 40px rgba(34, 211, 238, 0.6)' }}>
-                    2025
-                  </span>
-                </h1>
+                                 <h1 className="text-8xl md:text-7xl lg:text-8xl font-black text-white leading-none">
+                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 drop-shadow-lg text-9xl md:text-11xl lg:text-13xl" style={{ fontFamily: "'Childstone Demo', sans-serif", textShadow: '0 0 30px rgba(255,255,255,0.5)', letterSpacing: '0.02em' }}>
+                     SABRANG
+                   </span><br />
+                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 drop-shadow-2xl text-5xl md:text-6xl lg:text-7xl" style={{ fontFamily: "'TAN Nimbus', sans-serif", textShadow: '0 0 40px rgba(34, 211, 238, 0.6)' }}>
+                     2025
+                   </span>
+                 </h1>
               </div>
             </div>
           )}
@@ -669,6 +669,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
       {/* Infinity transition */}
       <InfinityTransition
         isActive={showTransition}
+        targetHref={targetHref}
         onComplete={() => {
           if (targetHref) router.push(targetHref);
           setShowTransition(false);

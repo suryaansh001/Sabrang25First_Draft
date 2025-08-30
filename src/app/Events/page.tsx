@@ -760,6 +760,7 @@ export default function EventsPage() {
           {/* Infinity transition for mobile nav */}
           <InfinityTransition
             isActive={showTransition}
+            targetHref={targetHref}
             onComplete={() => {
               if (targetHref) router.push(targetHref);
               setShowTransition(false);

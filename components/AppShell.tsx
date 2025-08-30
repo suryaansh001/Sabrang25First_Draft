@@ -49,10 +49,12 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
   }, [pathname, isTransitioning, showTransition]);
 
   const handleSidebarNavigate = (href: string) => {
-    setPendingNavigation(href);
+    // Clean the href to remove query parameters for consistent navigation
+    const cleanHref = href.split('?')[0];
+    setPendingNavigation(cleanHref);
     setIsTransitioning(true);
     setShowTransition(true);
-    router.push(href);
+    router.push(cleanHref);
   };
 
   const handleTransitionComplete = () => {
@@ -71,8 +73,6 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
     setMounted(true);
   }, []);
 
-
-
   const hideChrome = pathname === "/" || pathname?.startsWith("/home") || pathname === "/Login" || pathname === "/Signup";
 
   return (
@@ -81,6 +81,7 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
       <Background />
       <InfinityTransition 
         isActive={showTransition} 
+        targetHref={pendingNavigation}
         onComplete={handleTransitionComplete}
       />
       <div className="relative z-30 flex-grow">

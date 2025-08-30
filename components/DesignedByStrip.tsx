@@ -2,39 +2,40 @@ import Link from 'next/link';
 
 export default function DesignedByStrip() {
 	return (
-		<div className="fixed inset-x-0 bottom-0 z-50">
-			<div className="relative mx-auto max-w-7xl px-3 sm:px-4 pb-3">
-				<div className="pointer-events-auto group relative overflow-hidden rounded-xl border border-white/10 bg-black/40 backdrop-blur-md">
-					{/* Glow */}
-					<div className="absolute inset-0 -z-10 opacity-60 group-hover:opacity-80 transition" style={{
-						background: 'radial-gradient(120% 60% at 50% 120%, rgba(99,102,241,0.25) 0%, rgba(236,72,153,0.18) 35%, transparent 70%)'
-					}} />
-					{/* Accent edge */}
-					<div className="absolute left-0 top-0 h-full w-[2px] bg-gradient-to-b from-fuchsia-400 via-purple-400 to-blue-400" />
-					<Link href="/designed-by" className="flex w-full items-center justify-between gap-3 px-4 py-2.5">
-						<div className="flex items-center gap-3">
-							<div className="h-6 w-6 rounded-md border border-white/15 bg-white/5 grid place-items-center">
-								<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden>
-									<path d="M3 3h18v18H3z" fill="none" stroke="url(#g)" strokeWidth="1.5" />
-									<defs>
-										<linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-											<stop stopColor="#a78bfa" />
-											<stop stopColor="#60a5fa" offset="1" />
-										</linearGradient>
-									</defs>
-								</svg>
-							</div>
-							<p className="text-xs sm:text-sm text-gray-200">
-								Designed by <span className="font-semibold text-white">Sabrang Techinal Team</span>
-							</p>
-						</div>
-						<div className="text-[10px] sm:text-xs text-purple-200/90 group-hover:text-white transition flex items-center gap-2">
-							<span className="hidden sm:inline">See how we built it</span>
-							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
-						</div>
-					</Link>
+		<div className="fixed bottom-4 right-4 z-50">
+			<Link href="/designed-by" className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group">
+				{/* Animated Ball Container - centered with text */}
+				<div className="relative w-8 h-8 flex items-center justify-center">
+					{/* Large background ball with low opacity */}
+					<div className="absolute w-8 h-8 bg-blue-500/20 rounded-full animate-pulse" style={{ animationDuration: '3s' }}></div>
+					
+					{/* Medium ball with medium opacity */}
+					<div className="absolute w-6 h-6 bg-blue-500/40 rounded-full animate-bounce" style={{ 
+						animationDuration: '2s',
+						animationDelay: '0.5s'
+					}}></div>
+					
+					{/* Small ball with full opacity */}
+					<div className="absolute w-4 h-4 bg-blue-500 rounded-full animate-ping" style={{ 
+						animationDuration: '1.5s',
+						animationDelay: '1s'
+					}}></div>
+					
+					{/* Floating particle - top right */}
+					<div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-cyan-400/60 rounded-full animate-pulse" style={{ 
+						animationDuration: '2.5s',
+						animationDelay: '0.3s'
+					}}></div>
+					
+					{/* Bottom particle - bottom left */}
+					<div className="absolute -bottom-0.5 -left-0.5 w-1.5 h-1.5 bg-purple-400/50 rounded-full animate-bounce" style={{ 
+						animationDuration: '1.8s',
+						animationDelay: '0.8s'
+					}}></div>
 				</div>
-			</div>
+
+				<span className="text-xs font-medium leading-none">designed by tech_stack</span>
+			</Link>
 		</div>
 	);
 }

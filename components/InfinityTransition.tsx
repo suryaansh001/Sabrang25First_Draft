@@ -2,19 +2,23 @@
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 interface InfinityTransitionProps {
   isActive: boolean;
   onComplete: () => void;
+  targetHref?: string | null;
 }
 
-const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onComplete }) => {
+const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onComplete, targetHref }) => {
   const [currentPhase, setCurrentPhase] = useState<'idle' | 'drawing' | 'filling' | 'complete' | 'zoom' | 'final'>('idle');
   const [videoReady, setVideoReady] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [nextPageLoaded, setNextPageLoaded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const animationRef = useRef<NodeJS.Timeout | null>(null);
   const phaseTimersRef = useRef<{ [key: string]: NodeJS.Timeout }>({});
+  const router = useRouter();
 
   // Detect mobile device
   useEffect(() => {
@@ -27,6 +31,25 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
     
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Preload next page in background when transition starts
+  useEffect(() => {
+    if (isActive && targetHref && !nextPageLoaded) {
+      // Start preloading the next page immediately
+      const preloadNextPage = async () => {
+        try {
+          // Prefetch the next page route
+          await router.prefetch(targetHref);
+          setNextPageLoaded(true);
+        } catch (error) {
+          console.log('Page preloading failed, continuing anyway');
+          setNextPageLoaded(true);
+        }
+      };
+      
+      preloadNextPage();
+    }
+  }, [isActive, targetHref, nextPageLoaded, router]);
 
   // Clear all timers
   const clearAllTimers = useCallback(() => {
@@ -74,44 +97,46 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
     }
   }, []);
 
-  // Main animation controller - progressive infinity building
+  // Main animation controller - unified timing for mobile and desktop
   useEffect(() => {
     if (!isActive) {
       setCurrentPhase('idle');
       clearAllTimers();
+      setNextPageLoaded(false);
       return;
     }
 
     // Clear any existing timers
     clearAllTimers();
 
-    // Start animation sequence with progressive infinity building
+    // Start animation sequence with unified timing
     const startAnimation = () => {
       // Phase 1: Drawing the outline paths
       setCurrentPhase('drawing');
       
-      // On mobile, drastically reduce durations for near-instant navigation
-      const drawingDuration = isMobile ? 200 : 1800;
+      // Unified timing - mobile gets slightly faster but not drastically different
+      const drawingDuration = isMobile ? 1200 : 1800;
       phaseTimersRef.current.drawing = setTimeout(() => {
         // Phase 2: Filling the shapes
         setCurrentPhase('filling');
         
-        const fillingDuration = isMobile ? 200 : 1200;
+        const fillingDuration = isMobile ? 800 : 1200;
         phaseTimersRef.current.filling = setTimeout(() => {
           // Phase 3: Complete infinity symbol
           setCurrentPhase('complete');
           
-          const completeDuration = isMobile ? 150 : 1000;
+          const completeDuration = isMobile ? 600 : 1000;
           phaseTimersRef.current.complete = setTimeout(() => {
             // Phase 4: Zoom effect
             setCurrentPhase('zoom');
             
-            const zoomDuration = isMobile ? 150 : 600;
+            const zoomDuration = isMobile ? 400 : 600;
             phaseTimersRef.current.zoom = setTimeout(() => {
               // Phase 5: Final transition
               setCurrentPhase('final');
               
-              const finalDelay = 0;
+              // Wait for next page to be loaded before completing
+              const finalDelay = nextPageLoaded ? 0 : 100;
               phaseTimersRef.current.final = setTimeout(() => {
                 onComplete();
               }, finalDelay);
@@ -121,13 +146,14 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
       }, drawingDuration);
     };
 
-    const startDelay = isMobile ? 50 : 250;
+    // Unified start delay
+    const startDelay = isMobile ? 100 : 250;
     animationRef.current = setTimeout(startAnimation, startDelay);
 
     return () => {
       clearAllTimers();
     };
-  }, [isActive, onComplete, clearAllTimers, isMobile]);
+  }, [isActive, onComplete, clearAllTimers, isMobile, nextPageLoaded]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -181,11 +207,11 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
         )}
       </div>
 
-      {/* Animation container - increased size */}
+      {/* Animation container - unified size for mobile and desktop */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="relative w-32 h-32 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-64 lg:h-64">
+        <div className="relative w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-64 lg:h-64">
           
-          {/* Drawing Phase - progressive path drawing */}
+          {/* Drawing Phase - progressive path drawing with unified animation */}
           <AnimatePresence mode="wait">
             {currentPhase === 'drawing' && (
               <motion.div
@@ -194,7 +220,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
                 initial={{ scale: 0, opacity: 0, rotate: -5 }}
                 animate={{ scale: 1, opacity: 1, rotate: 0 }}
                 exit={{ scale: 0, opacity: 0, rotate: 5 }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
               >
                 <svg
                   viewBox="0 0 302.73 467.06"
@@ -249,7 +275,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
                 initial={{ scale: 0.9, opacity: 0, rotate: -2 }}
                 animate={{ scale: 1, opacity: 1, rotate: 0 }}
                 exit={{ scale: 0, opacity: 0, rotate: 2 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
               >
                 <svg
                   viewBox="0 0 302.73 467.06"
@@ -314,7 +340,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0, opacity: 0 }}
                 transition={{ 
-                  duration: 0.5, 
+                  duration: 0.6, 
                   ease: "easeInOut" 
                 }}
               >
@@ -322,9 +348,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
                   viewBox="0 0 302.73 467.06"
                   className="w-full h-full"
                   style={{ 
-                    filter: isMobile 
-                      ? 'drop-shadow(0 0 25px rgba(17, 79, 238, 0.9))'
-                      : 'drop-shadow(0 0 40px rgba(17, 79, 238, 1))'
+                    filter: 'drop-shadow(0 0 40px rgba(17, 79, 238, 1))'
                   }}
                 >
                   <defs>
@@ -341,7 +365,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
                       <stop offset="1" stopColor="#009c41"/>
                     </linearGradient>
                     <filter id="complete-glow">
-                      <feGaussianBlur stdDeviation={isMobile ? "4" : "6"} result="coloredBlur"/>
+                      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
                       <feMerge> 
                         <feMergeNode in="coloredBlur"/>
                         <feMergeNode in="SourceGraphic"/>
@@ -376,16 +400,16 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
             )}
           </AnimatePresence>
 
-          {/* Zoom Phase - infinity symbol zooms out */}
+          {/* Zoom Phase - infinity symbol zooms out with unified animation */}
           <AnimatePresence mode="wait">
             {currentPhase === 'zoom' && (
               <motion.div
                 key="zoom"
                 className="absolute inset-0 w-full h-full"
                 initial={{ scale: 1, opacity: 1 }}
-                animate={{ scale: isMobile ? 30 : 40, opacity: 0 }}
+                animate={{ scale: 35, opacity: 0 }}
                 transition={{ 
-                  duration: isMobile ? 0.45 : 0.5, 
+                  duration: 0.5, 
                   ease: "easeIn" 
                 }}
                 style={{ willChange: 'transform, opacity', backfaceVisibility: 'hidden', transformOrigin: '50% 50%', contain: 'layout paint' }}
@@ -421,6 +445,15 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
             )}
           </AnimatePresence>
 
+          {/* Loading indicator for next page */}
+          {currentPhase === 'final' && !nextPageLoaded && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-center text-white">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
+                <p className="text-sm opacity-80">Loading...</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

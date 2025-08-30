@@ -9,12 +9,12 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        'sans': ['TAN Nimbus', 'Poppins', 'ui-sans-serif', 'system-ui'],
-        'serif': ['TAN Nimbus', 'ui-serif', 'Georgia'],
-        'mono': ['TAN Nimbus', 'ui-monospace', 'SFMono-Regular'],
+        'sans': ['Poppins', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        'serif': ['Georgia', 'Times New Roman', 'serif'],
+        'mono': ['SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', 'monospace'],
         'tan-nimbus': ['TAN Nimbus', 'sans-serif'],
-        'display': ['TAN Nimbus', 'sans-serif'],
-        'body': ['TAN Nimbus', 'sans-serif'],
+        'display': ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        'body': ['Poppins', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
       },
       animation: {
         'star-movement-bottom': 'star-movement-bottom linear infinite alternate',

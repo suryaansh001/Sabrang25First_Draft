@@ -39,11 +39,11 @@ export default function EventCard({ event, outline, variant = 'default' }: Event
 
           {/* Event Content Overlay - responsive padding and text sizes */}
           <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 lg:p-6 text-white">
-            <h2 className="text-lg sm:text-xl lg:text-3xl font-bold mb-2 sm:mb-3 lg:mb-4 font-tan-nimbus leading-tight drop-shadow-lg">
+            <h2 className="text-lg sm:text-xl lg:text-3xl font-bold mb-2 sm:mb-3 lg:mb-4 leading-tight drop-shadow-lg">
               {event.title}
             </h2>
             {event.description && (
-              <p className="text-xs sm:text-sm lg:text-base text-white/90 mb-3 sm:mb-4 lg:mb-6 font-tan-nimbus leading-relaxed drop-shadow-lg line-clamp-2 sm:line-clamp-3">
+              <p className="text-xs sm:text-sm lg:text-base text-white/90 mb-3 sm:mb-4 lg:mb-6 leading-relaxed drop-shadow-lg line-clamp-2 sm:line-clamp-3">
                 {event.description}
               </p>
             )}

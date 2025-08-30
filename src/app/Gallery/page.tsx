@@ -154,6 +154,7 @@ const Gallery = () => {
       {/* Infinity Transition */}
       <InfinityTransition 
         isActive={showTransition} 
+        targetHref={targetHref}
         onComplete={() => {
           setShowTransition(false);
           if (targetHref) {

@@ -68,7 +68,7 @@ const Navbar: React.FC = () => {
       // Dispatch custom event to notify other components about logout
       window.dispatchEvent(new CustomEvent('userLoggedOut'));
       
-      window.location.href = '/?skipLoading=true';
+      window.location.href = '/';
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -78,7 +78,7 @@ const Navbar: React.FC = () => {
     <nav className="w-full fixed top-0 z-50 flex items-center justify-between pl-4 pr-4 sm:pl-25 sm:pr-0">
       {/* Left: Logo */}
       <div className="flex items-center ml-4 sm:ml-14">
-        <Link href="/?skipLoading=true" className="mr-4"></Link>
+        <Link href="/" className="mr-4"></Link>
         <Image src={Logo} alt="Logo" width={56} height={56} />
       </div>
 
@@ -87,7 +87,7 @@ const Navbar: React.FC = () => {
 		<div className="flex items-center justify-between md:w-fit md:px-6 md:py-3 md:bg-black/40 md:backdrop-blur-xl md:border md:border-white/10 text-white md:rounded-full md:shadow-[0_10px_40px_rgba(168,85,247,0.25)]" data-no-splash="true">
           {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center space-x-6">
-            <a href="/?skipLoading=true" className="text-white font-medium hover:text-yellow-300 transition">Home</a>
+            <a href="/" className="text-white font-medium hover:text-yellow-300 transition">Home</a>
             <a href="/Events" className="text-white font-medium hover:text-yellow-300 transition">Events</a>
             <a href="/About" className="text-white font-medium hover:text-yellow-300 transition">About</a>
             <a href="/Gallery" className="text-white font-medium hover:text-yellow-300 transition">Gallery</a>
@@ -121,7 +121,7 @@ const Navbar: React.FC = () => {
         {/* Mobile Nav Links */}
 			{isOpen && (
 				<div className="md:hidden absolute top-20 left-0 right-0 mx-auto w-11/12 bg-black/40 backdrop-blur-xl border border-white/10 text-white rounded-2xl px-4 py-4 shadow-[0_10px_40px_rgba(168,85,247,0.25)] z-40">
-            <a href="/?skipLoading=true" className="block text-white py-2 hover:text-yellow-300">Home</a>
+            <a href="/" className="block text-white py-2 hover:text-yellow-300">Home</a>
             <a href="/Events" className="block text-white py-2 hover:text-yellow-300">Events</a>
             <a href="/About" className="block text-white py-2 hover:text-yellow-300">About</a>
             <a href="/Gallery" className="block text-white py-2 hover:text-yellow-300">Gallery</a>

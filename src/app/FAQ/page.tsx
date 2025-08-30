@@ -237,6 +237,7 @@ const FAQ = () => {
       {/* Local Infinity Transition for mobile nav (mobile-optimized) */}
       <InfinityTransition
         isActive={showTransition}
+        targetHref={targetHref}
         onComplete={() => {
           if (targetHref) {
             router.push(targetHref);

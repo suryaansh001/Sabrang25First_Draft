@@ -106,7 +106,7 @@ const AboutPage = () => {
                 SABRANG
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-medium" style={{ fontFamily: "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
               Experience the grandest cultural fest. Unleash your talent, witness captivating performances, 
               and create unforgettable memories that will last a lifetime.
             </p>

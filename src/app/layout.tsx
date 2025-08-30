@@ -57,47 +57,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
-        {/* JSON-LD: Organization */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'CollegeOrUniversity',
-              name: "JK Lakshmipat University - Sabrang'25",
-              url: 'https://sabrang.jklu.edu.in/',
-              logo: 'https://sabrang.jklu.edu.in/og/sabrang-og.jpg',
-              sameAs: []
-            })
-          }}
-        />
-
-        {/* JSON-LD: Event */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'Festival',
-              name: "SABRANG'25",
-              description: "JK Lakshmipat University's annual cultural and technical fest in Jaipur.",
-              url: 'https://sabrang.jklu.edu.in/',
-              eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-              eventStatus: 'https://schema.org/EventScheduled',
-              location: {
-                '@type': 'Place',
-                name: 'JK Lakshmipat University',
-                address: {
-                  '@type': 'PostalAddress',
-                  addressLocality: 'Jaipur',
-                  addressRegion: 'Rajasthan',
-                  addressCountry: 'IN'
-                }
-              },
-              image: ['https://sabrang.jklu.edu.in/og/sabrang-og.jpg'],
-            })
-          }}
-        />
+      
       </head>
       <body className="antialiased">
         <VideoProvider>

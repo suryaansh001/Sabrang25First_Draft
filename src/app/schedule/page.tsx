@@ -294,6 +294,7 @@ export default function SchedulePage() {
 			{/* Infinity Transition */}
 			<InfinityTransition
 				isActive={showTransition}
+				targetHref={targetHref}
 				onComplete={() => {
 					if (targetHref) {
 						router.push(targetHref);

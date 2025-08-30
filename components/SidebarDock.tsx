@@ -22,7 +22,7 @@ interface SidebarDockProps {
 }
 
 const navigationItems = [
-  { title: 'Home', icon: <Home className="w-5 h-5" />, href: '/?skipLoading=true' },
+  { title: 'Home', icon: <Home className="w-5 h-5" />, href: '/' },
   { title: 'About', icon: <Info className="w-5 h-5" />, href: '/About' },
   { title: 'Events', icon: <Calendar className="w-5 h-5" />, href: '/Events' },
   { title: 'Highlights', icon: <Star className="w-5 h-5" />, href: '/Gallery' },
