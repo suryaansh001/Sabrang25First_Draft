@@ -41,6 +41,14 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
     }
   }, [showTransition, pendingNavigation]);
 
+  // Ensure content is properly synchronized with pathname changes
+  useEffect(() => {
+    if (pathname && !showTransition && isTransitioning) {
+      // If pathname has changed and transition is complete, ensure content is visible immediately
+      setIsTransitioning(false);
+    }
+  }, [pathname, showTransition, isTransitioning]);
+
   // Ensure content is visible when pathname changes (for direct navigation)
   useEffect(() => {
     if (pathname && !isTransitioning && !showTransition) {
@@ -51,22 +59,29 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
   const handleSidebarNavigate = (href: string) => {
     // Clean the href to remove query parameters for consistent navigation
     const cleanHref = href.split('?')[0];
-    setPendingNavigation(cleanHref);
+    
+    // Hide content immediately
     setIsTransitioning(true);
+    
+    // Start transition
+    setPendingNavigation(cleanHref);
     setShowTransition(true);
-    router.push(cleanHref);
+    
+    // Don't navigate here - let the transition handle it
+    // router.push(cleanHref);
   };
 
   const handleTransitionComplete = () => {
-    // Reveal new content first, then remove overlay to avoid any visual gap
+    // Clear pending navigation immediately
     if (pendingNavigation) {
       setPendingNavigation(null);
     }
-    // Keep content hidden a tiny bit longer on mobile to prevent previous page flash
+    
+    // Remove transition overlay
     setShowTransition(false);
-    setTimeout(() => {
-      setIsTransitioning(false);
-    }, 30); // 30ms buffer as requested
+    
+    // Make content visible immediately - no delay
+    setIsTransitioning(false);
   };
 
   useEffect(() => {
@@ -89,10 +104,10 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
         <main 
           key={pathname}
           className={`${
-            isTransitioning ? 'opacity-0 pointer-events-none invisible' : 'opacity-100 visible'
+            isTransitioning ? 'opacity-0 pointer-events-none' : 'opacity-100'
           }`}
         >
-          {!isTransitioning && children}
+          {children}
         </main>
         {!hideChrome && <SidebarDock onNavigate={handleSidebarNavigate} />}
       </div>

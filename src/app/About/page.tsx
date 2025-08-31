@@ -13,7 +13,7 @@ const AboutPage = () => {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
-    { title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
+    { title: 'Home', href: '/', icon: <Home className="w-5 h-5" /> },
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
     { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },

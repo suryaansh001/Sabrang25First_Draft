@@ -372,10 +372,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                  </span>
                </h1>
               
-              {/* Subtitle */}
-              <p className="mt-4 text-lg sm:text-xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-pink-400 to-cyan-300 mb-8">
-                Noorwana & Color to Cosmos
-              </p>
+             
               
               {/* Tagline */}
               <p className="text-gray-300 text-base mb-8 leading-relaxed">

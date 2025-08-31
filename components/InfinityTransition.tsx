@@ -40,6 +40,19 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
         try {
           // Prefetch the next page route
           await router.prefetch(targetHref);
+          
+          // Additional preloading for better performance
+          if (targetHref.includes('/Events')) {
+            // Preload event-specific resources
+            const link = document.createElement('link');
+            link.rel = 'prefetch';
+            link.href = targetHref;
+            document.head.appendChild(link);
+          }
+          
+          // Simulate a small delay to ensure everything is ready
+          await new Promise(resolve => setTimeout(resolve, 200));
+          
           setNextPageLoaded(true);
         } catch (error) {
           console.log('Page preloading failed, continuing anyway');
@@ -136,8 +149,9 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
               setCurrentPhase('final');
               
               // Wait for next page to be loaded before completing
-              const finalDelay = nextPageLoaded ? 0 : 100;
+              const finalDelay = nextPageLoaded ? 0 : 200;
               phaseTimersRef.current.final = setTimeout(() => {
+                // Complete immediately when page is ready
                 onComplete();
               }, finalDelay);
             }, zoomDuration);
@@ -450,7 +464,21 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center text-white">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
-                <p className="text-sm opacity-80">Loading...</p>
+                <p className="text-sm opacity-80">Preparing next page...</p>
+              </div>
+            </div>
+          )}
+          
+          {/* Success indicator when page is ready */}
+          {currentPhase === 'final' && nextPageLoaded && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-center text-white">
+                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <p className="text-sm opacity-80">Ready!</p>
               </div>
             </div>
           )}
