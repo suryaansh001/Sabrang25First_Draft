@@ -11,7 +11,14 @@ const NavigationContext = createContext<NavigationContextType | undefined>(undef
 export const useNavigation = () => {
   const context = useContext(NavigationContext);
   if (!context) {
-    throw new Error('useNavigation must be used within a NavigationProvider');
+    // Return a fallback navigation function for SSR
+    return {
+      navigate: (href: string) => {
+        // This will only be called during SSR or when context is not available
+        // In a real scenario, this would be handled by the client-side hydration
+        console.warn('Navigation attempted during SSR or outside NavigationProvider');
+      }
+    };
   }
   return context;
 };
