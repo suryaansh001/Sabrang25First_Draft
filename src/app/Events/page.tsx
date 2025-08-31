@@ -759,7 +759,6 @@ export default function EventsPage() {
             isActive={showTransition}
             targetHref={targetHref}
             onComplete={() => {
-              if (targetHref) router.push(targetHref);
               setShowTransition(false);
               setTargetHref(null);
             }}

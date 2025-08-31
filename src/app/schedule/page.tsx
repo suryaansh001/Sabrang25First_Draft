@@ -296,9 +296,6 @@ export default function SchedulePage() {
 				isActive={showTransition}
 				targetHref={targetHref}
 				onComplete={() => {
-					if (targetHref) {
-						router.push(targetHref);
-					}
 					setShowTransition(false);
 					setTargetHref(null);
 				}}

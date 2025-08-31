@@ -54,19 +54,20 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
     setPendingNavigation(cleanHref);
     setIsTransitioning(true);
     setShowTransition(true);
-    router.push(cleanHref);
+    // Don't call router.push here - let InfinityTransition handle it
   };
 
   const handleTransitionComplete = () => {
-    // Reveal new content first, then remove overlay to avoid any visual gap
-    if (pendingNavigation) {
-      setPendingNavigation(null);
-    }
-    // Keep content hidden a tiny bit longer on mobile to prevent previous page flash
+    // Add a longer delay to ensure the new page is fully loaded and rendered
     setShowTransition(false);
+    
+    // Gradually reveal content with proper timing
     setTimeout(() => {
+      if (pendingNavigation) {
+        setPendingNavigation(null);
+      }
       setIsTransitioning(false);
-    }, 30); // 30ms buffer as requested
+    }, 150); // Increased delay to prevent flash of old content
   };
 
   useEffect(() => {

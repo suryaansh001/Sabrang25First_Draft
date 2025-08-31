@@ -15,9 +15,12 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
   const [videoReady, setVideoReady] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [nextPageLoaded, setNextPageLoaded] = useState(false);
+  const [transitionStartTime, setTransitionStartTime] = useState<number | null>(null);
+  const [progress, setProgress] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
   const animationRef = useRef<NodeJS.Timeout | null>(null);
   const phaseTimersRef = useRef<{ [key: string]: NodeJS.Timeout }>({});
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
 
   // Detect mobile device
@@ -35,21 +38,41 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
   // Preload next page in background when transition starts
   useEffect(() => {
     if (isActive && targetHref && !nextPageLoaded) {
-      // Start preloading the next page immediately
-      const preloadNextPage = async () => {
+      // Start preloading the next page immediately AND navigate
+      const preloadAndNavigate = async () => {
         try {
-          // Prefetch the next page route
+          // Start navigation immediately to get the page loading
+          router.push(targetHref);
+          
+          // Prefetch the next page route for caching
           await router.prefetch(targetHref);
+          
+          // Give page some time to start loading
+          await new Promise(resolve => setTimeout(resolve, 300));
+          
           setNextPageLoaded(true);
         } catch (error) {
-          console.log('Page preloading failed, continuing anyway');
+          console.log('Page navigation/preloading failed, continuing anyway');
           setNextPageLoaded(true);
         }
       };
       
-      preloadNextPage();
+      preloadAndNavigate();
     }
   }, [isActive, targetHref, nextPageLoaded, router]);
+
+  // Start progress tracking when page loads during final phase
+  useEffect(() => {
+    if (nextPageLoaded && currentPhase === 'final' && !progressIntervalRef.current) {
+      progressIntervalRef.current = setInterval(() => {
+        const currentTime = Date.now();
+        const startTime = transitionStartTime || currentTime;
+        const elapsed = currentTime - startTime;
+        const progressPercent = Math.min(100, (elapsed / 4000) * 100); // 4 seconds = 100%
+        setProgress(progressPercent);
+      }, 50);
+    }
+  }, [nextPageLoaded, currentPhase, transitionStartTime]);
 
   // Clear all timers
   const clearAllTimers = useCallback(() => {
@@ -58,6 +81,10 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
     if (animationRef.current) {
       clearTimeout(animationRef.current);
       animationRef.current = null;
+    }
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
     }
   }, []);
 
@@ -103,10 +130,17 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
       setCurrentPhase('idle');
       clearAllTimers();
       setNextPageLoaded(false);
+      setVideoReady(false);
+      setTransitionStartTime(null);
+      setProgress(0);
       return;
     }
 
-    // Clear any existing timers
+    // Record when transition starts for minimum duration enforcement
+    setTransitionStartTime(Date.now());
+    setProgress(0);
+
+    // Clear any existing timers first
     clearAllTimers();
 
     // Start animation sequence with unified timing
@@ -135,11 +169,29 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
               // Phase 5: Final transition
               setCurrentPhase('final');
               
-              // Wait for next page to be loaded before completing
-              const finalDelay = nextPageLoaded ? 0 : 100;
-              phaseTimersRef.current.final = setTimeout(() => {
-                onComplete();
-              }, finalDelay);
+              // Check completion conditions periodically
+              const checkCompletion = () => {
+                const currentTime = Date.now();
+                const elapsedTime = transitionStartTime ? currentTime - transitionStartTime : 0;
+                const hasMetMinimumDuration = elapsedTime >= 4000; // 4 seconds
+                
+                // Complete if BOTH conditions are met:
+                // 1. Page is loaded AND 2. Minimum 4 seconds have passed
+                if (nextPageLoaded && hasMetMinimumDuration) {
+                  if (progressIntervalRef.current) {
+                    clearInterval(progressIntervalRef.current);
+                    progressIntervalRef.current = null;
+                  }
+                  onComplete();
+                  return;
+                }
+                
+                // If not ready, check again after a short delay
+                setTimeout(checkCompletion, 100);
+              };
+              
+              // Start checking completion conditions
+              checkCompletion();
             }, zoomDuration);
           }, completeDuration);
         }, fillingDuration);
@@ -446,12 +498,35 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
           </AnimatePresence>
 
           {/* Loading indicator for next page */}
-          {currentPhase === 'final' && !nextPageLoaded && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center text-white">
+          {currentPhase === 'final' && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <div className="text-center text-white mb-4">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
-                <p className="text-sm opacity-80">Loading...</p>
+                <p className="text-sm opacity-80">
+                  {!nextPageLoaded 
+                    ? 'Loading page...' 
+                    : progress < 100 
+                      ? 'Preparing experience...' 
+                      : 'Almost ready...'}
+                </p>
               </div>
+              
+              {/* Progress bar - shows either page loading or minimum duration progress */}
+              <div className="w-48 h-1 bg-white/20 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 rounded-full transition-all duration-100 ease-out"
+                  style={{ 
+                    width: !nextPageLoaded 
+                      ? '0%' // Show empty if page isn't loaded yet
+                      : `${progress}%` // Show progress toward 4 seconds if page is loaded
+                  }}
+                />
+              </div>
+              <p className="text-xs text-white/60 mt-2">
+                {!nextPageLoaded 
+                  ? 'Loading...' 
+                  : `${Math.round(progress)}%`}
+              </p>
             </div>
           )}
         </div>
