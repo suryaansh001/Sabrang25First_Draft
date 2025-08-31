@@ -257,7 +257,7 @@ export default function PeopleStrip() {
       }
     },
     { 
-      img: "/images/Team/Prabal agrawal.webp", 
+      img: "/images/Team/Prabal agarwal2.webp", 
       bg: "bg-indigo-500",
       name: "Prabal Agarwal",
       role: "Report",
@@ -279,7 +279,7 @@ export default function PeopleStrip() {
        phone: "+91 98765 43220"
     },
     { 
-      img: "/images/Team/Ekansh Saraswat.webp", 
+      img: "/images/Team/Ekansh Saraswat 2.webp", 
       bg: "bg-yellow-500",
       name: "Ekansh Saraswat",
       role: "Photography",
@@ -288,9 +288,9 @@ export default function PeopleStrip() {
        phone: "+91 98765 43221"
     },
     { 
-      img: "/images/Team/Satvik vaid.webp", 
+      img: "/images/Team/Satvick vaid.webp", 
       bg: "bg-lime-500",
-      name: "Satvik Vaid",
+      name: "Satvick Vaid",
       role: "Cultural",
       committee: "Cultural",
       contact: "satvick.vaid@email.com",
@@ -300,7 +300,7 @@ export default function PeopleStrip() {
       }
     },
     { 
-      img: "/images/Team/Suryaansh Sharma.webp", 
+      img: "/images/Team/SuryaanshSharma.webp", 
       bg: "bg-amber-500",
       name: "Suryaansh Sharma",
       role: "Technical",
@@ -330,7 +330,7 @@ export default function PeopleStrip() {
       phone: "+91 98765 43228"
     },
     { 
-      img: "/images/Team/Vandan Shah.webp", 
+      img: "/images/Team/vandanshah.webp", 
       bg: "bg-sky-500",
       name: "Vandan P. Shah",
       role: "Social Media",
@@ -363,7 +363,7 @@ export default function PeopleStrip() {
       }
     },
     { 
-      img: "/images/Team/Suryansh Khandelwal.webp", 
+      img: "/images/Team/suryanshkhandelwal.jpg", 
       bg: "bg-neutral-500",
       name: "Suryansh Khandelwal",
       role: "Stage & Venue",
@@ -376,7 +376,20 @@ export default function PeopleStrip() {
       }
     },
     { 
-      img: "/images/Team/Ayushi Kabra.webp", 
+      img: "/images/Team/aryan.jpg", 
+      bg: "bg-neutral-500",
+      name: "Akshat Saraswat",
+      role: "Stage & Venue",
+      committee: "Stage & Venue",
+      contact: "AKASH@jklu.edu.in",
+      phone: "+91 7014647818",
+      socials: {
+        linkedin: "https://www.linkedin.com/in/",
+        instagram: "https://www.instagram.com/"
+      }
+    },
+    { 
+      img: "/images/Team/AyushiKabra.webp", 
       bg: "bg-gray-500",
       name: "Ayushi Kabra",
       role: "Registrations",
@@ -387,7 +400,7 @@ export default function PeopleStrip() {
     { 
       img: "/images/OH_images_home/pooja.jpeg", 
       bg: "bg-red-600",
-      name: "Jayash Gehlot",
+      name: "Jayash Gahlot",
       role: "Registrations",
       committee: "Registrations",
       contact: "jayash.gehlot@email.com",
