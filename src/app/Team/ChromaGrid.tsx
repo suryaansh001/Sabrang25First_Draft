@@ -224,7 +224,7 @@ export default function PeopleStrip() {
       }
     },
     { 
-      img: "/images/Team/Discipline/Kriti_Gupta.png", 
+      img: "/images/Team/kriti.webp", 
       bg: "bg-orange-500",
       name: "Kriti Gupta",
       role: "Discipline",
@@ -270,7 +270,7 @@ export default function PeopleStrip() {
       }
     },
     { 
-      img: "/images/OH_images_home/kavya.jpeg", 
+      img: "/images/Team/ShouryaPrajapat.webp", 
       bg: "bg-teal-500",
       name: "Shourya Prajapat",
       role: "Photography",
@@ -288,7 +288,7 @@ export default function PeopleStrip() {
        phone: "+91 98765 43221"
     },
     { 
-      img: "/images/Team/Satvick vaid.webp", 
+      img: "/images/Team/Satvik vaid.webp", 
       bg: "bg-lime-500",
       name: "Satvick Vaid",
       role: "Cultural",
@@ -376,7 +376,7 @@ export default function PeopleStrip() {
       }
     },
     { 
-      img: "/images/Team/aryan.jpg", 
+      img: "/images/Team/akashSaraswatCropped.webp", 
       bg: "bg-neutral-500",
       name: "Akshat Saraswat",
       role: "Stage & Venue",
@@ -411,7 +411,7 @@ export default function PeopleStrip() {
       bg: "bg-fuchsia-600",
       name: "Chahat Khandelwal",
       role: "Anchor",
-      committee: "anchorz",
+      committee: "anchors",
       contact: "",
       phone: "",
       socials: {
