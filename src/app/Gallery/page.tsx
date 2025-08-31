@@ -157,9 +157,7 @@ const Gallery = () => {
         targetHref={targetHref}
         onComplete={() => {
           setShowTransition(false);
-          if (targetHref) {
-            router.push(targetHref);
-          }
+          setTargetHref('');
         }}
       />
 

@@ -3,9 +3,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Clock, MapPin, ChevronRight, ChevronDown, Home, Info, Star, Users, HelpCircle, Handshake, Mail } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import SidebarDock from '../../../components/SidebarDock';
+import { useNavigation } from '../../../components/NavigationContext';
 import Logo from '../../../components/Logo';
-import InfinityTransition from '../../../components/InfinityTransition';
 
 interface TimelineEvent {
 	time: string;
@@ -21,10 +20,9 @@ interface TimelineData {
 
 export default function SchedulePage() {
 	const router = useRouter();
+	const { navigate } = useNavigation();
 	const [activeDay, setActiveDay] = useState<number>(1);
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-	const [showTransition, setShowTransition] = useState(false);
-	const [targetHref, setTargetHref] = useState<string | null>(null);
 	const [isMobile, setIsMobile] = useState(false);
 	const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 	const [scrollX, setScrollX] = useState(0);
@@ -70,7 +68,7 @@ export default function SchedulePage() {
 		{ title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
 		{ title: 'Events', href: '/Events', icon: <Star className="w-5 h-5" /> },
 		{ title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
-		{ title: 'Schedule', href: '/schedule', icon: <Calendar className="w-5 h-5" /> },
+		{ title: 'Schedule', href: '/schedule/progress', icon: <Clock className="w-5 h-5" /> },
 		{ title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
 		{ title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
 		{ title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
@@ -247,7 +245,6 @@ export default function SchedulePage() {
 
 			{/* Logo and sidebar */}
 			<Logo className="block" />
-			<SidebarDock className="hidden lg:block" />
 
 			{/* Mobile hamburger */}
 			<button
@@ -277,7 +274,7 @@ export default function SchedulePage() {
 							{mobileNavItems.map((item) => (
 								<button
 									key={item.title}
-									onClick={() => { setMobileMenuOpen(false); setTargetHref(item.href); setShowTransition(true); }}
+									onClick={() => { setMobileMenuOpen(false); navigate(item.href); }}
 									className="flex items-center gap-3 p-4 rounded-xl bg-white/20 backdrop-blur-md border border-white/35 text-white text-base hover:bg-white/25 active:scale-[0.99] transition text-left"
 								>
 									<span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/25 backdrop-blur-md border border-white/35">
@@ -291,18 +288,7 @@ export default function SchedulePage() {
 				</div>
 			)}
 
-			{/* Infinity Transition */}
-			<InfinityTransition
-				isActive={showTransition}
-				targetHref={targetHref}
-				onComplete={() => {
-					if (targetHref) {
-						router.push(targetHref);
-					}
-					setShowTransition(false);
-					setTargetHref(null);
-				}}
-			/>
+			{/* Infinity transition handled by AppShell */}
 
 			{/* Main Content Container */}
 			<div className="relative z-10 pb-16 flex-grow pt-20 lg:pt-0">

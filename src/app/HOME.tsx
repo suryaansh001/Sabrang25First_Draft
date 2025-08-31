@@ -5,7 +5,8 @@ import SidebarDock from '../../components/SidebarDock';
 import MobileScrollMenu from '../../components/MobileScrollMenu';
 import { useVideo } from '../../components/VideoContext';
 import { useRouter } from 'next/navigation';
-import InfinityTransition from '../../components/InfinityTransition';
+import { useNavigation } from '../../components/NavigationContext';
+
 
 // Simplified Video Background Component
 const VideoBackground = () => {
@@ -177,10 +178,10 @@ const MobileVideoBackground: React.FC = () => {
 const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false }: LayeredLandingPageProps) {
   const [assetsLoaded, setAssetsLoaded] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showTransition, setShowTransition] = useState(false);
-  const [targetHref, setTargetHref] = useState<string | null>(null);
+
   const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
+  const { navigate } = useNavigation();
 
   // Detect mobile device
   useEffect(() => {
@@ -414,7 +415,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                 {mobileNavItems.map((item) => (
                   <button
                     key={item.title}
-                    onClick={() => { setMobileMenuOpen(false); setTargetHref(item.href); setShowTransition(true); }}
+                    onClick={() => { setMobileMenuOpen(false); navigate(item.href); }}
                     className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
                   >
                     <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
@@ -431,8 +432,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         {/* Mobile Scroll Menu - appears when scrolling */}
         <MobileScrollMenu 
           onNavigate={(href) => {
-            setTargetHref(href);
-            setShowTransition(true);
+            navigate(href);
           }}
         />
       </div>
@@ -471,7 +471,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               ].map((item, index) => (
                 <button
                   key={item.title}
-                  onClick={() => { setTargetHref(item.href); setShowTransition(true); }}
+                  onClick={() => { navigate(item.href); }}
                   className="group relative p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 hover:border-white/40 active:scale-[0.98] transition-all duration-300 text-center overflow-hidden"
                 >
                   {/* Background gradient on hover */}
@@ -611,7 +611,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         {!isLoading && (
           <SidebarDock 
             className="hidden lg:block"
-            onNavigate={(href) => { setTargetHref(href); setShowTransition(true); }}
+            onNavigate={(href) => { navigate(href); }}
           />
         )}
         
@@ -663,16 +663,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         </div>
       </div>
 
-      {/* Infinity transition */}
-      <InfinityTransition
-        isActive={showTransition}
-        targetHref={targetHref}
-        onComplete={() => {
-          if (targetHref) router.push(targetHref);
-          setShowTransition(false);
-          setTargetHref(null);
-        }}
-      />
+              {/* Infinity transition handled by AppShell */}
 
       {/* Enhanced Mobile Styles */}
       <style jsx>{`

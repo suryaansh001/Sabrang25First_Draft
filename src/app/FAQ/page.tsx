@@ -1,11 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import SidebarDock from '../../../components/SidebarDock';
 import Logo from '../../../components/Logo';
 import { Calendar, Users, Handshake, Info, Clock, Star, Mail, Home, HelpCircle, X, ChevronUp, Search, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import InfinityTransition from '../../../components/InfinityTransition';
+import { useNavigation } from '../../../components/NavigationContext';
 
 interface Star {
   id: number;
@@ -54,9 +53,8 @@ const DecorativeIcon = ({ seed = 0 }: { seed?: number }) => {
 
 const FAQ = () => {
   const router = useRouter();
+  const { navigate } = useNavigation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showTransition, setShowTransition] = useState(false);
-  const [targetHref, setTargetHref] = useState<string | null>(null);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -190,7 +188,6 @@ const FAQ = () => {
 
       {/* Logo and sidebar */}
       <Logo className="block" />
-      <SidebarDock className="hidden lg:block" />
 
       {/* Mobile hamburger (same style as About section) */}
       <button
@@ -220,7 +217,7 @@ const FAQ = () => {
               {mobileNavItems.map((item) => (
                 <button
                   key={item.title}
-                  onClick={() => { setMobileMenuOpen(false); setTargetHref(item.href); setShowTransition(true); }}
+                  onClick={() => { setMobileMenuOpen(false); navigate(item.href); }}
                   className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
                 >
                   <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
@@ -234,18 +231,7 @@ const FAQ = () => {
         </div>
       )}
 
-      {/* Local Infinity Transition for mobile nav (mobile-optimized) */}
-      <InfinityTransition
-        isActive={showTransition}
-        targetHref={targetHref}
-        onComplete={() => {
-          if (targetHref) {
-            router.push(targetHref);
-          }
-          setShowTransition(false);
-          setTargetHref(null);
-        }}
-      />
+      {/* Infinity transition handled by AppShell */}
 
       {/* Main Content Container */}
       <div className="relative z-10 pb-16 flex-grow">

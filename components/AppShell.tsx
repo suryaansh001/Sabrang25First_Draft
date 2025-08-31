@@ -8,6 +8,25 @@ import Logo from "./Logo";
 import InfinityTransition from "./InfinityTransition";
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
+import { NavigationProvider } from "./NavigationContext";
+
+// Hook to detect mobile devices
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+    };
+    
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  return isMobile;
+};
 
 // Separate component that uses usePathname
 function AppShellContent({ children }: { children: React.ReactNode }) {
@@ -18,6 +37,7 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
   const [previousPath, setPreviousPath] = useState<string | null>(null);
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const isMobile = useIsMobile();
 
   // Handle page transitions
   useEffect(() => {
@@ -66,22 +86,33 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
     // Start transition
     setPendingNavigation(cleanHref);
     setShowTransition(true);
+    // Don't call router.push here - let InfinityTransition handle it
+  };
+
+  // Global navigation handler that can be used by any component
+  const handleGlobalNavigate = (href: string) => {
+    // Clean the href to remove query parameters for consistent navigation
+    const cleanHref = href.split('?')[0];
     
-    // Don't navigate here - let the transition handle it
-    // router.push(cleanHref);
+    // Hide content immediately
+    setIsTransitioning(true);
+    
+    // Start transition
+    setPendingNavigation(cleanHref);
+    setShowTransition(true);
   };
 
   const handleTransitionComplete = () => {
-    // Clear pending navigation immediately
-    if (pendingNavigation) {
-      setPendingNavigation(null);
-    }
-    
-    // Remove transition overlay
+    // Add a longer delay to ensure the new page is fully loaded and rendered
     setShowTransition(false);
     
-    // Make content visible immediately - no delay
-    setIsTransitioning(false);
+    // Gradually reveal content with proper timing
+    setTimeout(() => {
+      if (pendingNavigation) {
+        setPendingNavigation(null);
+      }
+      setIsTransitioning(false);
+    }, 150); // Increased delay to prevent flash of old content
   };
 
   useEffect(() => {
@@ -91,28 +122,30 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
   const hideChrome = pathname === "/" || pathname?.startsWith("/home") || pathname === "/Login" || pathname === "/Signup";
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <SplashCursor />
-      <Background />
-      <InfinityTransition 
-        isActive={showTransition} 
-        targetHref={pendingNavigation}
-        onComplete={handleTransitionComplete}
-      />
-      <div className="relative z-30 flex-grow">
-        {mounted && !hideChrome && pathname !== "/why-sponsor-us" && <Logo />}
-        <main 
-          key={pathname}
-          className={`${
-            isTransitioning ? 'opacity-0 pointer-events-none' : 'opacity-100'
-          }`}
-        >
-          {children}
-        </main>
-        {!hideChrome && <SidebarDock onNavigate={handleSidebarNavigate} />}
+    <NavigationProvider navigate={handleGlobalNavigate}>
+      <div className="min-h-screen flex flex-col">
+        <SplashCursor />
+        <Background />
+        <InfinityTransition 
+          isActive={showTransition} 
+          targetHref={pendingNavigation}
+          onComplete={handleTransitionComplete}
+        />
+        <div className="relative z-30 flex-grow">
+          {mounted && !hideChrome && pathname !== "/why-sponsor-us" && <Logo />}
+          <main 
+            key={pathname}
+            className={`${
+              isTransitioning ? 'opacity-0 pointer-events-none' : 'opacity-100'
+            }`}
+          >
+            {children}
+          </main>
+          {!hideChrome && !isMobile && <SidebarDock onNavigate={handleSidebarNavigate} />}
+        </div>
+        
       </div>
-      
-    </div>
+    </NavigationProvider>
   );
 }
 

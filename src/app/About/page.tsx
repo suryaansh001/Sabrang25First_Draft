@@ -3,14 +3,15 @@
 import React from 'react';
 import Image from 'next/image';
 import Logo from '../../../components/Logo';
-import SidebarDock from '../../../components/SidebarDock';
 import { useRouter } from 'next/navigation';
+import { useNavigation } from '../../../components/NavigationContext';
 import { Home, Info, Calendar, Star, Clock, Users, HelpCircle, Handshake, Mail, X } from 'lucide-react';
  
 
 const AboutPage = () => {
   // mobile menu state
   const router = useRouter();
+  const { navigate } = useNavigation();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
     { title: 'Home', href: '/', icon: <Home className="w-5 h-5" /> },
@@ -38,7 +39,6 @@ const AboutPage = () => {
       <div className="fixed inset-0 -z-10 bg-black/40 backdrop-blur-sm md:backdrop-blur" />
       
       <Logo />
-      <SidebarDock />
 
       {/* Mobile hamburger */}
       <button
@@ -68,7 +68,7 @@ const AboutPage = () => {
               {mobileNavItems.map((item) => (
                 <button
                   key={item.title}
-                  onClick={() => { setMobileMenuOpen(false); router.push(item.href); }}
+                  onClick={() => { setMobileMenuOpen(false); navigate(item.href); }}
                   className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
                 >
                   <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">

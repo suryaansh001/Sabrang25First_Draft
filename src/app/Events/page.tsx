@@ -3,10 +3,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, MapPin, Clock, Users, Star, Filter, Crown, Check, Share2, Home, HelpCircle, Handshake, Mail, Info, ChevronUp } from 'lucide-react';
-import SidebarDock from '../../../components/SidebarDock';
 import Logo from '../../../components/Logo';
 import { useRouter } from 'next/navigation';
-import InfinityTransition from '../../../components/InfinityTransition';
+import { useNavigation } from '../../../components/NavigationContext';
 import ComingSoonOverlay from '../../../components/ComingSoonOverlay';
 
 interface Event {
@@ -329,13 +328,12 @@ const categories = [
 
 export default function EventsPage() {
   const router = useRouter();
+  const { navigate } = useNavigation();
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [showFlagshipOnly, setShowFlagshipOnly] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [showCopyMessage, setShowCopyMessage] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showTransition, setShowTransition] = useState(false);
-  const [targetHref, setTargetHref] = useState<string | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   // ComingSoonOverlay removed – show main content directly
   const [isPageLoaded, setIsPageLoaded] = useState(true);
@@ -452,7 +450,6 @@ export default function EventsPage() {
           <div className="fixed inset-0 -z-10 bg-black/40 backdrop-blur-sm" />
           {/* Logo and sidebar */}
           <Logo className="block" />
-          <SidebarDock className="hidden lg:block" />
 
           {/* Flagship Events Toggle - hide on mobile to avoid overlapping navbar */}
           <motion.div 
@@ -740,7 +737,7 @@ export default function EventsPage() {
                   {mobileNavItems.map((item) => (
                     <button
                       key={item.title}
-                      onClick={() => { setMobileMenuOpen(false); setTargetHref(item.href); setShowTransition(true); }}
+                      onClick={() => { setMobileMenuOpen(false); navigate(item.href); }}
                       className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
                     >
                       <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
@@ -754,16 +751,7 @@ export default function EventsPage() {
             </div>
           )}
 
-          {/* Infinity transition for mobile nav */}
-          <InfinityTransition
-            isActive={showTransition}
-            targetHref={targetHref}
-            onComplete={() => {
-              if (targetHref) router.push(targetHref);
-              setShowTransition(false);
-              setTargetHref(null);
-            }}
-          />
+          {/* Infinity transition handled by AppShell */}
 
           {/* Scroll to Top Button */}
           <AnimatePresence>

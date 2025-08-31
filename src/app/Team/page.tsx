@@ -1,20 +1,17 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
 import { IconChevronUp } from '@tabler/icons-react';
 import { Calendar, Users, Handshake, Info, Clock, Star, Mail, Home, HelpCircle, X } from 'lucide-react';
 import ChromaGrid from "./ChromaGrid";
 import Logo from "../../../components/Logo";
-import InfinityTransition from "../../../components/InfinityTransition";
+import { useNavigation } from '../../../components/NavigationContext';
 
 const TeamPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showTransition, setShowTransition] = useState(false);
-  const [targetHref, setTargetHref] = useState<string>('');
   const [showScrollTop, setShowScrollTop] = useState(false);
   
-  const router = useRouter();
+  const { navigate } = useNavigation();
 
   // Navigation items for mobile menu (same as About page)
   const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
@@ -47,17 +44,6 @@ const TeamPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen text-white relative">
-      {/* Infinity Transition */}
-      <InfinityTransition 
-        isActive={showTransition} 
-        targetHref={targetHref}
-        onComplete={() => {
-          setShowTransition(false);
-          if (targetHref) {
-            router.push(targetHref);
-          }
-        }}
-      />
 
       {/* Mobile top-left logo (same as About page) */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
@@ -99,7 +85,7 @@ const TeamPage = () => {
               {mobileNavItems.map((item) => (
                 <button
                   key={item.title}
-                  onClick={() => { setMobileMenuOpen(false); setTargetHref(item.href); setShowTransition(true); }}
+                  onClick={() => { setMobileMenuOpen(false); navigate(item.href); }}
                   className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
                 >
                   <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
