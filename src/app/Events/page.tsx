@@ -33,7 +33,7 @@ const events: Event[] = [
     date: "25.12.2024",
     time: "19:00",
     shares: "567 Shares",
-    image: "/images/Events/Cultural/Panache.jpg",
+    image: "/images/about-section/Panache.png",
     description: "Sabrang's grandest fashion extravaganza. This year's theme-based rampwalk challenges participants to blend narrative with high fashion, showcasing creativity and stage presence.",
     venue: "Main Auditorium",
     price: "₹85-120",
@@ -50,7 +50,7 @@ const events: Event[] = [
     date: "27.12.2024",
     time: "19:30",
     shares: "189 Shares",
-    image: "/images/Events/Cultural/BandJam.jpg",
+    image: "/images/about-section/Bandjam.png",
     description: "A showdown of student bands performing original compositions and covers. From rock and indie to classical fusion.",
     venue: "Open Air Amphitheater",
     price: "₹60",
@@ -67,7 +67,7 @@ const events: Event[] = [
     date: "28.12.2024",
     time: "18:00",
     shares: "156 Shares",
-    image: "/images/Events/Cultural/DanceBattle.jpg",
+    image: "/images/about-section/Dance.png",
     description: "A one-on-one and crew vs. crew elimination dance face-off featuring hip-hop, freestyle, krumping, and fusion styles.",
     venue: "Dance Studio",
     price: "₹45",
@@ -84,7 +84,7 @@ const events: Event[] = [
     date: "01.01.2025",
     time: "18:00",
     shares: "145 Shares",
-    image: "/images/Events/Cultural/step-up.jpg",
+    image: "/images/home2.png",
     description: "A high-energy group dance event where choreography, synchronization, stage usage, and innovation are key.",
     venue: "Dance Studio",
     price: "₹40",
@@ -101,7 +101,7 @@ const events: Event[] = [
     date: "02.01.2025",
     time: "16:00",
     shares: "95 Shares",
-    image: "/images/Events/literary/dialectic.jpg", // Reusing an image
+    image: "/images/Logo@2x.png", // Placeholder image
     description: "A spoken word and poetry event celebrating the festival's theme, 'Noorwana'. Artists perform original pieces reflecting on light, cosmos, and inner luminescence.",
     venue: "Literature Hall",
     price: "Free",
@@ -118,7 +118,7 @@ const events: Event[] = [
     date: "03.01.2025",
     time: "17:00",
     shares: "88 Shares",
-    image: "/images/Events/Cultural/Nukkad Natak.jpg", // Reusing an image
+    image: "/images/building-6011756_1280.jpg", // Placeholder image
     description: "A mono-acting competition where a single actor, the 'Sutradhar' (narrator), brings a story to life. A test of versatility, expression, and stage command.",
     venue: "Performance Hall",
     price: "₹25",
@@ -135,7 +135,7 @@ const events: Event[] = [
     date: "03.01.2025",
     time: "20:00",
     shares: "234 Shares",
-    image: "/images/Events/Management/BiddingBeforeWicket.png",
+    image: "/images/Logo@2x.png", // Placeholder image
     description: "Cricket trivia meets auction drama. Participants receive virtual budgets to 'bid' on cricket players or scenarios.",
     venue: "Business School Auditorium",
     price: "₹25",
@@ -152,7 +152,7 @@ const events: Event[] = [
     date: "04.01.2025",
     time: "18:00",
     shares: "189 Shares",
-    image: "/images/Events/Management/SealTheDeal.png",
+    image: "/images/Logo@2x.png", // Placeholder image
     description: "A mock marketing game where participants act as salespeople trying to 'sell' unconventional or humorous items.",
     venue: "Conference Room",
     price: "₹15",
@@ -169,7 +169,7 @@ const events: Event[] = [
     date: "05.01.2025",
     time: "15:00",
     shares: "110 Shares",
-    image: "/images/Events/literary/dialectic.jpg", // Reusing image
+    image: "/images/Logo@2x.png", // Placeholder image
     description: "A unique debate competition where arguments must be presented in poetic verse. A battle of wits and words, rhythm and reason.",
     venue: "Literature Hall",
     price: "Free",
@@ -186,7 +186,7 @@ const events: Event[] = [
     date: "12.01.2025",
     time: "16:00",
     shares: "234 Shares",
-    image: "/images/Events/literary/dialectic.jpg",
+    image: "/images/Logo@2x.png", // Placeholder image
     description: "A curated talk series with distinguished guests—artists, activists, creators—sharing personal journeys and behind-the-scenes stories.",
     venue: "Main Auditorium",
     price: "Free",
@@ -203,7 +203,7 @@ const events: Event[] = [
     date: "06.01.2025",
     time: "14:00",
     shares: "70 Shares",
-    image: "/images/Events/Design/RECREATION.jpg", // Reusing image
+    image: "/images/Logo@2x.png", // Placeholder image
     description: "A hands-on workshop and competition where participants shape their imagination out of clay. The theme will be revealed on the spot.",
     venue: "Art Studio",
     price: "₹40",
@@ -220,7 +220,7 @@ const events: Event[] = [
     date: "09.01.2025",
     time: "10:00",
     shares: "115 Shares",
-    image: "/images/Events/Technical/Codeureka.jpg", // Reusing image
+    image: "/images/Logo@2x.png", // Placeholder image
     description: "A short filmmaking competition. Capture the essence of 'Sabrang' in a 3-5 minute film. A challenge of storytelling through the cinematic lens.",
     venue: "Campus Wide",
     price: "₹50",
@@ -237,7 +237,7 @@ const events: Event[] = [
     date: "07.01.2025",
     time: "12:00",
     shares: "350 Shares",
-    image: "/images/Events/Technical/Battleground.jpg", // Reusing image
+    image: "/images/Logo@2x.png", // Placeholder image
     description: "Drop into the battlegrounds in Sabrang's official BGMI tournament. Squad up and fight for the chicken dinner and ultimate bragging rights.",
     venue: "Online / E-Sports Arena",
     price: "₹50/squad",
@@ -254,7 +254,7 @@ const events: Event[] = [
     date: "08.01.2025",
     time: "12:00",
     shares: "410 Shares",
-    image: "/images/Events/Technical/Battleground.jpg", // Reusing image
+    image: "/images/Logo@2x.png", // Placeholder image
     description: "Assemble your team of five and compete in a high-stakes Valorant tournament. Strategy, aim, and teamwork will decide the champions.",
     venue: "E-Sports Arena",
     price: "₹100/team",
@@ -271,7 +271,7 @@ const events: Event[] = [
     date: "09.01.2025",
     time: "12:00",
     shares: "290 Shares",
-    image: "/images/Events/Technical/Battleground.jpg", // Reusing image
+    image: "/images/Logo@2x.png", // Placeholder image
     description: "The ultimate survival shooter on mobile. Join the Free Fire tournament and prove your squad is the best. Booyah!",
     venue: "Online / E-Sports Arena",
     price: "₹40/squad",
@@ -288,7 +288,7 @@ const events: Event[] = [
     date: "10.01.2025",
     time: "11:00",
     shares: "180 Shares",
-    image: "/images/Events/Technical/Synergy.jpg", // Reusing image
+    image: "/images/Logo@2x.png", // Placeholder image
     description: "Build and code your autonomous robot to compete in a thrilling game of soccer. A fusion of engineering, coding, and strategy.",
     venue: "Technical Block",
     price: "₹150/team",
@@ -305,7 +305,7 @@ const events: Event[] = [
     date: "02.01.2025",
     time: "19:00",
     shares: "67 Shares",
-    image: "/images/Events/Cultural/Dumb Show.jpg",
+    image: "/images/Schedule.jpg",
     description: "A classic non-verbal guessing game with a Sabrang twist. Teams mime phrases, movie titles, or idioms under time pressure.",
     venue: "Theater Hall",
     price: "Free",
