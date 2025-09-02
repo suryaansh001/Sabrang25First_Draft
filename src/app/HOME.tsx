@@ -365,10 +365,16 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
             <div className="max-w-sm mx-auto">
                              {/* Main Title */}
                <h1 className="font-black leading-none mb-6">
-                 <span className="block text-5xl sm:text-6xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 drop-shadow-2xl" style={{ fontFamily: "'Childstone Demo', sans-serif" }}>
+                 <span className="block text-6xl sm:text-7xl md:text-8xl text-white drop-shadow-lg" style={{ 
+                   fontFamily: "'Quivert', sans-serif",
+                   textShadow: '0 0 20px rgba(255,255,255,0.3)'
+                 }}>
                    SABRANG
                  </span>
-                 <span className="inline-block text-4xl sm:text-5xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 drop-shadow-2xl ml-2 sm:ml-3 md:ml-4" style={{ fontFamily: "'Childstone Demo', sans-serif" }}>
+                 <span className="inline-block text-5xl sm:text-6xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 ml-2 sm:ml-3 md:ml-4" style={{ 
+                   fontFamily: "'TAN Nimbus', sans-serif",
+                   textShadow: '0 0 15px rgba(34,211,238,0.4)'
+                 }}>
                    25
                  </span>
                </h1>
@@ -444,7 +450,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
           <section className="px-6 py-20">
             <div className="text-center">
               <div className="w-16 h-1 bg-gradient-to-r from-purple-400 to-pink-400 mx-auto mb-6 rounded-full"></div>
-              <h2 className="text-4xl font-bold text-white mb-6">Sabrang 25</h2>
+              <h2 className="text-4xl font-bold text-white mb-6" style={{ fontFamily: "'Quivert', sans-serif" }}>Sabrang 25</h2>
               <p className="text-gray-300 text-lg leading-relaxed max-w-md mx-auto">
                 Unforgettable celebration of culture, creativity, and community.
               </p>
@@ -458,7 +464,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
           {/* Explore More Section */}
           <section className="px-6 py-16">
             <div className="text-center mb-12">
-              <h3 className="text-3xl font-bold text-white mb-3">Explore More</h3>
+              <h3 className="text-3xl font-bold text-white mb-3" style={{ fontFamily: "'Quivert', sans-serif" }}>Explore More</h3>
               <p className="text-gray-400 text-sm">Discover what makes Sabrang special</p>
             </div>
             
@@ -499,7 +505,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
           {/* Ready to Join Section */}
           <section className="px-6 py-20">
             <div className="text-center">
-              <h3 className="text-3xl font-bold text-white mb-4">Ready to Join?</h3>
+              <h3 className="text-3xl font-bold text-white mb-4" style={{ fontFamily: "'Quivert', sans-serif" }}>Ready to Join?</h3>
               <p className="text-gray-300 mb-8 text-lg">Don't miss out on the biggest event of the year!</p>
               
               {/* Enhanced Register Button */}
@@ -649,14 +655,21 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
           {!isLoading && (
             <div className="relative z-10 flex items-center justify-center h-full">
               <div className="text-center">
-                                 <h1 className="text-8xl md:text-7xl lg:text-8xl font-black text-white leading-none">
-                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 drop-shadow-lg text-9xl md:text-11xl lg:text-13xl" style={{ fontFamily: "'Childstone Demo', sans-serif", textShadow: '0 0 30px rgba(255,255,255,0.5)', letterSpacing: '0.02em' }}>
-                     SABRANG
-                   </span><br />
-                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 drop-shadow-2xl text-5xl md:text-6xl lg:text-7xl" style={{ fontFamily: "'TAN Nimbus', sans-serif", textShadow: '0 0 40px rgba(34, 211, 238, 0.6)' }}>
-                     2025
-                   </span>
-                 </h1>
+                                                 <h1 className="text-8xl md:text-7xl lg:text-8xl font-black text-white leading-none">
+                  <span className="text-white drop-shadow-lg text-9xl md:text-11xl lg:text-13xl" style={{ 
+                    fontFamily: "'Quivert', sans-serif", 
+                    letterSpacing: '0.02em',
+                    textShadow: '0 0 30px rgba(255,255,255,0.4)'
+                  }}>
+                    SABRANG
+                  </span><br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 drop-shadow-2xl text-5xl md:text-6xl lg:text-7xl" style={{ 
+                    fontFamily: "'TAN Nimbus', sans-serif", 
+                    textShadow: '0 0 20px rgba(34,211,238,0.5)'
+                  }}>
+                    2025
+                  </span>
+                </h1>
               </div>
             </div>
           )}
