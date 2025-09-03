@@ -3,14 +3,16 @@
 import React, { useState } from 'react';
 import Logo from '../../../components/Logo';
 import Footer from '../../../components/Footer';
+import SidebarDock from '../../../components/SidebarDock';
 import { useRouter } from 'next/navigation';
-import { useNavigation } from '../../../components/NavigationContext';
+import InfinityTransition from '../../../components/InfinityTransition';
 import { Home, Info, Calendar, Star, Users, HelpCircle, Handshake, Mail as MailIcon, X } from 'lucide-react';
 
 const Contact = () => {
   const router = useRouter();
-  const { navigate } = useNavigation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showTransition, setShowTransition] = useState(false);
+  const [targetHref, setTargetHref] = useState<string | null>(null);
 
   const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
     { title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
@@ -38,6 +40,7 @@ const Contact = () => {
       <div className="fixed inset-0 -z-10 bg-black/60" />
       
       <Logo />
+      <SidebarDock className="hidden lg:block" />
 
       {/* Mobile hamburger */}
       <button
@@ -67,7 +70,7 @@ const Contact = () => {
               {mobileNavItems.map((item) => (
                 <button
                   key={item.title}
-                  onClick={() => { setMobileMenuOpen(false); navigate(item.href); }}
+                  onClick={() => { setMobileMenuOpen(false); setTargetHref(item.href); setShowTransition(true); }}
                   className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
                 >
                   <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
@@ -81,7 +84,15 @@ const Contact = () => {
         </div>
       )}
 
-      {/* Infinity transition handled by AppShell */}
+      {/* Infinity Transition */}
+      <InfinityTransition
+        isActive={showTransition}
+        targetHref={targetHref}
+        onComplete={() => {
+          setShowTransition(false);
+          setTargetHref(null);
+        }}
+      />
       
       {/* Main Content Container */}
       <div className="relative z-10 pt-24 flex-grow">

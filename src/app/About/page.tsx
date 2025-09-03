@@ -1,14 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { memo, lazy, Suspense } from 'react';
 import Image from 'next/image';
-import Logo from '../../../components/Logo';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '../../../components/NavigationContext';
 import { Home, Info, Calendar, Star, Clock, Users, HelpCircle, Handshake, Mail, X } from 'lucide-react';
+
+// Lazy load Logo component
+const Logo = lazy(() => import('../../../components/Logo'));
  
 
-const AboutPage = () => {
+const AboutPage = memo(() => {
   // mobile menu state
   const router = useRouter();
   const { navigate } = useNavigation();
@@ -38,7 +40,9 @@ const AboutPage = () => {
       {/* Black Overlay for better text readability with subtle glass blur */}
       <div className="fixed inset-0 -z-10 bg-black/40 backdrop-blur-sm md:backdrop-blur" />
       
-      <Logo />
+      <Suspense fallback={<div className="w-16 h-16" />}>
+        <Logo />
+      </Suspense>
 
       {/* Mobile hamburger */}
       <button
@@ -135,6 +139,9 @@ const AboutPage = () => {
                     fill
                     sizes="(min-width: 1024px) 50vw, 100vw"
                     priority={false}
+                    loading="lazy"
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyg"
                     className="object-cover transform group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
@@ -173,7 +180,8 @@ const AboutPage = () => {
           <div className="absolute inset-0 -z-10">
                          {/* Image Fallback - Always visible */}
              <img 
-               loading="lazy" decoding="async"
+               loading="lazy" 
+               decoding="async"
                src="/images/backgrounds/about-page/WhatsApp Image 2025-08-13 at 20.04.40_42fe13c8.jpg" 
                alt="Why It's OP Background"
                className="w-full h-full object-cover"
@@ -185,17 +193,14 @@ const AboutPage = () => {
               muted 
               loop
               playsInline
-              preload="metadata"
+              preload="none"
               onError={(e) => {
                 console.warn('About video failed to load, using image fallback', e);
                 const target = e.target as HTMLVideoElement;
                 target.style.display = 'none';
               }}
-              onLoadStart={() => console.log('About video loading started')}
-              onCanPlay={() => console.log('About video can play')}
             >
               <source src="/videos/optimized/aboutop.mp4" type="video/mp4" />
-              <source src="/videos/aboutsection/aboutop.mp4" type="video/mp4" />
             </video>
             <div className="absolute inset-0 bg-gradient-to-br from-purple-900/80 via-blue-900/70 to-pink-900/80"></div>
           </div>
@@ -252,6 +257,8 @@ const AboutPage = () => {
                  <div className="absolute inset-0 overflow-hidden rounded-lg md:rounded-2xl">
                    {/* Image Fallback - Always visible */}
                    <img 
+                     loading="lazy"
+                     decoding="async"
                      src="/images/about-section/Panache.png" 
                      alt="Panache Fashion Show"
                      className="w-full h-full object-cover"
@@ -263,17 +270,14 @@ const AboutPage = () => {
                      muted 
                      loop
                      playsInline
-                     preload="metadata"
+                     preload="none"
                      onError={(e) => {
                        console.warn('Panache video failed to load, using image fallback', e);
                        const target = e.target as HTMLVideoElement;
                        target.style.display = 'none';
                      }}
-                     onLoadStart={() => console.log('Panache video loading started')}
-                     onCanPlay={() => console.log('Panache video can play')}
                    >
                      <source src="/videos/optimized/panache.mp4" type="video/mp4" />
-                     <source src="/videos/aboutsection/panache.mp4" type="video/mp4" />
                    </video>
                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                  </div>
@@ -288,6 +292,8 @@ const AboutPage = () => {
                  <div className="absolute inset-0 overflow-hidden rounded-lg md:rounded-2xl">
                    {/* Image Fallback - Always visible */}
                    <img 
+                     loading="lazy"
+                     decoding="async"
                      src="/images/about-section/Bandjam.png" 
                      alt="Band Jam Music Competition"
                      className="w-full h-full object-cover"
@@ -299,17 +305,14 @@ const AboutPage = () => {
                      muted 
                      loop
                      playsInline
-                     preload="metadata"
+                     preload="none"
                      onError={(e) => {
                        console.warn('Band Jam video failed to load, using image fallback', e);
                        const target = e.target as HTMLVideoElement;
                        target.style.display = 'none';
                      }}
-                     onLoadStart={() => console.log('Band Jam video loading started')}
-                     onCanPlay={() => console.log('Band Jam video can play')}
                    >
                      <source src="/videos/optimized/bandjam.mp4" type="video/mp4" />
-                     <source src="/videos/aboutsection/bandjam.mp4" type="video/mp4" />
                    </video>
                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                  </div>
@@ -324,6 +327,8 @@ const AboutPage = () => {
                  <div className="absolute inset-0 overflow-hidden rounded-lg md:rounded-2xl">
                    {/* Image Fallback - Always visible */}
                    <img 
+                     loading="lazy"
+                     decoding="async"
                      src="/images/about-section/Dance.png" 
                      alt="Dance Battle Competition"
                      className="w-full h-full object-cover"
@@ -335,17 +340,14 @@ const AboutPage = () => {
                      muted 
                      loop
                      playsInline
-                     preload="metadata"
+                     preload="none"
                      onError={(e) => {
                        console.warn('Dance video failed to load, using image fallback', e);
                        const target = e.target as HTMLVideoElement;
                        target.style.display = 'none';
                      }}
-                     onLoadStart={() => console.log('Dance video loading started')}
-                     onCanPlay={() => console.log('Dance video can play')}
                    >
                      <source src="/videos/optimized/dance.mp4" type="video/mp4" />
-                     <source src="/videos/aboutsection/dance.mp4" type="video/mp4" />
                    </video>
                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                  </div>
@@ -436,6 +438,8 @@ const AboutPage = () => {
               <div className="relative group hidden lg:block">
                 <div className="relative overflow-hidden rounded-2xl">
                   <img 
+                    loading="lazy"
+                    decoding="async"
                     src="/images/backgrounds/about-page/WhatsApp Image 2025-08-13 at 20.04.37_b514dcc5.jpg" 
                     alt="Beyond Competitions - Live Performance"
                     className="w-full h-[500px] object-cover transform group-hover:scale-105 transition-transform duration-700"
@@ -462,6 +466,8 @@ const AboutPage = () => {
               <div className="relative group hidden lg:block">
                 <div className="relative overflow-hidden rounded-2xl">
                   <img 
+                    loading="lazy"
+                    decoding="async"
                     src="/images/backgrounds/about-page/WhatsApp Image 2025-08-13 at 20.04.40_42fe13c8.jpg" 
                     alt="Final Vibe - Live Event Atmosphere"
                     className="w-full h-[500px] object-cover transform group-hover:scale-105 transition-transform duration-700"
@@ -495,6 +501,21 @@ const AboutPage = () => {
       
 
       <style jsx>{`
+        /* Performance optimizations */
+        @media (prefers-reduced-motion: reduce) {
+          *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
+        }
+
+        /* GPU acceleration for transforms */
+        .transform {
+          will-change: transform;
+          transform: translateZ(0);
+        }
+
         /* Custom scrollbar */
         ::-webkit-scrollbar {
           width: 8px;
@@ -518,7 +539,7 @@ const AboutPage = () => {
           scroll-behavior: smooth;
         }
         
-        /* Animation for floating elements */
+        /* Optimized animation for floating elements */
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-10px); }
@@ -526,10 +547,19 @@ const AboutPage = () => {
         
         .animate-float {
           animation: float 3s ease-in-out infinite;
+          contain: layout style paint;
+        }
+
+        /* Optimize video containers for better performance */
+        video {
+          will-change: auto;
+          transform: translateZ(0);
         }
       `}</style>
     </div>
   );
-};
+});
+
+AboutPage.displayName = 'AboutPage';
 
 export default AboutPage;

@@ -5,10 +5,12 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "build:analyze": "ANALYZE=true next build",
     "start": "next start",
     "lint": "next lint",
     "optimize-videos": "node scripts/optimize-videos.js",
-    "check-videos": "node scripts/check-videos.js"
+    "check-videos": "node scripts/check-videos.js",
+    "preload-critical": "node scripts/preload-critical.js"
   },
   "dependencies": {
     "@react-three/fiber": "^9.2.0",
@@ -34,6 +36,7 @@
     "tailwind-scrollbar-hide": "^4.0.0"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^15.4.6",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

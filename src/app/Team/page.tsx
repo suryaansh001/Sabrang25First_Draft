@@ -1,17 +1,22 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { IconChevronUp } from '@tabler/icons-react';
 import { Calendar, Users, Handshake, Info, Clock, Star, Mail, Home, HelpCircle, X } from 'lucide-react';
-import ChromaGrid from "./ChromaGrid";
-import Logo from "../../../components/Logo";
-import { useNavigation } from '../../../components/NavigationContext';
+import InfinityTransition from "../../../components/InfinityTransition";
+
+// Lazy load only non-critical components
+const ChromaGrid = lazy(() => import("./ChromaGrid"));
+const Logo = lazy(() => import("../../../components/Logo"));
 
 const TeamPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showTransition, setShowTransition] = useState(false);
+  const [targetHref, setTargetHref] = useState<string>('');
   const [showScrollTop, setShowScrollTop] = useState(false);
   
-  const { navigate } = useNavigation();
+  const router = useRouter();
 
   // Navigation items for mobile menu (same as About page)
   const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
@@ -44,6 +49,15 @@ const TeamPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen text-white relative">
+      {/* Infinity Transition */}
+      <InfinityTransition 
+        isActive={showTransition} 
+        targetHref={targetHref}
+        onComplete={() => {
+          setShowTransition(false);
+          setTargetHref('');
+        }}
+      />
 
       {/* Mobile top-left logo (same as About page) */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
@@ -85,7 +99,7 @@ const TeamPage = () => {
               {mobileNavItems.map((item) => (
                 <button
                   key={item.title}
-                  onClick={() => { setMobileMenuOpen(false); navigate(item.href); }}
+                  onClick={() => { setMobileMenuOpen(false); setTargetHref(item.href); setShowTransition(true); }}
                   className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
                 >
                   <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
@@ -149,7 +163,9 @@ const TeamPage = () => {
             <div className="w-24 h-1 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 rounded-full" />
           </motion.div>
           
-          <ChromaGrid />
+          <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="text-white">Loading team...</div></div>}>
+            <ChromaGrid />
+          </Suspense>
         </div>
       </div>
 
