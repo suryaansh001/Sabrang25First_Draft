@@ -8,6 +8,25 @@ import Logo from "./Logo";
 import InfinityTransition from "./InfinityTransition";
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
+import { NavigationProvider } from "./NavigationContext";
+
+// Hook to detect mobile devices
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+    };
+    
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  return isMobile;
+};
 
 // Separate component that uses usePathname
 function AppShellContent({ children }: { children: React.ReactNode }) {
@@ -18,6 +37,7 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
   const [previousPath, setPreviousPath] = useState<string | null>(null);
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const isMobile = useIsMobile();
 
   // Handle page transitions
   useEffect(() => {
@@ -41,6 +61,14 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
     }
   }, [showTransition, pendingNavigation]);
 
+  // Ensure content is properly synchronized with pathname changes
+  useEffect(() => {
+    if (pathname && !showTransition && isTransitioning) {
+      // If pathname has changed and transition is complete, ensure content is visible immediately
+      setIsTransitioning(false);
+    }
+  }, [pathname, showTransition, isTransitioning]);
+
   // Ensure content is visible when pathname changes (for direct navigation)
   useEffect(() => {
     if (pathname && !isTransitioning && !showTransition) {
@@ -49,54 +77,75 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
   }, [pathname, isTransitioning, showTransition]);
 
   const handleSidebarNavigate = (href: string) => {
-    setPendingNavigation(href);
+    // Clean the href to remove query parameters for consistent navigation
+    const cleanHref = href.split('?')[0];
+    
+    // Hide content immediately
     setIsTransitioning(true);
+    
+    // Start transition
+    setPendingNavigation(cleanHref);
     setShowTransition(true);
-    router.push(href);
+    // Don't call router.push here - let InfinityTransition handle it
+  };
+
+  // Global navigation handler that can be used by any component
+  const handleGlobalNavigate = (href: string) => {
+    // Clean the href to remove query parameters for consistent navigation
+    const cleanHref = href.split('?')[0];
+    
+    // Hide content immediately
+    setIsTransitioning(true);
+    
+    // Start transition
+    setPendingNavigation(cleanHref);
+    setShowTransition(true);
   };
 
   const handleTransitionComplete = () => {
-    // Reveal new content first, then remove overlay to avoid any visual gap
-    if (pendingNavigation) {
-      setPendingNavigation(null);
-    }
-    // Keep content hidden a tiny bit longer on mobile to prevent previous page flash
+    // Add a longer delay to ensure the new page is fully loaded and rendered
     setShowTransition(false);
+    
+    // Gradually reveal content with proper timing
     setTimeout(() => {
+      if (pendingNavigation) {
+        setPendingNavigation(null);
+      }
       setIsTransitioning(false);
-    }, 30); // 30ms buffer as requested
+    }, 150); // Increased delay to prevent flash of old content
   };
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-
-
   const hideChrome = pathname === "/" || pathname?.startsWith("/home") || pathname === "/Login" || pathname === "/Signup";
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <SplashCursor />
-      <Background />
-      <InfinityTransition 
-        isActive={showTransition} 
-        onComplete={handleTransitionComplete}
-      />
-      <div className="relative z-30 flex-grow">
-        {mounted && !hideChrome && pathname !== "/why-sponsor-us" && <Logo />}
-        <main 
-          key={pathname}
-          className={`${
-            isTransitioning ? 'opacity-0 pointer-events-none invisible' : 'opacity-100 visible'
-          }`}
-        >
-          {!isTransitioning && children}
-        </main>
-        {!hideChrome && <SidebarDock onNavigate={handleSidebarNavigate} />}
+    <NavigationProvider navigate={handleGlobalNavigate}>
+      <div className="min-h-screen flex flex-col">
+        <SplashCursor />
+        <Background />
+        <InfinityTransition 
+          isActive={showTransition} 
+          targetHref={pendingNavigation}
+          onComplete={handleTransitionComplete}
+        />
+        <div className="relative z-30 flex-grow">
+          {mounted && !hideChrome && pathname !== "/why-sponsor-us" && <Logo />}
+          <main 
+            key={pathname}
+            className={`${
+              isTransitioning ? 'opacity-0 pointer-events-none' : 'opacity-100'
+            }`}
+          >
+            {children}
+          </main>
+          {!hideChrome && !isMobile && <SidebarDock onNavigate={handleSidebarNavigate} />}
+        </div>
+        
       </div>
-      
-    </div>
+    </NavigationProvider>
   );
 }
 

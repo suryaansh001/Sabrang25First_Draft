@@ -5,7 +5,8 @@ import SidebarDock from '../../components/SidebarDock';
 import MobileScrollMenu from '../../components/MobileScrollMenu';
 import { useVideo } from '../../components/VideoContext';
 import { useRouter } from 'next/navigation';
-import InfinityTransition from '../../components/InfinityTransition';
+import { useNavigation } from '../../components/NavigationContext';
+
 
 // Simplified Video Background Component
 const VideoBackground = () => {
@@ -177,10 +178,10 @@ const MobileVideoBackground: React.FC = () => {
 const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false }: LayeredLandingPageProps) {
   const [assetsLoaded, setAssetsLoaded] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showTransition, setShowTransition] = useState(false);
-  const [targetHref, setTargetHref] = useState<string | null>(null);
+
   const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
+  const { navigate } = useNavigation();
 
   // Detect mobile device
   useEffect(() => {
@@ -195,12 +196,12 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
   }, []);
 
   const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
-    { title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
+    { title: 'Home', href: '/', icon: <Home className="w-5 h-5" /> },
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
     { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
     { title: 'Schedule', href: '/schedule/progress', icon: <Clock className="w-5 h-5" /> },
-    { title: 'Team', href: '/Team/team-reveal', icon: <Users className="w-5 h-5" /> },
+    { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
     { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
     { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
     { title: 'Contact', href: '/Contact', icon: <Mail className="w-5 h-5" /> },
@@ -362,20 +363,17 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         {!isLoading && (
           <div className="absolute inset-0 z-20 flex items-center justify-center text-center px-6 pointer-events-none">
             <div className="max-w-sm mx-auto">
-              {/* Main Title */}
-              <h1 className="font-black leading-none mb-6">
-                <span className="block text-6xl sm:text-7xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 drop-shadow-2xl" style={{ fontFamily: "'Stardos Stencil', 'Orbitron', sans-serif" }}>
-                  SABRANG
-                </span>
-                <span className="inline-block text-5xl sm:text-6xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 drop-shadow-2xl ml-2 sm:ml-3 md:ml-4" style={{ fontFamily: "'Stardos Stencil', 'Orbitron', sans-serif" }}>
-                  25
-                </span>
-              </h1>
+                             {/* Main Title */}
+               <h1 className="font-black leading-none mb-6">
+                 <span className="block text-5xl sm:text-6xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 drop-shadow-2xl" style={{ fontFamily: "'Childstone Demo', sans-serif" }}>
+                   SABRANG
+                 </span>
+                 <span className="inline-block text-4xl sm:text-5xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 drop-shadow-2xl ml-2 sm:ml-3 md:ml-4" style={{ fontFamily: "'Childstone Demo', sans-serif" }}>
+                   25
+                 </span>
+               </h1>
               
-              {/* Subtitle */}
-              <p className="mt-4 text-lg sm:text-xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-pink-400 to-cyan-300 mb-8">
-                Noorwana & Color to Cosmos
-              </p>
+             
               
               {/* Tagline */}
               <p className="text-gray-300 text-base mb-8 leading-relaxed">
@@ -417,7 +415,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                 {mobileNavItems.map((item) => (
                   <button
                     key={item.title}
-                    onClick={() => { setMobileMenuOpen(false); setTargetHref(item.href); setShowTransition(true); }}
+                    onClick={() => { setMobileMenuOpen(false); navigate(item.href); }}
                     className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
                   >
                     <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
@@ -434,8 +432,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         {/* Mobile Scroll Menu - appears when scrolling */}
         <MobileScrollMenu 
           onNavigate={(href) => {
-            setTargetHref(href);
-            setShowTransition(true);
+            navigate(href);
           }}
         />
       </div>
@@ -474,7 +471,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               ].map((item, index) => (
                 <button
                   key={item.title}
-                  onClick={() => { setTargetHref(item.href); setShowTransition(true); }}
+                  onClick={() => { navigate(item.href); }}
                   className="group relative p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 hover:border-white/40 active:scale-[0.98] transition-all duration-300 text-center overflow-hidden"
                 >
                   {/* Background gradient on hover */}
@@ -604,7 +601,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
             <a href="/coming-soon" className="px-24 py-4 bg-black/40 backdrop-blur-sm rounded-full text-white text-sm font-medium hover:bg-black/60 transition-all duration-300 border border-white/30">
               Register Now
             </a>
-            <a href="/dashboard" className="w-12 h-12 bg-purple-600/60 hover:bg-purple-600/80 rounded-full text-white transition-all duration-300 border border-purple-400/40 flex items-center justify-center">
+            <a href="/coming-soon" className="w-12 h-12 bg-purple-600/60 hover:bg-purple-600/80 rounded-full text-white transition-all duration-300 border border-purple-400/40 flex items-center justify-center">
               <LayoutDashboard className="w-5 h-5" />
             </a>
           </div>
@@ -614,7 +611,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         {!isLoading && (
           <SidebarDock 
             className="hidden lg:block"
-            onNavigate={(href) => { setTargetHref(href); setShowTransition(true); }}
+            onNavigate={(href) => { navigate(href); }}
           />
         )}
         
@@ -652,29 +649,21 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
           {!isLoading && (
             <div className="relative z-10 flex items-center justify-center h-full">
               <div className="text-center">
-                <h1 className="text-7xl md:text-8xl lg:text-9xl font-black text-white leading-none">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 drop-shadow-lg text-8xl md:text-9xl lg:text-[12rem]" style={{ fontFamily: "'Stardos Stencil', 'Orbitron', sans-serif", textShadow: '0 0 30px rgba(255,255,255,0.5)', letterSpacing: '0.02em' }}>
-                    SABRANG
-                  </span><br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 drop-shadow-2xl text-8xl md:text-9xl lg:text-[10rem]" style={{ fontFamily: "'Stardos Stencil', 'Orbitron', sans-serif", textShadow: '0 0 40px rgba(34, 211, 238, 0.6)' }}>
-                    2025
-                  </span>
-                </h1>
+                                 <h1 className="text-8xl md:text-7xl lg:text-8xl font-black text-white leading-none">
+                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-200 drop-shadow-lg text-9xl md:text-11xl lg:text-13xl" style={{ fontFamily: "'Childstone Demo', sans-serif", textShadow: '0 0 30px rgba(255,255,255,0.5)', letterSpacing: '0.02em' }}>
+                     SABRANG
+                   </span><br />
+                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 drop-shadow-2xl text-5xl md:text-6xl lg:text-7xl" style={{ fontFamily: "'TAN Nimbus', sans-serif", textShadow: '0 0 40px rgba(34, 211, 238, 0.6)' }}>
+                     2025
+                   </span>
+                 </h1>
               </div>
             </div>
           )}
         </div>
       </div>
 
-      {/* Infinity transition */}
-      <InfinityTransition
-        isActive={showTransition}
-        onComplete={() => {
-          if (targetHref) router.push(targetHref);
-          setShowTransition(false);
-          setTargetHref(null);
-        }}
-      />
+              {/* Infinity transition handled by AppShell */}
 
       {/* Enhanced Mobile Styles */}
       <style jsx>{`

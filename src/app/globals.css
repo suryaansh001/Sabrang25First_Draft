@@ -24,11 +24,68 @@
   font-display: swap;
 }
 
-/* TAN Nimbus Font */
+/* TAN Nimbus Font - kept for specific use cases */
 @font-face {
   font-family: 'TAN Nimbus';
   src: url('/Font/TAN_Nimbus/TAN-NIMBUS.otf') format('opentype');
   font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Childstone Demo Font - for Sabrang 2025 */
+@font-face {
+  font-family: 'Childstone Demo';
+  src: url('/Font/childstone-demo/Childstone Demo.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TAN Nimbus';
+  src: url('/Font/TAN_Nimbus/TAN-NIMBUS.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TAN Nimbus';
+  src: url('/Font/TAN_Nimbus/TAN-NIMBUS.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TAN Nimbus';
+  src: url('/Font/TAN_Nimbus/TAN-NIMBUS.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TAN Nimbus';
+  src: url('/Font/TAN_Nimbus/TAN-NIMBUS.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TAN Nimbus';
+  src: url('/Font/TAN_Nimbus/TAN-NIMBUS.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TAN Nimbus';
+  src: url('/Font/TAN_Nimbus/TAN-NIMBUS.otf') format('opentype');
+  font-weight: 900;
   font-style: normal;
   font-display: swap;
 }
@@ -78,15 +135,58 @@
 body {
   background-color: #000000;
   color: var(--foreground);
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
 }
 
-/* Display font for big headers */
+/* Remove custom font from all text elements - use system fonts instead */
+*, *::before, *::after {
+  font-family: inherit;
+}
+
+h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, label {
+  font-family: inherit;
+}
+
+/* Custom font class for specific use cases (like Sabrang 2025) */
+.font-tan-nimbus {
+  font-family: 'TAN Nimbus', sans-serif !important;
+}
+
+/* Childstone Demo font class for Sabrang 2025 */
+.font-childstone-demo {
+  font-family: 'Childstone Demo', sans-serif !important;
+}
+
+/* Remove font overrides - let elements use their natural font */
+.font-poppins,
+.font-unbounded,
+.font-bebas,
+.font-orbitron,
+.font-stardos,
+.font-anton,
+.font-tilt-neon {
+  font-family: inherit;
+}
+
+/* Let Tailwind's default font families work naturally */
+.font-sans {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.font-serif {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.font-mono {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+/* Display font for big headers - now uses system fonts */
 .font-display {
-  font-family: 'Unbounded', cursive;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 /* Soft neon text glow */
@@ -96,7 +196,7 @@ body {
 
 /* Hero title styles */
 .font-hero-main {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: inherit;
   letter-spacing: 1px;
   line-height: 0.9;
 }
@@ -107,7 +207,7 @@ body {
 }
 
 .font-hero-year {
-  font-family: 'Orbitron', sans-serif;
+  font-family: inherit;
 }
 
 .hero-year-style {

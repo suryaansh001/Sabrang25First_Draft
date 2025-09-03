@@ -2,19 +2,26 @@
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 interface InfinityTransitionProps {
   isActive: boolean;
   onComplete: () => void;
+  targetHref?: string | null;
 }
 
-const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onComplete }) => {
+const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onComplete, targetHref }) => {
   const [currentPhase, setCurrentPhase] = useState<'idle' | 'drawing' | 'filling' | 'complete' | 'zoom' | 'final'>('idle');
   const [videoReady, setVideoReady] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [nextPageLoaded, setNextPageLoaded] = useState(false);
+  const [transitionStartTime, setTransitionStartTime] = useState<number | null>(null);
+  const [progress, setProgress] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
   const animationRef = useRef<NodeJS.Timeout | null>(null);
   const phaseTimersRef = useRef<{ [key: string]: NodeJS.Timeout }>({});
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const router = useRouter();
 
   // Detect mobile device
   useEffect(() => {
@@ -28,6 +35,45 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Preload next page in background when transition starts
+  useEffect(() => {
+    if (isActive && targetHref && !nextPageLoaded) {
+      // Start preloading the next page immediately AND navigate
+      const preloadAndNavigate = async () => {
+        try {
+          // Start navigation immediately to get the page loading
+          router.push(targetHref);
+          
+          // Prefetch the next page route for caching
+          await router.prefetch(targetHref);
+          
+          // Give page some time to start loading
+          await new Promise(resolve => setTimeout(resolve, 300));
+          
+          setNextPageLoaded(true);
+        } catch (error) {
+          console.log('Page navigation/preloading failed, continuing anyway');
+          setNextPageLoaded(true);
+        }
+      };
+      
+      preloadAndNavigate();
+    }
+  }, [isActive, targetHref, nextPageLoaded, router]);
+
+  // Start progress tracking when page loads during final phase
+  useEffect(() => {
+    if (nextPageLoaded && currentPhase === 'final' && !progressIntervalRef.current) {
+      progressIntervalRef.current = setInterval(() => {
+        const currentTime = Date.now();
+        const startTime = transitionStartTime || currentTime;
+        const elapsed = currentTime - startTime;
+        const progressPercent = Math.min(100, (elapsed / 4000) * 100); // 4 seconds = 100%
+        setProgress(progressPercent);
+      }, 50);
+    }
+  }, [nextPageLoaded, currentPhase, transitionStartTime]);
+
   // Clear all timers
   const clearAllTimers = useCallback(() => {
     Object.values(phaseTimersRef.current).forEach(timer => clearTimeout(timer));
@@ -35,6 +81,10 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
     if (animationRef.current) {
       clearTimeout(animationRef.current);
       animationRef.current = null;
+    }
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
     }
   }, []);
 
@@ -74,59 +124,88 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
     }
   }, []);
 
-  // Main animation controller - progressive infinity building
+  // Main animation controller - unified timing for mobile and desktop
   useEffect(() => {
     if (!isActive) {
       setCurrentPhase('idle');
       clearAllTimers();
+      setNextPageLoaded(false);
+      setVideoReady(false);
+      setTransitionStartTime(null);
+      setProgress(0);
       return;
     }
 
-    // Clear any existing timers
+    // Record when transition starts for minimum duration enforcement
+    setTransitionStartTime(Date.now());
+    setProgress(0);
+
+    // Clear any existing timers first
     clearAllTimers();
 
-    // Start animation sequence with progressive infinity building
+    // Start animation sequence with unified timing
     const startAnimation = () => {
       // Phase 1: Drawing the outline paths
       setCurrentPhase('drawing');
       
-      const drawingDuration = isMobile ? 1400 : 1800;
+      // Unified timing - mobile gets slightly faster but not drastically different
+      const drawingDuration = isMobile ? 1200 : 1800;
       phaseTimersRef.current.drawing = setTimeout(() => {
         // Phase 2: Filling the shapes
         setCurrentPhase('filling');
         
-        const fillingDuration = isMobile ? 1000 : 1200;
+        const fillingDuration = isMobile ? 800 : 1200;
         phaseTimersRef.current.filling = setTimeout(() => {
           // Phase 3: Complete infinity symbol
           setCurrentPhase('complete');
           
-          const completeDuration = isMobile ? 800 : 1000;
+          const completeDuration = isMobile ? 600 : 1000;
           phaseTimersRef.current.complete = setTimeout(() => {
             // Phase 4: Zoom effect
             setCurrentPhase('zoom');
             
-            const zoomDuration = isMobile ? 500 : 600;
+            const zoomDuration = isMobile ? 400 : 600;
             phaseTimersRef.current.zoom = setTimeout(() => {
               // Phase 5: Final transition
               setCurrentPhase('final');
               
-              const finalDelay = isMobile ? 800 : 900;
-              phaseTimersRef.current.final = setTimeout(() => {
-                onComplete();
-              }, finalDelay);
+              // Check completion conditions periodically
+              const checkCompletion = () => {
+                const currentTime = Date.now();
+                const elapsedTime = transitionStartTime ? currentTime - transitionStartTime : 0;
+                const hasMetMinimumDuration = elapsedTime >= 4000; // 4 seconds
+                
+                // Complete if BOTH conditions are met:
+                // 1. Page is loaded AND 2. Minimum 4 seconds have passed
+                if (nextPageLoaded && hasMetMinimumDuration) {
+                  if (progressIntervalRef.current) {
+                    clearInterval(progressIntervalRef.current);
+                    progressIntervalRef.current = null;
+                  }
+                  onComplete();
+                  return;
+                }
+                
+                // If not ready, check again after a short delay
+                setTimeout(checkCompletion, 100);
+              };
+              
+              // Start checking completion conditions
+              checkCompletion();
             }, zoomDuration);
           }, completeDuration);
         }, fillingDuration);
       }, drawingDuration);
     };
 
-    const startDelay = isMobile ? 200 : 250;
+    // Unified start delay
+    const startDelay = isMobile ? 100 : 250;
     animationRef.current = setTimeout(startAnimation, startDelay);
 
     return () => {
       clearAllTimers();
     };
-  }, [isActive, onComplete, clearAllTimers, isMobile]);
+  }, [isActive, onComplete, clearAllTimers, isMobile, nextPageLoaded]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -180,11 +259,11 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
         )}
       </div>
 
-      {/* Animation container - increased size */}
+      {/* Animation container - unified size for mobile and desktop */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="relative w-32 h-32 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-64 lg:h-64">
+        <div className="relative w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-64 lg:h-64">
           
-          {/* Drawing Phase - progressive path drawing */}
+          {/* Drawing Phase - progressive path drawing with unified animation */}
           <AnimatePresence mode="wait">
             {currentPhase === 'drawing' && (
               <motion.div
@@ -193,7 +272,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
                 initial={{ scale: 0, opacity: 0, rotate: -5 }}
                 animate={{ scale: 1, opacity: 1, rotate: 0 }}
                 exit={{ scale: 0, opacity: 0, rotate: 5 }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
               >
                 <svg
                   viewBox="0 0 302.73 467.06"
@@ -248,7 +327,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
                 initial={{ scale: 0.9, opacity: 0, rotate: -2 }}
                 animate={{ scale: 1, opacity: 1, rotate: 0 }}
                 exit={{ scale: 0, opacity: 0, rotate: 2 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
               >
                 <svg
                   viewBox="0 0 302.73 467.06"
@@ -313,7 +392,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0, opacity: 0 }}
                 transition={{ 
-                  duration: 0.5, 
+                  duration: 0.6, 
                   ease: "easeInOut" 
                 }}
               >
@@ -321,9 +400,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
                   viewBox="0 0 302.73 467.06"
                   className="w-full h-full"
                   style={{ 
-                    filter: isMobile 
-                      ? 'drop-shadow(0 0 25px rgba(17, 79, 238, 0.9))'
-                      : 'drop-shadow(0 0 40px rgba(17, 79, 238, 1))'
+                    filter: 'drop-shadow(0 0 40px rgba(17, 79, 238, 1))'
                   }}
                 >
                   <defs>
@@ -340,7 +417,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
                       <stop offset="1" stopColor="#009c41"/>
                     </linearGradient>
                     <filter id="complete-glow">
-                      <feGaussianBlur stdDeviation={isMobile ? "4" : "6"} result="coloredBlur"/>
+                      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
                       <feMerge> 
                         <feMergeNode in="coloredBlur"/>
                         <feMergeNode in="SourceGraphic"/>
@@ -375,16 +452,16 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
             )}
           </AnimatePresence>
 
-          {/* Zoom Phase - infinity symbol zooms out */}
+          {/* Zoom Phase - infinity symbol zooms out with unified animation */}
           <AnimatePresence mode="wait">
             {currentPhase === 'zoom' && (
               <motion.div
                 key="zoom"
                 className="absolute inset-0 w-full h-full"
                 initial={{ scale: 1, opacity: 1 }}
-                animate={{ scale: isMobile ? 30 : 40, opacity: 0 }}
+                animate={{ scale: 35, opacity: 0 }}
                 transition={{ 
-                  duration: isMobile ? 0.45 : 0.5, 
+                  duration: 0.5, 
                   ease: "easeIn" 
                 }}
                 style={{ willChange: 'transform, opacity', backfaceVisibility: 'hidden', transformOrigin: '50% 50%', contain: 'layout paint' }}
@@ -420,6 +497,38 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
             )}
           </AnimatePresence>
 
+          {/* Loading indicator for next page */}
+          {currentPhase === 'final' && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <div className="text-center text-white mb-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
+                <p className="text-sm opacity-80">
+                  {!nextPageLoaded 
+                    ? 'Loading page...' 
+                    : progress < 100 
+                      ? 'Preparing experience...' 
+                      : 'Almost ready...'}
+                </p>
+              </div>
+              
+              {/* Progress bar - shows either page loading or minimum duration progress */}
+              <div className="w-48 h-1 bg-white/20 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 rounded-full transition-all duration-100 ease-out"
+                  style={{ 
+                    width: !nextPageLoaded 
+                      ? '0%' // Show empty if page isn't loaded yet
+                      : `${progress}%` // Show progress toward 4 seconds if page is loaded
+                  }}
+                />
+              </div>
+              <p className="text-xs text-white/60 mt-2">
+                {!nextPageLoaded 
+                  ? 'Loading...' 
+                  : `${Math.round(progress)}%`}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

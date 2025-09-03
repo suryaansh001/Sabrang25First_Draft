@@ -1,15 +1,15 @@
 "use client";
 import React, { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Calendar, Clock, Users, Star, Menu, X } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Calendar, Clock, Users, Star, Menu, X, Info, HelpCircle, Mail, Handshake, Home } from "lucide-react";
+import { useNavigation } from '../../../components/NavigationContext';
 
 export default function ScheduleInProgress() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [progress, setProgress] = useState(0);
   const [mounted, setMounted] = useState(false);
-  const router = useRouter();
+  const { navigate } = useNavigation();
 
   // Update time
   useEffect(() => {
@@ -67,16 +67,18 @@ export default function ScheduleInProgress() {
     { title: 'FAQ', href: '/FAQ', icon: <Clock className="w-5 h-5" /> },
     { title: 'Contact', href: '/Contact', icon: <Calendar className="w-5 h-5" /> },
   ];
-
-  const mobileNavItems = [
-    { title: 'Home', href: '/', icon: <Calendar className="w-5 h-5" /> },
-    { title: 'About', href: '/About', icon: <Calendar className="w-5 h-5" /> },
+  const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
+    { title: 'Home', href: '/', icon: <Home className="w-5 h-5" /> },
+    { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
     { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
+    { title: 'Schedule', href: '/schedule/progress', icon: <Clock className="w-5 h-5" /> },
     { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
-    { title: 'FAQ', href: '/FAQ', icon: <Clock className="w-5 h-5" /> },
-    { title: 'Contact', href: '/Contact', icon: <Calendar className="w-5 h-5" /> },
+    { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
+    { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
+    { title: 'Contact', href: '/Contact', icon: <Mail className="w-5 h-5" /> },
   ];
+
   return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden">
       {/* Animated gradient background */}
@@ -152,7 +154,7 @@ export default function ScheduleInProgress() {
               {mobileNavItems.map((item) => (
                 <button
                   key={item.title}
-                  onClick={() => { setIsMenuOpen(false); router.push(item.href); }}
+                  onClick={() => { setIsMenuOpen(false); navigate(item.href); }}
                   className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
                 >
                   <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
