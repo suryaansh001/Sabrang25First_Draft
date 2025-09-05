@@ -24,19 +24,66 @@ interface PromoCode {
   };
 }
 
+interface Event {
+  _id: string;
+  name: string;
+  category: string;
+}
+
+interface CreatePromoFormData {
+  code: string;
+  discountType: 'percentage' | 'fixed';
+  discountValue: number;
+  maxDiscountAmount?: number;
+  minOrderAmount: number;
+  validUntil: string;
+  usageLimit: number;
+  allowedEmailDomains: string[];
+  applicableEvents: string[];
+  description: string;
+}
+
 function PromoCodesPage() {
   const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingCode, setEditingCode] = useState<PromoCode | null>(null);
+  const [formData, setFormData] = useState<CreatePromoFormData>({
+    code: '',
+    discountType: 'percentage',
+    discountValue: 0,
+    maxDiscountAmount: undefined,
+    minOrderAmount: 0,
+    validUntil: '',
+    usageLimit: 1,
+    allowedEmailDomains: [],
+    applicableEvents: [],
+    description: ''
+  });
 
   useEffect(() => {
     fetchPromoCodes();
+    fetchEvents();
   }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const response = await fetch(createApiUrl('/admin/events-public'), {
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setEvents(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch events:', error);
+    }
+  };
 
   const fetchPromoCodes = async () => {
     try {
-      const response = await fetch('http://localhost:5000/admin/promo-codes', {
+      const response = await fetch(createApiUrl('/admin/promo-codes'), {
         credentials: 'include'
       });
       if (response.ok) {
@@ -54,7 +101,7 @@ function PromoCodesPage() {
     if (!confirm('Are you sure you want to delete this promo code?')) return;
     
     try {
-      const response = await fetch(`http://localhost:5000/admin/promo-codes/${id}`, {
+      const response = await fetch(createApiUrl(`/admin/promo-codes/${id}`), {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -70,6 +117,119 @@ function PromoCodesPage() {
   const copyToClipboard = (code: string) => {
     navigator.clipboard.writeText(code);
     // You could add a toast notification here
+  };
+
+  const createPromoCode = async () => {
+    try {
+      const response = await fetch(createApiUrl('/admin/promo-codes'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setPromoCodes([result.promoCode, ...promoCodes]);
+        setShowCreateForm(false);
+        resetForm();
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Failed to create promo code');
+      }
+    } catch (error) {
+      console.error('Failed to create promo code:', error);
+      alert('Failed to create promo code');
+    }
+  };
+
+  const updatePromoCode = async () => {
+    if (!editingCode) return;
+
+    try {
+      const response = await fetch(createApiUrl(`/admin/promo-codes/${editingCode._id}`), {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setPromoCodes(promoCodes.map(code => 
+          code._id === editingCode._id ? result.promoCode : code
+        ));
+        setEditingCode(null);
+        resetForm();
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Failed to update promo code');
+      }
+    } catch (error) {
+      console.error('Failed to update promo code:', error);
+      alert('Failed to update promo code');
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      code: '',
+      discountType: 'percentage',
+      discountValue: 0,
+      maxDiscountAmount: undefined,
+      minOrderAmount: 0,
+      validUntil: '',
+      usageLimit: 1,
+      allowedEmailDomains: [],
+      applicableEvents: [],
+      description: ''
+    });
+  };
+
+  const handleEditClick = (code: PromoCode) => {
+    setFormData({
+      code: code.code,
+      discountType: code.discountType,
+      discountValue: code.discountValue,
+      maxDiscountAmount: code.maxDiscountAmount,
+      minOrderAmount: code.minOrderAmount,
+      validUntil: code.validUntil.split('T')[0], // Format for date input
+      usageLimit: code.usageLimit,
+      allowedEmailDomains: [],
+      applicableEvents: [],
+      description: code.description
+    });
+    setEditingCode(code);
+  };
+
+  const validatePromoCode = async (code: string, orderAmount: number = 100) => {
+    try {
+      const response = await fetch(createApiUrl('/admin/promo-codes/validate'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          code,
+          userEmail: 'test@example.com',
+          orderAmount
+        })
+      });
+
+      const result = await response.json();
+      alert(result.success 
+        ? `✅ Valid! Discount: ₹${result.discountAmount}, Final: ₹${result.finalAmount}`
+        : `❌ ${result.message}`
+      );
+    } catch (error) {
+      console.error('Failed to validate promo code:', error);
+      alert('Failed to validate promo code');
+    }
   };
 
   const formatDiscount = (code: PromoCode) => {
@@ -231,7 +391,14 @@ function PromoCodesPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-2">
                         <button
-                          onClick={() => setEditingCode(code)}
+                          onClick={() => validatePromoCode(code.code)}
+                          className="p-2 hover:bg-blue-500/20 rounded-lg transition-colors text-blue-400"
+                          title="Test promo code"
+                        >
+                          <CheckCircle className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleEditClick(code)}
                           className="p-2 hover:bg-white/10 rounded-lg transition-colors"
                           title="Edit promo code"
                         >
@@ -267,6 +434,153 @@ function PromoCodesPage() {
           </div>
         )}
       </div>
+
+      {/* Create/Edit Form Modal */}
+      {(showCreateForm || editingCode) && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/20">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold">
+                {editingCode ? 'Edit Promo Code' : 'Create New Promo Code'}
+              </h2>
+              <button
+                onClick={() => {
+                  setShowCreateForm(false);
+                  setEditingCode(null);
+                  resetForm();
+                }}
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              >
+                <XCircle className="w-6 h-6" />
+              </button>
+            </div>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              editingCode ? updatePromoCode() : createPromoCode();
+            }} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Promo Code</label>
+                  <input
+                    type="text"
+                    value={formData.code}
+                    onChange={(e) => setFormData({...formData, code: e.target.value.toUpperCase()})}
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="SAVE20"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Discount Type</label>
+                  <select
+                    value={formData.discountType}
+                    onChange={(e) => setFormData({...formData, discountType: e.target.value as 'percentage' | 'fixed'})}
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="percentage">Percentage</option>
+                    <option value="fixed">Fixed Amount</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Discount Value {formData.discountType === 'percentage' ? '(%)' : '(₹)'}
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.discountValue}
+                    onChange={(e) => setFormData({...formData, discountValue: Number(e.target.value)})}
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    min="0"
+                    required
+                  />
+                </div>
+
+                {formData.discountType === 'percentage' && (
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Max Discount Amount (₹)</label>
+                    <input
+                      type="number"
+                      value={formData.maxDiscountAmount || ''}
+                      onChange={(e) => setFormData({...formData, maxDiscountAmount: e.target.value ? Number(e.target.value) : undefined})}
+                      className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      min="0"
+                      placeholder="Optional"
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Minimum Order Amount (₹)</label>
+                  <input
+                    type="number"
+                    value={formData.minOrderAmount}
+                    onChange={(e) => setFormData({...formData, minOrderAmount: Number(e.target.value)})}
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    min="0"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Usage Limit</label>
+                  <input
+                    type="number"
+                    value={formData.usageLimit}
+                    onChange={(e) => setFormData({...formData, usageLimit: Number(e.target.value)})}
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    min="1"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Valid Until</label>
+                  <input
+                    type="date"
+                    value={formData.validUntil}
+                    onChange={(e) => setFormData({...formData, validUntil: e.target.value})}
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Description</label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows={3}
+                  placeholder="Description of the promo code..."
+                />
+              </div>
+
+              <div className="flex items-center space-x-4 pt-4">
+                <button
+                  type="submit"
+                  className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 px-6 py-3 rounded-xl font-semibold transition-all duration-300"
+                >
+                  {editingCode ? 'Update Promo Code' : 'Create Promo Code'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowCreateForm(false);
+                    setEditingCode(null);
+                    resetForm();
+                  }}
+                  className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-xl font-semibold transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

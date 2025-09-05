@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Gift, Download, Copy, Plus } from "lucide-react";
+import ProtectedRoute from "../../../../components/ProtectedRoute";
+import createApiUrl from "../../../lib/api";
 
 interface BulkPromoForm {
   codePrefix: string;
@@ -52,7 +54,7 @@ function BulkPromoPage() {
   const generateCodes = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/admin/promo-codes/bulk', {
+      const response = await fetch(createApiUrl('/admin/promo-codes/bulk'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -325,4 +327,10 @@ function BulkPromoPage() {
   );
 }
 
-export default BulkPromoPage;
+export default function ProtectedBulkPromoPage() {
+  return (
+    <ProtectedRoute requireAdmin={true}>
+      <BulkPromoPage />
+    </ProtectedRoute>
+  );
+}
