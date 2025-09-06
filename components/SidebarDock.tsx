@@ -13,7 +13,8 @@ import {
   Mail,
   Home,
   HelpCircle,
-  LayoutDashboard
+  LayoutDashboard,
+  ShoppingCart
 } from 'lucide-react';
 
 interface SidebarDockProps {
@@ -28,6 +29,7 @@ const navigationItems = [
   { title: 'Highlights', icon: <Star className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-5 lg:h-5" />, href: '/Gallery' },
   { title: 'Schedule', icon: <Clock className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-5 lg:h-5" />, href: '/schedule/progress' },
   { title: 'Team', icon: <Users className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-5 lg:h-5" />, href: '/Team' },
+  { title: 'Checkout', icon: <ShoppingCart className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-5 lg:h-5" />, href: '/checkout' },
   { title: 'FAQ', icon: <HelpCircle className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-5 lg:h-5" />, href: '/FAQ' },
   { title: 'Why Sponsor Us', icon: <Handshake className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-5 lg:h-5" />, href: '/why-sponsor-us' },
   { title: 'Contact', icon: <Mail className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-5 lg:h-5" />, href: '/Contact' },

@@ -13,6 +13,7 @@ import {
   Mail,
   Home,
   HelpCircle,
+  ShoppingCart,
   X
 } from 'lucide-react';
 
@@ -27,6 +28,7 @@ const navigationItems = [
   { title: 'Highlights', icon: <Star className="w-5 h-5" />, href: '/Gallery' },
   { title: 'Schedule', icon: <Clock className="w-5 h-5" />, href: '/schedule/progress' },
   { title: 'Team', icon: <Users className="w-5 h-5" />, href: '/Team' },
+  { title: 'Checkout', icon: <ShoppingCart className="w-5 h-5" />, href: '/checkout' },
   { title: 'FAQ', icon: <HelpCircle className="w-5 h-5" />, href: '/FAQ' },
   { title: 'Why Sponsor Us', icon: <Handshake className="w-5 h-5" />, href: '/why-sponsor-us' },
   { title: 'Contact', icon: <Mail className="w-5 h-5" />, href: '/Contact' },
