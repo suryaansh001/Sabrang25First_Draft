@@ -8,25 +8,6 @@ import Logo from "./Logo";
 import InfinityTransition from "./InfinityTransition";
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
-import { NavigationProvider } from "./NavigationContext";
-
-// Hook to detect mobile devices
-const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 1024); // lg breakpoint
-    };
-    
-    checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
-    
-    return () => window.removeEventListener('resize', checkIsMobile);
-  }, []);
-
-  return isMobile;
-};
 
 // Separate component that uses usePathname
 function AppShellContent({ children }: { children: React.ReactNode }) {
@@ -37,7 +18,6 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
   const [previousPath, setPreviousPath] = useState<string | null>(null);
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const isMobile = useIsMobile();
 
   // Handle page transitions
   useEffect(() => {
@@ -61,14 +41,6 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
     }
   }, [showTransition, pendingNavigation]);
 
-  // Ensure content is properly synchronized with pathname changes
-  useEffect(() => {
-    if (pathname && !showTransition && isTransitioning) {
-      // If pathname has changed and transition is complete, ensure content is visible immediately
-      setIsTransitioning(false);
-    }
-  }, [pathname, showTransition, isTransitioning]);
-
   // Ensure content is visible when pathname changes (for direct navigation)
   useEffect(() => {
     if (pathname && !isTransitioning && !showTransition) {
@@ -79,27 +51,10 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
   const handleSidebarNavigate = (href: string) => {
     // Clean the href to remove query parameters for consistent navigation
     const cleanHref = href.split('?')[0];
-    
-    // Hide content immediately
-    setIsTransitioning(true);
-    
-    // Start transition
     setPendingNavigation(cleanHref);
+    setIsTransitioning(true);
     setShowTransition(true);
     // Don't call router.push here - let InfinityTransition handle it
-  };
-
-  // Global navigation handler that can be used by any component
-  const handleGlobalNavigate = (href: string) => {
-    // Clean the href to remove query parameters for consistent navigation
-    const cleanHref = href.split('?')[0];
-    
-    // Hide content immediately
-    setIsTransitioning(true);
-    
-    // Start transition
-    setPendingNavigation(cleanHref);
-    setShowTransition(true);
   };
 
   const handleTransitionComplete = () => {
@@ -122,30 +77,28 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
   const hideChrome = pathname === "/" || pathname?.startsWith("/home") || pathname === "/Login" || pathname === "/Signup";
 
   return (
-    <NavigationProvider navigate={handleGlobalNavigate}>
-      <div className="min-h-screen flex flex-col">
-        <SplashCursor />
-        <Background />
-        <InfinityTransition 
-          isActive={showTransition} 
-          targetHref={pendingNavigation}
-          onComplete={handleTransitionComplete}
-        />
-        <div className="relative z-30 flex-grow">
-          {mounted && !hideChrome && pathname !== "/why-sponsor-us" && <Logo />}
-          <main 
-            key={pathname}
-            className={`${
-              isTransitioning ? 'opacity-0 pointer-events-none' : 'opacity-100'
-            }`}
-          >
-            {children}
-          </main>
-          {!hideChrome && !isMobile && <SidebarDock onNavigate={handleSidebarNavigate} />}
-        </div>
-        
+    <div className="min-h-screen flex flex-col">
+      <SplashCursor />
+      <Background />
+      <InfinityTransition 
+        isActive={showTransition} 
+        targetHref={pendingNavigation}
+        onComplete={handleTransitionComplete}
+      />
+      <div className="relative z-30 flex-grow">
+        {mounted && !hideChrome && pathname !== "/why-sponsor-us" && <Logo />}
+        <main 
+          key={pathname}
+          className={`${
+            isTransitioning ? 'opacity-0 pointer-events-none invisible' : 'opacity-100 visible'
+          }`}
+        >
+          {!isTransitioning && children}
+        </main>
+        {!hideChrome && <SidebarDock onNavigate={handleSidebarNavigate} />}
       </div>
-    </NavigationProvider>
+      
+    </div>
   );
 }
 
@@ -162,4 +115,3 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     </Suspense>
   );
 }
-
