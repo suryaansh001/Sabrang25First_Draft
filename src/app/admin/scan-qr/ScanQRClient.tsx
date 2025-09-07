@@ -86,6 +86,17 @@ export default function ScanQR() {
   }, [scanning, router]);
 
   const handleStartScan = () => {
+    // Unlock audio on user gesture so failure buzzer can play later
+    try {
+      const audio = new Audio('/audio/buzzer.mp3');
+      audio.volume = 0;
+      audio.play()
+        .then(() => {
+          try { audio.pause(); audio.currentTime = 0; } catch {}
+          (window as any).__audioUnlocked = true;
+        })
+        .catch(() => { (window as any).__audioUnlocked = false; });
+    } catch { (window as any).__audioUnlocked = false; }
     setScanning(true);
   };
 
