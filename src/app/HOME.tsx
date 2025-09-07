@@ -643,7 +643,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         
         {/* Right Panel */}
         <div 
-          className="absolute top-0 h-full bg-gradient-to-br from-blue-500 via-blue-600 to-purple-700 p-6 sm:p-8 md:p-12 lg:p-16"
+          className="absolute top-0 h-full bg-black p-6 sm:p-8 md:p-12 lg:p-16"
           style={{
             left: '0',
             right: '0',

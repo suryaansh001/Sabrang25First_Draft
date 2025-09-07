@@ -6,6 +6,7 @@ import SplashCursor from "./SplashCursor";
 import { SidebarDock } from "./SidebarDock";
 import Logo from "./Logo";
 import InfinityTransition from "./InfinityTransition";
+import { NavigationProvider } from "./NavigationContext";
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 
@@ -78,7 +79,10 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <SplashCursor />
+      {/* Disable SplashCursor globally to remove WebGL cost */}
+      {/* <div className="hidden lg:block">
+        <SplashCursor />
+      </div> */}
       <Background />
       <InfinityTransition 
         isActive={showTransition} 
@@ -86,16 +90,18 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
         onComplete={handleTransitionComplete}
       />
       <div className="relative z-30 flex-grow">
-        {mounted && !hideChrome && pathname !== "/why-sponsor-us" && <Logo />}
-        <main 
-          key={pathname}
-          className={`${
-            isTransitioning ? 'opacity-0 pointer-events-none invisible' : 'opacity-100 visible'
-          }`}
-        >
-          {!isTransitioning && children}
-        </main>
-        {!hideChrome && <SidebarDock onNavigate={handleSidebarNavigate} />}
+        <NavigationProvider navigate={handleSidebarNavigate}>
+          {mounted && !hideChrome && pathname !== "/why-sponsor-us" && <Logo />}
+          <main 
+            key={pathname}
+            className={`${
+              isTransitioning ? 'opacity-0 pointer-events-none invisible' : 'opacity-100 visible'
+            }`}
+          >
+            {!isTransitioning && children}
+          </main>
+          {!hideChrome && <SidebarDock className="hidden lg:block" onNavigate={handleSidebarNavigate} />}
+        </NavigationProvider>
       </div>
       
     </div>
