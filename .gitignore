@@ -84,3 +84,6 @@ jspm_packages/
 # Temporary folders
 tmp/
 temp/
+src/app/direct-payment-test
+src/app/test-payment
+src/app/checkout
