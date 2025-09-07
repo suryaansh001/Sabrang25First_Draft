@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { CheckCircle, XCircle, Clock, ArrowLeft, Download } from 'lucide-react';
 import Logo from '../../../../components/Logo';
 
-export default function PaymentSuccessPage() {
+// Client component that uses useSearchParams
+function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [paymentStatus, setPaymentStatus] = useState<'loading' | 'success' | 'failed' | 'pending'>('loading');
@@ -211,5 +212,29 @@ export default function PaymentSuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Loading fallback component
+function PaymentSuccessLoading() {
+  return (
+    <div className="min-h-screen bg-black text-white relative overflow-hidden flex items-center justify-center">
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-transparent to-pink-900/20" />
+      <div className="absolute inset-0 bg-gradient-to-tl from-blue-900/10 via-transparent to-cyan-900/10" />
+      
+      <div className="text-center">
+        <div className="w-16 h-16 border-4 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <h1 className="text-2xl font-bold text-purple-400 mb-2">Loading Payment Status...</h1>
+        <p className="text-white/70">Please wait while we verify your payment</p>
+      </div>
+    </div>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={<PaymentSuccessLoading />}>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }
