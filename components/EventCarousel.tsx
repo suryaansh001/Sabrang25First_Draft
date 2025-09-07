@@ -1,11 +1,9 @@
 'use client';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import EventCard from '../src/app/Events/EventCard';
+import EventCard, { EventCardEvent } from '../src/app/Events/EventCard';
 
-type EventItem = {
-  title: string;
-  image: string;
+type EventItem = EventCardEvent & {
   description?: string;
   date?: string;
   prize?: string;
@@ -149,7 +147,7 @@ export default function EventCarousel({ events, initialIndex = 0 }: EventCarouse
 
       {/* Content overlay */}
       <div className="relative z-10 h-full flex flex-col items-center justify-center px-4">
-        <EventCard event={currentEvent} variant="glass" />
+        <EventCard event={currentEvent} />
 
         {/* Navigation controls */}
         <div className="mt-8 flex items-center gap-4">
@@ -192,5 +190,3 @@ export default function EventCarousel({ events, initialIndex = 0 }: EventCarouse
     </div>
   );
 }
-
-

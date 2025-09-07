@@ -1,114 +1,93 @@
-"use client";
+import React from 'react';
 
-import { cn } from '../../../components/lib/utils';
-
-interface EventProps {
-  event: {
-    title: string;
-    image: string;
-    description?: string;
-    date?: string;
-    prize?: string;
-    registration?: string;
-    video?: string;
-  };
-  outline?: 'gold' | 'silver';
-  variant?: 'default' | 'glass';
+export interface EventCardEvent {
+  id: number;
+  title: string;
+  image?: string;
+  category?: string;
+  isFlagship?: boolean;
 }
 
-export default function EventCard({ event, outline, variant = 'default' }: EventProps) {
-  if (!event) return null;
+interface EventCardProps {
+  event: EventCardEvent;
+}
 
-  let borderClass = 'border-t-2';
-  if (outline === 'gold') borderClass += ' border-yellow-400';
-  else if (outline === 'silver') borderClass += ' border-gray-300';
-  else borderClass += ' border-transparent';
+const EventCard: React.FC<EventCardProps> = ({ event }) => {
+  const isFlagship = event.isFlagship ?? event.category === 'Flagship';
 
   return (
-    <div className={cn('relative rounded-2xl group metallic-border w-full')} data-no-splash="true">
-      <div className={cn('block rounded-2xl w-full', borderClass)}>
-        {/* Image as the Card - optimized for mobile */}
-        <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-black w-full">
-          <img
-            src={event.image || "/images/building-6011756_1280.jpg"}
-            alt={event.title}
-            className="block w-full h-auto min-h-[200px] sm:min-h-[250px] object-cover"
-          />
-          {/* Gradient Overlay for Text Readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent" />
+    <div className="relative w-[300px] aspect-[2/3] rounded-lg overflow-hidden border border-white/10 shadow-lg">
+        {/* --- MYSTERIOUS & SUSPENSEFUL OVERLAY --- */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-slate-800 overflow-hidden p-4 flex flex-col justify-between">
+            
+            {/* Mysterious grid pattern */}
+            <div className="absolute inset-0 opacity-5" style={{
+                backgroundImage: 'radial-gradient(circle at 1px 1px, #00ff88 1px, transparent 0)',
+                backgroundSize: '20px 20px',
+            }} />
 
-          {/* Event Content Overlay - responsive padding and text sizes */}
-          <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 lg:p-6 text-white">
-            <h2 className="text-lg sm:text-xl lg:text-3xl font-bold mb-2 sm:mb-3 lg:mb-4 leading-tight drop-shadow-lg">
-              {event.title}
-            </h2>
-            {event.description && (
-              <p className="text-xs sm:text-sm lg:text-base text-white/90 mb-3 sm:mb-4 lg:mb-6 leading-relaxed drop-shadow-lg line-clamp-2 sm:line-clamp-3">
-                {event.description}
-              </p>
-            )}
-            <div className="space-y-1 sm:space-y-2 lg:space-y-3 mb-3 sm:mb-4 lg:mb-6">
-              {event.date && (
-                <div className="flex items-center space-x-1 sm:space-x-2">
-                  <span className="text-yellow-400 font-semibold text-sm">📅</span>
-                  <span className="text-white/90 text-xs sm:text-sm">{event.date}</span>
+            {/* Glitch effect lines */}
+            <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-pulse opacity-30" />
+            <div className="absolute bottom-0 right-0 w-full h-0.5 bg-gradient-to-l from-transparent via-red-400 to-transparent animate-pulse opacity-30 delay-1000" />
+
+            {/* Top section - Mysterious badge */}
+            <div className="relative z-10 flex justify-between items-start">
+                <div className="px-3 py-1 bg-black/50 border border-green-400/50 rounded-sm backdrop-blur-sm">
+                    <span className="text-xs font-bold text-green-400 uppercase tracking-widest" style={{ fontFamily: 'monospace' }}>
+                        {isFlagship ? '⚡ CLASSIFIED' : (event.category || 'Event')}
+                    </span>
                 </div>
-              )}
-              {event.prize && (
-                <div className="flex items-center space-x-1 sm:space-x-2">
-                  <span className="text-yellow-400 font-semibold text-sm">🏆</span>
-                  <span className="text-white/90 text-xs sm:text-sm">Prize: {event.prize}</span>
-                </div>
-              )}
+                {isFlagship && (
+                    <div className="w-6 h-6 bg-gradient-to-r from-green-400 to-blue-400 rounded-sm border border-green-400/50 flex items-center justify-center animate-pulse">
+                        <span className="text-xs">🔒</span>
+                    </div>
+                )}
             </div>
-            <a
-              href="/coming-soon"
-              className="inline-block px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm sm:text-base lg:text-lg font-semibold shadow-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 hover:shadow-xl active:scale-95"
-            >
-              {event.registration || "Register Now"}
-            </a>
-          </div>
+
+            {/* Center - Mysterious title with glitch effect */}
+            <div className="flex-grow flex items-center justify-center text-center relative z-10">
+                <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 via-transparent to-red-400/20 animate-pulse opacity-50" />
+                    <h3 className="relative font-bold text-xl text-white px-2 uppercase tracking-widest leading-tight"
+                        style={{
+                            textShadow: '0 0 10px rgba(0, 255, 136, 0.8), 0 0 20px rgba(0, 255, 136, 0.4)',
+                            fontFamily: 'monospace',
+                            letterSpacing: '0.2em'
+                        }}>
+                        {event.title}
+                    </h3>
+                    <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-pulse" />
+                </div>
+            </div>
+
+            {/* Bottom section - Suspenseful elements */}
+            <div className="relative z-10 text-center space-y-3">
+                <div className="flex items-center justify-center space-x-2">
+                    <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-ping" />
+                </div>
+                <div className="inline-block px-4 py-2 bg-black/50 border border-green-400/50 rounded-sm backdrop-blur-sm">
+                    <span className="text-xs font-bold text-green-400 uppercase tracking-widest" style={{ fontFamily: 'monospace' }}>
+                        Coming Soon ..
+                    </span>
+                </div>
+            </div>
+
+            {/* Mysterious border with glitch */}
+            <div className="absolute inset-0 border border-green-400/30 rounded-lg" />
+            <div className="absolute inset-0 border border-red-400/20 rounded-lg animate-pulse opacity-50" />
+            
+            {/* Mysterious corner elements */}
+            <div className="absolute top-2 left-2 w-2 h-2 border-l border-t border-green-400" />
+            <div className="absolute top-2 right-2 w-2 h-2 border-r border-t border-red-400" />
+            <div className="absolute bottom-2 left-2 w-2 h-2 border-l border-b border-red-400" />
+            <div className="absolute bottom-2 right-2 w-2 h-2 border-r border-b border-green-400" />
+            
+            {/* Floating particles */}
+            <div className="absolute top-1/3 left-1/4 w-1 h-1 bg-green-400 rounded-full animate-ping delay-500" />
+            <div className="absolute bottom-1/3 right-1/4 w-1 h-1 bg-red-400 rounded-full animate-ping delay-1000" />
         </div>
-      </div>
-      <style jsx>{`
-        .group:hover.card-border-gradient,
-        .group:focus.card-border-gradient {
-          background: transparent !important;
-        }
-        .metallic-border {
-          position: relative;
-        }
-        .metallic-border::before {
-          display: none;
-          display: none;
-        }
-        
-        /* Text clamping utilities for mobile */
-        .line-clamp-2 {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        
-        .line-clamp-3 {
-          display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        
-        /* Smooth transitions for mobile interactions */
-        @media (max-width: 768px) {
-          .group {
-            transition: transform 0.2s ease-in-out;
-          }
-          
-          .group:active {
-            transform: scale(0.98);
-          }
-        }
-      `}</style>
     </div>
   );
-}
+};
+
+export default EventCard;

@@ -357,44 +357,34 @@ const AboutPage = () => {
             </div>
 
             {/* Additional Flagship Cards */}
-            <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-              {/* Nukkad Natak */}
-              <div className="relative group h-[180px] md:h-[280px] bg-gradient-to-br from-orange-600 to-red-600 rounded-xl md:rounded-2xl overflow-hidden">
-                <div className="absolute inset-0 bg-black/25" />
-                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
-                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
-                  <h3 className="text-base md:text-2xl font-bold text-white mb-2">Nukkad Natak</h3>
-                  <p className="text-xs md:text-sm text-gray-200">Street theatre showcase</p>
-                </div>
-              </div>
-
-              {/* Spotlight */}
-              <div className="relative group h-[180px] md:h-[280px] bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl md:rounded-2xl overflow-hidden">
-                <div className="absolute inset-0 bg-black/25" />
-                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
-                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
-                  <h3 className="text-base md:text-2xl font-bold text-white mb-2">Spotlight</h3>
-                  <p className="text-xs md:text-sm text-gray-200">Acting excellence</p>
-                </div>
-              </div>
-
-              {/* Singing Palooza */}
-              <div className="relative group h-[180px] md:h-[280px] bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl md:rounded-2xl overflow-hidden">
-                <div className="absolute inset-0 bg-black/25" />
-                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
-                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
-                  <h3 className="text-base md:text-2xl font-bold text-white mb-2">Singing Palooza</h3>
-                  <p className="text-xs md:text-sm text-gray-200">Vocal mastery</p>
-                </div>
-              </div>
-
+            <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">
               {/* Step Up */}
               <div className="relative group h-[180px] md:h-[280px] bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl md:rounded-2xl overflow-hidden">
                 <div className="absolute inset-0 bg-black/25" />
                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
                   <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
                   <h3 className="text-base md:text-2xl font-bold text-white mb-2">Step Up</h3>
-                  <p className="text-xs md:text-sm text-gray-200">Group dance energy</p>
+                  <p className="text-xs md:text-sm text-gray-200">Solo dance energy</p>
+                </div>
+              </div>
+
+              {/* Echoes of Noor */}
+              <div className="relative group h-[180px] md:h-[280px] bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl md:rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-black/25" />
+                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
+                  <h3 className="text-base md:text-2xl font-bold text-white mb-2">Echoes of Noor</h3>
+                  <p className="text-xs md:text-sm text-gray-200">Spoken word & poetry</p>
+                </div>
+              </div>
+
+              {/* VerseVaad */}
+              <div className="relative group h-[180px] md:h-[280px] bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl md:rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-black/25" />
+                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
+                  <h3 className="text-base md:text-2xl font-bold text-white mb-2">VerseVaad</h3>
+                  <p className="text-xs md:text-sm text-gray-200">Poetic debate battle</p>
                 </div>
               </div>
             </div>

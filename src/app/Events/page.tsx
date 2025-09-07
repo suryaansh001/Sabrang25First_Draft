@@ -6,7 +6,7 @@ import { X, Calendar, MapPin, Clock, Users, Star, Filter, Crown, Check, Share2, 
 import Logo from '../../../components/Logo';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '../../../components/NavigationContext';
-import ComingSoonOverlay from '../../../components/ComingSoonOverlay';
+
 
 interface Event {
   id: number;
@@ -23,18 +23,19 @@ interface Event {
   category: string;
   details: string;
   isFlagship: boolean;
+  rules?: string[];
 }
 
 const events: Event[] = [
   // 1. Rampwalk – Panache – Theme Based
   {
     id: 1,
-    title: "RAMPWALK - PANACHE - THEME BASED",
+    title: "RAMPWALK - PANACHE",
     date: "25.12.2024",
     time: "19:00",
     shares: "567 Shares",
     image: "/images/about-section/Panache.png",
-    description: "Sabrang's grandest fashion extravaganza. This year's theme-based rampwalk challenges participants to blend narrative with high fashion, showcasing creativity and stage presence.",
+    description: "The grandest runway event of Sabrang, Panache is where elegance, charisma, and confidence collide. Teams will display original collections or concepts with full choreography, soundtrack, and fashion narratives. Expectations - Glamour, high-stakes competition, and crowd pulling visuals.",
     venue: "Main Auditorium",
     price: "₹85-120",
     capacity: "3,000 people",
@@ -51,7 +52,7 @@ const events: Event[] = [
     time: "19:30",
     shares: "189 Shares",
     image: "/images/about-section/Bandjam.png",
-    description: "A showdown of student bands performing original compositions and covers. From rock and indie to classical fusion.",
+    description: "Get ready to experience the electrifying talent of the Band Jam Competition, where instruments roar to life with powerful melodies. This musical face-off will fill the air with rhythm and energy, leaving the audience moved by the magic of sound.",
     venue: "Open Air Amphitheater",
     price: "₹60",
     capacity: "5,000 people",
@@ -68,7 +69,7 @@ const events: Event[] = [
     time: "18:00",
     shares: "156 Shares",
     image: "/images/about-section/Dance.png",
-    description: "A one-on-one and crew vs. crew elimination dance face-off featuring hip-hop, freestyle, krumping, and fusion styles.",
+    description: "Get ready for an electrifying crew vs. crew dance showdown! In this high-stakes elimination battle, teams of 6-12 members will face off, showcasing their best choreography and freestyle moves. With strict rules on music, props, and conduct, only the most disciplined and creative crew will be crowned champions. It's a test of skill, synchronization, and raw energy.",
     venue: "Dance Studio",
     price: "₹45",
     capacity: "1,500 people",
@@ -85,13 +86,13 @@ const events: Event[] = [
     time: "18:00",
     shares: "145 Shares",
     image: "/images/home2.png",
-    description: "A high-energy group dance event where choreography, synchronization, stage usage, and innovation are key.",
+    description: "Step Up is the ultimate solo dance challenge where individual performers take center stage. This is a test of pure skill, creativity, and stage command. With strict rules and a two-round elimination format, only the most versatile and captivating dancer will rise to the top. Are you ready to own the spotlight?",
     venue: "Dance Studio",
     price: "₹40",
     capacity: "1,200 people",
-    genre: "Group Dance",
+    genre: "Solo Dance",
     category: "Flagship",
-    details: "Teams bring pre-prepared routines and must light up the stage with drama, unity, and movement.",
+    details: "A two-round solo dance elimination where individual performers showcase their skill, creativity, and stage command.",
     isFlagship: true
   },
   // 5. Echoes of Noor
@@ -107,26 +108,9 @@ const events: Event[] = [
     price: "Free",
     capacity: "150 people",
     genre: "Spoken Word",
-    category: "Creative Arts",
+    category: "Flagship",
     details: "Performances are judged on lyrical content, emotional delivery, and thematic relevance. A platform for the voices of tomorrow.",
-    isFlagship: false
-  },
-  // 6. Sutradhar
-  {
-    id: 6,
-    title: "SUTRADHAR",
-    date: "03.01.2025",
-    time: "17:00",
-    shares: "88 Shares",
-    image: "/images/building-6011756_1280.jpg", // Placeholder image
-    description: "A mono-acting competition where a single actor, the 'Sutradhar' (narrator), brings a story to life. A test of versatility, expression, and stage command.",
-    venue: "Performance Hall",
-    price: "₹25",
-    capacity: "400 people",
-    genre: "Mono-acting",
-    category: "Creative Arts",
-    details: "Participants perform a short, self-scripted or adapted monologue. Judged on acting prowess, script quality, and audience engagement.",
-    isFlagship: false
+    isFlagship: true
   },
   // 7. Bidding Before Wicket
   {
@@ -136,7 +120,7 @@ const events: Event[] = [
     time: "20:00",
     shares: "234 Shares",
     image: "/images/Logo@2x.png", // Placeholder image
-    description: "Cricket trivia meets auction drama. Participants receive virtual budgets to 'bid' on cricket players or scenarios.",
+    description: "Welcome to Bidding Before Wicket, the ultimate cricket strategy showdown! This isn't just an auction; it's a high-stakes battle of wits where you build your dream team with a 100 Cr budget. Navigate the auction with special powers like 'Jump Bidding' and the risky 'Budget Boost'. Qualify through a quiz round, then dominate the auction table to assemble a squad with the highest rating. Do you have what it takes to be a champion owner?",
     venue: "Business School Auditorium",
     price: "₹25",
     capacity: "200 people",
@@ -153,13 +137,13 @@ const events: Event[] = [
     time: "18:00",
     shares: "189 Shares",
     image: "/images/Logo@2x.png", // Placeholder image
-    description: "A mock marketing game where participants act as salespeople trying to 'sell' unconventional or humorous items.",
+    description: "Welcome to Seal the Deal, a premier trading event designed to challenge and sharpen your financial acumen. This competition offers a unique opportunity to experience the intensity and decision-making rigour of trading in a simulated environment. With a substantial dummy capital and a range of trading strategies, participants will need skill, precision, and strategy to emerge victorious.",
     venue: "Conference Room",
     price: "₹15",
     capacity: "150 people",
-    genre: "Sales Competition",
+    genre: "Simulated Trading",
     category: "Fun & Games",
-    details: "Creativity, persuasion, and comic timing are key to winning the deal.",
+    details: "A solo simulated trading competition. Participants start with a dummy capital of ₹10,00,000 and aim for the highest gains within a 1-hour time limit. Judged on profit, with tie-breakers for trade success.",
     isFlagship: false
   },
   // 9. VerseVaad
@@ -170,14 +154,14 @@ const events: Event[] = [
     time: "15:00",
     shares: "110 Shares",
     image: "/images/Logo@2x.png", // Placeholder image
-    description: "A unique debate competition where arguments must be presented in poetic verse. A battle of wits and words, rhythm and reason.",
+    description: '"Versevaad" is a two-round rap battle event designed to showcase originality, creativity, and improvisational skills. The competition emphasizes clean content, prohibiting any form of vulgarity.',
     venue: "Literature Hall",
     price: "Free",
     capacity: "100 people",
     genre: "Poetic Debate",
-    category: "Creative Arts",
+    category: "Flagship",
     details: "Teams are given topics and must construct their arguments in rhyming couplets or free verse. Judged on content, poetic quality, and delivery.",
-    isFlagship: false
+    isFlagship: true
   },
   // 10. In Conversation With
   {
@@ -187,7 +171,7 @@ const events: Event[] = [
     time: "16:00",
     shares: "234 Shares",
     image: "/images/Logo@2x.png", // Placeholder image
-    description: "A curated talk series with distinguished guests—artists, activists, creators—sharing personal journeys and behind-the-scenes stories.",
+    description: "Join us for 'In Conversation With,' a curated talk series featuring distinguished guests from the worlds of art, activism, and creation. Listen as they share their personal journeys and behind-the-scenes stories in an intimate setting, followed by an interactive live Q&A session designed to spark ideas and inspire the next generation.",
     venue: "Main Auditorium",
     price: "Free",
     capacity: "1,000 people",
@@ -204,30 +188,30 @@ const events: Event[] = [
     time: "14:00",
     shares: "70 Shares",
     image: "/images/Logo@2x.png", // Placeholder image
-    description: "A hands-on workshop and competition where participants shape their imagination out of clay. The theme will be revealed on the spot.",
+    description: "Unleash your creativity and bring your imagination to life in our hands-on clay modelling event! This is a solo artist's playground, where you'll have the time, space, and materials to translate a concept from your mind into a tangible piece of art.",
     venue: "Art Studio",
     price: "₹40",
     capacity: "80 people",
     genre: "Sculpture",
     category: "Creative Arts",
-    details: "Participants will be provided with clay and basic tools. Judged on creativity, technique, and interpretation of the theme.",
+    details: "A solo competition where participants are given 2-3 hours to interpret a theme using air-dry clay. Judged on creativity, material handling, and relevance to the theme.",
     isFlagship: false
   },
   // 12. Focus (film)
   {
     id: 12,
-    title: "FOCUS (FILM)",
+    title: "FOCUS",
     date: "09.01.2025",
     time: "10:00",
     shares: "115 Shares",
     image: "/images/Logo@2x.png", // Placeholder image
-    description: "A short filmmaking competition. Capture the essence of 'Sabrang' in a 3-5 minute film. A challenge of storytelling through the cinematic lens.",
+    description: "Bring your vision to life through the lens! FOCUS is a creative photography challenge that pushes you to capture stories, colours, and reflections in their purest form — without heavy edits or digital tricks.",
     venue: "Campus Wide",
     price: "₹50",
     capacity: "150 people",
-    genre: "Short Film",
+    genre: "Photography",
     category: "Creative Arts",
-    details: "Submissions are judged on cinematography, editing, narrative, and overall impact. All genres are welcome.",
+    details: "A two-round photography competition focused on creativity, composition, and minimal editing. Participants will tackle themed challenges within the campus.",
     isFlagship: false
   },
   // 13. BGMI
@@ -238,7 +222,7 @@ const events: Event[] = [
     time: "12:00",
     shares: "350 Shares",
     image: "/images/Logo@2x.png", // Placeholder image
-    description: "Drop into the battlegrounds in Sabrang's official BGMI tournament. Squad up and fight for the chicken dinner and ultimate bragging rights.",
+    description: "Drop into Sabrang's official BGMI tournament, where strategy and skill collide. Squads of four will battle it out in a multi-day event with a unique scoring system that rewards both aggressive play and survival. With bonus points for kill streaks and chicken dinners, only the most versatile team will claim victory. Register your squad, gear up, and get ready for the ultimate battle royale showdown.",
     venue: "Online / E-Sports Arena",
     price: "₹50/squad",
     capacity: "256 players",
@@ -255,7 +239,7 @@ const events: Event[] = [
     time: "12:00",
     shares: "410 Shares",
     image: "/images/Logo@2x.png", // Placeholder image
-    description: "Assemble your team of five and compete in a high-stakes Valorant tournament. Strategy, aim, and teamwork will decide the champions.",
+    description: "Gear up for Sabrang's official 5v5 Valorant tournament! This high-stakes competition tests your team's strategy, aim, and coordination across a multi-stage format, from group stages to a best-of-five grand final. With strict fair play rules and a professional map veto process, only the most skilled team will emerge as champions.",
     venue: "E-Sports Arena",
     price: "₹100/team",
     capacity: "160 players",
@@ -272,30 +256,13 @@ const events: Event[] = [
     time: "12:00",
     shares: "290 Shares",
     image: "/images/Logo@2x.png", // Placeholder image
-    description: "The ultimate survival shooter on mobile. Join the Free Fire tournament and prove your squad is the best. Booyah!",
+    description: "Dive into the ultimate mobile battle royale with Sabrang's official Free Fire Tournament. This is a high-stakes competition where only the sharpest squads will survive. With strict rules against teaming and hacking, and a point system that rewards both placement and kills, your path to victory depends on pure skill and strategy. Join the lobby, prove your worth, and fight for the Booyah!",
     venue: "Online / E-Sports Arena",
     price: "₹40/squad",
     capacity: "192 players",
     genre: "E-Sports",
     category: "Fun & Games",
     details: "Squad-based battle royale. The tournament will consist of multiple qualifying rounds leading to a grand final.",
-    isFlagship: false
-  },
-  // 16. RoboSoccer
-  {
-    id: 16,
-    title: "ROBOSOCCER",
-    date: "10.01.2025",
-    time: "11:00",
-    shares: "180 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
-    description: "Build and code your autonomous robot to compete in a thrilling game of soccer. A fusion of engineering, coding, and strategy.",
-    venue: "Technical Block",
-    price: "₹150/team",
-    capacity: "32 teams",
-    genre: "Robotics",
-    category: "Special Events",
-    details: "Teams of up to 4 members design and build a robot to play soccer against an opponent. The arena and rules will be provided beforehand.",
     isFlagship: false
   },
   // 17. Dumb Show
@@ -306,13 +273,47 @@ const events: Event[] = [
     time: "19:00",
     shares: "67 Shares",
     image: "/images/Schedule.jpg",
-    description: "A classic non-verbal guessing game with a Sabrang twist. Teams mime phrases, movie titles, or idioms under time pressure.",
+    description: "Get ready for a fun and challenging game of silent acting! Dumb Show brings teams together to act out movie names, phrases, or themes without speaking, relying on gestures and body language to communicate. Test your creativity and teamwork as participants race against the clock to guess the correct answer, making for an exciting and laughter-filled experience for everyone involved.",
     venue: "Theater Hall",
     price: "Free",
     capacity: "300 people",
     genre: "Mime Acting",
     category: "Fun & Games",
     details: "It's fast, funny, and tests how well you know your teammates – and your acting chops.",
+    isFlagship: false
+  },
+  // 18. Courtroom
+  {
+    id: 18,
+    title: "COURTROOM",
+    date: "11.01.2025",
+    time: "14:00",
+    shares: "50 Shares",
+    image: "/images/Logo@2x.png",
+    description: "Step into the shoes of detectives and unravel a thrilling murder mystery! With twists, turns, and surprising revelations, this event promises to test your problem-solving skills, creativity, and intuition.",
+    venue: "Moot Court Hall",
+    price: "₹30",
+    capacity: "100 people",
+    genre: "Mock Trial",
+    category: "Special Events",
+    details: "Teams will be given a case brief and must prepare arguments for prosecution and defense. Judged on legal reasoning, presentation, and courtroom etiquette.",
+    isFlagship: false
+  },
+  // 19. Art Relay
+  {
+    id: 19,
+    title: "ART RELAY",
+    date: "11.01.2025",
+    time: "11:00",
+    shares: "60 Shares",
+    image: "/images/Logo@2x.png",
+    description: "The Art Relay is a unique event that tests an artist's flexibility and innovative thinking. Participants are tasked with creating a single artwork that evolves through multiple phases based on a series of revealed prompts.",
+    venue: "Art Studio",
+    price: "₹20",
+    capacity: "40 people",
+    genre: "Solo Art",
+    category: "Creative Arts",
+    details: "A solo art challenge where participants create an evolving artwork on a single canvas based on a series of prompts revealed every 10 minutes. Judged on creativity, cohesiveness, and relevance to prompts.",
     isFlagship: false
   }
 ];
@@ -330,6 +331,7 @@ export default function EventsPage() {
   const router = useRouter();
   const { navigate } = useNavigation();
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [showRules, setShowRules] = useState(false);
   const [showFlagshipOnly, setShowFlagshipOnly] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [showCopyMessage, setShowCopyMessage] = useState(false);
@@ -357,6 +359,7 @@ export default function EventsPage() {
 
   const handleClose = () => {
     setSelectedEvent(null);
+    setShowRules(false);
   };
   
 
@@ -420,15 +423,85 @@ export default function EventsPage() {
   if (selectedEvent) {
     return (
       <div className="min-h-screen relative overflow-hidden">
-        {/* Close overlay button to return to events list */}
-        <button
-          aria-label="Close overlay"
-          onClick={handleClose}
-          className="fixed top-4 right-4 z-[10000] w-12 h-12 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-white hover:bg-white/20 transition"
-        >
-          <X className="w-6 h-6 mx-auto" />
-        </button>
-        <ComingSoonOverlay />
+        <div className="fixed inset-0 z-[9998] bg-black/40 backdrop-blur-lg" />
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+          <div className="relative w-full max-w-6xl rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 bg-neutral-900/30 backdrop-blur-2xl border border-white/10">
+            <button
+              aria-label="Close"
+              onClick={handleClose}
+              className="absolute top-4 right-4 z-[10001] w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition"
+            >
+              <X className="w-5 h-5 mx-auto" />
+            </button>
+            <div className="grid grid-cols-1 md:grid-cols-2">
+              <div className="relative aspect-[4/3] md:aspect-auto md:h-full bg-black/40">
+                <img
+                  src={selectedEvent.image}
+                  alt={selectedEvent.title}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  draggable={false}
+                />
+                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/70 to-transparent" />
+              </div>
+              <div className="p-6 md:p-8 text-white space-y-5 md:space-y-6 overflow-y-auto max-h-[80vh] md:border-l md:border-white/10">
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-bold mb-2 tracking-tight">{selectedEvent.title}</h2>
+                  <div className="flex flex-wrap items-center gap-3 text-sm text-gray-300">
+                    <span className="inline-flex items-center gap-1"><Calendar className="w-4 h-4" />{selectedEvent.date}</span>
+                    <span className="inline-flex items-center gap-1"><Clock className="w-4 h-4" />{selectedEvent.time}</span>
+                    <span className="inline-flex items-center gap-1"><MapPin className="w-4 h-4" />{selectedEvent.venue}</span>
+                    <span className="inline-flex items-center gap-1"><Users className="w-4 h-4" />{selectedEvent.capacity}</span>
+                  </div>
+                </div>
+                <p className="text-gray-200 leading-relaxed">{selectedEvent.description}</p>
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Details</h3>
+                  <p className="text-gray-300 whitespace-pre-line">{selectedEvent.details}</p>
+                </div>
+                {showRules && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">Rules</h3>
+                    <ul className="list-disc pl-5 space-y-2 text-gray-200">
+                      {(selectedEvent.rules && selectedEvent.rules.length > 0 ? selectedEvent.rules : [
+                        'Carry a valid college ID and entry pass.',
+                        'Report at least 30 minutes before the event start time.',
+                        'Decisions of judges are final and binding.',
+                        'Any form of abuse, vandalism or misconduct leads to disqualification.',
+                        'Organizers reserve the right to modify rules at any time.'
+                      ]).map((rule, idx) => (
+                        <li key={idx}>{rule}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                <div className="flex flex-wrap items-center gap-3 pt-2">
+                  <div className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-sm">{selectedEvent.genre}</div>
+                  {selectedEvent.isFlagship ? (
+                    <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-yellow-500/20 border border-yellow-400/30 text-sm text-yellow-300">
+                      <Crown className="w-4 h-4" /> Flagship
+                    </div>
+                  ) : (
+                    <div className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-sm">{selectedEvent.category}</div>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-3 pt-2">
+                  <button onClick={() => router.push(`/Events/${selectedEvent.id}/rules`)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border bg-white/10 text-white hover:bg-white/15 border-white/20 transition">
+                    <Info className="w-4 h-4" /> Rules
+                  </button>
+                  <button onClick={() => router.push(`/checkout?event=${selectedEvent.id}`)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition shadow-lg">
+                    Checkout
+                  </button>
+                  <button onClick={handleShare} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 transition">
+                    <Share2 className="w-4 h-4" /> Share
+                  </button>
+                  {showCopyMessage && (
+                    <span className="text-sm text-green-300">Link copied!</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
