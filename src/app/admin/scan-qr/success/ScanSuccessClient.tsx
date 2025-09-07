@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import createApiUrl from "../../../../lib/api";
 
@@ -43,6 +43,7 @@ export default function ScanSuccessClient() {
   const [error, setError] = useState<string | null>(null);
   const [allowingEntry, setAllowingEntry] = useState(false);
   const [entryResult, setEntryResult] = useState<any>(null);
+  const autoValidatedRef = useRef(false);
 
   // Extract ID from scanned data
   const userId = extractId(data);
@@ -65,6 +66,16 @@ export default function ScanSuccessClient() {
         const user = await response.json();
         setUserData(user);
         
+        // If already entered or not allowed, treat as failure state and play buzzer
+        if (user.hasEntered || user.allowEntry === false) {
+          try {
+            const audio = new Audio('/audio/buzzer.mp3');
+            if ((window as any).__audioUnlocked) {
+              audio.play().catch(() => {});
+            }
+          } catch {}
+        }
+        
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch user");
       } finally {
@@ -74,7 +85,7 @@ export default function ScanSuccessClient() {
 
     fetchUserData();
 
-    // Do not auto-redirect; redirection will be handled after successful validation
+    // Do not auto-redirect on load
     return () => {};
   }, [userId, router]);
 
@@ -94,7 +105,6 @@ export default function ScanSuccessClient() {
       const result = await response.json();
       setEntryResult(result);
       
-      // After successful first-time validation, redirect back to scanner
       // Update user data to reflect new entry status
       if (result.success && userData) {
         setUserData({
@@ -103,9 +113,18 @@ export default function ScanSuccessClient() {
           entryTime: result.entryTime,
           allowEntry: false
         });
-
-        // Redirect to scanner immediately to continue scanning
-        router.push("/admin/scan-qr?scan=1");
+        // Redirect to scanner after 3 seconds
+        setTimeout(() => {
+          router.push("/admin/scan-qr?scan=1");
+        }, 3000);
+      } else if (!result.success) {
+        // Failure: play buzzer and stay on page
+        try {
+          if ((window as any).__audioUnlocked) {
+            const audio = new Audio('/audio/buzzer.mp3');
+            audio.play().catch(() => {});
+          }
+        } catch {}
       }
       
     } catch (err) {
@@ -144,7 +163,10 @@ export default function ScanSuccessClient() {
               </span>
               
               {/* Entry Status Display */}
-              {userData.hasEntered ? (
+              {(() => {
+                const isValidationSuccess = entryResult?.success === true;
+                const showDenied = entryResult ? !entryResult.success : userData.hasEntered;
+                return showDenied && !isValidationSuccess ? (
                 <div className="mt-4 p-4 bg-red-500/20 border border-red-500 rounded-lg w-full">
                   <p className="text-red-300 font-bold text-base md:text-lg leading-snug">🚫 ACCESS DENIED</p>
                   <p className="text-red-400 text-xs md:text-sm mt-1">User has already entered</p>
@@ -163,20 +185,21 @@ export default function ScanSuccessClient() {
                   </div>
                   
                 </div>
-              ) : (
+                ) : (
                 <div className="mt-4 p-4 bg-green-500/20 border border-green-500 rounded-lg w-full">
                   <p className="text-green-300 font-bold text-base md:text-lg leading-snug">✅ ENTRY ALLOWED</p>
                   <p className="text-green-400 text-xs md:text-sm mt-1">First-time entry</p>
                   
-                  {!entryResult && (
-                    <button
-                      onClick={handleAllowEntry}
-                      disabled={allowingEntry}
-                      className="mt-3 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 
-                               text-white rounded-lg transition-colors duration-200 text-sm font-semibold"
-                    >
-                      {allowingEntry ? 'Processing...' : 'ALLOW ENTRY'}
-                    </button>
+                  {/* Auto-validate for first-time entries */}
+                  {!entryResult && !autoValidatedRef.current && (
+                    <>
+                      {(() => {
+                        autoValidatedRef.current = true;
+                        handleAllowEntry();
+                        return null;
+                      })()}
+                      <p className="mt-2 text-[11px] md:text-xs text-green-300">Validating...</p>
+                    </>
                   )}
                   
                   {entryResult && (
@@ -200,7 +223,8 @@ export default function ScanSuccessClient() {
                     </div>
                   )}
                 </div>
-              )}
+                );
+              })()}
             </div>
             
             <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
@@ -210,9 +234,21 @@ export default function ScanSuccessClient() {
               </div>
               <div className="p-3 bg-black/30 rounded-lg">
                 <p className="text-xs text-gray-400">Status</p>
-                <p className={`text-xs md:text-sm font-semibold ${userData.hasEntered ? 'text-red-400' : 'text-green-400'}`}>
-                  {userData.hasEntered ? 'Already Entered' : 'New Entry'}
-                </p>
+                {(() => {
+                  const success = entryResult?.success === true;
+                  const failure = entryResult?.success === false || userData.hasEntered;
+                  const label = success
+                    ? 'Entry Allowed'
+                    : failure
+                      ? (entryResult?.success === false ? 'Validation Failed' : 'Already Entered')
+                      : 'First-time Entry';
+                  const color = success ? 'text-green-400' : failure ? 'text-red-400' : 'text-yellow-300';
+                  return (
+                    <p className={`text-xs md:text-sm font-semibold ${color}`}>
+                      {label}
+                    </p>
+                  );
+                })()}
               </div>
             </div>
           </>
