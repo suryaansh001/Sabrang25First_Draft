@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useRef, useMemo } from "react";
 import { Linkedin, Instagram, Twitter } from 'lucide-react';
 
 // Define the Person type interface
@@ -7,10 +6,7 @@ interface Person {
   img: string;
   bg: string;
   name: string;
-  role: string;
   committee: string;
-  contact: string;
-  phone: string;
   socials?: { linkedin?: string; instagram?: string; twitter?: string; };
 }
 
@@ -65,7 +61,7 @@ const HolographicCard = ({
         <div className={`
           absolute -inset-1 rounded-lg opacity-75 transition-all duration-500 
           bg-gradient-to-r from-purple-500/40 via-pink-500/40 to-blue-500/40 blur-sm
-          ${hoveredCard ? 'opacity-100 animate-pulse' : ''}
+          ${hoveredCard ? 'opacity-100' : ''}
         `} />
         
         {/* Name on Border - Top */}
@@ -89,13 +85,11 @@ const HolographicCard = ({
             <div className={`absolute inset-0 w-full h-full rounded-lg backdrop-blur-xl bg-white/10 border-4 border-white/30 overflow-hidden shadow-2xl backface-hidden transition-opacity duration-300 ${hoveredCard ? 'opacity-0' : 'opacity-100'}`}>
               {/* Main Image */}
               <img
-                src={person.img || '/images/building-6011756_1280.jpg'}
+                src={person.img || ''}
                 alt={person.name || 'Team Member'}
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).src = '/images/Logo.svg';
-                  e.currentTarget.classList.remove('object-cover');
-                  e.currentTarget.classList.add('object-contain');
+                  e.currentTarget.style.display = 'none';
                 }}
               />
               
@@ -113,9 +107,6 @@ const HolographicCard = ({
               
               {/* Hidden description text - keeping in code but not displaying */}
               <div className="hidden text-center text-white flex-grow flex-col justify-center">
-                <p className="text-xs font-semibold opacity-80 mb-1 sm:mb-3 uppercase tracking-widest text-purple-200">
-                  {person.role || 'Member'}
-                </p>
                 {/* Responsive description for mobile (full) and desktop (clamped) */}
                 <p className="text-[11px] opacity-80 leading-snug sm:hidden">
                   Leading the charge in making our annual fest unforgettable with creative vision and seamless execution.
@@ -132,19 +123,18 @@ const HolographicCard = ({
               {/* Enhanced background with person's image as backdrop */}
               <div className="absolute inset-0">
                 <img
-                  src={person.img || '/images/building-6011756_1280.jpg'}
+                  src={person.img || ''}
                   alt={person.name || 'Team Member'}
                   className="w-full h-full object-cover opacity-30 blur-sm"
                 />
                 <div className="absolute inset-0 bg-black/60" />
               </div>
               
-              <div className="relative z-10 flex flex-col h-full items-center justify-center gap-4 text-center">
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">{person.name || 'Unknown'}</h3>
-                  <p className="text-md text-purple-200/90 mb-4">{person.role || 'Member'}</p>
-                  
-                  <div className="w-20 sm:w-28 h-0.5 bg-white/25 my-4 mx-auto" />
+               <div className="relative z-10 flex flex-col h-full items-center justify-center gap-4 text-center">
+                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                   <h3 className="text-xl sm:text-2xl font-bold text-white mb-4">{person.name || 'Unknown'}</h3>
+                   
+                   <div className="w-20 sm:w-28 h-0.5 bg-white/25 my-4 mx-auto" />
 
                   <div className="space-y-4">
                     <p className="text-sm text-white/80 uppercase tracking-widest">Connect With Me</p>
@@ -189,279 +179,201 @@ const HolographicCard = ({
 };
 
 export default function PeopleStrip() {
-  const [isClient, setIsClient] = useState(false);
-
-  // Prevent hydration mismatch by only rendering animations on client
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
 
-  // People array with detailed information for each person
-  const people: Person[] = [
-    // Student Affairs
-    { 
-      img: "/images/OH_images_home/Deepak_Sogani.png", 
-      bg: "bg-gradient-to-br from-orange-500 via-rose-500 to-yellow-400",
-      name: "Mr. Deepak Sogani",
-      role: "Head-Student Affairs",
-      committee: "Student Affairs",
-      contact: "",
-      phone: "+91 98765 43210"
-    },
-    // Core Committee Members
-    { 
-      img: "/images/Team/Discipline/Rahul_Verma.png", 
-      bg: "bg-red-500",
-      name: "Rahul Verma",
-      role: "Discipline",
-      committee: "Discipline",
-      contact: "rahul.verma@email.com",
-      phone: "+91 98765 43214",
-      socials: {
-        linkedin: "https://www.linkedin.com/",
-        instagram: "https://www.instagram.com/"
-      }
-    },
-    { 
-      img: "/images/Team/kriti.webp", 
-      bg: "bg-orange-500",
-      name: "Kriti Gupta",
-      role: "Discipline",
-      committee: "Discipline",
-      contact: "kriti.gupta@email.com",
-      phone: "+91 98765 43215"
-    },
-    { 
-      img: "/images/Team/Jinal Lodha.webp", 
-      bg: "bg-blue-500",
-      name: "Jinal Lodha",
-      role: "Decor",
-      committee: "Decor",
-      contact: "jinal.lodha@email.com",
-       phone: "+91 98765 43216",
+   // People array with detailed information for each person
+   const people: Person[] = [
+     // Student Affairs
+     { 
+       img: "/images/Team/final/Deepak_Sogani.webp", 
+       bg: "bg-gradient-to-br from-orange-500 via-rose-500 to-yellow-400",
+       name: "Mr. Deepak Sogani",
+       committee: "Student Affairs"
+     },
+     // Core Committee Members
+     { 
+       img: "/images/Team/final/Rahul_Verma.webp", 
+       bg: "bg-red-500",
+       name: "Rahul Verma",
+       committee: "Discipline",
        socials: {
-        instagram: "https://www.instagram.com/jinal_lodha7?igsh=MXVmajA1d25obWd1bg=="
-      }
-    },
-    { 
-      img: "/images/Team/Jigeesha Agarawal.webp", 
-      bg: "bg-green-500",
-      name: "Jigeesha Agarawal",
-      role: "Decor",
-      committee: "Decor",
-      contact: "jigeesha.agarawal@email.com",
-       phone: "+91 98765 43217",
+         linkedin: "https://www.linkedin.com/",
+         instagram: "https://www.instagram.com/"
+       }
+     },
+     { 
+       img: "/images/Team/final/kriti.webp", 
+       bg: "bg-orange-500",
+       name: "Kriti Gupta",
+       committee: "Discipline"
+     },
+     { 
+       img: "/images/Team/final/Jinal Lodha.webp", 
+       bg: "bg-blue-500",
+       name: "Jinal Lodha",
+       committee: "Decor",
        socials: {
-        instagram: "https://www.instagram.com/jigeeeshaaa?igsh=emNubTcyM28yNHVi"
-      }
-    },
-    { 
-      img: "/images/Team/Prabal agarwal2.webp", 
-      bg: "bg-indigo-500",
-      name: "Prabal Agarwal",
-      role: "Report",
-      committee: "Media & Report",
-      contact: "prabal.agarwal@email.com",
-      phone: "+91 98765 43219",
+         instagram: "https://www.instagram.com/jinal_lodha7?igsh=MXVmajA1d25obWd1bg=="
+       }
+     },
+     { 
+       img: "/images/Team/final/Jigeesha Agarawal.webp", 
+       bg: "bg-green-500",
+       name: "Jigeesha Agarawal",
+       committee: "Decor",
+       socials: {
+         instagram: "https://www.instagram.com/jigeeeshaaa?igsh=emNubTcyM28yNHVi"
+       }
+     },
+     { 
+       img: "/images/Team/final/Prabal agarwal2.webp", 
+       bg: "bg-indigo-500",
+       name: "Prabal Agarwal",
+       committee: "Media & Report",
        socials: { 
-        instagram: "https://www.instagram.com/agrawal.prabal?igsh=cmoyMXU4NGQyZ3h0",
-        linkedin: "https://www.linkedin.com/in/prabal-agrawal23?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
-      }
-    },
-    { 
-      img: "/images/Team/ShouryaPrajapat.webp", 
-      bg: "bg-teal-500",
-      name: "Shourya Prajapat",
-      role: "Photography",
-      committee: "Photography",
-      contact: "shourya.prajapat@email.com",
-       phone: "+91 98765 43220"
-    },
-    { 
-      img: "/images/Team/Ekansh Saraswat 2.webp", 
-      bg: "bg-yellow-500",
-      name: "Ekansh Saraswat",
-      role: "Photography",
-      committee: "Photography",
-      contact: "ekansh.saraswat@email.com",
-       phone: "+91 98765 43221"
-    },
-    { 
-      img: "/images/Team/Satvik vaid.webp", 
-      bg: "bg-lime-500",
-      name: "Satvick Vaid",
-      role: "Cultural",
-      committee: "Cultural",
-      contact: "satvick.vaid@email.com",
-       phone: "+91 98765 43223",
+         instagram: "https://www.instagram.com/agrawal.prabal?igsh=cmoyMXU4NGQyZ3h0",
+         linkedin: "https://www.linkedin.com/in/prabal-agrawal23?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
+       }
+     },
+     { 
+       img: "/images/Team/final/ShouryaPrajapat.webp", 
+       bg: "bg-teal-500",
+       name: "Shourya Prajapat",
+       committee: "Photography"
+     },
+     { 
+       img: "/images/Team/final/Ekansh Saraswat.webp", 
+       bg: "bg-yellow-500",
+       name: "Ekansh Saraswat",
+       committee: "Photography"
+     },
+     { 
+       img: "/images/Team/final/Satvick.webp", 
+       bg: "bg-lime-500",
+       name: "Satvick Vaid",
+       committee: "Cultural",
        socials: {
-        instagram: "https://www.instagram.com/satvick_vaid?utm_source=qr&igsh=NHI2ZjE0c3VsNGY4"
-      }
-    },
-    { 
-      img: "/images/Team/SuryaanshSharma.webp", 
-      bg: "bg-amber-500",
-      name: "Suryaansh Sharma",
-      role: "Technical",
-      committee: "Technical",
-      contact: "suryaansh.sharma@email.com",
-      phone: "+91 98765 43224",
-      socials: {
-        linkedin: "https://www.linkedin.com/in/suryaansh-sharma-05a811284/"
-      }
-    },
-    { 
-      img: "/images/OH_images_home/aryan.jpeg", 
-      bg: "bg-emerald-500",
-      name: "Lakshay Khandelwal",
-      role: "Internal Arrangements",
-      committee: "Internal Arrangements",
-      contact: "lakshay.khandelwal@email.com",
-      phone: "+91 98765 43226"
-    },
-    { 
-      img: "/images/Team/Anmol Sahu.webp", 
-      bg: "bg-rose-500",
-      name: "Anmol Sahu",
-      role: "Transport",
-      committee: "Transport",
-      contact: "anmol.sahu@email.com",
-      phone: "+91 98765 43228"
-    },
-    { 
-      img: "/images/Team/vandanshah.webp", 
-      bg: "bg-sky-500",
-      name: "Vandan P. Shah",
-      role: "Social Media",
-      committee: "Social Media",
-      contact: "vandan.shah@email.com",
-      phone: "+91 98765 43229"
-    },
-    { 
-      img: "/images/Team/Tanveer Kanderiya.webp", 
-      bg: "bg-slate-500",
-      name: "Tanveer Kanderiya",
-      role: "Prize & Certificates",
-      committee: "Prize & Certificates",
-      contact: "tanveer.kanderiya@email.com",
-      phone: "+91 98765 43230",
-      socials: {
-        instagram: "https://instagram.com/tanveer_kumawatt"
-      }
-    },
-    { 
-      img: "/images/Team/Aayushi Meel.webp", 
-      bg: "bg-zinc-500",
-      name: "Aayushi Meel",
-      role: "Hospitality",
-      committee: "Hospitality",
-      contact: "aayushi.meel@email.com",
-      phone: "+91 98765 43231",
-      socials: {
-        linkedin: "https://www.linkedin.com/in/aayushi-meel-01505a2b7/"
-      }
-    },
-    { 
-      img: "/images/Team/suryanshkhandelwal.jpg", 
-      bg: "bg-neutral-500",
-      name: "Suryansh Khandelwal",
-      role: "Stage & Venue",
-      committee: "Stage & Venue",
-      contact: "suryansh.khandelwal@email.com",
-      phone: "+91 98765 43232",
-      socials: {
-        linkedin: "https://www.linkedin.com/in/suryansh-khandelwal-bb495b322",
-        instagram: "https://www.instagram.com/_.hrshhh?igsh=MTRnNHRwMjNqc3RmdQ=="
-      }
-    },
-    { 
-      img: "/images/Team/akashSaraswatCropped.webp", 
-      bg: "bg-neutral-500",
-      name: "Akshat Saraswat",
-      role: "Stage & Venue",
-      committee: "Stage & Venue",
-      contact: "AKASH@jklu.edu.in",
-      phone: "+91 7014647818",
-      socials: {
-        linkedin: "https://www.linkedin.com/in/",
-        instagram: "https://www.instagram.com/"
-      }
-    },
-    { 
-      img: "/images/Team/AyushiKabra.webp", 
-      bg: "bg-gray-500",
-      name: "Ayushi Kabra",
-      role: "Registrations",
-      committee: "Registrations",
-      contact: "ayushi.kabra@email.com",
-      phone: "+91 98765 43234"
-    },
-    { 
-      img: "/images/OH_images_home/pooja.jpeg", 
-      bg: "bg-red-600",
-      name: "Jayash Gahlot",
-      role: "Registrations",
-      committee: "Registrations",
-      contact: "jayash.gehlot@email.com",
-      phone: "+91 98765 43235"
-    },
-    {
-      img: "/images/Team/Chahat Khandelwal.webp",
-      bg: "bg-fuchsia-600",
-      name: "Chahat Khandelwal",
-      role: "Anchor",
-      committee: "anchors",
-      contact: "",
-      phone: "",
-      socials: {
-        instagram: "https://www.instagram.com/okchahat_?igsh=YTR1am1ldXoxOThk&utm_source=qr"
-      }
-    },
-    {
-      img: "/images/OH_images_home/Anushka_Pathak.png",
-      bg: "bg-purple-600",
-      name: "Anushka Pathak",
-      role: "Executive Student Affairs",
-      committee: "Student Affairs",
-      contact: "",
-      phone: ""
-    },
-    {
-      img: "/images/Team/Dheevi_Fozdar.png",
-      bg: "bg-zinc-600",
-      name: "Dheevi Fozdar",
-      role: "Hospitality",
-      committee: "Hospitality",
-      contact: "dheevi.fozdar@email.com",
-      phone: "+91 98765 43238"
-    },
-    {
-      img: "/images/Team/Naman_Shukla.png",
-      bg: "bg-stone-600",
-      name: "Naman Shukla",
-      role: "Sponsorship & Promotion",
-      committee: "Sponsorship & Promotion",
-      contact: "naman.shukla@email.com",
-      phone: "+91 98765 43239"
-    }
-  ];
+         instagram: "https://www.instagram.com/satvick_vaid?utm_source=qr&igsh=NHI2ZjE0c3VsNGY4"
+       }
+     },
+     { 
+       img: "/images/Team/final/Suryaansh Sharma.webp", 
+       bg: "bg-amber-500",
+       name: "Suryaansh Sharma",
+       committee: "Technical",
+       socials: {
+         linkedin: "https://www.linkedin.com/in/suryaansh-sharma-05a811284/"
+       }
+     },
+     { 
+       img: "/images/Team/final/Lakshay.webp", 
+       bg: "bg-emerald-500",
+       name: "Lakshay Khandelwal",
+       committee: "Internal Arrangements"
+     },
+     { 
+       img: "/images/Team/final/Anmol Sahu.webp", 
+       bg: "bg-rose-500",
+       name: "Anmol Sahu",
+       committee: "Transport"
+     },
+     { 
+       img: "/images/Team/final/vandanshah.webp", 
+       bg: "bg-sky-500",
+       name: "Vandan P. Shah",
+       committee: "Social Media"
+     },
+     { 
+       img: "/images/Team/final/Tanveer.webp", 
+       bg: "bg-slate-500",
+       name: "Tanveer Kanderiya",
+       committee: "Prize & Certificates",
+       socials: {
+         instagram: "https://instagram.com/tanveer_kumawatt"
+       }
+     },
+     { 
+       img: "/images/Team/final/Aayushi Meel.webp", 
+       bg: "bg-zinc-500",
+       name: "Aayushi Meel",
+       committee: "Hospitality",
+       socials: {
+         linkedin: "https://www.linkedin.com/in/aayushi-meel-01505a2b7/"
+       }
+     },
+     { 
+       img: "/images/Team/final/suryanshkhandelwal.webp", 
+       bg: "bg-neutral-500",
+       name: "Suryansh Khandelwal",
+       committee: "Stage & Venue",
+       socials: {
+         linkedin: "https://www.linkedin.com/in/suryansh-khandelwal-bb495b322",
+         instagram: "https://www.instagram.com/_.hrshhh?igsh=MTRnNHRwMjNqc3RmdQ=="
+       }
+     },
+     { 
+       img: "/images/Team/final/akashSaraswatCropped.webp", 
+       bg: "bg-neutral-500",
+       name: "Akshat Saraswat",
+       committee: "Internal Arrangements",
+       socials: {
+         linkedin: "https://www.linkedin.com/in/",
+         instagram: "https://www.instagram.com/"
+       }
+     },
+     { 
+       img: "/images/Team/final/Ayushi Kabra.webp", 
+       bg: "bg-gray-500",
+       name: "Ayushi Kabra",
+       committee: "Registrations"
+     },
+     { 
+       img: "/images/Team/final/pooja.jpeg", 
+       bg: "bg-red-600",
+       name: "Jayash Gahlot",
+       committee: "Registrations"
+     },
+     {
+       img: "/images/Team/final/Chahat Khandelwal.webp",
+       bg: "bg-fuchsia-600",
+       name: "Chahat Khandelwal",
+       committee: "anchors",
+       socials: {
+         instagram: "https://www.instagram.com/okchahat_?igsh=YTR1am1ldXoxOThk&utm_source=qr"
+       }
+     },
+     {
+       img: "/images/Team/final/Anushka_Pathak.webp",
+       bg: "bg-purple-600",
+       name: "Anushka Pathak",
+       committee: "Student Affairs"
+     },
+     {
+       img: "/images/Team/final/Dheevi_Fozdar.png",
+       bg: "bg-zinc-600",
+       name: "Dheevi Fozdar",
+       committee: "Hospitality"
+     },
+     {
+       img: "/images/Team/final/Naman_Shukla.png",
+       bg: "bg-stone-600",
+       name: "Naman Shukla",
+       committee: "Sponsorship & Promotion"
+     }
+   ];
 
   // Student Affairs people (rendered using OH card style)
   const studentAffairsPeople: Person[] = people.filter((p) => p.committee === 'Student Affairs');
 
-  // Single OH card (Diya Garg)
-  const ohPeople: Person[] = [
-    {
-      img: "/images/Team/OH/Diya Garg.webp",
-      bg: "bg-gradient-to-br from-fuchsia-500 via-pink-500 to-rose-400",
-      name: "Diya Garg",
-      role: "Organizing Head",
-      committee: "Organizing Committee",
-      contact: "",
-      phone: ""
-    }
-  ];
+   // Single OH card (Diya Garg)
+   const ohPeople: Person[] = [
+     {
+       img: "/images/Team/final/Diya Garg.webp",
+       bg: "bg-gradient-to-br from-fuchsia-500 via-pink-500 to-rose-400",
+       name: "Diya Garg",
+       committee: "Organizing Committee"
+     }
+   ];
 
   // Committee names for grouping - simple array
   const committeeNames = [
@@ -476,7 +388,7 @@ export default function PeopleStrip() {
     "Sponsorship & Promotion",
     "Photography",
     "Social Media",
-    "anchorz",
+    "anchors",
     "Prize & Certificates",
     "Transport",
     "Discipline"
@@ -517,18 +429,13 @@ export default function PeopleStrip() {
       large: "w-[220px] sm:w-[240px] md:w-[260px]"
     };
 
-    // Use static styles on server, dynamic on client
-    const cardStyle = isClient ? {
+    // Use consistent styles
+    const cardStyle = {
       willChange: 'transform',
       transform: 'translateZ(0)',
       WebkitTransform: 'translateZ(0)',
       animationDelay: `${animationDelay}ms`,
       ...style
-    } : {
-      willChange: 'transform',
-      transform: 'translateZ(0)',
-      WebkitTransform: 'translateZ(0)',
-      animationDelay: `${animationDelay}ms`
     };
 
     // If it's a committee card, use holographic style
@@ -549,7 +456,7 @@ export default function PeopleStrip() {
     return (
       <div className={`relative ${sizeClasses[size]} ${className} ${transformClass} cursor-pointer transition-all duration-700 ease-out group hover:scale-110 hover:z-20`} style={cardStyle}>
            {/* Enhanced Glow Effect for OH */}
-           <div className="absolute -inset-2 bg-gradient-to-r from-purple-500/30 via-pink-500/30 to-blue-500/30 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-all duration-700 animate-pulse" />
+           <div className="absolute -inset-2 bg-gradient-to-r from-purple-500/30 via-pink-500/30 to-blue-500/30 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-all duration-700" />
            
            <div className={`relative w-full h-full rounded-lg overflow-hidden shadow-2xl border-2 border-white/20 group-hover:border-white/40 transition-all duration-500`}>
              {/* Enhanced Background with multiple layers */}
@@ -561,9 +468,9 @@ export default function PeopleStrip() {
                <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/20 rounded-lg" />
                
                {/* Floating geometric shapes */}
-               <div className="absolute top-4 right-4 w-8 h-8 bg-white/20 rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
-               <div className="absolute bottom-6 left-6 w-6 h-6 bg-white/15 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }} />
-               <div className="absolute top-1/2 left-4 w-4 h-4 bg-white/25 rounded-full animate-bounce" style={{ animationDelay: '1s' }} />
+               <div className="absolute top-4 right-4 w-8 h-8 bg-white/20 rounded-full" />
+               <div className="absolute bottom-6 left-6 w-6 h-6 bg-white/15 rounded-full" />
+               <div className="absolute top-1/2 left-4 w-4 h-4 bg-white/25 rounded-full" />
              </div>
 
              {/* Enhanced splash background */}
@@ -580,7 +487,6 @@ export default function PeopleStrip() {
                  alt={person.name}
                  className="w-full h-full object-cover rounded-lg transition-all duration-500 ease-out group-hover:scale-105 group-hover:rotate-1 relative z-20"
                  onError={(e) => {
-                   console.error('Image failed to load:', person.img);
                    e.currentTarget.style.display = 'none';
                  }}
                />
@@ -594,20 +500,17 @@ export default function PeopleStrip() {
                {/* Background for text readability */}
                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent rounded-b-lg" />
                
-               {/* Text content */}
-               <div className="relative z-10 text-center">
-                 <h3 className="text-lg lg:text-xl font-bold mb-1 text-shadow-lg group-hover:text-white transition-all duration-300 truncate">
-                   {person.name}
-                 </h3>
-                 <p className="text-sm opacity-90 font-medium text-shadow-md group-hover:text-white/90 transition-all duration-300 truncate">
-                   {person.role}
-                 </p>
-                 
-                 {/* Enhanced role indicator */}
-                 {person.role === 'Organizing Head' && <div className="mt-2 inline-flex items-center px-2 py-1 bg-white/20 backdrop-blur-sm rounded-md border border-white/30">
-                   <span className="text-xs font-semibold text-white">⭐ Organizing Head</span>
-                 </div>}
-               </div>
+                 {/* Text content */}
+                 <div className="relative z-10 text-center">
+                   <h3 className="text-lg lg:text-xl font-bold mb-1 text-shadow-lg group-hover:text-white transition-all duration-300 truncate">
+                     {person.name}
+                   </h3>
+                   
+                   {/* Enhanced role indicator */}
+                   {person.name === 'Diya Garg' && <div className="mt-2 inline-flex items-center px-2 py-1 bg-white/20 backdrop-blur-sm rounded-md border border-white/30">
+                     <span className="text-xs font-semibold text-white">⭐ Organizing Head</span>
+                   </div>}
+                 </div>
              </div>
            </div>
            
@@ -616,6 +519,48 @@ export default function PeopleStrip() {
          </div>
        );
     }
+
+    // Default card style for other cases
+    return (
+      <div className={`relative ${sizeClasses[size]} ${className} ${transformClass} cursor-pointer transition-all duration-700 ease-out group hover:scale-110 hover:z-20`} style={cardStyle}>
+        <div className={`relative w-full h-full rounded-lg overflow-hidden shadow-2xl border-2 border-white/20 group-hover:border-white/40 transition-all duration-500`}>
+          <div className="absolute inset-0">
+            <div className={`absolute inset-0 ${person.bg} rounded-lg opacity-90`} />
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/20 rounded-lg" />
+          </div>
+          
+          <img
+            src="/images/BG-TEAM.png"
+            alt="splash"
+            className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay pointer-events-none group-hover:opacity-80 transition-all duration-500"
+          />
+
+          <div className="relative z-10 w-full h-full flex items-center justify-center p-4">
+            <img
+              src={person.img}
+              alt={person.name}
+              className="w-full h-full object-cover rounded-lg transition-all duration-500 ease-out group-hover:scale-105 group-hover:rotate-1 relative z-20"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+            
+            <div className="absolute inset-0 rounded-lg ring-2 ring-white/30 group-hover:ring-white/50 transition-all duration-500" />
+          </div>
+          
+          <div className="absolute bottom-0 left-0 right-0 p-4 text-white z-30">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent rounded-b-lg" />
+            <div className="relative z-10 text-center">
+              <h3 className="text-lg lg:text-xl font-bold mb-1 text-shadow-lg group-hover:text-white transition-all duration-300 truncate">
+                {person.name}
+              </h3>
+            </div>
+          </div>
+        </div>
+        
+        <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out rounded-lg" />
+      </div>
+    );
   };
 
   // Render different layouts based on committee name
@@ -623,84 +568,34 @@ export default function PeopleStrip() {
     const committeeMembers = people.filter(p => p.committee === committeeName);
     if (committeeMembers.length === 0) return null;
     
-    // Don't render animated layouts on server
     const isSingleMember = committeeMembers.length === 1;
 
-    if (!isClient) {
-      return (
-        <div key={committeeName} className="flex flex-col items-center mb-24 relative min-h-[400px] w-full">
-          {/* Enhanced background effects */}
-          <div className={`absolute inset-0 bg-neutral-700 opacity-20 rounded-lg blur-3xl`}></div>
-          <div className={`absolute inset-0 bg-neutral-700 opacity-10 rounded-lg blur-2xl scale-150`}></div>
-          
-          {/* Enhanced committee header */}
-          <div className="relative z-10 text-center mb-8 sm:mb-12">
-            <h3 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-white uppercase tracking-widest px-4`}>
-              {committeeName}
-            </h3>
-            <p className="text-sm text-gray-400 mt-2 max-w-md mx-auto">
-              Dedicated team members working together to deliver excellence
-            </p>
-          </div>
-          
-          {/* Enhanced cards layout */}
-          <div className={`relative ${isSingleMember ? 'flex justify-center' : 'grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center'} gap-4 sm:gap-8 w-full max-w-7xl mx-auto px-2 sm:px-4`}>
-            {committeeMembers.filter(Boolean).map((person: Person, idx: number) => (
-              <div key={idx} className={isSingleMember ? 'w-44 sm:w-auto' : 'w-full sm:w-auto'}>
-                <PersonCard
-                  person={person}
-                  cardId={`${committeeName}-${idx}`}
-                  className="relative z-10"
-                  animationDelay={idx * 400}
-                  size="normal"
-                  isCommitteeCard={true}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-
-    // Client-side animated layouts - Enhanced with better visual elements
+    // Enhanced layouts with better visual elements
     return (
       <div key={committeeName} className="flex flex-col items-center mb-24 relative min-h-[400px] w-full group">
         {/* Enhanced background effects with animations */}
         <div className={`absolute inset-0 bg-neutral-700 opacity-20 rounded-lg blur-3xl transition-all duration-1000 group-hover:opacity-30`}></div>
         <div className={`absolute inset-0 bg-neutral-700 opacity-10 rounded-lg blur-2xl scale-150 transition-all duration-1000 group-hover:scale-175`}></div>
         
-        {/* Enhanced committee header with animations */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          viewport={{ once: true }}
+        {/* Enhanced committee header */}
+        <div 
           className="relative z-10 text-center mb-8 sm:mb-12"
         >
           <h3 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-white uppercase tracking-widest px-4`}>
             {committeeName}
           </h3>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            viewport={{ once: true }}
+          <p 
             className="text-sm text-gray-400 mt-2 max-w-md mx-auto"
           >
-            Dedicated team members working together to deliver excellence
-          </motion.p>
-        </motion.div>
+            {/* Dedicated team members working together to deliver excellence */}
+          </p>
+        </div>
         
         {/* Enhanced cards layout with connecting elements */}
         <div className={`relative ${isSingleMember ? 'flex justify-center' : 'grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center'} gap-4 sm:gap-8 w-full max-w-7xl mx-auto px-2 sm:px-4`}>
           {committeeMembers.filter(Boolean).map((person: Person, idx: number) => (
-            <motion.div
+            <div
               key={idx}
-              initial={{ opacity: 0, y: 30, scale: 0.8 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 + idx * 0.2 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -5, scale: 1.05 }}
               className={`relative z-10 h-full ${isSingleMember ? 'w-44 sm:w-auto' : 'w-full sm:w-auto'}`}
             >
               <PersonCard
@@ -710,141 +605,33 @@ export default function PeopleStrip() {
                 size="normal"
                 isCommitteeCard={true}
               />
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
     );
   };
 
-  return (
-    <div className="flex flex-col items-center px-2 sm:px-4 py-4 sm:py-8 w-full overflow-x-hidden">
+   return (
+     <div className="flex flex-col items-center px-2 sm:px-4 py-4 sm:py-8 w-full overflow-x-hidden">
 
       
-                    {/* Enhanced Main "SABRANG'25" heading with cosmic styling */}
-       <motion.div 
-         initial={{ opacity: 0, y: 30 }}
-         animate={{ opacity: 1, y: 0 }}
-         transition={{ duration: 1, delay: 0.2 }}
-         className="text-center mb-12 sm:mb-16 lg:mb-20"
-       >
-         {/* Floating particles background */}
-         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-           {useMemo(() => {
-             let seed = 123456;
-             const rand = () => {
-               seed = (seed * 1664525 + 1013904223) % 4294967296;
-               return seed / 4294967296;
-             };
-             return Array.from({ length: 20 }).map((_, i) => (
-               <motion.div
-                 key={i}
-                 className="absolute w-2 h-2 bg-white/20 rounded-full"
-                 style={{
-                   left: `${rand() * 100}%`,
-                   top: `${rand() * 100}%`,
-                 }}
-                 animate={{
-                   y: [0, -20, 0],
-                   opacity: [0.2, 0.8, 0.2],
-                   scale: [1, 1.5, 1],
-                 }}
-                 transition={{
-                   duration: 3 + rand() * 2,
-                   repeat: Infinity,
-                   delay: rand() * 2,
-                 }}
-               />
-             ));
-           }, [])}
-         </div>
-
-        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 sm:mb-6 text-white drop-shadow-2xl tracking-widest uppercase relative z-10" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
-           <motion.span
-             initial={{ opacity: 0, scale: 0.5 }}
-             animate={{ opacity: 1, scale: 1 }}
-             transition={{ duration: 0.8, delay: 0.5 }}
-           >
-             SABRANG
-           </motion.span>
-           <motion.span
-             initial={{ opacity: 0, scale: 0.5 }}
-             animate={{ opacity: 1, scale: 1 }}
-             transition={{ duration: 0.8, delay: 0.7 }}
-             className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl"
-           >
-             '25
-           </motion.span>
-      </h1>
-      
-         {/* Enhanced decorative elements with animations */}
-         <motion.div 
-           initial={{ scaleX: 0 }}
-           animate={{ scaleX: 1 }}
-           transition={{ duration: 1.2, delay: 1 }}
-           className="flex justify-center items-center gap-4 mb-6"
-         >
-          <div className="w-16 h-1 bg-purple-400 rounded-full" />
-           <motion.div 
-            className="w-4 h-4 bg-pink-400 rounded-full"
-             animate={{ 
-               scale: [1, 1.2, 1],
-               rotate: [0, 180, 360]
-             }}
-             transition={{ 
-               duration: 3,
-               repeat: Infinity,
-               ease: "easeInOut"
-             }}
-           />
-           <div className="w-16 h-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full" />
-         </motion.div>
-         
-         <motion.h2 
-           initial={{ opacity: 0, y: 20 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ duration: 0.8, delay: 1.2 }}
-           className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 text-white relative z-10"
-         >
-           Organizing Committee
-         </motion.h2>
-         <motion.p 
-           initial={{ opacity: 0, y: 20 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ duration: 0.8, delay: 1.4 }}
-           className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto mb-8 relative z-10"
-         >
-           Meet the visionary leaders who orchestrate the magic of{' '}
-          <span className="text-purple-400 font-bold">
-             SABRANG'25
-           </span>
-         </motion.p>
-       </motion.div>
  
       {/* Student Affairs heading */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.1 }}
-        viewport={{ once: true }}
+      <div 
         className="text-center"
       >
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-2xl tracking-widest uppercase px-4" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
           Student Affairs
         </h2>
-      </motion.div>
+      </div>
 
       {/* Student Affairs cards - styled like OH and placed above OH */}
       <div className="relative mt-6 mb-12">
         <div className="flex flex-wrap justify-center lg:justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 w-full max-w-7xl mx-auto px-2 sm:px-4 relative z-10">
           {studentAffairsPeople.map((person, index) => (
-            <motion.div
+            <div
               key={`student-affairs-${index}`}
-              initial={{ opacity: 0, y: 30, scale: 0.9 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 + index * 0.15 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -10, transition: { duration: 0.3 } }}
               className="relative"
             >
               <PersonCard
@@ -854,23 +641,19 @@ export default function PeopleStrip() {
                 transformClass=""
                 isOH
               />
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
 
       {/* Organizing Head heading */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.1 }}
-        viewport={{ once: true }}
+      <div 
         className="text-center mt-24"
       >
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-2xl tracking-widest uppercase px-4" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
           Organizing Head
         </h2>
-      </motion.div>
+      </div>
       
              {/* Organizing Heads cards - enhanced layout and styling */}
        <div className="relative mt-[-8] mb-24 sm:mb-28 lg:mb-32">
@@ -881,25 +664,16 @@ export default function PeopleStrip() {
         
          {/* Enhanced connecting elements for mobile */}
          <div className="lg:hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-[320px] flex justify-between items-center z-10">
-           <div className="w-4 h-4 bg-purple-400 rounded-lg animate-pulse shadow-lg" />
-           <div className="w-6 h-6 bg-pink-400 rounded-lg animate-pulse shadow-lg" style={{ animationDelay: '0.5s' }} />
-           <div className="w-4 h-4 bg-blue-400 rounded-lg animate-pulse shadow-lg" style={{ animationDelay: '1s' }} />
+           <div className="w-4 h-4 bg-purple-400 rounded-lg shadow-lg" />
+           <div className="w-6 h-6 bg-pink-400 rounded-lg shadow-lg" />
+           <div className="w-4 h-4 bg-blue-400 rounded-lg shadow-lg" />
          </div>
         
                  {/* Cards container with enhanced spacing */}
          <div className="flex flex-wrap justify-center lg:justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 mt-8 sm:mt-12 lg:mt-20 w-full max-w-7xl mx-auto px-2 sm:px-4 relative z-10">
         {cards.map((person, index) => (
-            <motion.div
+            <div
             key={index}
-                initial={{ opacity: 0, y: 50, scale: 0.8 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ 
-                  duration: 0.8, 
-                  delay: 1.6 + index * 0.2,
-                  type: "spring",
-                  stiffness: 100
-                }}
-                whileHover={{ y: -10, transition: { duration: 0.3 } }}
                 className="relative"
               >
                  {/* Special glow effect for each card */}
@@ -921,17 +695,13 @@ export default function PeopleStrip() {
                  
                  {/* Floating achievement badges */}
                 
-              </motion.div>
+              </div>
         ))}
          </div>
       </div>
 
        {/* Enhanced "Core Committee Members" heading */}
-       <motion.div 
-         initial={{ opacity: 0, y: 30 }}
-         whileInView={{ opacity: 1, y: 0 }}
-         transition={{ duration: 1, delay: 0.2 }}
-         viewport={{ once: true }}
+       <div 
          className="text-center mb-4 sm:mb-12"
        >
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-white drop-shadow-2xl tracking-widest uppercase px-4" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
@@ -940,7 +710,7 @@ export default function PeopleStrip() {
          <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto mt-4">
            Dedicated teams working behind the scenes to create an unforgettable experience
          </p>
-       </motion.div>
+       </div>
 
 
       {/* Committee Layouts - Row-based */}
@@ -952,27 +722,7 @@ export default function PeopleStrip() {
         </div>
       </div>
 
-             {/* Special Floating Action Button */}
-       <motion.div
-         className="fixed bottom-8 right-8 z-50"
-         initial={{ opacity: 0, scale: 0, rotate: -180 }}
-         animate={{ opacity: 1, scale: 1, rotate: 0 }}
-         transition={{ duration: 0.8, delay: 2, type: "spring" }}
-       >
-         <motion.button
-          className="w-16 h-16 bg-purple-500 rounded-full shadow-2xl border-2 border-white/20 flex items-center justify-center text-white text-2xl backdrop-blur-sm"
-           whileHover={{ scale: 1.1, rotate: 180 }}
-           whileTap={{ scale: 0.9 }}
-           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-         >
-           <motion.span
-             animate={{ y: [0, -2, 0] }}
-             transition={{ duration: 2, repeat: Infinity }}
-           >
-             ↑
-           </motion.span>
-         </motion.button>
-       </motion.div>
+
 
        {/* Enhanced CSS for animations and styling */}
       <style jsx global>{`
@@ -994,25 +744,6 @@ export default function PeopleStrip() {
           transform: rotateY(180deg);
         }
         
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        
-        @keyframes pulse {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.02); }
-        }
-        
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-        }
-        
-        @keyframes glow {
-          0%, 100% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); }
-          50% { box-shadow: 0 0 40px rgba(168, 85, 247, 0.8); }
-        }
         
         /* Enhanced text shadows for better readability */
         .text-shadow-lg {
@@ -1069,15 +800,6 @@ export default function PeopleStrip() {
           filter: brightness(1.1) contrast(1.1);
         }
         
-        /* Floating animation for decorative elements */
-        .float-animation {
-          animation: float 3s ease-in-out infinite;
-        }
-        
-        /* Glow animation for special elements */
-        .glow-animation {
-          animation: glow 2s ease-in-out infinite alternate;
-        }
         
         /* Enhanced gradient backgrounds */
         .gradient-bg {
