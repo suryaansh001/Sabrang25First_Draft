@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import Logo from '../public/images/Logo.svg';
 import Link from 'next/link';
@@ -15,45 +15,48 @@ const Navbar: React.FC = () => {
   // Check authentication status on component mount
   useEffect(() => {
     checkAuthStatus();
-    
-    // Listen for login/logout events
     const handleAuthChange = () => {
       checkAuthStatus();
     };
-    
     window.addEventListener('userLoggedIn', handleAuthChange);
     window.addEventListener('userLoggedOut', handleAuthChange);
-    
     return () => {
       window.removeEventListener('userLoggedIn', handleAuthChange);
       window.removeEventListener('userLoggedOut', handleAuthChange);
     };
   }, []);
 
-  const checkAuthStatus = async () => {
+  const authAbortRef = useRef<AbortController | null>(null);
+  const authCooldownRef = useRef<number>(0);
+  const checkAuthStatus = useCallback(async () => {
+    const now = Date.now();
+    if (now - authCooldownRef.current < 3000) return; // debounce frequent checks
+    authCooldownRef.current = now;
     try {
-      console.log('Checking authentication status...');
+      if (authAbortRef.current) authAbortRef.current.abort();
+      const controller = new AbortController();
+      authAbortRef.current = controller;
       const response = await fetch(createApiUrl('/api/user'), {
-        credentials: 'include'
+        credentials: 'include',
+        signal: controller.signal,
+        cache: 'no-store'
       });
-      
       if (response.ok) {
         const userData = await response.json();
-        console.log('User authenticated:', userData.email);
         setIsAuthenticated(true);
         setIsAdmin(userData.isAdmin || false);
         setUserEmail(userData.email);
       } else {
-        console.log('User not authenticated, status:', response.status);
         setIsAuthenticated(false);
         setIsAdmin(false);
       }
-    } catch (error) {
-      console.log('Auth check error:', error);
-      setIsAuthenticated(false);
-      setIsAdmin(false);
+    } catch (error: any) {
+      if (error?.name !== 'AbortError') {
+        setIsAuthenticated(false);
+        setIsAdmin(false);
+      }
     }
-  };
+  }, []);
 
   const handleLogout = async () => {
     try {
