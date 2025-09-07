@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, MotionValue } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { 
@@ -35,20 +35,51 @@ const navigationItems = [
 
 export const SidebarDock: React.FC<SidebarDockProps> = ({ className = '', onNavigate }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [screenSize, setScreenSize] = useState({ width: 0, height: 0 });
+  const [widthBucket, setWidthBucket] = useState<0 | 1 | 2 | 3 | 4>(0);
   const router = useRouter();
   const mouseY = useMotionValue(Infinity);
 
-  // Track screen size changes
+  // Efficiently track viewport width buckets using matchMedia + rAF throttle
   useEffect(() => {
-    const updateScreenSize = () => {
-      setScreenSize({ width: window.innerWidth, height: window.innerHeight });
+    if (typeof window === 'undefined') return;
+    const queries = [
+      window.matchMedia('(max-width: 639px)'),
+      window.matchMedia('(min-width: 640px) and (max-width: 767px)'),
+      window.matchMedia('(min-width: 768px) and (max-width: 1023px)'),
+      window.matchMedia('(min-width: 1024px) and (max-width: 1279px)'),
+      window.matchMedia('(min-width: 1280px)')
+    ];
+
+    let rafId = 0;
+    const updateBucket = () => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const idx = queries.findIndex(q => q.matches);
+        setWidthBucket((idx === -1 ? 0 : idx) as 0 | 1 | 2 | 3 | 4);
+      });
     };
-    
-    updateScreenSize();
-    window.addEventListener('resize', updateScreenSize);
-    
-    return () => window.removeEventListener('resize', updateScreenSize);
+
+    updateBucket();
+    queries.forEach(q => {
+      if (typeof q.addEventListener === 'function') {
+        q.addEventListener('change', updateBucket, { passive: true } as any);
+      } else {
+        // @ts-ignore older Safari
+        q.addListener(updateBucket);
+      }
+    });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      queries.forEach(q => {
+        if (typeof q.removeEventListener === 'function') {
+          q.removeEventListener('change', updateBucket as any);
+        } else {
+          // @ts-ignore older Safari
+          q.removeListener(updateBucket);
+        }
+      });
+    };
   }, []);
 
   const handleMouseEnter = useCallback(() => setIsExpanded(true), []);
@@ -74,14 +105,8 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({ className = '', onNavi
         }}
         style={{
           width: isExpanded ? 
-            (screenSize.width < 640 ? 160 : 
-             screenSize.width < 768 ? 180 : 
-             screenSize.width < 1024 ? 200 : 
-             screenSize.width < 1280 ? 220 : 240) : 
-            (screenSize.width < 640 ? 48 : 
-             screenSize.width < 768 ? 52 : 
-             screenSize.width < 1024 ? 56 : 
-             screenSize.width < 1280 ? 60 : 64)
+            ([160, 180, 200, 220, 240][widthBucket]) : 
+            ([48, 52, 56, 60, 64][widthBucket])
         }}
       >
         {navigationItems.map((item, index) => (
@@ -93,7 +118,7 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({ className = '', onNavi
             isExpanded={isExpanded}
             onNavigate={onNavigate}
             router={router}
-            screenSize={screenSize}
+            widthBucket={widthBucket}
           />
         ))}
       </motion.div>
@@ -108,7 +133,7 @@ function IconContainer({
   isExpanded,
   router,
   onNavigate,
-  screenSize
+  widthBucket
 }: {
   item: { title: string; icon: React.ReactNode; href: string };
   index: number;
@@ -116,7 +141,7 @@ function IconContainer({
   isExpanded: boolean;
   router: ReturnType<typeof useRouter>;
   onNavigate?: (href: string) => void;
-  screenSize: { width: number; height: number };
+  widthBucket: 0 | 1 | 2 | 3 | 4;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [bounds, setBounds] = useState({ y: 0, height: 0 });
@@ -126,16 +151,9 @@ function IconContainer({
   });
 
   // The use of `useTransform` here creates a "magnetic" or "fisheye" effect on the icons.
-  // Scale based on screen size
-  const baseSize = screenSize.width < 640 ? 32 : 
-                   screenSize.width < 768 ? 36 : 
-                   screenSize.width < 1024 ? 40 : 
-                   screenSize.width < 1280 ? 44 : 48;
-  
-  const expandedSize = screenSize.width < 640 ? 56 : 
-                       screenSize.width < 768 ? 64 : 
-                       screenSize.width < 1024 ? 72 : 
-                       screenSize.width < 1280 ? 80 : 88;
+  // Scale based on width bucket to avoid frequent recalcs
+  const baseSize = useMemo(() => [32, 36, 40, 44, 48][widthBucket], [widthBucket]);
+  const expandedSize = useMemo(() => [56, 64, 72, 80, 88][widthBucket], [widthBucket]);
   
   const widthTransform = useTransform(distance, [-150, 0, 150], [baseSize, expandedSize, baseSize]);
   const heightTransform = useTransform(distance, [-150, 0, 150], [baseSize, expandedSize, baseSize]);

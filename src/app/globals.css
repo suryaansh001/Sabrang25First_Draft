@@ -90,6 +90,23 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'lavoka';
+  src: url('/Font/lavoka/Lavoka DEMO.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Quivert Font */
+@font-face {
+  font-family: 'Quivert';
+  src: url('/Font/quivert/Quivert.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @import "tailwindcss";
 
 @tailwind base;
@@ -158,6 +175,68 @@ h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, label {
 /* Childstone Demo font class for Sabrang 2025 */
 .font-childstone-demo {
   font-family: 'Childstone Demo', sans-serif !important;
+}
+
+/* Quivert font class for Sabrang 2025 */
+.font-quivert {
+  font-family: 'Quivert', sans-serif !important;
+}
+
+/* Enhanced title glow animations */
+@keyframes titleGlow {
+  0%, 100% {
+    text-shadow: 
+      0 0 30px rgba(255,255,255,0.8), 
+      0 0 60px rgba(34,211,238,0.6), 
+      0 0 90px rgba(59,130,246,0.4),
+      0 0 120px rgba(139,92,246,0.2);
+  }
+  50% {
+    text-shadow: 
+      0 0 40px rgba(255,255,255,1), 
+      0 0 80px rgba(34,211,238,0.8), 
+      0 0 120px rgba(59,130,246,0.6),
+      0 0 160px rgba(139,92,246,0.4);
+  }
+}
+
+@keyframes yearGlow {
+  0%, 100% {
+    text-shadow: 
+      0 0 25px rgba(34,211,238,0.8), 
+      0 0 50px rgba(139,92,246,0.6), 
+      0 0 75px rgba(236,72,153,0.4),
+      0 0 100px rgba(255,107,107,0.2);
+  }
+  50% {
+    text-shadow: 
+      0 0 35px rgba(34,211,238,1), 
+      0 0 70px rgba(139,92,246,0.8), 
+      0 0 105px rgba(236,72,153,0.6),
+      0 0 140px rgba(255,107,107,0.4);
+  }
+}
+
+@keyframes titleFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Title animation classes */
+.title-glow-animation {
+  animation: titleGlow 4s ease-in-out infinite;
+}
+
+.year-glow-animation {
+  animation: yearGlow 4s ease-in-out infinite 0.5s;
+}
+
+.title-float-animation {
+  animation: titleFloat 6s ease-in-out infinite;
 }
 
 /* Remove font overrides - let elements use their natural font */

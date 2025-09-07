@@ -34,7 +34,7 @@ export default function DesignedByStrip() {
 					}}></div>
 				</div>
 
-				<span className="text-xs font-medium leading-none">designed by tech_stack</span>
+				<span className="text-xs font-medium leading-none">designed and coded by Tech_crew</span>
 			</Link>
 		</div>
 	);
