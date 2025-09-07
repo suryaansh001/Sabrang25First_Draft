@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { CreditCard, User, Mail, Phone, IndianRupee, TestTube } from 'lucide-react';
+import { CreditCard, TestTube } from 'lucide-react';
 
 // Declare global for Cashfree
 declare global {
@@ -12,16 +12,11 @@ declare global {
 }
 
 export default function TestPaymentPage() {
-  const [formData, setFormData] = useState({
-    name: 'Test User',
-    email: 'test@example.com',
-    phone: '9876543210',
-    amount: 100
-  });
+  const [paymentSessionId, setPaymentSessionId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
-  const [paymentSessionId, setPaymentSessionId] = useState<string | null>(null);
   const [cashfreeLoaded, setCashfreeLoaded] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
 
   // Load Cashfree SDK
   useEffect(() => {
@@ -42,71 +37,34 @@ export default function TestPaymentPage() {
     loadCashfreeSDK();
   }, []);
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const testCreateOrder = async () => {
-    setIsLoading(true);
-    setResult(null);
-    setPaymentSessionId(null);
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/test-payment/test-create-order`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          orderAmount: formData.amount,
-          customerDetails: {
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone
-          }
-        }),
-      });
-
-      const data = await response.json();
-      
-      if (data.success && data.data.paymentSessionId) {
-        setPaymentSessionId(data.data.paymentSessionId);
-        setResult({
-          type: 'create-order',
-          success: true,
-          data: {
-            orderId: data.data.orderId,
-            paymentSessionId: data.data.paymentSessionId,
-            orderAmount: data.data.orderAmount,
-            message: 'Order created successfully! You can now proceed to payment.'
-          },
-          status: response.status
-        });
-      } else {
-        setResult({
-          type: 'create-order',
-          success: false,
-          data: data.error || 'Failed to create order',
-          status: response.status,
-          details: data.details || null
-        });
-      }
-
-    } catch (error: any) {
+  // Check for return URL params on page load
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('order_id');
+    const status = urlParams.get('status');
+    
+    if (orderId) {
+      setPaymentStatus(status || 'completed');
       setResult({
-        type: 'create-order',
-        success: false,
-        data: error.message,
-        status: 'error'
+        type: 'payment-redirect',
+        success: status === 'success' || status === 'SUCCESS',
+        data: {
+          orderId,
+          status,
+          message: `Payment ${status === 'success' || status === 'SUCCESS' ? 'completed successfully' : 'failed or was cancelled'}`
+        },
+        status: status === 'success' || status === 'SUCCESS' ? 'success' : 'failed'
       });
-    } finally {
-      setIsLoading(false);
     }
+  }, []);
+
+  const handleSessionIdChange = (value: string) => {
+    setPaymentSessionId(value);
   };
 
   const proceedToPayment = async () => {
-    if (!paymentSessionId) {
-      alert('Please create an order first!');
+    if (!paymentSessionId.trim()) {
+      alert('Please enter a payment session ID!');
       return;
     }
 
@@ -115,106 +73,73 @@ export default function TestPaymentPage() {
       return;
     }
 
+    setIsLoading(true);
+    setResult(null);
+
     try {
       const checkoutOptions = {
-        paymentSessionId: paymentSessionId,
+        paymentSessionId: paymentSessionId.trim(),
         redirectTarget: '_self',
       };
 
       console.log('🚀 Starting Cashfree checkout with session:', paymentSessionId);
-      await window.Cashfree.checkout(checkoutOptions);
-    } catch (error) {
-      console.error('❌ Payment checkout failed:', error);
-      alert('Failed to open payment page. Please try again.');
-    }
-  };
-
-  const testPromoValidation = async () => {
-    setIsLoading(true);
-    setResult(null);
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/test-payment/test-validate-promo`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      setResult({
+        type: 'payment-initiated',
+        success: true,
+        data: {
+          paymentSessionId: paymentSessionId.trim(),
+          message: 'Payment checkout initiated successfully!'
         },
-        body: JSON.stringify({
-          promoCode: 'EARLYBIRD',
-          orderAmount: formData.amount
-        }),
+        status: 'initiated'
       });
 
-      const data = await response.json();
-      setResult({
-        type: 'promo-validation',
-        success: data.success,
-        data: data.data || data.error,
-        status: response.status
-      });
-
+      await window.Cashfree.checkout(checkoutOptions);
     } catch (error: any) {
+      console.error('❌ Payment checkout failed:', error);
       setResult({
-        type: 'promo-validation',
+        type: 'payment-failed',
         success: false,
-        data: error.message,
-        status: 'error'
+        data: {
+          error: error.message || 'Payment checkout failed',
+          paymentSessionId: paymentSessionId.trim()
+        },
+        status: 'failed'
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const testCashfreeConfig = async () => {
-    setIsLoading(true);
-    setResult(null);
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/test-payment/test-config`);
-      const data = await response.json();
+  const validateSessionId = () => {
+    const sessionId = paymentSessionId.trim();
+    if (!sessionId) return false;
+    
+    // Basic validation for Cashfree session ID format
+    if (sessionId.length < 10) {
       setResult({
-        type: 'cashfree-config',
-        success: data.success,
-        data: data,
-        status: response.status
-      });
-
-    } catch (error: any) {
-      setResult({
-        type: 'cashfree-config',
+        type: 'validation',
         success: false,
-        data: error.message,
-        status: 'error'
+        data: { error: 'Session ID appears to be too short' },
+        status: 'invalid'
       });
-    } finally {
-      setIsLoading(false);
+      return false;
     }
+
+    setResult({
+      type: 'validation',
+      success: true,
+      data: { 
+        message: 'Session ID format looks valid!',
+        sessionId 
+      },
+      status: 'valid'
+    });
+    return true;
   };
 
-  const testBackendConnection = async () => {
-    setIsLoading(true);
+  const clearResults = () => {
     setResult(null);
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/test-payment/test-config`);
-      const data = await response.json();
-      setResult({
-        type: 'backend-connection',
-        success: data.success,
-        data: `Backend is reachable! ${data.message || ''}`,
-        status: response.status
-      });
-
-    } catch (error: any) {
-      setResult({
-        type: 'backend-connection',
-        success: false,
-        data: `Backend connection failed: ${error.message}`,
-        status: 'error'
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    setPaymentStatus(null);
   };
 
   
@@ -230,10 +155,10 @@ export default function TestPaymentPage() {
         >
           <div className="flex items-center justify-center gap-3 mb-4">
             <TestTube className="w-8 h-8 text-green-400" />
-            <h1 className="text-4xl font-bold">Cashfree Payment Test</h1>
+            <h1 className="text-4xl font-bold">Direct Payment Test</h1>
           </div>
           <p className="text-white/70">
-            Test the Cashfree payment integration before going live
+            Test Cashfree payments directly with a payment session ID (no backend required)
           </p>
         </motion.div>
 
@@ -246,128 +171,84 @@ export default function TestPaymentPage() {
           >
             <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
               <CreditCard className="w-6 h-6 text-blue-400" />
-              Test Payment Data
+              Payment Session ID
             </h2>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-white/80 mb-2">
-                  Customer Name
+                  Enter Payment Session ID
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-blue-400 transition-colors"
-                    placeholder="Enter customer name"
+                  <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
+                  <textarea
+                    value={paymentSessionId}
+                    onChange={(e) => handleSessionIdChange(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-blue-400 transition-colors min-h-[100px] resize-vertical"
+                    placeholder="Paste your payment session ID here..."
                   />
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-blue-400 transition-colors"
-                    placeholder="Enter email address"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">
-                  Phone Number
-                </label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-blue-400 transition-colors"
-                    placeholder="Enter phone number"
-                    maxLength={10}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">
-                  Amount (₹)
-                </label>
-                <div className="relative">
-                  <IndianRupee className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
-                  <input
-                    type="number"
-                    value={formData.amount}
-                    onChange={(e) => handleInputChange('amount', e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-blue-400 transition-colors"
-                    placeholder="Enter amount"
-                    min="1"
-                  />
-                </div>
+                <p className="text-xs text-white/50 mt-2">
+                  This should be the payment_session_id returned from your backend's create order API
+                </p>
               </div>
             </div>
 
-            {/* Test Buttons */}
+            {/* SDK Status */}
+            <div className={`mt-4 p-3 rounded-lg border ${
+              cashfreeLoaded 
+                ? 'bg-green-500/10 border-green-400/30 text-green-300' 
+                : 'bg-yellow-500/10 border-yellow-400/30 text-yellow-300'
+            }`}>
+              <div className="text-sm font-medium">
+                Cashfree SDK: {cashfreeLoaded ? '✅ Loaded' : '⏳ Loading...'}
+              </div>
+            </div>
+
+            {/* Action Buttons */}
             <div className="space-y-3 mt-6">
               <button
-                onClick={testBackendConnection}
-                disabled={isLoading}
-                className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg font-bold text-white hover:from-green-600 hover:to-emerald-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? 'Testing...' : 'Test Backend Connection'}
-              </button>
-
-              <button
-                onClick={testPromoValidation}
-                disabled={isLoading}
+                onClick={validateSessionId}
+                disabled={isLoading || !paymentSessionId.trim()}
                 className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg font-bold text-white hover:from-purple-600 hover:to-pink-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? 'Testing...' : 'Test Promo Code (EARLYBIRD)'}
+                Validate Session ID
               </button>
 
               <button
-                onClick={testCreateOrder}
-                disabled={isLoading}
-                className="w-full py-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg font-bold text-white hover:from-blue-600 hover:to-cyan-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={proceedToPayment}
+                disabled={isLoading || !cashfreeLoaded || !paymentSessionId.trim()}
+                className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg font-bold text-white hover:from-green-600 hover:to-emerald-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? 'Creating Order...' : 'Step 1: Create Payment Order'}
+                {isLoading ? 'Processing...' : '💳 Start Payment'}
               </button>
-
-              {paymentSessionId && (
-                <button
-                  onClick={proceedToPayment}
-                  disabled={!cashfreeLoaded}
-                  className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg font-bold text-white hover:from-green-600 hover:to-emerald-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed animate-pulse"
-                >
-                  {cashfreeLoaded ? '💳 Step 2: Proceed to Payment' : 'Loading Payment Gateway...'}
-                </button>
-              )}
 
               <button
-                onClick={testCashfreeConfig}
-                disabled={isLoading}
-                className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg font-bold text-white hover:from-orange-600 hover:to-red-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={clearResults}
+                className="w-full py-3 bg-gradient-to-r from-gray-500 to-gray-600 rounded-lg font-bold text-white hover:from-gray-600 hover:to-gray-700 transition-all"
               >
-                {isLoading ? 'Testing...' : 'Test Cashfree Configuration'}
+                Clear Results
               </button>
+            </div>
+
+            {/* How to get session ID */}
+            <div className="mt-6 p-4 bg-blue-500/10 border border-blue-400/30 rounded-lg">
+              <h3 className="text-blue-300 font-semibold mb-2">How to get a Payment Session ID:</h3>
+              <div className="text-sm text-blue-200 space-y-2">
+                <div>1. Create an order using Cashfree's Create Order API on your backend</div>
+                <div>2. The API response will contain a "payment_session_id"</div>
+                <div>3. Copy that ID and paste it above</div>
+                <div>4. Click "Start Payment" to open the payment gateway</div>
+              </div>
             </div>
 
             {/* Environment Info */}
-            <div className="mt-6 p-4 bg-black/30 rounded-lg">
+            <div className="mt-4 p-4 bg-black/30 rounded-lg">
               <h3 className="text-sm font-semibold text-white/80 mb-2">Environment Info:</h3>
               <div className="text-xs text-white/60 space-y-1">
-                <div>Backend URL: {process.env.NEXT_PUBLIC_API_URL || 'Not configured'}</div>
-                <div>Environment: {process.env.NODE_ENV || 'development'}</div>
+                <div>SDK Mode: Production</div>
+                <div>Environment: {process.env.NODE_ENV || 'production'}</div>
+                <div>Redirect Target: Current Tab (_self)</div>
               </div>
             </div>
           </motion.div>
@@ -378,7 +259,22 @@ export default function TestPaymentPage() {
             animate={{ opacity: 1, x: 0 }}
             className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
           >
-            <h2 className="text-2xl font-bold mb-6">Test Results</h2>
+            <h2 className="text-2xl font-bold mb-6">Payment Results</h2>
+
+            {paymentStatus && (
+              <div className={`mb-4 p-4 rounded-lg border ${
+                paymentStatus === 'success' || paymentStatus === 'SUCCESS'
+                  ? 'bg-green-500/10 border-green-400/30 text-green-300' 
+                  : 'bg-orange-500/10 border-orange-400/30 text-orange-300'
+              }`}>
+                <div className="font-semibold mb-2">
+                  PAYMENT REDIRECT DETECTED
+                </div>
+                <div className="text-sm opacity-80">
+                  Status: {paymentStatus}
+                </div>
+              </div>
+            )}
 
             {result ? (
               <div className="space-y-4">
@@ -388,7 +284,7 @@ export default function TestPaymentPage() {
                     : 'bg-red-500/10 border-red-400/30 text-red-300'
                 }`}>
                   <div className="font-semibold mb-2">
-                    {result.type.toUpperCase()} - {result.success ? 'SUCCESS' : 'FAILED'}
+                    {result.type.toUpperCase().replace('-', ' ')} - {result.success ? 'SUCCESS' : 'FAILED'}
                   </div>
                   <div className="text-sm opacity-80">
                     Status: {result.status}
@@ -405,30 +301,41 @@ export default function TestPaymentPage() {
             ) : (
               <div className="text-center text-white/50 py-8">
                 <TestTube className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>Run a test to see results here</p>
+                <p>Enter a payment session ID and start testing</p>
               </div>
             )}
 
-            {/* Test Guide */}
+            {/* Payment Flow Guide */}
             <div className="mt-6 p-4 bg-blue-500/10 border border-blue-400/30 rounded-lg">
-              <h3 className="text-blue-300 font-semibold mb-2">Testing Guide:</h3>
+              <h3 className="text-blue-300 font-semibold mb-2">Payment Flow:</h3>
               <div className="text-sm text-blue-200 space-y-2">
-                <div>1. First test backend connection</div>
-                <div>2. Test promo code validation</div>
-                <div>3. Test payment order creation</div>
-                <div>4. Check console for detailed logs</div>
+                <div>1. Enter a valid payment session ID</div>
+                <div>2. Validate the session ID format</div>
+                <div>3. Click "Start Payment" to launch Cashfree</div>
+                <div>4. Complete payment in the popup/redirect</div>
+                <div>5. Check console for detailed logs</div>
               </div>
             </div>
 
-            {/* Available Promo Codes */}
+            {/* Payment Status Guide */}
             <div className="mt-4 p-4 bg-purple-500/10 border border-purple-400/30 rounded-lg">
-              <h3 className="text-purple-300 font-semibold mb-2">Available Promo Codes:</h3>
+              <h3 className="text-purple-300 font-semibold mb-2">After Payment:</h3>
               <div className="text-sm text-purple-200 space-y-1">
-                <div>• EARLYBIRD - 15% off (min ₹100)</div>
-                <div>• STUDENT50 - ₹50 off (min ₹150)</div>
-                <div>• WELCOME10 - 10% off (min ₹50)</div>
-                <div>• FESTIVAL25 - 25% off (min ₹200)</div>
-                <div>• COMBO20 - ₹20 off (min ₹100)</div>
+                <div>• SUCCESS: Payment completed successfully</div>
+                <div>• FAILED: Payment failed or was declined</div>
+                <div>• PENDING: Payment is being processed</div>
+                <div>• CANCELLED: User cancelled the payment</div>
+              </div>
+            </div>
+
+            {/* Sample Session ID */}
+            <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-400/30 rounded-lg">
+              <h3 className="text-yellow-300 font-semibold mb-2">Sample Session ID Format:</h3>
+              <div className="text-sm text-yellow-200 font-mono bg-black/30 p-2 rounded">
+                session_abc123def456...
+              </div>
+              <div className="text-xs text-yellow-200 mt-1">
+                Actual session IDs are much longer and contain alphanumeric characters
               </div>
             </div>
           </motion.div>
@@ -441,13 +348,31 @@ export default function TestPaymentPage() {
           transition={{ delay: 0.2 }}
           className="mt-8 bg-yellow-500/10 border border-yellow-400/30 rounded-lg p-6"
         >
-          <h3 className="text-yellow-300 font-semibold mb-3">Setup Instructions:</h3>
+          <h3 className="text-yellow-300 font-semibold mb-3">How to Use This Tool:</h3>
           <div className="text-sm text-yellow-200 space-y-2">
-            <div>1. Make sure your backend server is running on the configured URL</div>
-            <div>2. Ensure MongoDB is connected and seeded with test data</div>
-            <div>3. Verify Cashfree credentials are set in your backend .env file</div>
-            <div>4. Check that CORS is configured to allow your frontend domain</div>
-            <div>5. For actual payment testing, you'll need to authenticate first (login)</div>
+            <div><strong>Step 1:</strong> Get a payment session ID from your backend (using Cashfree's Create Order API)</div>
+            <div><strong>Step 2:</strong> Paste the session ID in the input field above</div>
+            <div><strong>Step 3:</strong> Click "Validate Session ID" to check the format</div>
+            <div><strong>Step 4:</strong> Click "Start Payment" to open the Cashfree payment gateway</div>
+            <div><strong>Step 5:</strong> Complete the payment process in the gateway</div>
+            <div><strong>Step 6:</strong> You'll be redirected back here with the payment result</div>
+          </div>
+          
+          <div className="mt-4 p-3 bg-black/30 rounded-lg">
+            <h4 className="text-yellow-200 font-medium mb-2">Backend Create Order Example:</h4>
+            <pre className="text-xs text-yellow-100 overflow-x-auto">
+{`const order = await cashfree.PGCreateOrder({
+  order_amount: 100.00,
+  order_currency: "INR", 
+  order_id: "order_" + Date.now(),
+  customer_details: {
+    customer_id: "customer_123",
+    customer_phone: "9876543210",
+    customer_name: "Test User",
+    customer_email: "test@example.com"
+  }
+});
+// Use: order.payment_session_id`}</pre>
           </div>
         </motion.div>
       </div>
