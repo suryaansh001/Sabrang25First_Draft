@@ -106,8 +106,8 @@ const TeamPage = () => {
         }}
       />
 
-      {/* Glassy Translucent Overlay with 0.4 opacity */}
-      <div className="fixed inset-0 -z-10 bg-black/40 backdrop-blur-sm" />
+      {/* Translucent Overlay without backdrop blur for smoother scroll */}
+      <div className="fixed inset-0 -z-10 bg-black/50" />
 
       {/* Desktop Logo and Sidebar */}
       <div className="hidden lg:block">

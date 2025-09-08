@@ -451,6 +451,7 @@ h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, label {
 /* Custom scrollbar hide for Firefox */
 html {
   scrollbar-width: none;
+  scroll-behavior: smooth;
 }
 
 /* Optional: For IE/Edge, though usually not needed if overflow is handled */

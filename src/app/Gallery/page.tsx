@@ -255,7 +255,7 @@ const Gallery = () => {
           Last Sabrang
         </h1>
         <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/80 drop-shadow-[0_0_12px_rgba(34,211,238,0.25)] px-2">
-          Relive the moments from Sabrang '25!
+          Relive the moments from Sabrang '24!
         </p>
         <div className="mt-4 h-1 w-32 sm:w-48 mx-auto rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 blur-[1px]"></div>
       </div>

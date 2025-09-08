@@ -111,7 +111,7 @@ const Contact = () => {
               <div className="group relative overflow-hidden rounded-2xl bg-black/20 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-500">
                 <div className="relative h-80 sm:h-96 md:h-[28rem] overflow-hidden">
                   <img 
-                    src="/images/OH_images_home/diya.jpeg" 
+                    src="/images/Team/final/diya_contact.webp" 
                     alt="Diya - Organizing Head"
                     className="w-full h-full object-cover transition-transform duration-700"
                   />
