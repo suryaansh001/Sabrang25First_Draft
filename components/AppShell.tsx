@@ -78,7 +78,7 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
   const hideChrome = pathname === "/" || pathname?.startsWith("/home") || pathname === "/Login" || pathname === "/Signup";
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex-1 flex flex-col">
       {/* Disable SplashCursor globally to remove WebGL cost */}
       {/* <div className="hidden lg:block">
         <SplashCursor />
