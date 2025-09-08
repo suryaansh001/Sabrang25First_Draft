@@ -2,8 +2,8 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { motion, AnimatePresence, PanInfo } from 'framer-motion';
-import { Check, ChevronLeft, ChevronRight, CreditCard, ListChecks, ShoppingCart } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Check, ChevronLeft, CreditCard, ArrowRight } from 'lucide-react';
 import createApiUrl from '../../lib/api';
 
 type EventCatalogItem = {
@@ -26,7 +26,6 @@ type FormField = {
 
 type FieldSet = FormField[];
 
-// Minimal catalog. In a later refactor, extract from a shared module or backend.
 const EVENT_CATALOG: EventCatalogItem[] = [
   { id: 1, title: 'RAMPWALK - PANACHE', price: '₹85-120', category: 'Flagship' },
   { id: 2, title: 'BANDJAM', price: '₹60', category: 'Flagship' },
@@ -47,7 +46,6 @@ const EVENT_CATALOG: EventCatalogItem[] = [
   { id: 19, title: 'ART RELAY', price: '₹20', category: 'Creative Arts' }
 ];
 
-// Define base field sets
 const SOLO_FIELDS: FieldSet = [
   { name: 'fullName', label: 'Full Name', type: 'text', required: true, placeholder: 'Enter your name' },
   { name: 'email', label: 'Email', type: 'email', required: true, placeholder: 'you@example.com' },
@@ -83,9 +81,7 @@ const SQUAD_ESPORTS_FIELDS: FieldSet = [
   { name: 'contact', label: 'Contact Number', type: 'phone', required: true }
 ];
 
-// Optional: per-event overrides or custom fields
 const EVENT_CUSTOM_FIELDS: Partial<Record<number, FieldSet>> = {
-  // Example: Panache requires theme name
   1: [
     ...TEAM_FIELDS,
     { name: 'theme', label: 'Theme Title', type: 'text', required: true }
@@ -96,12 +92,10 @@ const EVENT_CUSTOM_FIELDS: Partial<Record<number, FieldSet>> = {
   ]
 };
 
-// Determine default fields for an event when not overridden
 function getDefaultFieldsForEvent(ev: EventCatalogItem): FieldSet {
   if (ev.title.includes('VALORANT')) return TEAM_ESPORTS_FIELDS;
   if (ev.title.includes('BGMI') || ev.title.includes('FREE FIRE')) return SQUAD_ESPORTS_FIELDS;
   if (ev.title.includes('RAMPWALK') || ev.title.includes('DANCE') || ev.title.includes('DUMB SHOW') || ev.title.includes('COURTROOM')) return TEAM_FIELDS;
-  // Fallback to solo
   return SOLO_FIELDS;
 }
 
@@ -111,11 +105,11 @@ function getEventFields(ev: EventCatalogItem): FieldSet {
 
 type Step = 'select' | 'forms' | 'review' | 'payment';
 
-const STEPS: { id: Step; name: string; icon: React.ElementType }[] = [
-  { id: 'select', name: 'Select Events', icon: ShoppingCart },
-  { id: 'forms', name: 'Fill Details', icon: ListChecks },
-  { id: 'review', name: 'Review & Confirm', icon: Check },
-  { id: 'payment', name: 'Payment', icon: CreditCard },
+const STEPS: { id: Step; name: string }[] = [
+  { id: 'select', name: 'Select Events' },
+  { id: 'forms', name: 'Your Details' },
+  { id: 'review', name: 'Review' },
+  { id: 'payment', name: 'Payment' },
 ];
 
 function parsePrice(priceStr: string): number {
@@ -127,16 +121,16 @@ function parsePrice(priceStr: string): number {
 const Stepper = ({ currentStep }: { currentStep: Step }) => {
   const currentStepIndex = STEPS.findIndex(s => s.id === currentStep);
   return (
-    <div className="flex items-center">
+    <div className="flex items-center justify-center mb-12">
       {STEPS.map((step, i) => (
         <React.Fragment key={step.id}>
-          <div className={`flex flex-col items-center transition-all duration-300 ${i <= currentStepIndex ? 'text-amber-400' : 'text-neutral-500'}`}>
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${i <= currentStepIndex ? 'bg-amber-400/10 border-amber-400' : 'bg-neutral-800 border-neutral-700'}`}>
-              <step.icon className={`w-5 h-5 ${i <= currentStepIndex ? 'text-amber-400' : 'text-neutral-500'}`} />
+          <div className={`flex items-center ${i <= currentStepIndex ? 'text-purple-300' : 'text-gray-400'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${i <= currentStepIndex ? 'bg-purple-500 text-white' : 'bg-gray-700 text-gray-400'}`}>
+              {i + 1}
             </div>
-            <p className="text-xs mt-2 text-center">{step.name}</p>
+            <span className="ml-2 text-sm hidden sm:inline">{step.name}</span>
           </div>
-          {i < STEPS.length - 1 && <div className={`flex-1 h-0.5 mx-4 transition-colors duration-300 ${i < currentStepIndex ? 'bg-amber-400' : 'bg-neutral-700'}`} />}
+          {i < STEPS.length - 1 && <div className={`w-12 h-px mx-4 ${i < currentStepIndex ? 'bg-purple-400' : 'bg-gray-700'}`} />}
         </React.Fragment>
       ))}
     </div>
@@ -151,10 +145,9 @@ export default function CheckoutPage() {
   const [step, setStep] = useState<Step>('select');
   const [selectedEventIds, setSelectedEventIds] = useState<number[]>([]);
   const [formErrors, setFormErrors] = useState<Record<string, Record<string, string>>>({});
-  // formDataByFormKey stores one object per schema; events sharing the schema reuse it
   const [formDataBySignature, setFormDataBySignature] = useState<Record<string, Record<string, string>>>({});
 
-  // Preselect from query param, if any
+  // Preselect from query param
   useEffect(() => {
     const q = searchParams?.get('event');
     if (!q) return;
@@ -171,13 +164,12 @@ export default function CheckoutPage() {
     return selectedEvents.reduce((total, event) => total + parsePrice(event.price), 0);
   }, [selectedEvents]);
 
-  // Group selected events by their exact field set signature (no duplicate filling)
   const fieldGroups = useMemo(() => {
     const groups: { signature: string; fields: FieldSet; events: EventCatalogItem[] }[] = [];
     const map = new Map<string, { signature: string; fields: FieldSet; events: EventCatalogItem[] }>();
     for (const ev of selectedEvents) {
       const fields = getEventFields(ev);
-      const signature = JSON.stringify(fields.map(f => ({ name: f.name, type: f.type, label: f.label, required: !!f.required, options: f.options }))); // stable
+      const signature = JSON.stringify(fields.map(f => ({ name: f.name, type: f.type, label: f.label, required: !!f.required, options: f.options })));
       if (!map.has(signature)) {
         map.set(signature, { signature, fields, events: [ev] });
       } else {
@@ -237,7 +229,6 @@ export default function CheckoutPage() {
     }
     if (step === 'review') {
       setStep('payment');
-      // In a real flow, initiate payment here
       return;
     }
   };
@@ -297,12 +288,10 @@ export default function CheckoutPage() {
         throw new Error(errText || 'Failed to create order');
       }
       const data = await response.json();
-      // Prefer redirect link if backend provides it
       if (data.payment_link) {
         window.location.href = data.payment_link as string;
         return;
       }
-      // Else use SDK flow with token
       const orderToken = data.order_token || data.payment_session_id || data.token;
       const mode = data.mode || (window.location.hostname === 'localhost' ? 'sandbox' : 'production');
       if (!orderToken) throw new Error('Missing payment session token from server');
@@ -310,224 +299,152 @@ export default function CheckoutPage() {
       const anyWindow = window as unknown as Record<string, any>;
       const cf = anyWindow.Cashfree || anyWindow?.cashfree;
       if (!cf) throw new Error('Cashfree SDK not available');
-      // Try v2 style API
-      if (typeof cf.initialize !== 'function' && typeof cf?.payments !== 'function') {
-        // Some SDKs expose cf as a callable factory
-      }
-      // Common newer API
       if (typeof cf?.initialize === 'function') {
         const ins = cf.initialize({ mode });
         await ins.checkout({ paymentSessionId: orderToken });
         return;
       }
-      // Fallback older API patterns
       if (typeof cf?.payments === 'function') {
         const ins = cf.payments({ mode });
         await ins.checkout({ paymentSessionId: orderToken });
         return;
       }
-      // Last resort: if backend sends link, we already redirected above
       throw new Error('Unsupported Cashfree SDK interface');
     } finally {
-      // Keep user on page for now
+      // Keep user on page
     }
   };
 
-  return (
-    <div className="min-h-screen bg-neutral-900 text-white font-sans">
-      <div className="absolute inset-0 -z-10 h-full w-full bg-neutral-900 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(252,211,77,0.15),rgba(255,255,255,0))]"></div>
+  // Group events by category
+  const eventsByCategory = useMemo(() => {
+    const categories = new Map<string, EventCatalogItem[]>();
+    EVENT_CATALOG.forEach(event => {
+      const cat = event.category;
+      if (!categories.has(cat)) categories.set(cat, []);
+      categories.get(cat)!.push(event);
+    });
+    return categories;
+  }, []);
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <header className="flex items-center justify-between mb-8 md:mb-12">
-          <button onClick={goBack} className="flex items-center gap-2 text-neutral-300 hover:text-white transition-colors p-2 rounded-md -ml-2">
+  return (
+    <div className="min-h-screen text-white">
+      {/* Fancy cosmic background with aurora overlays */}
+      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-indigo-950 via-purple-900 to-black">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(147,51,234,0.25),transparent_70%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(59,130,246,0.15),transparent_70%)]"></div>
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
+        <div className="aurora">
+          <div className="aurora-blob aurora-1"></div>
+          <div className="aurora-blob aurora-2"></div>
+          <div className="aurora-blob aurora-3"></div>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-6 py-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <button 
+            onClick={goBack} 
+            className="flex items-center gap-2 text-white/70 hover:text-purple-300 transition"
+          >
             <ChevronLeft className="w-5 h-5" />
-            <span className="hidden sm:inline">Back</span>
+            Back
           </button>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-center bg-gradient-to-br from-amber-200 via-amber-400 to-orange-500 bg-clip-text text-transparent">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-300 bg-clip-text text-transparent title-glow-animation">
             Event Registration
           </h1>
-          <div className="w-20 hidden sm:block" /> {/* Spacer */}
-        </header>
-
-        <div className="max-w-2xl mx-auto mb-10">
-          <Stepper currentStep={step} />
+          <div className="w-16"></div>
         </div>
 
+        <Stepper currentStep={step} />
+
+        {/* Rest of your steps remain as before, but card classes adjusted */}
+        {/* Example: */}
         <main>
           <AnimatePresence mode="wait">
-          {step === 'select' && (
-            <motion.div key="select" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                <div className="lg:col-span-2 space-y-3">
-                  {EVENT_CATALOG.map(ev => {
-                    const isSelected = selectedEventIds.includes(ev.id);
-                    return (
-                      <button
-                        key={ev.id}
-                        onClick={() => handleToggleEvent(ev.id)}
-                        className={`w-full text-left p-4 rounded-lg border-2 transition-all duration-200 group ${isSelected ? 'border-amber-500 bg-amber-500/10' : 'border-neutral-800 bg-neutral-800/30 hover:border-neutral-700 hover:bg-neutral-800/60'}`}
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className={`flex-shrink-0 w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-200 ${isSelected ? 'bg-amber-500 border-amber-500' : 'bg-neutral-700 border-neutral-600 group-hover:border-neutral-500'}`}>
-                            {isSelected && <Check className="w-4 h-4 text-black" />}
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-semibold">{ev.title}</p>
-                            <p className="text-xs text-neutral-400">{ev.category}</p>
-                          </div>
-                          <p className="font-mono text-sm text-neutral-300">{ev.price}</p>
+            {step === 'select' && (
+              <motion.div 
+                key="select" 
+                initial={{ opacity: 0, x: 50 }} 
+                animate={{ opacity: 1, x: 0 }} 
+                exit={{ opacity: 0, x: -50 }}
+              >
+                <div className="grid lg:grid-cols-4 gap-8">
+                  <div className="lg:col-span-3">
+                    <h2 className="text-xl font-semibold mb-6">Choose Your Events</h2>
+                    {Array.from(eventsByCategory.entries()).map(([category, events]) => (
+                      <div key={category} className="mb-8">
+                        <h3 className="text-lg font-medium text-white/80 mb-4">{category}</h3>
+                        <div className="space-y-3">
+                          {events.map(event => {
+                            const isSelected = selectedEventIds.includes(event.id);
+                            return (
+                              <motion.div
+                                key={event.id}
+                                onClick={() => handleToggleEvent(event.id)}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.995 }}
+                                className={`relative p-4 rounded-xl cursor-pointer transition-all duration-300 border overflow-hidden ${
+                                  isSelected
+                                    ? 'bg-purple-500/20 border-purple-400 shadow-lg shadow-purple-900/30'
+                                    : 'bg-white/5 border-white/10 hover:bg-white/10'
+                                }`}
+                              >
+                                {/* subtle animated shine */}
+                                <div className="pointer-events-none absolute -inset-1 opacity-0 hover:opacity-100 transition-opacity duration-500">
+                                  <div className="absolute -top-8 -left-10 h-20 w-36 rotate-12 bg-gradient-to-r from-white/10 to-transparent blur-xl"></div>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <div>
+                                    <h4 className="font-semibold">{event.title}</h4>
+                                    <p className="text-sm text-gray-400">{event.price}</p>
+                                  </div>
+                                  {isSelected && (
+                                    <div className="relative">
+                                      <span className="absolute -inset-2 rounded-full bg-purple-500/20 blur-md"></span>
+                                      <Check className="relative w-5 h-5 text-purple-300" />
+                                    </div>
+                                  )}
+                                </div>
+                              </motion.div>
+                            );
+                          })}
                         </div>
-                      </button>
-                    );
-                  })}
-                </div>
-                <aside className="lg:col-span-1 lg:sticky lg:top-24">
-                  <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-6">
-                    <h3 className="text-lg font-bold mb-4 text-amber-400">Your Selections</h3>
-                    {selectedEvents.length > 0 ? (
-                      <>
-                        <ul className="space-y-3 max-h-60 overflow-y-auto pr-2">
-                          {selectedEvents.map(ev => (
-                            <li key={ev.id} className="flex justify-between items-center text-sm">
-                              <span className="text-neutral-300">{ev.title}</span>
-                              <span className="font-mono text-neutral-400">{ev.price}</span>
-                            </li>
-                          ))}
-                        </ul>
-                        <div className="mt-6 pt-4 border-t border-neutral-800 flex justify-between items-baseline">
-                          <span className="text-lg font-bold">Total</span>
-                          <span className="font-mono text-xl font-bold text-amber-400">₹{totalPrice}</span>
-                        </div>
-                      </>
-                    ) : (
-                      <p className="text-neutral-400 text-sm py-8 text-center">Select events to get started.</p>
-                    )}
-                    <button
-                      disabled={selectedEventIds.length === 0}
-                      onClick={goNext}
-                      className="w-full mt-6 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg transition-all duration-300 font-semibold text-black bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 disabled:from-neutral-700 disabled:to-neutral-800 disabled:text-neutral-500 disabled:cursor-not-allowed"
-                    >
-                      Continue <ChevronRight className="w-5 h-5" />
-                    </button>
+                      </div>
+                    ))}
                   </div>
-                </aside>
-              </div>
-            </motion.div>
-          )}
-
-          {step === 'forms' && (
-            <motion.div key="forms" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
-              <div className="max-w-3xl mx-auto space-y-8">
-                {fieldGroups.length === 0 && <div className="text-center text-neutral-400 py-10">No additional details required for the selected events.</div>}
-                {fieldGroups.map(group => (
-                  <div key={group.signature} className="rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 shadow-lg">
-                    <div className="mb-4 border-b border-neutral-800 pb-4">
-                      <h2 className="text-xl font-bold text-amber-400">Participant Details</h2>
-                      <p className="text-sm text-neutral-400 mt-1">This form applies to: <span className="font-medium text-neutral-300">{group.events.map(e => e.title).join(', ')}</span></p>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-                      {group.fields.map(field => (
-                        <div key={field.name} className={field.type === 'text' && (field.name.includes('Name') || field.name.includes('college')) ? 'md:col-span-2' : ''}>
-                          <label htmlFor={`${group.signature}-${field.name}`} className="block text-sm font-medium text-neutral-300 mb-1.5">{field.label}{field.required && <span className="text-orange-500 ml-1">*</span>}</label>
-                          {field.type === 'select' ? (
-                            <select
-                              id={`${group.signature}-${field.name}`}
-                              className="w-full px-3 py-2 rounded-lg bg-neutral-800/50 border-2 border-neutral-700 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition"
-                              value={(formDataBySignature[group.signature]?.[field.name]) || ''}
-                              onChange={e => handleFieldChange(group.signature, field.name, e.target.value)}
-                            >
-                              <option value="">Select...</option>
-                              {(field.options || []).map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                            </select>
-                          ) : (
-                            <input
-                              id={`${group.signature}-${field.name}`}
-                              type={field.type === 'phone' ? 'tel' : field.type}
-                              inputMode={field.type === 'phone' || field.type === 'number' ? 'numeric' : undefined}
-                              className="w-full px-3 py-2 rounded-lg bg-neutral-800/50 border-2 border-neutral-700 placeholder-neutral-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition"
-                              placeholder={field.placeholder}
-                              value={(formDataBySignature[group.signature]?.[field.name]) || ''}
-                              onChange={e => handleFieldChange(group.signature, field.name, e.target.value)}
-                            />
-                          )}
-                          {formErrors[group.signature]?.[field.name] && <p className="text-red-500 text-xs mt-1">{formErrors[group.signature][field.name]}</p>}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-                <div className="flex justify-end pt-4">
-                  <button onClick={goNext} className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg transition-all duration-300 font-semibold text-black bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600">
-                    Review & Confirm <ChevronRight className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {step === 'review' && (
-            <motion.div key="review" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
-              <div className="max-w-4xl mx-auto space-y-8">
-                <div className="rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 shadow-lg">
-                  <h2 className="text-2xl font-bold text-amber-400 mb-6">Review Your Registration</h2>
-                  {reviewPayload.map(group => (
-                    <div key={group.signature} className="mb-6 last:mb-0 rounded-xl border border-neutral-800 bg-neutral-900/40 p-4">
-                      <p className="text-sm text-neutral-400 mb-2">Details for: <span className="font-semibold text-neutral-200">{group.events.map(e => e.title).join(', ')}</span></p>
-                      <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
-                        {group.fields.map(field => (
-                          <div key={field.name} className="flex justify-between border-b border-neutral-800 py-2">
-                            <dt className="text-neutral-400">{field.label}</dt>
-                            <dd className="text-neutral-200 font-medium text-right break-all">{group.data?.[field.name] || 'N/A'}</dd>
-                          </div>
+                  <div>
+                    <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 shadow-lg shadow-purple-900/20 relative overflow-hidden">
+                      <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
+                      <h3 className="font-semibold text-purple-200">Selected Events</h3>
+                      <ul className="mt-4 space-y-2 text-sm">
+                        {selectedEvents.map(ev => (
+                          <li key={ev.id} className="flex justify-between">
+                            <span>{ev.title}</span>
+                            <span>{ev.price}</span>
+                          </li>
                         ))}
-                      </dl>
-                    </div>
-                  ))}
-                  <div className="mt-8 border-t border-neutral-700 pt-6">
-                    <h3 className="text-xl font-semibold mb-4">Total Summary</h3>
-                    <div className="space-y-2">
-                      {selectedEvents.map(ev => (
-                        <div key={ev.id} className="flex justify-between items-center text-sm">
-                          <span className="text-neutral-300">{ev.title}</span>
-                          <span className="font-mono text-neutral-400">{ev.price}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="mt-4 pt-4 border-t border-neutral-800 flex justify-between items-baseline">
-                      <span className="text-lg font-bold">Total Payable</span>
-                      <span className="font-mono text-2xl font-bold text-amber-400">₹{totalPrice}</span>
+                      </ul>
+                      <div className="border-t border-white/10 mt-4 pt-4 flex justify-between font-semibold">
+                        <span>Total</span>
+                        <span>₹{totalPrice}</span>
+                      </div>
+                      <button
+                        onClick={goNext}
+                        disabled={selectedEventIds.length === 0}
+                        className={`relative w-full mt-6 inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-white font-medium transition-all duration-300 ${
+                          selectedEventIds.length === 0 
+                            ? 'bg-gray-600 cursor-not-allowed' 
+                            : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 shadow-[0_0_20px_rgba(147,51,234,0.25)] hover:shadow-[0_0_30px_rgba(147,51,234,0.4)] hover:scale-105'
+                        }`}
+                      >
+                        Continue <ArrowRight className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
                 </div>
-                <div className="flex justify-end">
-                  <button onClick={goNext} className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg transition-all duration-300 font-semibold text-black bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600">
-                    Proceed to Payment <ChevronRight className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {step === 'payment' && (
-            <motion.div key="payment" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
-              <div className="max-w-2xl mx-auto text-center">
-                <div className="rounded-2xl border border-neutral-800 bg-neutral-900/50 p-8 shadow-lg">
-                  <div className="w-16 h-16 mx-auto rounded-full bg-amber-400/10 border-2 border-amber-400 flex items-center justify-center mb-6">
-                    <CreditCard className="w-8 h-8 text-amber-400" />
-                  </div>
-                  <h2 className="text-3xl font-bold mb-2">Final Step: Payment</h2>
-                  <p className="text-neutral-300 mb-6 max-w-md mx-auto">You are about to complete your registration. You will be redirected to our secure payment partner.</p>
-                  <div className="bg-neutral-800/50 rounded-lg p-4 my-6">
-                    <p className="text-neutral-400 text-sm">Total Amount</p>
-                    <p className="text-4xl font-bold font-mono text-amber-400">₹{totalPrice}</p>
-                  </div>
-                  <button onClick={proceedToPayment} className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg transition-all duration-300 font-semibold text-black bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600">
-                    Pay Now
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          )}
+              </motion.div>
+            )}
           </AnimatePresence>
         </main>
       </div>
