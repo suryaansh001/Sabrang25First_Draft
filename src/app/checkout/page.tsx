@@ -7,52 +7,47 @@ import { Check, ChevronLeft, CreditCard, ArrowRight } from 'lucide-react';
 import createApiUrl from '../../lib/api';
 import { events as EVENTS_DATA } from '../Events/[id]/rules/events.data';
 
-interface Event {
-  id: number;
-  title: string;
-  date: string;
-  time: string;
-  endTime: string;
-  image: string;
-  description: string;
-  venue: string;
-  price: string;
-  capacity: string;
-  genre: string;
-  category: string;
-  isFlagship: boolean;
-}
 
-interface ComboPackage {
-  id: string;
+// Define missing types
+interface FormField {
   name: string;
   label: string;
-  type: FieldType;
+  type: 'text' | 'email' | 'phone' | 'number' | 'select';
   required?: boolean;
   placeholder?: string;
   options?: { value: string; label: string }[];
-};
+}
 
 type FieldSet = FormField[];
 
+interface EventCatalogItem {
+  id: number;
+  title: string;
+  price: string;
+  category: string;
+  date: string;
+  time: string;
+  endTime: string;
+}
+
 const EVENT_CATALOG: EventCatalogItem[] = [
-  { id: 1, title: 'RAMPWALK - PANACHE', price: '₹85-120', category: 'Flagship' },
-  { id: 2, title: 'BANDJAM', price: '₹60', category: 'Flagship' },
-  { id: 3, title: 'DANCE BATTLE', price: '₹45', category: 'Flagship' },
-  { id: 4, title: 'STEP UP', price: '₹40', category: 'Flagship' },
-  { id: 5, title: 'ECHOES OF NOOR', price: 'Free', category: 'Flagship' },
-  { id: 7, title: 'BIDDING BEFORE WICKET', price: '₹25', category: 'Fun & Games' },
-  { id: 8, title: 'SEAL THE DEAL', price: '₹15', category: 'Fun & Games' },
-  { id: 9, title: 'VERSEVAAD', price: 'Free', category: 'Flagship' },
-  { id: 10, title: 'IN CONVERSATION WITH', price: 'Free', category: 'Workshops & Talks' },
-  { id: 11, title: 'CLAY MODELLING', price: '₹40', category: 'Creative Arts' },
-  { id: 12, title: 'FOCUS', price: '₹50', category: 'Creative Arts' },
-  { id: 13, title: 'BGMI TOURNAMENT', price: '₹50/squad', category: 'Fun & Games' },
-  { id: 14, title: 'VALORANT TOURNAMENT', price: '₹100/team', category: 'Fun & Games' },
-  { id: 15, title: 'FREE FIRE TOURNAMENT', price: '₹40/squad', category: 'Fun & Games' },
-  { id: 17, title: 'DUMB SHOW', price: 'Free', category: 'Fun & Games' },
-  { id: 18, title: 'COURTROOM', price: '₹30', category: 'Special Events' },
-  { id: 19, title: 'ART RELAY', price: '₹20', category: 'Creative Arts' }
+  { id: 1, title: 'RAMPWALK - PANACHE', price: '₹85-120', category: 'Flagship', date: '25.12.2024', time: '19:00', endTime: '22:00' },
+  { id: 2, title: 'BANDJAM', price: '₹60', category: 'Flagship', date: '27.12.2024', time: '19:30', endTime: '23:00' },
+  { id: 3, title: 'DANCE BATTLE', price: '₹45', category: 'Flagship', date: '28.12.2024', time: '18:00', endTime: '21:00' },
+  { id: 4, title: 'STEP UP', price: '₹40', category: 'Flagship', date: '01.01.2025', time: '18:00', endTime: '21:30' },
+  { id: 5, title: 'ECHOES OF NOOR', price: 'Free', category: 'Flagship', date: '02.01.2025', time: '16:00', endTime: '18:00' },
+  { id: 7, title: 'BIDDING BEFORE WICKET', price: '₹25', category: 'Fun & Games', date: '25.12.2024', time: '14:00', endTime: '16:00' },
+  { id: 8, title: 'SEAL THE DEAL', price: '₹15', category: 'Fun & Games', date: '26.12.2024', time: '15:00', endTime: '17:00' },
+  { id: 9, title: 'VERSEVAAD', price: 'Free', category: 'Flagship', date: '29.12.2024', time: '17:00', endTime: '19:00' },
+  { id: 10, title: 'IN CONVERSATION WITH', price: 'Free', category: 'Workshops & Talks', date: '30.12.2024', time: '16:00', endTime: '18:00' },
+  { id: 11, title: 'CLAY MODELLING', price: '₹40', category: 'Creative Arts', date: '26.12.2024', time: '10:00', endTime: '12:00' },
+  { id: 12, title: 'FOCUS', price: '₹50', category: 'Creative Arts', date: '27.12.2024', time: '14:00', endTime: '16:00' },
+  { id: 13, title: 'BGMI TOURNAMENT', price: '₹50/squad', category: 'Fun & Games', date: '28.12.2024', time: '10:00', endTime: '18:00' },
+  { id: 14, title: 'VALORANT TOURNAMENT', price: '₹100/team', category: 'Fun & Games', date: '29.12.2024', time: '10:00', endTime: '18:00' },
+  { id: 15, title: 'FREE FIRE TOURNAMENT', price: '₹40/squad', category: 'Fun & Games', date: '30.12.2024', time: '10:00', endTime: '18:00' },
+  { id: 17, title: 'DUMB SHOW', price: 'Free', category: 'Fun & Games', date: '31.12.2024', time: '19:00', endTime: '21:00' },
+  { id: 18, title: 'COURTROOM', price: '₹30', category: 'Special Events', date: '01.01.2025', time: '14:00', endTime: '16:00' },
+  { id: 19, title: 'ART RELAY', price: '₹20', category: 'Creative Arts', date: '02.01.2025', time: '10:00', endTime: '12:00' }
 ];
 
 const SOLO_FIELDS: FieldSet = [
@@ -147,8 +142,6 @@ const Stepper = React.memo(({ currentStep }: { currentStep: Step }) => {
 });
 
 export default function CheckoutPage() {
-  const [selectedCombo, setSelectedCombo] = useState<string>('');
-  const [selectedEvents, setSelectedEvents] = useState<number[]>([]);
   const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
   const [showComingSoon, setShowComingSoon] = useState(false);
   const router = useRouter();
@@ -207,16 +200,24 @@ export default function CheckoutPage() {
   }, []);
 
   const handleToggleEvent = (id: number) => {
-    setSelectedEventIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+    setSelectedEventIds(prev => {
+      if (prev.includes(id)) {
+        // Remove event if already selected
+        return prev.filter(x => x !== id);
+      } else {
+        // Check for time conflicts before adding
+        const hasConflict = hasTimeConflict(id);
+        if (hasConflict) {
+          // Show error message or prevent selection
+          const conflictMessage = getConflictMessage(id);
+          alert(`Cannot select this event. ${conflictMessage}. Please deselect the conflicting event first.`);
+          return prev;
+        }
+        return [...prev, id];
+      }
+    });
   };
 
-  const handleQuantityChange = (eventId: number, quantity: number) => {
-    if (quantity < 0) return;
-    setQuantities(prev => ({
-      ...prev,
-      [eventId]: quantity
-    }));
-  };
 
   const validateForms = () => {
     const errors: Record<string, Record<string, string>> = {};
@@ -267,17 +268,81 @@ export default function CheckoutPage() {
     if (step === 'payment') { setStep('review'); return; }
   };
 
-  const getConflictMessage = (eventId: number) => {
-    const event = events.find(e => e.id === eventId);
-    if (!event) return '';
+  // Helper function to load Cashfree SDK
+  const loadCashfreeSdk = async () => {
+    if (cashfreeLoadedRef.current) return;
+    
+    return new Promise<void>((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
+      script.onload = () => {
+        cashfreeLoadedRef.current = true;
+        resolve();
+      };
+      script.onerror = () => reject(new Error('Failed to load Cashfree SDK'));
+      document.head.appendChild(script);
+    });
+  };
 
-    const conflictingEvent = selectedEvents.find(selectedId => {
-      const selectedEvent = events.find(e => e.id === selectedId);
+  // Handle field changes
+  const handleFieldChange = (signature: string, fieldName: string, value: string) => {
+    setFormDataBySignature(prev => ({
+      ...prev,
+      [signature]: {
+        ...prev[signature],
+        [fieldName]: value
+      }
+    }));
+  };
+
+  // Helper function to check if two time ranges overlap
+  const isTimeOverlapping = (start1: string, end1: string, start2: string, end2: string) => {
+    const timeToMinutes = (time: string) => {
+      const [hours, minutes] = time.split(':').map(Number);
+      return hours * 60 + minutes;
+    };
+
+    const start1Min = timeToMinutes(start1);
+    const end1Min = timeToMinutes(end1);
+    const start2Min = timeToMinutes(start2);
+    const end2Min = timeToMinutes(end2);
+
+    // Check if the time ranges overlap
+    return start1Min < end2Min && start2Min < end1Min;
+  };
+
+  // Check if an event has time conflicts with selected events
+  const hasTimeConflict = (eventId: number) => {
+    const event = EVENT_CATALOG.find(e => e.id === eventId);
+    if (!event) return false;
+
+    return selectedEventIds.some(selectedId => {
+      const selectedEvent = EVENT_CATALOG.find(e => e.id === selectedId);
       return selectedEvent && 
              selectedEvent.id !== eventId &&
              selectedEvent.date === event.date && 
              isTimeOverlapping(selectedEvent.time, selectedEvent.endTime, event.time, event.endTime);
     });
+  };
+
+  // Get conflict message for an event
+  const getConflictMessage = (eventId: number) => {
+    const event = EVENT_CATALOG.find(e => e.id === eventId);
+    if (!event) return '';
+
+    const conflictingEvent = selectedEventIds.find(selectedId => {
+      const selectedEvent = EVENT_CATALOG.find(e => e.id === selectedId);
+      return selectedEvent && 
+             selectedEvent.id !== eventId &&
+             selectedEvent.date === event.date && 
+             isTimeOverlapping(selectedEvent.time, selectedEvent.endTime, event.time, event.endTime);
+    });
+
+    if (conflictingEvent) {
+      const conflictingEventData = EVENT_CATALOG.find(e => e.id === conflictingEvent);
+      return `Time conflict with ${conflictingEventData?.title} (${conflictingEventData?.time}-${conflictingEventData?.endTime})`;
+    }
+    return '';
   };
 
   const proceedToPayment = async () => {
@@ -391,15 +456,21 @@ export default function CheckoutPage() {
                         <div className="space-y-3">
                           {events.map(event => {
                             const isSelected = selectedEventIds.includes(event.id);
+                            const hasConflict = hasTimeConflict(event.id);
+                            const conflictMessage = getConflictMessage(event.id);
+                            const isDisabled = hasConflict && !isSelected;
+                            
                             return (
                               <motion.div
                                 key={event.id}
-                                onMouseDown={() => handleToggleEvent(event.id)}
-                                whileHover={reducedMotion ? undefined : { scale: 1.01 }}
-                                className={`relative p-4 rounded-xl cursor-pointer transition-colors duration-150 border overflow-hidden ${
+                                onMouseDown={() => !isDisabled && handleToggleEvent(event.id)}
+                                whileHover={!isDisabled && reducedMotion ? undefined : { scale: 1.01 }}
+                                className={`relative p-4 rounded-xl transition-colors duration-150 border overflow-hidden ${
                                   isSelected
-                                    ? 'bg-purple-500/20 border-purple-400 shadow-md shadow-purple-900/20'
-                                    : 'bg-white/5 border-white/10 hover:bg-white/10'
+                                    ? 'bg-purple-500/20 border-purple-400 shadow-md shadow-purple-900/20 cursor-pointer'
+                                    : isDisabled
+                                    ? 'bg-red-500/10 border-red-400/50 cursor-not-allowed opacity-60'
+                                    : 'bg-white/5 border-white/10 hover:bg-white/10 cursor-pointer'
                                 }`}
                               >
                                 {/* subtle animated shine */}
@@ -409,9 +480,9 @@ export default function CheckoutPage() {
                                   </div>
                                 )}
                                 <div className="flex justify-between items-center">
-                                  <div>
+                                  <div className="flex-1">
                                     <h4 className="font-semibold">{event.title}</h4>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2 mb-1">
                                       <p className="text-sm text-gray-400">{event.price}</p>
                                       <button
                                         onClick={(e) => { e.stopPropagation(); e.preventDefault(); const ed = eventDataById.get(event.id); if (ed) setInfoEvent(ed); }}
@@ -421,6 +492,16 @@ export default function CheckoutPage() {
                                         Info
                                       </button>
                                     </div>
+                                    <div className="flex items-center gap-2 text-xs text-white/60">
+                                      <span>{event.date}</span>
+                                      <span>{event.time} - {event.endTime}</span>
+                                    </div>
+                                    {isDisabled && conflictMessage && (
+                                      <div className="mt-2 text-xs text-red-400 flex items-center gap-1">
+                                        <span>⚠️</span>
+                                        <span>{conflictMessage}</span>
+                                      </div>
+                                    )}
                                   </div>
                                   {isSelected && (
                                     <div className="relative">
@@ -443,8 +524,11 @@ export default function CheckoutPage() {
                       <ul className="mt-4 space-y-2 text-sm">
                         {selectedEvents.map(ev => (
                           <li key={ev.id} className="flex justify-between">
-                            <span>{ev.title}</span>
-                            <span>{ev.price}</span>
+                            <div>
+                              <div className="font-medium">{ev.title}</div>
+                              <div className="text-xs text-white/60">{ev.date} {ev.time}-{ev.endTime}</div>
+                            </div>
+                            <span className="text-green-400 font-medium">{ev.price}</span>
                           </li>
                         ))}
                       </ul>
@@ -548,8 +632,11 @@ export default function CheckoutPage() {
                       <ul className="mt-4 space-y-2 text-sm">
                         {selectedEvents.map(ev => (
                           <li key={ev.id} className="flex justify-between">
-                            <span>{ev.title}</span>
-                            <span>{ev.price}</span>
+                            <div>
+                              <div className="font-medium">{ev.title}</div>
+                              <div className="text-xs text-white/60">{ev.date} {ev.time}-{ev.endTime}</div>
+                            </div>
+                            <span className="text-green-400 font-medium">{ev.price}</span>
                           </li>
                         ))}
                       </ul>
@@ -585,14 +672,14 @@ export default function CheckoutPage() {
                           ))}
                         </ul>
                       </div>
-                      {reviewPayload.map(group => (
+                      {fieldGroups.map(group => (
                         <div key={group.signature} className="bg-white/5 rounded-2xl p-6 border border-white/10">
                           <h3 className="font-semibold text-purple-200">Details for: {group.events.map(e => e.title).join(', ')}</h3>
                           <div className="mt-3 grid md:grid-cols-2 gap-3 text-sm">
                             {group.fields.map(f => (
                               <div key={f.name} className="flex justify-between gap-4">
                                 <span className="text-white/70">{f.label}</span>
-                                <span className="text-white/90 break-words">{group.data[f.name] || '-'}</span>
+                                <span className="text-white/90 break-words">{formDataBySignature[group.signature]?.[f.name] || '-'}</span>
                               </div>
                             ))}
                           </div>
