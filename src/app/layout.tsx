@@ -59,6 +59,10 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
         
+        {/* Preload custom fonts for faster rendering of hero text */}
+        <link rel="preload" href="/Font/quivert/Quivert.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
+        <link rel="preload" href="/Font/TAN_Nimbus/Web/TAN-NIMBUS.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
+
         {/* Local fonts handled by next/font with display:swap; keeping preload links unnecessary */}
         
         {/* Google Fonts */}

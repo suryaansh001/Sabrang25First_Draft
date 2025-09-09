@@ -24,52 +24,11 @@
   font-display: swap;
 }
 
-/* TAN Nimbus Font - kept for specific use cases */
-@font-face {
-  font-family: 'TAN Nimbus';
-  src: url('/Font/TAN_Nimbus/TAN-NIMBUS.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* Childstone Demo Font - for Sabrang 2025 */
 @font-face {
   font-family: 'Childstone Demo';
   src: url('/Font/childstone-demo/Childstone Demo.otf') format('opentype');
   font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'TAN Nimbus';
-  src: url('/Font/TAN_Nimbus/TAN-NIMBUS.otf') format('opentype');
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'TAN Nimbus';
-  src: url('/Font/TAN_Nimbus/TAN-NIMBUS.otf') format('opentype');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'TAN Nimbus';
-  src: url('/Font/TAN_Nimbus/TAN-NIMBUS.otf') format('opentype');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'TAN Nimbus';
-  src: url('/Font/TAN_Nimbus/TAN-NIMBUS.otf') format('opentype');
-  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
@@ -323,6 +282,8 @@ h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, label {
   border-radius: 50%;
   filter: blur(60px);
   animation: auroraDrift 16s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 .aurora-1 {

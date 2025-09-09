@@ -385,7 +385,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
             <div className="max-w-sm mx-auto">
                              {/* Main Title */}
                <h1 className="font-black leading-tight mb-6 whitespace-nowrap overflow-visible">
-                 <span className="inline text-5xl sm:text-7xl md:text-8xl text-white drop-shadow-lg" style={{ 
+                 <span className="preload inline text-5xl sm:text-7xl md:text-8xl text-white drop-shadow-lg" style={{ 
                    fontFamily: "'Quivert', sans-serif",
                    textShadow: '0 0 20px rgba(255,255,255,0.3)'
                  }}>
