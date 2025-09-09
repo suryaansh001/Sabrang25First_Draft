@@ -88,6 +88,7 @@ const HolographicCard = ({
                 src={person.img || ''}
                 alt={person.name || 'Team Member'}
                 className="w-full h-full object-cover"
+                loading="lazy"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
                 }}
@@ -126,6 +127,7 @@ const HolographicCard = ({
                   src={person.img || ''}
                   alt={person.name || 'Team Member'}
                   className="w-full h-full object-cover opacity-30 blur-sm"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-black/60" />
               </div>
@@ -217,7 +219,7 @@ export default function PeopleStrip() {
        }
      },
      { 
-       img: "/images/Team/final/Jigeesha Agarawal.webp", 
+       img: "/images/Team/final/Jigeesha Agarwal.webp", 
        bg: "bg-green-500",
        name: "Jigeesha Agarawal",
        committee: "Decor",
@@ -478,6 +480,7 @@ export default function PeopleStrip() {
                 src="/images/BG-TEAM.png"
                 alt="splash"
                className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay pointer-events-none group-hover:opacity-80 transition-all duration-500"
+               loading="lazy"
              />
 
              {/* Main Image with enhanced styling */}
@@ -486,6 +489,7 @@ export default function PeopleStrip() {
                  src={person.img}
                  alt={person.name}
                  className="w-full h-full object-cover rounded-lg transition-all duration-500 ease-out group-hover:scale-105 group-hover:rotate-1 relative z-20"
+                 loading="lazy"
                  onError={(e) => {
                    e.currentTarget.style.display = 'none';
                  }}
@@ -533,6 +537,7 @@ export default function PeopleStrip() {
             src="/images/BG-TEAM.png"
             alt="splash"
             className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay pointer-events-none group-hover:opacity-80 transition-all duration-500"
+            loading="lazy"
           />
 
           <div className="relative z-10 w-full h-full flex items-center justify-center p-4">
@@ -540,6 +545,7 @@ export default function PeopleStrip() {
               src={person.img}
               alt={person.name}
               className="w-full h-full object-cover rounded-lg transition-all duration-500 ease-out group-hover:scale-105 group-hover:rotate-1 relative z-20"
+              loading="lazy"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
               }}

@@ -5,14 +5,14 @@ import Logo from '../../../components/Logo';
 import Footer from '../../../components/Footer';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '../../../components/NavigationContext';
-import { Home, Info, Calendar, Star, Users, HelpCircle, Handshake, Mail as MailIcon, X } from 'lucide-react';
+import { Home, Info, Calendar, Star, Users, HelpCircle, Handshake, Mail as MailIcon, X, Phone, MessageCircle } from 'lucide-react';
 
 const Contact = () => {
   const router = useRouter();
   const { navigate } = useNavigation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
+  const mobileNavItems = [
     { title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
     { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
@@ -25,17 +25,15 @@ const Contact = () => {
   ];
 
   return (
-    <div className="min-h-screen text-white relative overflow-hidden flex flex-col">
-      {/* Background Image */}
+    <div className="min-h-screen text-white relative">
+      {/* Simple background */}
       <div 
-        className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
+        className="fixed inset-0 -z-10 bg-cover bg-center"
         style={{
           backgroundImage: 'url(/images/backgrounds/faq.webp)'
         }}
       />
-      
-      {/* Black Overlay for better text readability */}
-      <div className="fixed inset-0 -z-10 bg-black/60" />
+      <div className="fixed inset-0 -z-10 bg-black/70" />
       
       <Logo />
 
@@ -43,37 +41,34 @@ const Contact = () => {
       <button
         aria-label="Open menu"
         onClick={() => setMobileMenuOpen(true)}
-        className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
+        className="lg:hidden fixed top-4 right-4 z-50 p-3"
       >
         <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
         <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
         <span className="block h-0.5 bg-white/80 rounded-full w-4" />
       </button>
 
-      {/* Mobile menu overlay */}
+      {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
+        <div className="lg:hidden fixed inset-0 z-50 bg-black/90">
           <div className="absolute top-4 right-4">
             <button
-              aria-label="Close menu"
               onClick={() => setMobileMenuOpen(false)}
-              className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
+              className="p-3 text-white"
             >
-              <X className="w-6 h-6 text-white" />
+              <X className="w-6 h-6" />
             </button>
           </div>
-          <div className="pt-20 px-6 h-full overflow-y-auto">
-            <div className="grid grid-cols-1 gap-3 pb-8">
+          <div className="pt-20 px-6">
+            <div className="space-y-4">
               {mobileNavItems.map((item) => (
                 <button
                   key={item.title}
                   onClick={() => { setMobileMenuOpen(false); navigate(item.href); }}
-                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                  className="flex items-center gap-3 p-3 w-full text-left text-white hover:bg-white/10 rounded-lg"
                 >
-                  <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
-                    {item.icon}
-                  </span>
-                  <span className="font-medium">{item.title}</span>
+                  {item.icon}
+                  <span>{item.title}</span>
                 </button>
               ))}
             </div>
@@ -81,187 +76,147 @@ const Contact = () => {
         </div>
       )}
 
-      {/* Infinity transition handled by AppShell */}
-      
-      {/* Main Content Container */}
-      <div className="relative z-10 pt-24 flex-grow">
-        {/* Hero Section */}
-        <section className="py-0 px-6">
-          <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-4xl sm:text-6xl md:text-8xl font-extrabold mb-6 sm:mb-8 leading-tight text-white">
-              CONTACT US
-            </h1>
-          </div>
-        </section>
+      {/* Main content */}
+      <div className="pt-32 px-6">
+        {/* Header */}
+        <div className="max-w-4xl mx-auto mb-16">
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-center">
+            Get in Touch
+          </h1>
+          <p className="text-xl text-gray-300 text-center max-w-2xl mx-auto">
+            Have questions? Need help with registration? We're here to help make your experience smooth and memorable.
+          </p>
+        </div>
 
-        {/* Organizing Heads Section */}
-        <section className="py-12 px-4 sm:px-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500">
-                  Organizing Heads
-                </span>
-              </h2>
-            </div>
+        {/* Main contact info */}
+        <div className="max-w-6xl mx-auto mb-20">
+          <div className="grid md:grid-cols-2 gap-12 items-start">
             
-            <div className="grid grid-cols-1 gap-6 lg:gap-8 place-items-center">
-            
-              {/* Diya */}
-              <div className="group relative overflow-hidden rounded-2xl bg-black/20 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-500">
-                <div className="relative h-80 sm:h-96 md:h-[28rem] overflow-hidden">
-                  <img 
-                    src="/images/OH_images_home/diya.jpeg" 
-                    alt="Diya - Organizing Head"
-                    className="w-full h-full object-cover transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                </div>
-                
-                <div className="p-5 sm:p-6">
-                  <h3 className="text-xl sm:text-2xl font-bold mb-2 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                    Diya
-                  </h3>
-                  <p className="text-cyan-300 font-medium mb-3">Organizing Head</p>
-                  <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-4">
-                    Mastermind of logistics and coordination. Ensuring everything runs smoothly behind the scenes.
+            {/* Left side - Organizing Head */}
+            <div className="space-y-8">
+              <div>
+                <h2 className="text-2xl font-semibold mb-6 text-orange-400">Organizing Head</h2>
+                <div className="bg-black/30 p-6 rounded-lg border-l-4 border-orange-400">
+                  <h3 className="text-xl font-semibold mb-2">DIYA GARG</h3>
+                  {/* <p className="text-orange-300 mb-4">Organizing Head</p> */}
+                  <p className="text-gray-300 mb-6 leading-relaxed">
+                    The person behind all the coordination magic. Reach out for any event-related queries, 
+                    partnerships, or if you need someone who knows exactly what's happening when and where.
                   </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2 text-sm">
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <MailIcon className="w-4 h-4 text-orange-400" />
+                      <a href="mailto:diyagarg@jklu.edu.in" className="text-gray-300 hover:text-white">
+                        diyagarg@jklu.edu.in
+                      </a>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Phone className="w-4 h-4 text-orange-400" />
+                      <a href="tel:+917296859397" className="text-gray-300 hover:text-white">
+                        +91 72968 59397
+                      </a>
+                    </div>
+                    <div className="flex items-center gap-2 mt-4">
                       <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                      <span className="text-green-300">Available for queries</span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-sm">
-                      <span className="text-gray-400">📧</span>
-                      <a href="mailto:diyagarg@jklu.edu.in" className="text-gray-300 underline decoration-white/30 hover:decoration-white">diyagarg@jklu.edu.in</a>
-                    </div>
-                    <div className="flex items-center space-x-2 text-sm">
-                      <span className="text-gray-400">📱</span>
-                      <a href="tel:+917296859397" className="text-gray-300 underline decoration-white/30 hover:decoration-white">+91 72968 59397</a>
+                      <span className="text-sm text-green-400">Usually responds within a few hours</span>
                     </div>
                   </div>
-                </div>
-                
-                
-              </div>
-
-            </div>
-          </div>
-        </section>
-
-        {/* Registration Team Section */}
-        <section className="py-12 px-4 sm:px-6 bg-black/20 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-blue-500 to-purple-500">
-                  Registration Team
-                </span>
-              </h2>
-              <p className="text-base sm:text-xl text-gray-300 max-w-3xl mx-auto">
-                Our dedicated team ready to help you with registrations and event queries
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-              {/* Ayushi Kabra */}
-              <div className="group relative overflow-hidden rounded-2xl bg-black/20 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-500">
-                <div className="p-6 text-center">
-                  <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-2xl font-bold">AK</span>
-                  </div>
-                  <h3 className="text-lg sm:text-xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-                    Ayushi Kabra
-                  </h3>
-                  <p className="text-blue-300 font-medium mb-3">Registrations</p>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-center space-x-2 text-sm">
-                      <span className="text-gray-400">📧</span>
-                      <a href="mailto:ayushikabra@jklu.edu.in" className="text-gray-300 underline decoration-white/30 hover:decoration-white">ayushikabra@jklu.edu.in</a>
-                    </div>
-                    <div className="flex items-center justify-center space-x-2 text-sm">
-                      <span className="text-gray-400">📱</span>
-                      <a href="tel:+918949941985" className="text-gray-300 underline decoration-white/30 hover:decoration-white">+91 89499 41985</a>
-                    </div>
-                  </div>
-                </div>
-                <div className="absolute top-4 right-4 w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="text-white text-sm">📋</span>
                 </div>
               </div>
+            </div>
 
-              {/* Jayash Gehlot */}
-              <div className="group relative overflow-hidden rounded-2xl bg-black/20 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-500">
-                <div className="p-6 text-center">
-                  <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-pink-500 to-red-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-2xl font-bold">JG</span>
-                  </div>
-                  <h3 className="text-lg sm:text-xl font-bold mb-2 bg-gradient-to-r from-pink-400 to-red-500 bg-clip-text text-transparent">
-                    Jayash Gehlot
-                  </h3>
-                  <p className="text-pink-300 font-medium mb-3">Registrations</p>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-center space-x-2 text-sm">
-                      <span className="text-gray-400">📧</span>
-                      <a href="mailto:jayashgehlot@jklu.edu.in" className="text-gray-300 underline decoration-white/30 hover:decoration-white">jayashgehlot@jklu.edu.in</a>
+            {/* Right side - Registration Team */}
+            <div className="space-y-8">
+              <div>
+                <h2 className="text-2xl font-semibold mb-6 text-blue-400">Registration Help</h2>
+                <div className="space-y-6">
+                  
+                  <div className="bg-black/30 p-6 rounded-lg border-l-4 border-blue-400">
+                    <h3 className="text-lg font-semibold mb-1">Ayushi Kabra</h3>
+                    <p className="text-blue-300 text-sm mb-4">RegistrationS Core</p>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3 text-sm">
+                        <MailIcon className="w-4 h-4 text-blue-400" />
+                        <a href="mailto:ayushikabra@jklu.edu.in" className="text-gray-300 hover:text-white">
+                          ayushikabra@jklu.edu.in
+                        </a>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm">
+                        <Phone className="w-4 h-4 text-blue-400" />
+                        <a href="tel:+918949941985" className="text-gray-300 hover:text-white">
+                          +91 89499 41985
+                        </a>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-center space-x-2 text-sm">
-                      <span className="text-gray-400">📱</span>
-                      <a href="tel:+918306274199" className="text-gray-300 underline decoration-white/30 hover:decoration-white">+91 83062 74199</a>
+                  </div>
+
+                  <div className="bg-black/30 p-6 rounded-lg border-l-4 border-purple-400">
+                    <h3 className="text-lg font-semibold mb-1">Jayash Gehlot</h3>
+                    <p className="text-purple-300 text-sm mb-4">Registrations Core</p>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3 text-sm">
+                        <MailIcon className="w-4 h-4 text-purple-400" />
+                        <a href="mailto:jayashgehlot@jklu.edu.in" className="text-gray-300 hover:text-white">
+                          jayashgehlot@jklu.edu.in
+                        </a>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm">
+                        <Phone className="w-4 h-4 text-purple-400" />
+                        <a href="tel:+918306274199" className="text-gray-300 hover:text-white">
+                          +91 83062 74199
+                        </a>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="absolute top-4 right-4 w-10 h-10 bg-gradient-to-br from-pink-500 to-red-500 rounded-full flex items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="text-white text-sm">🎯</span>
                 </div>
               </div>
             </div>
           </div>
-        </section>
+        </div>
 
-       
-        <div className="relative z-10">
-          <Footer />
+        {/* Quick tips section */}
+        <div className="max-w-4xl mx-auto mb-20">
+          <div className="bg-black/40 p-8 rounded-lg">
+            <h2 className="text-2xl font-semibold mb-6">Best Ways to Reach Us</h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div>
+                <h3 className="font-semibold mb-2 text-cyan-400">Quick Questions</h3>
+                <p className="text-gray-300 text-sm">
+                  WhatsApp or call any of our registration team members for immediate help
+                </p>
+              </div>
+              <div>
+                <h3 className="font-semibold mb-2 text-green-400">Detailed Inquiries</h3>
+                <p className="text-gray-300 text-sm">
+                  Email works best for complex questions or when you need detailed information
+                </p>
+              </div>
+              <div>
+                <h3 className="font-semibold mb-2 text-yellow-400">Partnership/Sponsorship</h3>
+                <p className="text-gray-300 text-sm">
+                  Contact Diya directly for any collaboration or sponsorship opportunities
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Simple FAQ teaser */}
+        <div className="max-w-4xl mx-auto mb-20 text-center">
+          <p className="text-gray-400 mb-4">
+            Can't find what you're looking for?
+          </p>
+          <button 
+            onClick={() => navigate('/FAQ')}
+            className="text-blue-400 hover:text-blue-300 underline"
+          >
+            Check out our FAQ section
+          </button>
         </div>
       </div>
 
-      {/* Footer outside main container */}
-      {/* Footer is rendered globally in AppShell */}
-
-      <style jsx>{`
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-          width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.3);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-          background: linear-gradient(45deg, #8b5cf6, #ec4899);
-          border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(45deg, #7c3aed, #db2777);
-        }
-        
-        /* Smooth scrolling */
-        html {
-          scroll-behavior: smooth;
-        }
-        
-        /* Animation for floating elements */
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-        }
-        
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-      `}</style>
+      <Footer />
     </div>
   );
 };
