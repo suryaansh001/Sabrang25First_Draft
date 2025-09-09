@@ -22,16 +22,17 @@ interface SidebarDockProps {
 }
 
 const navigationItems = [
-  { title: 'Home', icon: <Home className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-5 lg:h-5" />, href: '/' },
-  { title: 'About', icon: <Info className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-5 lg:h-5" />, href: '/About' },
-  { title: 'Events', icon: <Calendar className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-5 lg:h-5" />, href: '/Events' },
-  { title: 'Highlights', icon: <Star className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-5 lg:h-5" />, href: '/Gallery' },
-  { title: 'Schedule', icon: <Clock className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-5 lg:h-5" />, href: '/schedule/progress' },
-  { title: 'Team', icon: <Users className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-5 lg:h-5" />, href: '/Team' },
-  { title: 'FAQ', icon: <HelpCircle className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-5 lg:h-5" />, href: '/FAQ' },
-  { title: 'Why Sponsor Us', icon: <Handshake className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-5 lg:h-5" />, href: '/why-sponsor-us' },
-  { title: 'Contact', icon: <Mail className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-5 lg:h-5" />, href: '/Contact' },
+  { title: 'Home', icon: <Home className="w-3 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/' },
+  { title: 'About', icon: <Info className="w-3 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/About' },
+  { title: 'Events', icon: <Calendar className="w-3 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/Events' },
+  { title: 'Highlights', icon: <Star className="w-3 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/Gallery' },
+  { title: 'Schedule', icon: <Clock className="w-3 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/schedule/progress' },
+  { title: 'Team', icon: <Users className="w-3 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/Team' },
+  { title: 'FAQ', icon: <HelpCircle className="w-3 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/FAQ' },
+  { title: 'Why Sponsor Us', icon: <Handshake className="w-3 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/why-sponsor-us' },
+  { title: 'Contact', icon: <Mail className="w-3 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/Contact' },
 ];
+
 
 export const SidebarDock: React.FC<SidebarDockProps> = ({ className = '', onNavigate }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -99,6 +100,11 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({ className = '', onNavi
     >
       <motion.div
         className="flex flex-col items-start gap-2 sm:gap-2.5 md:gap-3 rounded-xl sm:rounded-2xl bg-black/40 backdrop-blur-md border border-white/20 px-2 py-3 sm:px-2.5 sm:py-3.5 md:px-3 md:py-4 lg:px-4 lg:py-5 shadow-2xl"
+        className="flex flex-col items-start gap-1 
+rounded-md sm:rounded-lg 
+bg-black/40 backdrop-blur-md border border-white/20 
+px-1 py-1.5 sm:px-1.5 sm:py-2 md:px-2 md:py-2.5 
+shadow-md"
         animate={{
           width: isExpanded ? 'auto' : 'auto',
           transition: { duration: 0.3, ease: "easeInOut" }
