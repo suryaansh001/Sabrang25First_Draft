@@ -3,7 +3,7 @@ import "./globals.css";
 import { quivertFont, tanNimbusFont } from "./fonts";
 import AppShell from "../../components/AppShell";
 import { VideoProvider } from "../../components/VideoContext";
-import DesignedByStrip from "../../components/DesignedByStrip";
+import FooterStrip from "../../components/FooterStrip";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://sabrang.jklu.edu.in'),
@@ -108,8 +108,10 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         <VideoProvider>
-          <AppShell>{children}</AppShell>
-          <DesignedByStrip />
+          <div className="min-h-screen flex flex-col">
+            <AppShell>{children}</AppShell>
+            <FooterStrip />
+          </div>
         </VideoProvider>
       </body>
     </html>
