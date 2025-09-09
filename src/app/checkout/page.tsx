@@ -449,6 +449,11 @@ function CheckoutPageContent() {
               >
                 <div className="grid lg:grid-cols-4 gap-8">
                   <div className="lg:col-span-3">
+                    <div className="bg-yellow-500/20 border border-yellow-400/50 rounded-lg p-4 mb-6">
+                      <p className="text-sm text-yellow-200">
+                        <strong>Notice:</strong> Event registration is currently disabled. You can browse events but checkout is not available yet.
+                      </p>
+                    </div>
                     <h2 className="text-xl font-semibold mb-6">Choose Your Events</h2>
                     {Array.from(eventsByCategory.entries()).map(([category, events]) => (
                       <div key={category} className="mb-8">
@@ -538,14 +543,10 @@ function CheckoutPageContent() {
                       </div>
                       <button
                         onClick={goNext}
-                        disabled={selectedEventIds.length === 0}
-                        className={`relative w-full mt-6 inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-white font-medium transition-all duration-300 ${
-                          selectedEventIds.length === 0 
-                            ? 'bg-gray-600 cursor-not-allowed' 
-                            : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:scale-105 cursor-pointer'
-                        }`}
+                        disabled={true}
+                        className="relative w-full mt-6 inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-white font-medium transition-all duration-300 bg-gray-600 cursor-not-allowed opacity-50"
                       >
-                        Continue <ArrowRight className="w-4 h-4" />
+                        Checkout Temporarily Disabled <ArrowRight className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -688,7 +689,7 @@ function CheckoutPageContent() {
                     </div>
                     <div className="flex items-center gap-3 mt-8">
                       <button onClick={goBack} className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer">Back</button>
-                      <button onClick={goNext} className="px-5 py-2 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 transition cursor-pointer">Proceed to Payment</button>
+                      <button disabled={true} className="px-5 py-2 rounded-full bg-gray-600 cursor-not-allowed opacity-50 transition">Checkout Disabled</button>
                     </div>
                   </div>
                   <div>
@@ -713,12 +714,17 @@ function CheckoutPageContent() {
                   <div className="lg:col-span-3">
                     <h2 className="text-xl font-semibold mb-6">Payment</h2>
                     <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                      <div className="bg-yellow-500/20 border border-yellow-400/50 rounded-lg p-4 mb-4">
+                        <p className="text-sm text-yellow-200">
+                          <strong>Notice:</strong> Checkout is temporarily disabled. Event registration will be available soon.
+                        </p>
+                      </div>
                       <p className="text-sm text-white/80">You're almost there. Click the button below to complete your payment securely.</p>
                       <button
-                        onClick={proceedToPayment}
-                        className="mt-6 inline-flex items-center gap-2 rounded-full px-6 py-3 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 cursor-pointer"
+                        disabled={true}
+                        className="mt-6 inline-flex items-center gap-2 rounded-full px-6 py-3 bg-gray-600 cursor-not-allowed opacity-50"
                       >
-                        <CreditCard className="w-4 h-4" /> Pay ₹{totalPrice}
+                        <CreditCard className="w-4 h-4" /> Payment Disabled
                       </button>
                     </div>
                     <div className="flex items-center gap-3 mt-8">
