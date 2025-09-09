@@ -100,11 +100,6 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({ className = '', onNavi
     >
       <motion.div
         className="flex flex-col items-start gap-2 sm:gap-2.5 md:gap-3 rounded-xl sm:rounded-2xl bg-black/40 backdrop-blur-md border border-white/20 px-2 py-3 sm:px-2.5 sm:py-3.5 md:px-3 md:py-4 lg:px-4 lg:py-5 shadow-2xl"
-        className="flex flex-col items-start gap-1 
-rounded-md sm:rounded-lg 
-bg-black/40 backdrop-blur-md border border-white/20 
-px-1 py-1.5 sm:px-1.5 sm:py-2 md:px-2 md:py-2.5 
-shadow-md"
         animate={{
           width: isExpanded ? 'auto' : 'auto',
           transition: { duration: 0.3, ease: "easeInOut" }

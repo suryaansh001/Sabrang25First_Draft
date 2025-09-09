@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, ChevronLeft, CreditCard, ArrowRight } from 'lucide-react';
@@ -141,7 +141,7 @@ const Stepper = React.memo(({ currentStep }: { currentStep: Step }) => {
   );
 });
 
-export default function CheckoutPage() {
+function CheckoutPageContent() {
   const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
   const [showComingSoon, setShowComingSoon] = useState(false);
   const router = useRouter();
@@ -784,5 +784,26 @@ export default function CheckoutPage() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function CheckoutLoading() {
+  return (
+    <div className="min-h-screen text-white flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-400 mx-auto mb-4"></div>
+        <p className="text-white/70">Loading checkout...</p>
+      </div>
+    </div>
+  );
+}
+
+// Main export with Suspense wrapper
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<CheckoutLoading />}>
+      <CheckoutPageContent />
+    </Suspense>
   );
 }
