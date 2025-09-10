@@ -8,14 +8,14 @@ interface LogoProps {
 const Logo: React.FC<LogoProps> = ({ className = '' }) => {
   return (
     <div 
-      className={`fixed top-4 left-4 z-[100] transition-transform duration-300 ease-in-out ${className}`}
+      className={`fixed top-7 left-8 z-[100] transition-transform duration-300 ease-in-out ${className}`}
     >
       <div className="flex items-center justify-center">
         <a href="/" aria-label="Go to homepage">
           <img 
             src="/images/Logo@2x.png" 
             alt="Logo" 
-            className="h-10 w-auto lg:h-25 lg:w-36 cursor-pointer" 
+            className="h-10 w-auto lg:h-25 lg:w-33 cursor-pointer" 
             onError={(e) => { 
               (e.target as HTMLImageElement).src = '/images/Logo.svg'; 
             }} 
