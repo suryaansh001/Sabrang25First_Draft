@@ -529,7 +529,7 @@ export default function EventsPage() {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="hidden lg:fixed lg:top-6 lg:right-6 lg:z-50 lg:block"
+            className="hidden lg:fixed lg:top-6 lg:right-[120px] lg:z-50 lg:block"
           >
             <div className="relative">
               {/* Main toggle container */}
