@@ -402,10 +402,18 @@ function CheckoutPageContent() {
   return (
     <div className="min-h-screen text-white">
       {/* Background (lighter under reduced motion) */}
-      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-indigo-950 via-purple-900 to-black">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(147,51,234,0.18),transparent_70%)]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(59,130,246,0.12),transparent_70%)]"></div>
+      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-neutral-950 to-black">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(147,51,234,0.08),transparent_70%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(59,130,246,0.06),transparent_70%)]"></div>
         {/* Heavy animated background disabled for performance */}
+        {/* Aurora overlay to match site's dark neon vibe */}
+        <div className="aurora">
+          <div className="aurora-blob aurora-1"></div>
+          <div className="aurora-blob aurora-2"></div>
+          <div className="aurora-blob aurora-3"></div>
+        </div>
+        {/* Subtle dark overlay for extra contrast */}
+        <div className="absolute inset-0 bg-black/40"></div>
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-8">
@@ -421,7 +429,7 @@ function CheckoutPageContent() {
             </button>
           </div>
           <div className="justify-self-center text-center">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-300 bg-clip-text text-transparent title-glow-animation">
+            <h1 className="text-2xl font-bold title-chroma title-glow-animation">
               Event Registration
             </h1>
           </div>
@@ -449,15 +457,15 @@ function CheckoutPageContent() {
               >
                 <div className="grid lg:grid-cols-4 gap-8">
                   <div className="lg:col-span-3">
-                    <div className="bg-yellow-500/20 border border-yellow-400/50 rounded-lg p-4 mb-6">
+                    <div className="bg-yellow-500/15 border border-yellow-400/40 rounded-lg p-4 mb-6 shadow-[0_0_20px_rgba(250,204,21,0.2)]">
                       <p className="text-sm text-yellow-200">
                         <strong>Notice:</strong> Event registration is currently disabled. You can browse events but checkout is not available yet.
                       </p>
                     </div>
-                    <h2 className="text-xl font-semibold mb-6">Choose Your Events</h2>
+                    <h2 className="text-xl font-semibold mb-6 title-chroma">Choose Your Events</h2>
                     {Array.from(eventsByCategory.entries()).map(([category, events]) => (
                       <div key={category} className="mb-8">
-                        <h3 className="text-lg font-medium text-white/80 mb-4">{category}</h3>
+                        <h3 className="text-lg font-medium text-white mb-4"><span className="bg-gradient-to-r from-cyan-300 via-fuchsia-400 to-emerald-300 bg-clip-text text-transparent">{category}</span></h3>
                         <div className="space-y-3">
                           {events.map(event => {
                             const isSelected = selectedEventIds.includes(event.id);
@@ -472,10 +480,10 @@ function CheckoutPageContent() {
                                 whileHover={!isDisabled && reducedMotion ? undefined : { scale: 1.01 }}
                                 className={`relative p-4 rounded-xl transition-colors duration-150 border overflow-hidden ${
                                   isSelected
-                                    ? 'bg-purple-500/20 border-purple-400 shadow-md shadow-purple-900/20 cursor-pointer'
+                                    ? 'glass border-fuchsia-400/40 shadow-[0_0_18px_rgba(217,70,239,0.35)] cursor-pointer'
                                     : isDisabled
-                                    ? 'bg-red-500/10 border-red-400/50 cursor-not-allowed opacity-60'
-                                    : 'bg-white/5 border-white/10 hover:bg-white/10 cursor-pointer'
+                                    ? 'bg-red-500/10 border-red-400/40 cursor-not-allowed opacity-60'
+                                    : 'glass border-white/10 hover:border-cyan-400/40 hover:shadow-[0_0_16px_rgba(34,211,238,0.28)] cursor-pointer'
                                 }`}
                               >
                                 {/* subtle animated shine */}
@@ -488,7 +496,7 @@ function CheckoutPageContent() {
                                   <div className="flex-1">
                                     <h4 className="font-semibold">{event.title}</h4>
                                     <div className="flex items-center gap-2 mb-1">
-                                      <p className="text-sm text-gray-400">{event.price}</p>
+                                      <p className="text-sm text-cyan-300">{event.price}</p>
                                       <button
                                         onClick={(e) => { e.stopPropagation(); e.preventDefault(); const ed = eventDataById.get(event.id); if (ed) setInfoEvent(ed); }}
                                         className="text-[11px] px-2 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 cursor-pointer"
@@ -497,7 +505,7 @@ function CheckoutPageContent() {
                                         Info
                                       </button>
                                     </div>
-                                    <div className="flex items-center gap-2 text-xs text-white/60">
+                                    <div className="flex items-center gap-2 text-xs text-white/70">
                                       <span>{event.date}</span>
                                       <span>{event.time} - {event.endTime}</span>
                                     </div>
@@ -510,8 +518,8 @@ function CheckoutPageContent() {
                                   </div>
                                   {isSelected && (
                                     <div className="relative">
-                                      <span className="absolute -inset-2 rounded-full bg-purple-500/20 blur-md"></span>
-                                      <Check className="relative w-5 h-5 text-purple-300" />
+                                      <span className="absolute -inset-2 rounded-full bg-fuchsia-500/30 blur-md"></span>
+                                      <Check className="relative w-5 h-5 text-fuchsia-300" />
                                     </div>
                                   )}
                                 </div>
@@ -523,15 +531,15 @@ function CheckoutPageContent() {
                     ))}
                   </div>
                   <div>
-                    <div className="bg-white/5 rounded-2xl p-6 border border-white/10 shadow-md relative overflow-hidden">
+                    <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] relative overflow-hidden">
                       <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
-                      <h3 className="font-semibold text-purple-200">Selected Events</h3>
+                      <h3 className="font-semibold text-cyan-200">Selected Events</h3>
                       <ul className="mt-4 space-y-2 text-sm">
                         {selectedEvents.map(ev => (
                           <li key={ev.id} className="flex justify-between">
                             <div>
                               <div className="font-medium">{ev.title}</div>
-                              <div className="text-xs text-white/60">{ev.date} {ev.time}-{ev.endTime}</div>
+                              <div className="text-xs text-white/70">{ev.date} {ev.time}-{ev.endTime}</div>
                             </div>
                             <span className="text-green-400 font-medium">{ev.price}</span>
                           </li>
@@ -563,15 +571,15 @@ function CheckoutPageContent() {
               >
                 <div className="grid lg:grid-cols-4 gap-8">
                   <div className="lg:col-span-3">
-                    <h2 className="text-xl font-semibold mb-6">Your Details</h2>
+                    <h2 className="text-xl font-semibold mb-6 title-chroma">Your Details</h2>
                     {fieldGroups.length === 0 && (
                       <p className="text-sm text-gray-400">No events selected. Go back and pick at least one event.</p>
                     )}
                     <div className="space-y-8">
                       {fieldGroups.map(group => (
-                        <div key={group.signature} className="bg-white/5 rounded-2xl p-6 border border-white/10 shadow-md">
+                        <div key={group.signature} className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_22px_rgba(236,72,153,0.18)]">
                           <div className="mb-4">
-                            <h3 className="font-semibold text-purple-200">For: {group.events.map(e => e.title).join(', ')}</h3>
+                            <h3 className="font-semibold text-fuchsia-200">For: {group.events.map(e => e.title).join(', ')}</h3>
                             <p className="text-xs text-gray-400">Fill these details once; they'll apply to the selected events above.</p>
                           </div>
                           <div className="grid md:grid-cols-2 gap-4">
@@ -591,7 +599,7 @@ function CheckoutPageContent() {
                                       id={inputId}
                                       required={!!field.required}
                                       aria-describedby={error ? errorId : undefined}
-                                      className={`bg-black/30 border ${error ? 'border-pink-500' : 'border-white/10'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                                      className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400`}
                                       value={value}
                                       onChange={e => handleFieldChange(group.signature, field.name, e.target.value)}
                                     >
@@ -607,7 +615,7 @@ function CheckoutPageContent() {
                                       inputMode={field.type === 'phone' ? 'tel' : undefined}
                                       required={!!field.required}
                                       aria-describedby={error ? errorId : undefined}
-                                      className={`bg-black/30 border ${error ? 'border-pink-500' : 'border-white/10'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-white/30`}
+                                      className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40`}
                                       placeholder={field.placeholder || ''}
                                       value={value}
                                       onChange={e => handleFieldChange(group.signature, field.name, e.target.value)}
@@ -627,15 +635,15 @@ function CheckoutPageContent() {
                     </div>
                   </div>
                   <div>
-                    <div className="bg-white/5 rounded-2xl p-6 border border-white/10 shadow-md relative overflow-hidden">
+                    <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] relative overflow-hidden">
                       <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
-                      <h3 className="font-semibold text-purple-200">Selected Events</h3>
+                      <h3 className="font-semibold text-cyan-200">Selected Events</h3>
                       <ul className="mt-4 space-y-2 text-sm">
                         {selectedEvents.map(ev => (
                           <li key={ev.id} className="flex justify-between">
                             <div>
                               <div className="font-medium">{ev.title}</div>
-                              <div className="text-xs text-white/60">{ev.date} {ev.time}-{ev.endTime}</div>
+                              <div className="text-xs text-white/70">{ev.date} {ev.time}-{ev.endTime}</div>
                             </div>
                             <span className="text-green-400 font-medium">{ev.price}</span>
                           </li>
@@ -660,10 +668,10 @@ function CheckoutPageContent() {
               >
                 <div className="grid lg:grid-cols-4 gap-8">
                   <div className="lg:col-span-3">
-                    <h2 className="text-xl font-semibold mb-6">Review</h2>
+                    <h2 className="text-xl font-semibold mb-6 title-chroma">Review</h2>
                     <div className="space-y-8">
-                      <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                        <h3 className="font-semibold text-purple-200 mb-3">Events</h3>
+                      <div className="glass rounded-2xl p-6 border border-white/10">
+                        <h3 className="font-semibold text-cyan-200 mb-3">Events</h3>
                         <ul className="space-y-2 text-sm">
                           {selectedEvents.map(ev => (
                             <li key={ev.id} className="flex justify-between">
@@ -674,8 +682,8 @@ function CheckoutPageContent() {
                         </ul>
                       </div>
                       {fieldGroups.map(group => (
-                        <div key={group.signature} className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                          <h3 className="font-semibold text-purple-200">Details for: {group.events.map(e => e.title).join(', ')}</h3>
+                        <div key={group.signature} className="glass rounded-2xl p-6 border border-white/10">
+                          <h3 className="font-semibold text-fuchsia-200">Details for: {group.events.map(e => e.title).join(', ')}</h3>
                           <div className="mt-3 grid md:grid-cols-2 gap-3 text-sm">
                             {group.fields.map(f => (
                               <div key={f.name} className="flex justify-between gap-4">
@@ -693,9 +701,9 @@ function CheckoutPageContent() {
                     </div>
                   </div>
                   <div>
-                    <div className="bg-white/5 rounded-2xl p-6 border border-white/10 shadow-md relative overflow-hidden">
+                    <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] relative overflow-hidden">
                       <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
-                      <h3 className="font-semibold text-purple-200">Total</h3>
+                      <h3 className="font-semibold text-cyan-200">Total</h3>
                       <div className="mt-4 text-3xl font-bold">₹{totalPrice}</div>
                     </div>
                   </div>
@@ -712,9 +720,9 @@ function CheckoutPageContent() {
               >
                 <div className="grid lg:grid-cols-4 gap-8">
                   <div className="lg:col-span-3">
-                    <h2 className="text-xl font-semibold mb-6">Payment</h2>
-                    <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                      <div className="bg-yellow-500/20 border border-yellow-400/50 rounded-lg p-4 mb-4">
+                    <h2 className="text-xl font-semibold mb-6 title-chroma">Payment</h2>
+                    <div className="glass rounded-2xl p-6 border border-white/10">
+                      <div className="bg-yellow-500/15 border border-yellow-400/40 rounded-lg p-4 mb-4 shadow-[0_0_20px_rgba(250,204,21,0.2)]">
                         <p className="text-sm text-yellow-200">
                           <strong>Notice:</strong> Checkout is temporarily disabled. Event registration will be available soon.
                         </p>
@@ -732,9 +740,9 @@ function CheckoutPageContent() {
                     </div>
                   </div>
                   <div>
-                    <div className="bg-white/5 rounded-2xl p-6 border border-white/10 shadow-md relative overflow-hidden">
+                    <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] relative overflow-hidden">
                       <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
-                      <h3 className="font-semibold text-purple-200">Total</h3>
+                      <h3 className="font-semibold text-cyan-200">Total</h3>
                       <div className="mt-4 text-3xl font-bold">₹{totalPrice}</div>
                     </div>
                   </div>

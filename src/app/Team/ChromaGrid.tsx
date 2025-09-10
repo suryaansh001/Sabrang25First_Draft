@@ -210,7 +210,7 @@ export default function PeopleStrip() {
        committee: "Discipline"
      },
      { 
-       img: "/images/Team/final/Jinal Lodha.webp", 
+       img: "/images/Team/final/Jinal.webp", 
        bg: "bg-blue-500",
        name: "Jinal Lodha",
        committee: "Decor",
@@ -357,7 +357,7 @@ export default function PeopleStrip() {
        committee: "Hospitality"
      },
      {
-       img: "/images/Team/final/Naman_Shukla.png",
+       img: "/images/Team/final/Naman Shukla.webp",
        bg: "bg-stone-600",
        name: "Naman Shukla",
        committee: "Sponsorship & Promotion"
