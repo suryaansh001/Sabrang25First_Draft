@@ -6,8 +6,8 @@ import { X, Calendar, MapPin, Clock, Users, Star, Filter, Crown, Check, Share2, 
 import Logo from '../../../components/Logo';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '../../../components/NavigationContext';
-import { EVENT_CATALOG } from '../checkout/page';
-
+import { events as EVENTS_DATA } from './[id]/rules/events.data';
+import { EVENT_CATALOG, EventCatalogItem } from '../../lib/eventCatalog';
 
 interface Event {
   id: number;
