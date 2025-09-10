@@ -8,7 +8,7 @@ interface LogoProps {
 const Logo: React.FC<LogoProps> = ({ className = '' }) => {
   return (
     <div 
-      className={`fixed top-4 left-4 z-[40] transition-transform duration-300 ease-in-out ${className}`}
+      className={`fixed top-4 left-4 z-[100] transition-transform duration-300 ease-in-out ${className}`}
     >
       <div className="flex items-center justify-center">
         <a href="/" aria-label="Go to homepage">
