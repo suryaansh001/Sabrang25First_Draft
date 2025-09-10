@@ -8,17 +8,17 @@ export default function FooterStrip() {
 				<img src="/JKLU_logo_white.png" alt="JKLU" className="w-15 h-15 object-contain" />
 				{/* Copyright */}
 				<a href="https://jklu.edu.in" target="_blank" rel="noopener noreferrer" className="hover:text-white underline-offset-4 hover:underline">
-				<div className="text-white/70 text-xs sm:text-sm">
-					<span>Sabrang - JK Lakshmipat University © 2025 JKLU. All Right Reserved</span>
-				</div>
+					<div className="text-white/70 text-xs sm:text-sm">
+						<span>Sabrang - JK Lakshmipat University © 2025 JKLU. All Right Reserved</span>
+					</div>
 				</a>
 
 				{/* Credits */}
 				<div className="text-white/60 text-xs sm:text-sm">
-				<Link href="/designed-by" className="underline-offset-4 hover:underline hover:text-white">
-					<span>Built and designed by </span>
-					tech_geek</Link>
-				
+					<Link href="/designed-by" className="underline-offset-4 hover:underline hover:text-white">
+						<span>Built and designed by </span>
+						tech_geek
+					</Link>
 				</div>
 			</div>
 		</div>

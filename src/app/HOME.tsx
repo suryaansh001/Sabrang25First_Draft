@@ -134,7 +134,7 @@ const VideoBackground = memo(() => {
         <source src="/videos/herovideo2.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
-      <div className="absolute inset-0 bg-black/80 pointer-events-none" />
+      <div className="absolute inset-0 bg-black/60 pointer-events-none" />
     </>
   );
 });
@@ -196,7 +196,7 @@ const MobileVideoBackground = memo(() => {
         <source src="/videos/herovideo.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
-      <div className="absolute inset-0 bg-black/80 pointer-events-none" />
+      <div className="absolute inset-0 bg-black/40 pointer-events-none" />
     </>
   );
 });
@@ -609,7 +609,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               Register Now
             </a>
             <a href="/coming-soon" className="p-2 text-white transition-all duration-300 flex items-center justify-center">
-              <img src="/JKLU_logo_white.png" alt="JKLU" className="w-15 h-15 object-contain" />
+            <img src="/JKLU_logo_white.png" alt="JKLU" className="w-15 h-15 object-contain" />
             </a>
           </div>
         )}
