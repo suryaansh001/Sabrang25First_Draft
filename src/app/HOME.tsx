@@ -588,7 +588,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         
         {/* Top-left Logo (desktop) */}
         {!isLoading && (
-          <div className="absolute top-10 left-10 z-50">
+          <div className="absolute top-6 left-10 z-50">
             <img
               src="/images/Logo@2x.png"
               alt="Logo"
@@ -604,11 +604,11 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         
         {/* Register Now Button */}
         {!isLoading && (
-          <div className="absolute top-2.5 right-2 z-50 flex items-center space-x-5">
-            <a href="/coming-soon" className="px-24 py-4 bg-black/40 backdrop-blur-sm rounded-full text-white text-sm font-medium hover:bg-black/60 transition-all duration-300 border border-white/30">
+          <div className="absolute top-6 right-6 z-50 flex items-center space-x-5">
+            <a href="/coming-soon" className="px-28 py-5 bg-black/40 backdrop-blur-sm rounded-full text-white text-sm font-medium hover:bg-black/60 transition-all duration-300 border border-white/30">
               Register Now
             </a>
-            <a href="/coming-soon" className="p-0 text-white transition-all duration-300 flex items-center justify-center">
+            <a href="/coming-soon" className="p-2 text-white transition-all duration-300 flex items-center justify-center">
               <img src="/JKLU_logo_white.png" alt="JKLU" className="w-15 h-15 object-contain" />
             </a>
           </div>
