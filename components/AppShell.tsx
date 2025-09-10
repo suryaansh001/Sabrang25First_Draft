@@ -101,7 +101,7 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
       )}
       <div className="relative z-30 flex-grow">
         <NavigationProvider navigate={handleSidebarNavigate}>
-          <TopRightJKLULogo />
+          {pathname !== "/" && <TopRightJKLULogo />}
           {mounted && !hideChrome && pathname !== "/why-sponsor-us" && <Logo />}
           <main 
             key={pathname}
