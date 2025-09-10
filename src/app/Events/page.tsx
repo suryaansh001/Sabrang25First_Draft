@@ -6,6 +6,7 @@ import { X, Calendar, MapPin, Clock, Users, Star, Filter, Crown, Check, Share2, 
 import Logo from '../../../components/Logo';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '../../../components/NavigationContext';
+import { EVENT_CATALOG } from '../checkout/page';
 
 
 interface Event {
@@ -419,6 +420,12 @@ export default function EventsPage() {
     return categoryMatch && flagshipMatch;
   });
 
+  // A helper to get catalog data for an event
+  const getEventCatalogData = (eventId: number) => {
+    // The EVENT_CATALOG is 1-indexed on `id` and might not be a complete list.
+    return EVENT_CATALOG.find(e => e.id === eventId);
+  };
+
   // If any event is selected, immediately show the overlay and hide everything else
   if (selectedEvent) {
     return (
@@ -447,8 +454,12 @@ export default function EventsPage() {
                 <div>
                   <h2 className="text-2xl md:text-3xl font-bold mb-2 tracking-tight">{selectedEvent.title}</h2>
                   <div className="flex flex-wrap items-center gap-3 text-sm text-gray-300">
-                    <span className="inline-flex items-center gap-1"><Calendar className="w-4 h-4" />{selectedEvent.date}</span>
-                    <span className="inline-flex items-center gap-1"><Clock className="w-4 h-4" />{selectedEvent.time}</span>
+                    <span className="inline-flex items-center gap-1"><Calendar className="w-4 h-4" />{getEventCatalogData(selectedEvent.id)?.date || selectedEvent.date}</span>
+                    <span className="inline-flex items-center gap-1">
+                      <Clock className="w-4 h-4" />
+                      {getEventCatalogData(selectedEvent.id)?.time12hr || selectedEvent.time}
+                      {getEventCatalogData(selectedEvent.id)?.endTime12hr && ` - ${getEventCatalogData(selectedEvent.id)?.endTime12hr}`}
+                    </span>
                     <span className="inline-flex items-center gap-1"><MapPin className="w-4 h-4" />{selectedEvent.venue}</span>
                     <span className="inline-flex items-center gap-1"><Users className="w-4 h-4" />{selectedEvent.capacity}</span>
                   </div>

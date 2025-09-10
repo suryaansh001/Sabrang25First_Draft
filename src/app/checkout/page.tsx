@@ -28,9 +28,21 @@ interface EventCatalogItem {
   date: string;
   time: string;
   endTime: string;
+  time12hr: string;
+  endTime12hr: string;
+  teamSize?: string;
 }
 
-const EVENT_CATALOG: EventCatalogItem[] = [
+const formatTime12hr = (time24: string) => {
+  if (!time24) return '';
+  const [hours, minutes] = time24.split(':');
+  const h = parseInt(hours, 10);
+  const suffix = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return `${h12}:${minutes} ${suffix}`;
+};
+
+const rawEventCatalog: Omit<EventCatalogItem, 'time12hr' | 'endTime12hr' | 'teamSize'>[] = [
   { id: 1, title: 'RAMPWALK - PANACHE', price: '₹85-120', category: 'Flagship', date: '25.12.2024', time: '19:00', endTime: '22:00' },
   { id: 2, title: 'BANDJAM', price: '₹60', category: 'Flagship', date: '27.12.2024', time: '19:30', endTime: '23:00' },
   { id: 3, title: 'DANCE BATTLE', price: '₹45', category: 'Flagship', date: '28.12.2024', time: '18:00', endTime: '21:00' },
@@ -50,39 +62,55 @@ const EVENT_CATALOG: EventCatalogItem[] = [
   { id: 19, title: 'ART RELAY', price: '₹20', category: 'Creative Arts', date: '02.01.2025', time: '10:00', endTime: '12:00' }
 ];
 
-const SOLO_FIELDS: FieldSet = [
-  { name: 'fullName', label: 'Full Name', type: 'text', required: true, placeholder: 'Enter your name' },
-  { name: 'email', label: 'Email', type: 'email', required: true, placeholder: 'you@example.com' },
-  { name: 'phone', label: 'Phone', type: 'phone', required: true, placeholder: '10-digit number' },
-  { name: 'college', label: 'College/Organization', type: 'text', required: true },
-  { name: 'year', label: 'Year', type: 'select', options: [
-    { value: '1', label: '1st' },
-    { value: '2', label: '2nd' },
-    { value: '3', label: '3rd' },
-    { value: '4', label: '4th+' }
-  ] }
-];
+const findTeamSizeRule = (rules: string[] | undefined): string | undefined => {
+  if (!rules) return undefined;
+  return rules.find(rule => rule.toLowerCase().startsWith('team size:'));
+};
 
-const TEAM_FIELDS: FieldSet = [
-  { name: 'teamName', label: 'Team Name', type: 'text', required: true },
-  { name: 'captainName', label: 'Captain Name', type: 'text', required: true },
-  { name: 'captainEmail', label: 'Captain Email', type: 'email', required: true },
-  { name: 'captainPhone', label: 'Captain Phone', type: 'phone', required: true },
-  { name: 'numMembers', label: 'Total Members', type: 'number', required: true, placeholder: 'e.g., 6' }
+export const EVENT_CATALOG: EventCatalogItem[] = rawEventCatalog.map(event => {
+  const eventData = EVENTS_DATA.find(e => e.id === event.id);
+  const teamSizeRule = findTeamSizeRule(eventData?.rules);
+  return {
+    ...event,
+    time12hr: formatTime12hr(event.time),
+    endTime12hr: formatTime12hr(event.endTime),
+    teamSize: teamSizeRule ? teamSizeRule.replace('Team Size: ', '') : undefined,
+  };
+});
+
+const SOLO_FIELDS: FieldSet = [
+  { name: 'name', label: 'Name', type: 'text', required: true, placeholder: 'Enter your full name' },
+  { name: 'collegeMailId', label: 'College Mail ID', type: 'email', required: true, placeholder: 'you@example.edu' },
+  { name: 'contactNo', label: 'Contact No.', type: 'phone', required: true, placeholder: '10-digit number' },
+  { name: 'gender', label: 'Gender', type: 'select', required: true, options: [
+    { value: 'male', label: 'Male' },
+    { value: 'female', label: 'Female' },
+    { value: 'other', label: 'Other' },
+  ]},
+  { name: 'age', label: 'Age', type: 'number', required: true, placeholder: 'e.g., 20' },
+  { name: 'universityName', label: 'Name of University', type: 'text', required: true },
+  { name: 'universityId', label: 'University Identity Card', type: 'text', required: true },
+  { name: 'address', label: 'Address', type: 'text', required: true, placeholder: 'Enter your full address' },
 ];
 
 const TEAM_ESPORTS_FIELDS: FieldSet = [
   { name: 'teamName', label: 'Team Name', type: 'text', required: true },
   { name: 'leaderDiscord', label: 'Leader Discord ID', type: 'text', required: true },
   { name: 'leaderRiotId', label: 'Leader In-Game ID', type: 'text', required: true },
-  { name: 'contact', label: 'Contact Number', type: 'phone', required: true }
+  ...SOLO_FIELDS
+];
+
+const TEAM_FIELDS: FieldSet = [
+  { name: 'teamName', label: 'Team Name', type: 'text', required: true },
+  ...SOLO_FIELDS,
+  { name: 'numMembers', label: 'Total Members', type: 'number', required: true, placeholder: 'e.g., 6' }
 ];
 
 const SQUAD_ESPORTS_FIELDS: FieldSet = [
-  { name: 'squadName', label: 'Squad Name', type: 'text', required: true },
-  { name: 'captainIgn', label: 'Captain In-Game Name', type: 'text', required: true },
-  { name: 'captainUid', label: 'Captain UID', type: 'text', required: true },
-  { name: 'contact', label: 'Contact Number', type: 'phone', required: true }
+  { name: 'teamName', label: 'Squad Name', type: 'text', required: true },
+  { name: 'leaderIgn', label: 'Leader In-Game Name', type: 'text', required: true },
+  { name: 'leaderUid', label: 'Leader UID', type: 'text', required: true },
+  ...SOLO_FIELDS
 ];
 
 const EVENT_CUSTOM_FIELDS: Partial<Record<number, FieldSet>> = {
@@ -153,18 +181,8 @@ function CheckoutPageContent() {
   const [selectedEventIds, setSelectedEventIds] = useState<number[]>([]);
   const [formErrors, setFormErrors] = useState<Record<string, Record<string, string>>>({});
   const [formDataBySignature, setFormDataBySignature] = useState<Record<string, Record<string, string>>>({});
+  const [teamMembersBySignature, setTeamMembersBySignature] = useState<Record<string, Array<Record<string, string>>>>({});
   const [infoEvent, setInfoEvent] = useState<import('../Events/[id]/rules/events.data').Event | null>(null);
-
-  // Preselect from query param
-  useEffect(() => {
-    const q = searchParams?.get('event');
-    if (!q) return;
-    const id = Number(q);
-    if (!Number.isFinite(id)) return;
-    if (EVENT_CATALOG.some(e => e.id === id)) {
-      setSelectedEventIds(prev => (prev.includes(id) ? prev : [...prev, id]));
-    }
-  }, [searchParams]);
 
   // Force reduced motion for smooth scrolling experience on this page
   useEffect(() => {
@@ -172,10 +190,6 @@ function CheckoutPageContent() {
   }, []);
 
   const selectedEvents = useMemo(() => EVENT_CATALOG.filter(e => selectedEventIds.includes(e.id)), [selectedEventIds]);
-
-  const totalPrice = useMemo(() => {
-    return selectedEvents.reduce((total, event) => total + parsePrice(event.price), 0);
-  }, [selectedEvents]);
 
   const fieldGroups = useMemo(() => {
     const groups: { signature: string; fields: FieldSet; events: EventCatalogItem[] }[] = [];
@@ -191,6 +205,41 @@ function CheckoutPageContent() {
     }
     for (const v of map.values()) groups.push(v);
     return groups;
+  }, [selectedEvents]);
+
+  // For fixed-size teams, pre-populate the member fields when moving to the forms step
+  useEffect(() => {
+    if (step === 'forms') {
+      setTeamMembersBySignature(prev => {
+        const updated = { ...prev };
+        let hasChanged = false;
+
+        fieldGroups.forEach(group => {
+          if (updated[group.signature]) return; // Already initialized, skip
+
+          const isTeamGroup = group.fields.some(f => f.name === 'teamName');
+          const hasNumMembersField = group.fields.some(f => f.name === 'numMembers');
+
+          if (isTeamGroup && !hasNumMembersField) {
+            const event = group.events[0];
+            if (event && event.teamSize) {
+              const match = event.teamSize.match(/\d+/);
+              if (match) {
+                const totalSize = parseInt(match[0], 10);
+                const additionalMembers = Math.max(0, totalSize - 1);
+                updated[group.signature] = Array.from({ length: additionalMembers }, () => SOLO_FIELDS.reduce((acc, f) => ({ ...acc, [f.name]: '' }), {}));
+                hasChanged = true;
+              }
+            }
+          }
+        });
+        return hasChanged ? updated : prev;
+      });
+    }
+  }, [step, fieldGroups]);
+
+  const totalPrice = useMemo(() => {
+    return selectedEvents.reduce((total, event) => total + parsePrice(event.price), 0);
   }, [selectedEvents]);
 
   const eventDataById = useMemo(() => {
@@ -234,6 +283,45 @@ function CheckoutPageContent() {
           }
         }
       });
+
+      // Extra validation for team groups
+      const isTeamGroup = group.fields.some(f => f.name === 'teamName');
+      if (isTeamGroup) {
+        const members = teamMembersBySignature[group.signature] || [];
+        let requiredAdditionalMembers = -1; // -1 means not applicable or not determined
+        let totalSize = 0;
+
+        const hasNumMembersField = group.fields.some(f => f.name === 'numMembers');
+        
+        if (hasNumMembersField) {
+          totalSize = parseInt((formDataBySignature[group.signature]?.['numMembers'] || '0'), 10) || 0;
+          if (totalSize > 0) {
+            requiredAdditionalMembers = Math.max(0, totalSize - 1);
+          }
+        } else {
+          // For fixed-size teams, get size from first event in group
+          const event = group.events[0];
+          if (event && event.teamSize) {
+            const match = event.teamSize.match(/\d+/);
+            if (match) {
+              totalSize = parseInt(match[0], 10);
+              requiredAdditionalMembers = Math.max(0, totalSize - 1);
+            }
+          }
+        }
+
+        if (requiredAdditionalMembers !== -1 && members.length !== requiredAdditionalMembers) {
+          const totalDisplay = totalSize > 0 ? ` (for a total of ${totalSize})` : '';
+          errors[group.signature]['teamMembers'] = `Please add details for ${requiredAdditionalMembers} more team member(s)${totalDisplay}. You have added ${members.length}.`;
+          isValid = false;
+        }
+
+        members.forEach((m, idx) => {
+          SOLO_FIELDS.forEach(field => {
+            if (field.required && !m[field.name]?.trim()) { errors[group.signature][`member_${idx}_${field.name}`] = `${field.label} is required.`; isValid = false; }
+          });
+        });
+      }
     });
 
     setFormErrors(errors);
@@ -293,6 +381,20 @@ function CheckoutPageContent() {
         [fieldName]: value
       }
     }));
+
+    // If team size changes, auto-size team members array to match
+    if (fieldName === 'numMembers') {
+      const totalMembers = Math.max(0, Math.min(50, parseInt(value || '0', 10) || 0));
+      const additionalMembers = Math.max(0, totalMembers - 1); // Leader is in main form
+      setTeamMembersBySignature(prev => {
+        const existing = prev[signature] || [];
+        const next = existing.slice(0, additionalMembers);
+        while (next.length < additionalMembers) {
+          next.push(SOLO_FIELDS.reduce((acc, f) => ({ ...acc, [f.name]: '' }), {}));
+        }
+        return { ...prev, [signature]: next };
+      });
+    }
   };
 
   // Helper function to check if two time ranges overlap
@@ -417,10 +519,10 @@ function CheckoutPageContent() {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-8">
-        {/* Header */}
+      {/* Header */}
         <div className="grid grid-cols-3 items-center mb-8">
           <div className="justify-self-start">
-            <button 
+            <button
               onClick={goBack} 
               className="flex items-center gap-2 text-white/70 hover:text-purple-300 transition cursor-pointer"
             >
@@ -448,7 +550,7 @@ function CheckoutPageContent() {
         <main>
           <AnimatePresence mode="wait">
             {step === 'select' && (
-              <motion.div 
+        <motion.div
                 key="select" 
                 initial={reducedMotion ? false : { opacity: 0, x: 30 }} 
                 animate={reducedMotion ? { opacity: 1, x: 0 } : { opacity: 1, x: 0 }} 
@@ -457,11 +559,11 @@ function CheckoutPageContent() {
               >
                 <div className="grid lg:grid-cols-4 gap-8">
                   <div className="lg:col-span-3">
-                    <div className="bg-yellow-500/15 border border-yellow-400/40 rounded-lg p-4 mb-6 shadow-[0_0_20px_rgba(250,204,21,0.2)]">
+                    <div className="bg-yellow-500/15 border border-yellow-400/40 rounded-lg p-4 mb-6 shadow-[0_0_20px_rgba(250,204,21,0.2)] hidden">
                       <p className="text-sm text-yellow-200">
                         <strong>Notice:</strong> Event registration is currently disabled. You can browse events but checkout is not available yet.
                       </p>
-                    </div>
+                            </div>
                     <h2 className="text-xl font-semibold mb-6 title-chroma">Choose Your Events</h2>
                     {Array.from(eventsByCategory.entries()).map(([category, events]) => (
                       <div key={category} className="mb-8">
@@ -469,19 +571,19 @@ function CheckoutPageContent() {
                         <div className="space-y-3">
                           {events.map(event => {
                             const isSelected = selectedEventIds.includes(event.id);
-                            const hasConflict = hasTimeConflict(event.id);
-                            const conflictMessage = getConflictMessage(event.id);
-                            const isDisabled = hasConflict && !isSelected;
-                            
-                            return (
-                              <motion.div
-                                key={event.id}
+                        const hasConflict = hasTimeConflict(event.id);
+                        const conflictMessage = getConflictMessage(event.id);
+                        const isDisabled = hasConflict && !isSelected;
+                        
+                        return (
+                          <motion.div
+                            key={event.id}
                                 onMouseDown={() => !isDisabled && handleToggleEvent(event.id)}
                                 whileHover={!isDisabled && reducedMotion ? undefined : { scale: 1.01 }}
                                 className={`relative p-4 rounded-xl transition-colors duration-150 border overflow-hidden ${
-                                  isSelected
+                              isSelected
                                     ? 'glass border-fuchsia-400/40 shadow-[0_0_18px_rgba(217,70,239,0.35)] cursor-pointer'
-                                    : isDisabled
+                                : isDisabled
                                     ? 'bg-red-500/10 border-red-400/40 cursor-not-allowed opacity-60'
                                     : 'glass border-white/10 hover:border-cyan-400/40 hover:shadow-[0_0_16px_rgba(34,211,238,0.28)] cursor-pointer'
                                 }`}
@@ -490,43 +592,44 @@ function CheckoutPageContent() {
                                 {!reducedMotion && (
                                   <div className="pointer-events-none absolute -inset-1 opacity-0 hover:opacity-100 transition-opacity duration-500">
                                     <div className="absolute -top-8 -left-10 h-20 w-36 rotate-12 bg-gradient-to-r from-white/10 to-transparent blur-xl"></div>
-                                  </div>
+                            </div>
                                 )}
                                 <div className="flex justify-between items-center">
-                                  <div className="flex-1">
+                            <div className="flex-1">
                                     <h4 className="font-semibold">{event.title}</h4>
                                     <div className="flex items-center gap-2 mb-1">
                                       <p className="text-sm text-cyan-300">{event.price}</p>
                                       <button
-                                        onClick={(e) => { e.stopPropagation(); e.preventDefault(); const ed = eventDataById.get(event.id); if (ed) setInfoEvent(ed); }}
+                                        onClick={(e) => { e.stopPropagation(); e.preventDefault(); const ed = eventDataById.get(event.id); if (ed) setInfoEvent(ed); }} // prettier-ignore
                                         className="text-[11px] px-2 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 cursor-pointer"
                                         aria-label={`View info for ${event.title}`}
                                       >
                                         Info
                                       </button>
-                                    </div>
+                                      {event.teamSize && <span className="text-[11px] text-white/60">👥 {event.teamSize}</span>}
+                                </div>
                                     <div className="flex items-center gap-2 text-xs text-white/70">
                                       <span>{event.date}</span>
-                                      <span>{event.time} - {event.endTime}</span>
-                                    </div>
-                                    {isDisabled && conflictMessage && (
+                                      <span>{event.time12hr} - {event.endTime12hr}</span>
+                              </div>
+                              {isDisabled && conflictMessage && (
                                       <div className="mt-2 text-xs text-red-400 flex items-center gap-1">
                                         <span>⚠️</span>
                                         <span>{conflictMessage}</span>
-                                      </div>
-                                    )}
-                                  </div>
+                                </div>
+                              )}
+                            </div>
                                   {isSelected && (
                                     <div className="relative">
                                       <span className="absolute -inset-2 rounded-full bg-fuchsia-500/30 blur-md"></span>
                                       <Check className="relative w-5 h-5 text-fuchsia-300" />
-                                    </div>
+                          </div>
                                   )}
-                                </div>
-                              </motion.div>
-                            );
-                          })}
-                        </div>
+                              </div>
+                        </motion.div>
+                        );
+                      })}
+                    </div>
                       </div>
                     ))}
                   </div>
@@ -539,7 +642,7 @@ function CheckoutPageContent() {
                           <li key={ev.id} className="flex justify-between">
                             <div>
                               <div className="font-medium">{ev.title}</div>
-                              <div className="text-xs text-white/70">{ev.date} {ev.time}-{ev.endTime}</div>
+                              <div className="text-xs text-white/70">{ev.date} {ev.time12hr}-{ev.endTime12hr}</div>
                             </div>
                             <span className="text-green-400 font-medium">{ev.price}</span>
                           </li>
@@ -548,17 +651,21 @@ function CheckoutPageContent() {
                       <div className="border-t border-white/10 mt-4 pt-4 flex justify-between font-semibold">
                         <span>Total</span>
                         <span>₹{totalPrice}</span>
-                      </div>
+            </div>
                       <button
                         onClick={goNext}
-                        disabled={true}
-                        className="relative w-full mt-6 inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-white font-medium transition-all duration-300 bg-gray-600 cursor-not-allowed opacity-50"
+                        disabled={selectedEventIds.length === 0}
+                        className={`relative w-full mt-6 inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-white font-medium transition-all duration-300 ${
+                          selectedEventIds.length === 0 
+                            ? 'bg-gray-600 cursor-not-allowed' 
+                            : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:scale-105 cursor-pointer'
+                        }`}
                       >
-                        Checkout Temporarily Disabled <ArrowRight className="w-4 h-4" />
+                        Continue <ArrowRight className="w-4 h-4" />
                       </button>
-                    </div>
-                  </div>
-                </div>
+                        </div>
+                        </div>
+                      </div>
               </motion.div>
             )}
             {step === 'forms' && (
@@ -589,7 +696,7 @@ function CheckoutPageContent() {
                               const inputType = field.type === 'phone' ? 'tel' : (field.type === 'number' ? 'number' : (field.type === 'email' ? 'email' : 'text'));
                               const inputId = `g-${group.events.map(e => e.id).join('-')}-f-${idx}-${field.name}`;
                               const errorId = `${inputId}-error`;
-                              return (
+                          return (
                                 <div key={field.name} className="flex flex-col">
                                   <label htmlFor={inputId} className="text-sm text-white/80 mb-1">
                                     {field.label}{field.required ? <span className="text-pink-400"> *</span> : null}
@@ -622,10 +729,125 @@ function CheckoutPageContent() {
                                     />
                                   )}
                                   {error && <span id={errorId} className="text-xs text-pink-400 mt-1">{error}</span>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {(() => {
+                        const isTeamGroup = group.fields.some(f => f.name === 'numMembers' || f.name === 'teamName' || f.name === 'captainName');
+                        if (!isTeamGroup) return null;
+                        const members = teamMembersBySignature[group.signature] || [];
+                        const groupErrors = formErrors[group.signature] || {};
+                        return (
+                          <div className="mt-6">
+                            <div className="flex items-center justify-between mb-3">
+                              <h4 className="font-semibold text-cyan-200">Team Members</h4>
+                              <div className="flex gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setTeamMembersBySignature(prev => ({
+                                      ...prev,
+                                      [group.signature]: [...(prev[group.signature] || []), SOLO_FIELDS.reduce((acc, f) => ({ ...acc, [f.name]: '' }), {})]
+                                    }));
+                                  }}
+                                  className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 cursor-pointer text-sm"
+                                >
+                                  Add team member
+                                </button>
+                                {members.length > 0 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setTeamMembersBySignature(prev => ({
+                                        ...prev,
+                                        [group.signature]: []
+                                      }));
+                                    }}
+                                    className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 cursor-pointer text-sm"
+                                  >
+                                    Clear all
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                            {members.length === 0 && (
+                              <p className="text-xs text-white/60">Click "Add team member" to enter details for each member.</p>
+                            )}
+                            {groupErrors['teamMembers'] && (
+                              <div className="text-xs text-pink-400 mb-2">{groupErrors['teamMembers']}</div>
+                            )}
+                            <div className="space-y-3">
+                              {members.map((m, idx) => (
+                                <div key={idx} className="glass rounded-xl p-4 border border-white/10">
+                                  <div className="flex justify-between items-center mb-3">
+                                    <h5 className="text-sm font-medium text-white/90">Member {idx + 1}</h5>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setTeamMembersBySignature(prev => {
+                                          const arr = [...(prev[group.signature] || [])];
+                                          arr.splice(idx, 1);
+                                          return { ...prev, [group.signature]: arr };
+                                        });
+                                      }}
+                                      className="px-2 py-1 rounded-md bg-red-500/20 hover:bg-red-500/30 text-red-300 text-xs"
+                                    >
+                                      Remove
+                                    </button>
+                                  </div>
+                                  <div className="grid md:grid-cols-2 gap-3">
+                                    {SOLO_FIELDS.map(field => {
+                                      const error = groupErrors[`member_${idx}_${field.name}`];
+                                      const value = m[field.name] || '';
+                                      const inputType = field.type === 'phone' ? 'tel' : (field.type === 'number' ? 'number' : (field.type === 'email' ? 'email' : 'text'));
+                                      return (
+                                        <div key={field.name} className="flex flex-col">
+                                          <label className="text-xs text-white/70 mb-1">{field.label}{field.required && <span className="text-pink-400">*</span>}</label>
+                                          {field.type === 'select' ? (
+                                            <select
+                                              required={!!field.required}
+                                              className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm`}
+                                              value={value}
+                                              onChange={e => {
+                                                const v = e.target.value;
+                                                setTeamMembersBySignature(prev => {
+                                                  const arr = [...(prev[group.signature] || [])];
+                                                  arr[idx] = { ...arr[idx], [field.name]: v };
+                                                  return { ...prev, [group.signature]: arr };
+                                                });
+                                              }}
+                                            >
+                                              <option value="">Select</option>
+                                              {(field.options || []).map(opt => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}
+                                            </select>
+                                          ) : (
+                                            <input
+                                              type={inputType}
+                                              className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40 text-sm`}
+                                              placeholder={field.placeholder || ''}
+                                              value={value}
+                                              onChange={e => {
+                                                const v = e.target.value;
+                                                setTeamMembersBySignature(prev => {
+                                                  const arr = [...(prev[group.signature] || [])];
+                                                  arr[idx] = { ...arr[idx], [field.name]: v };
+                                                  return { ...prev, [group.signature]: arr };
+                                                });
+                                              }}
+                                            />
+                                          )}
+                                          {error && <span className="text-xs text-pink-400 mt-1">{error}</span>}
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
                                 </div>
-                              );
-                            })}
+                              ))}
+                            </div>
                           </div>
+                        );
+                      })()}
                         </div>
                       ))}
                     </div>
@@ -643,7 +865,7 @@ function CheckoutPageContent() {
                           <li key={ev.id} className="flex justify-between">
                             <div>
                               <div className="font-medium">{ev.title}</div>
-                              <div className="text-xs text-white/70">{ev.date} {ev.time}-{ev.endTime}</div>
+                              <div className="text-xs text-white/70">{ev.date} {ev.time12hr}-{ev.endTime12hr}</div>
                             </div>
                             <span className="text-green-400 font-medium">{ev.price}</span>
                           </li>
@@ -697,17 +919,17 @@ function CheckoutPageContent() {
                     </div>
                     <div className="flex items-center gap-3 mt-8">
                       <button onClick={goBack} className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer">Back</button>
-                      <button disabled={true} className="px-5 py-2 rounded-full bg-gray-600 cursor-not-allowed opacity-50 transition">Checkout Disabled</button>
+                      <button onClick={goNext} className="px-5 py-2 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 transition cursor-pointer">Proceed to Payment</button>
                     </div>
-                  </div>
+                      </div>
                   <div>
                     <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] relative overflow-hidden">
                       <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
                       <h3 className="font-semibold text-cyan-200">Total</h3>
                       <div className="mt-4 text-3xl font-bold">₹{totalPrice}</div>
+                  </div>
                     </div>
                   </div>
-                </div>
               </motion.div>
             )}
             {step === 'payment' && (
@@ -722,18 +944,18 @@ function CheckoutPageContent() {
                   <div className="lg:col-span-3">
                     <h2 className="text-xl font-semibold mb-6 title-chroma">Payment</h2>
                     <div className="glass rounded-2xl p-6 border border-white/10">
-                      <div className="bg-yellow-500/15 border border-yellow-400/40 rounded-lg p-4 mb-4 shadow-[0_0_20px_rgba(250,204,21,0.2)]">
+                      <div className="bg-yellow-500/15 border border-yellow-400/40 rounded-lg p-4 mb-4 shadow-[0_0_20px_rgba(250,204,21,0.2)] hidden">
                         <p className="text-sm text-yellow-200">
                           <strong>Notice:</strong> Checkout is temporarily disabled. Event registration will be available soon.
                         </p>
                       </div>
                       <p className="text-sm text-white/80">You're almost there. Click the button below to complete your payment securely.</p>
-                      <button
-                        disabled={true}
-                        className="mt-6 inline-flex items-center gap-2 rounded-full px-6 py-3 bg-gray-600 cursor-not-allowed opacity-50"
-                      >
-                        <CreditCard className="w-4 h-4" /> Payment Disabled
-                      </button>
+                  <button
+                        onClick={proceedToPayment}
+                        className="mt-6 inline-flex items-center gap-2 rounded-full px-6 py-3 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 cursor-pointer"
+                  >
+                        <CreditCard className="w-4 h-4" /> Pay ₹{totalPrice}
+                  </button>
                     </div>
                     <div className="flex items-center gap-3 mt-8">
                       <button onClick={goBack} className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer">Back</button>
@@ -790,9 +1012,9 @@ function CheckoutPageContent() {
                   <div className="pt-2 flex flex-wrap gap-2">
                     <button onClick={() => { setInfoEvent(null); router.push(`/Events/${infoEvent.id}/rules`); }} className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 cursor-pointer">View Rules</button>
                     <button onClick={() => setInfoEvent(null)} className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 cursor-pointer">Close</button>
-                  </div>
-                </div>
-              </div>
+            </div>
+          </div>
+        </div>
             </motion.div>
           </motion.div>
         )}

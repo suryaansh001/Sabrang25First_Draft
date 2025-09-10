@@ -8,7 +8,7 @@ const members: Member[] = [
 	{ name: 'Suryansh Sharma', initials: 'SS' , image: '/images/tech_team/Suryansh_Sharma.jpg' },
 	{ name: 'Devam Gupta', initials: 'DG', image: '/images/tech_team/Devam_Gupta.webp' },
 	{ name: 'Aman Pratap Singh', initials: 'APS', image: '/images/tech_team/Aman_Pratap_Singh.webp' },
-	{ name: 'Yash Mishra', initials: 'YM' , image: '/images/tech_team/Yash_Mishra.jpg' },
+	{ name: 'Yash Mishra', initials: 'YM' , image: '/images/tech_team/yash-mishra.jpg' },
 	{ name: 'Ayush Sharma', initials: 'AS', image: '/images/tech_team/Ayush_Shrama.jpg' },
 	{ name: 'Atharv Mehrotra', initials: 'AM' , image: '/images/tech_team/Atharv_Mehrotra.jpg' },
 	{ name: 'Somaya Agr', initials: 'AM' , image: '/images/tech_team/Somaya_Agr.jpg' },

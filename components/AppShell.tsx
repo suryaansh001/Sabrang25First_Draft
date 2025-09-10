@@ -111,9 +111,9 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
           >
             {!isTransitioning && children}
           </main>
-          {!hideChrome && <SidebarDock className="hidden lg:block" onNavigate={handleSidebarNavigate} />}
         </NavigationProvider>
       </div>
+      {!hideChrome && <SidebarDock className="hidden lg:block" onNavigate={handleSidebarNavigate} />}
       
     </div>
   );

@@ -92,7 +92,7 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({ className = '', onNavi
 
   return (
     <motion.div
-      className={`fixed left-2 sm:left-3 md:left-4 lg:left-6 xl:left-8 top-[56%] transform -translate-y-1/2 z-[90] transform-gpu ${className}`}
+      className={`fixed left-2 sm:left-3 md:left-4 lg:left-6 xl:left-8 top-[56%] transform -translate-y-1/2 z-[9999] transform-gpu ${className}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onMouseMove={handleMouseMove}
