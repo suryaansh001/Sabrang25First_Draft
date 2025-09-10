@@ -74,52 +74,40 @@ const FAQ = () => {
 
   const faqs = [
     {
-      question: "What is Sabrang '25?",
-      answer: "Sabrang '25 is the grandest cultural fest, offering a platform for talent, captivating performances, and unforgettable memories. It's a three-day celebration of music, dance, art, technology, and pure creativity.",
-      category: "General",
+      question: "What kind of events will there be in Sabrang?",
+      answer: "There will be a mix of cultural, creative and competitive, and gaming events. The event list is available on Sabrang's website. There will be flagship events like verse vaad, rampwalk, echoes of noor, dance battle along with non-flagship events including courtroom, seal the deal, bgmi and freefire gaming tournaments.",
+      category: "Events",
       icon: "🎭"
     },
     {
-      question: "How can I participate in Sabrang '25 events?",
-      answer: "You can register for various competitions and workshops through our 'Register Now' button on the homepage or by navigating to the Events section. Registration is open for all college students and young professionals.",
-      category: "Participation",
-      icon: "🎯"
-    },
-    {
-      question: "Is there a registration fee?",
-      answer: "Information regarding registration fees for specific events will be provided during the registration process or can be found on the individual event pages. Some events are free while others may have nominal fees.",
+      question: "Is there a registration fee for the fest or specific events?",
+      answer: "There will be a one-time registration fee which will be applicable for all three days of Sabrang. The fees will be for the fest, and you can participate in any 3 events.",
       category: "Registration",
       icon: "💰"
     },
     {
-      question: "Where will Sabrang '25 take place?",
-      answer: "Details about the venue and specific event locations will be announced closer to the event date on our website and social media channels. The event will be held at JKLU campus with multiple venues.",
-      category: "Venue",
-      icon: "📍"
+      question: "Will there be on-the-spot registrations for some events?",
+      answer: "Registration will be open for all three days of Sabrang. You can register either online on Sabrang's website or on the spot on the campus.",
+      category: "Registration",
+      icon: "📝"
     },
     {
-      question: "Can I attend Sabrang '25 without participating in events?",
-      answer: "Yes, you are welcome to attend Sabrang '25 as a spectator to enjoy the performances and overall festive atmosphere. Spectator passes will be available for purchase.",
-      category: "Attendance",
+      question: "Can I be part of Sabrang without competing in any competition?",
+      answer: "Yes, you can still be part of Sabrang and enjoy the events without participating. You still have to register even if you are not participating in any event.",
+      category: "Participation",
       icon: "👥"
     },
     {
-      question: "What are the flagship events?",
-      answer: "Our flagship events include PANACHE (fashion show), BAND JAM (music festival), and DANCE BATTLE (dance competition). These events feature the highest prize pools and celebrity judges.",
-      category: "Events",
-      icon: "🏆"
-    },
-    {
-      question: "How can I get updates about Sabrang '25?",
-      answer: "Follow us on social media platforms and subscribe to our newsletter for the latest updates, event announcements, and exclusive behind-the-scenes content.",
-      category: "Updates",
-      icon: "📱"
-    },
-    {
-      question: "Are there accommodation facilities for outstation participants?",
-      answer: "Yes, we provide accommodation facilities for outstation participants. Details about accommodation options, pricing, and booking procedures will be shared closer to the event date.",
+      question: "Will accommodation be provided for outstation participants?",
+      answer: "Accommodation for outstation participants will be provided on a chargeable basis. Transport will also be available for participants on prior information.",
       category: "Accommodation",
       icon: "🏨"
+    },
+    {
+      question: "What are the payment options available for passes?",
+      answer: "For registrations, the payment method will be online through Sabrang's website.",
+      category: "Payment",
+      icon: "💳"
     }
   ];
 
@@ -256,9 +244,18 @@ const FAQ = () => {
             
             {/* Search Bar */}
             <div className="max-w-2xl mx-auto px-4 sm:px-0">
-          
-        </div>
-      </div>
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search FAQs..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-12 pr-4 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-500/40 focus:border-purple-500/40 transition-all duration-300"
+                />
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* FAQ Section */}
@@ -282,36 +279,37 @@ const FAQ = () => {
               </div>
             </div>
 
-            {/* FAQ Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+            {/* FAQ Grid - Fixed to display as single column on all screens */}
+            <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
               {filteredFaqs.map((faq, index) => (
                 <div
                   key={index}
-                  className="group relative h-full"
+                  className="group relative w-full"
                 >
                   {/* Layered glow and accent edge */}
                   <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-indigo-500/20 blur opacity-40 group-hover:opacity-60 transition" />
                   <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl bg-gradient-to-b from-purple-400 via-pink-400 to-blue-400 opacity-70" />
                
-                  <div className="relative bg-gradient-to-br from-gray-900/85 via-gray-900/70 to-gray-900/85 backdrop-blur-md border border-white/10 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl transition-all duration-500 transform hover:translate-y-[-2px] hover:shadow-[0_10px_40px_rgba(0,0,0,0.5)] h-full flex flex-col">
+                  <div className="relative bg-gradient-to-br from-gray-900/85 via-gray-900/70 to-gray-900/85 backdrop-blur-md border border-white/10 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl transition-all duration-500 transform hover:translate-y-[-2px] hover:shadow-[0_10px_40px_rgba(0,0,0,0.5)] w-full">
                     {/* Subtle grid texture */}
                     <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,.2) 1px, transparent 1px), linear-gradient(0deg, rgba(255,255,255,.2) 1px, transparent 1px)', backgroundSize: '18px 18px' }} />
                     {/* Corner cut */}
                     <div className="absolute -right-6 -top-6 w-16 h-16 rotate-45 bg-gradient-to-br from-white/10 to-transparent" />
+                    
                     {/* Question Header */}
                     <button
                       onClick={() => toggle(index)}
-                      className="w-full text-left p-5 sm:p-6 focus:outline-none focus:ring-2 focus:ring-purple-500/40 focus:ring-inset group active:scale-[0.99] transition-transform duration-150 touch-manipulation flex-shrink-0"
+                      className="w-full text-left p-5 sm:p-6 focus:outline-none focus:ring-2 focus:ring-purple-500/40 focus:ring-inset group active:scale-[0.99] transition-transform duration-150 touch-manipulation"
                       aria-expanded={openIndex === index}
                       aria-controls={`faq-answer-${index}`}
                     >
-                      <div className="flex items-start justify-between min-h-[72px]">
-                        <div className="flex items-start gap-3 sm:gap-4 flex-1">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
                           <div className="flex-shrink-0 rounded-lg bg-white/5 border border-white/10 p-2 shadow-sm">
                             <DecorativeIcon seed={index} />
                           </div>
-                          <div className="flex-1">
-                            <h3 className="text-base sm:text-lg md:text-xl font-semibold text-white group-hover:text-purple-200 transition-colors duration-300 leading-relaxed">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-base sm:text-lg md:text-xl font-semibold text-white group-hover:text-purple-200 transition-colors duration-300 leading-relaxed break-words">
                               {faq.question}
                             </h3>
                             <div className="mt-1.5 inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-white/5 text-purple-200 border border-white/10">
@@ -335,7 +333,7 @@ const FAQ = () => {
                     {/* Answer Container */}
                     <div
                       id={`faq-answer-${index}`}
-                      className={`px-5 sm:px-6 transition-all duration-500 ease-in-out overflow-hidden flex-1 ${
+                      className={`px-5 sm:px-6 transition-all duration-500 ease-in-out overflow-hidden ${
                         openIndex === index 
                           ? 'max-h-96 opacity-100 pb-5 sm:pb-6' 
                           : 'max-h-0 opacity-0 pb-0'
@@ -343,7 +341,7 @@ const FAQ = () => {
                       aria-hidden={openIndex !== index}
                     >
                       <div className="border-t border-white/10 pt-3 sm:pt-4">
-                        <p className="text-gray-200 leading-relaxed text-sm sm:text-base md:text-lg">
+                        <p className="text-gray-200 leading-relaxed text-sm sm:text-base md:text-lg break-words">
                           {faq.answer}
                         </p>
                         <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-white/10">
@@ -401,9 +399,9 @@ const FAQ = () => {
                     View All Events
                   </button>
                 </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
         </section>
       </div>
 

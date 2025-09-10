@@ -37,9 +37,9 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-bold uppercase mb-6 text-white">Quick Links</h3>
             <div className="space-y-3">
-              <a href="/" className="block text-sm hover:text-gray-300 transition-colors">About</a>
+              <a href="/About" className="block text-sm hover:text-gray-300 transition-colors">About</a>
               <a href="/FAQ" className="block text-sm hover:text-gray-300 transition-colors">Schedule</a>
-              <a href="/Team" className="block text-sm hover:text-gray-300 transition-colors">Speakers</a>
+              <a href="/Team" className="block text-sm hover:text-gray-300 transition-colors">Team</a>
               <a href="https://jklu.edu.in" target="_blank" rel="noopener noreferrer" className="block text-sm hover:text-gray-300 transition-colors">University Website</a>
               <a href="/privacy-policy" className="block text-sm hover:text-gray-300 transition-colors">Privacy Policy</a>
               <a href="/terms" className="block text-sm hover:text-gray-300 transition-colors">Terms & Conditions</a>
@@ -79,14 +79,7 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Bottom Section - Copyright */}
-      <div className="bg-black/30 px-6 py-4">
-        <div className="max-w-7xl mx-auto text-center text-sm text-gray-300">
-          <div>
-            ©2025 Sabrang - JK Lakshmipat University. All rights reserved.
-          </div>
-        </div>
-      </div>
+    
     </footer>
   );
 };

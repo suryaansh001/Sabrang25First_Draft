@@ -49,28 +49,29 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
     };
   }, []);
 
+   // Ensure single navigation per activation
+  const hasPushedRef = useRef(false);
+
   // Preload next page in background when transition starts
   useEffect(() => {
-    if (isActive && targetHref && !nextPageLoaded) {
-      // Start preloading the next page immediately AND navigate
+    if (!isActive) {
+      hasPushedRef.current = false;
+      return;
+    }
+    if (isActive && targetHref && !nextPageLoaded && !hasPushedRef.current) {
+      hasPushedRef.current = true;
       const preloadAndNavigate = async () => {
         try {
-          // Start navigation immediately to get the page loading
           router.push(targetHref);
-          
-          // Prefetch the next page route for caching
-          await router.prefetch(targetHref);
-          
-          // Give page some time to start loading
+          // Best-effort prefetch (may be a no-op depending on Next version)
+          try { await (router as any).prefetch?.(targetHref); } catch {}
           await new Promise(resolve => setTimeout(resolve, 300));
-          
           setNextPageLoaded(true);
         } catch (error) {
           console.log('Page navigation/preloading failed, continuing anyway');
           setNextPageLoaded(true);
         }
       };
-      
       preloadAndNavigate();
     }
   }, [isActive, targetHref, nextPageLoaded, router]);
@@ -105,41 +106,33 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
     }
   }, []);
 
-  // Preload and prepare video
+  // Prepare video only when active to avoid heavy preload on first load
   useEffect(() => {
+    if (!isActive) return;
     if (videoRef.current) {
       const video = videoRef.current;
-      
-      // Set video properties for optimal performance
       video.preload = 'auto';
       video.muted = true;
       video.playsInline = true;
-      video.loop = false; // Don't loop for transition
-      
-      // Load video immediately
-      video.load();
-      
-      // Handle video ready state
+      video.loop = false;
+      // Trigger load when transition starts
+      try { video.load(); } catch {}
       const handleCanPlay = () => {
         setVideoReady(true);
-        // Pause initially to prevent autoplay issues
         video.pause();
       };
-
       const handleLoadedData = () => {
         setVideoReady(true);
         video.pause();
       };
-
       video.addEventListener('canplay', handleCanPlay);
       video.addEventListener('loadeddata', handleLoadedData);
-
       return () => {
         video.removeEventListener('canplay', handleCanPlay);
         video.removeEventListener('loadeddata', handleLoadedData);
       };
     }
-  }, []);
+  }, [isActive]);
 
   // Main animation controller - unified timing for mobile and desktop
   useEffect(() => {
@@ -248,34 +241,6 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
       {/* Full black background - always visible when active */}
       <div className="absolute inset-0 bg-black" />
       
-      {/* Background video - only visible during animation phases */}
-      <div className="absolute inset-0 overflow-hidden">
-        <video
-          ref={videoRef}
-          muted
-          playsInline
-          preload="auto"
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ 
-            filter: 'brightness(0.6) contrast(1.1)',
-            opacity: videoReady ? (currentPhase === 'final' ? 0 : 1) : 0,
-            transition: 'opacity 0.8s ease-in-out',
-            willChange: 'opacity'
-          }}
-        >
-          <source src="/videos/infinty_transition.mp4" type="video/mp4" />
-          <source src="/videos/infinity_transition.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-        
-        {/* Video loading indicator */}
-        {!videoReady && currentPhase !== 'final' && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/80">
-            {/* Loading indicator removed */}
-          </div>
-        )}
-      </div>
-
       {/* Animation container - unified size for mobile and desktop */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="relative w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-64 lg:h-64">
