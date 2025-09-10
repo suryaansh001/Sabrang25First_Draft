@@ -616,10 +616,12 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         
         {/* SidebarDock with InfinityTransition navigation */}
         {!isLoading && (
-          <SidebarDock 
-            className="hidden lg:block"
-            onNavigate={(href) => { navigate(href); }}
-          />
+          <div className="fixed inset-0 pointer-events-none z-[99999]">
+            <SidebarDock 
+              className="hidden lg:block pointer-events-auto"
+              onNavigate={(href) => { navigate(href); }}
+            />
+          </div>
         )}
         
         {/* Right Panel */}

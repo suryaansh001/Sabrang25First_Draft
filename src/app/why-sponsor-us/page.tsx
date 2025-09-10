@@ -1,368 +1,471 @@
-"use client";
+'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mail, Phone, Building, Clock, MessageCircle, Send } from 'lucide-react';
+import { X, Mail, Phone, Building, Send, Users, TrendingUp, Target, Award, CheckCircle, ArrowRight, Download, Briefcase, Megaphone, Eye, Star as StarIcon, Play } from 'lucide-react';
 
-interface FormData {
-  companyName: string;
-  contactPerson: string;
-  email: string;
-  phone: string;
-  sponsorshipAmount: string;
-  preferredTiming: string;
-  eventInterests: string[];
-  additionalRequests: string;
+// --- Data from your sponsorship deck ---
+
+const generalInfo = {
+  festival: "Sabrang 2025",
+  theme: "Noorvana – From Color to Cosmos",
+  dates: "10th – 12th October 2025",
+  venue: "JK Lakshmipat University, Jaipur"
+};
+
+const flagshipEvents = [
+  { name: "Panache", description: "Grand runway fashion show" },
+  { name: "BandJam", description: "Showdown of student bands" },
+  { name: "Battle Dance", description: "Solo and crew dance battles" },
+  { name: "Nukkad Natak", description: "Vibrant street theatre" },
+  { name: "Singing Palooza", description: "Vocal performance competition" }
+];
+
+const whySponsor = [
+  { title: "Extensive Media Coverage", description: "Gain visibility across print, digital, and social media platforms.", icon: Megaphone },
+  { title: "Unparalleled Visibility", description: "Exposure to students, influencers, and professionals nationwide.", icon: Eye },
+  { title: "High-Energy, Interactive Event", description: "Connect with your audience through carnival-style fun and immersive experiences.", icon: StarIcon },
+  { title: "Engaged Audience", description: "Reach over 60,000+ attendees with a strong Gen Z and millennial base.", icon: Users }
+];
+
+const sponsorshipTiers = [
+  {
+    name: "Title Sponsor",
+    price: "₹5,00,000",
+    featured: true,
+    branding: [
+      "Event co-branded as “Sabrang 2025 – Presented by [Brand Name]”",
+      "Most prominent logo placement on all assets",
+      "Exclusive press release and website presence"
+    ],
+    activation: [
+      "Premium stall space at a prime location",
+      "Option to sponsor a flagship event",
+      "8+ dedicated social media promotions & aftermovie integration"
+    ],
+    privileges: ["10 VIP passes", "On-stage felicitation", "Branded goodies in fest kits"]
+  },
+  {
+    name: "Co-Powered By",
+    price: "₹3,50,000",
+    featured: false,
+    branding: [
+      "Event co-branded as “Sabrang 2025 – Co-Powered by [Brand Name]”",
+      "Medium prominence on stage panels, posters, and creatives"
+    ],
+    activation: [
+      "Premium stall space",
+      "Stage announcements & option to co-host a flagship event"
+    ],
+    visibility: [
+      "5–6 featured social posts",
+      "Name in newsletters and sponsor collage reel"
+    ],
+    privileges: ["6 exclusive passes", "Felicitation on final day", "Branded vouchers in kits"]
+  },
+  {
+    name: "Associate Sponsor",
+    price: "₹2,50,000",
+    featured: false,
+    branding: [
+      "Recognition as “Associate Sponsor” on posters and backdrops",
+      "Logos on selected materials and signage"
+    ],
+    activation: [
+      "Shared stall space (if available)",
+      "One-time stage acknowledgment",
+      "Venue branding in a specific zone"
+    ],
+    visibility: [
+      "3–4 social media shoutouts",
+      "Logo on website and ticketing platform"
+    ],
+    privileges: ["4 general passes", "Appreciation certificate", "Access to media highlights"]
+  },
+  {
+    name: "In-Kind Sponsors",
+    price: "Flexible Value",
+    featured: false,
+    description: "Provide products or services in exchange for branding opportunities equivalent to the contribution value.",
+    examples: [
+      "Product sampling/giveaways",
+      "Printing/merchandise",
+      "Food & refreshment sponsorship",
+      "Photography/videography",
+      "Trophies & certificates"
+    ]
+  }
+];
+
+// --- Reusable Components ---
+
+const Section = ({ children, className = '' }: { children: React.ReactNode, className?: string }) => (
+  <section className={`relative z-10 py-20 md:py-28 px-6 ${className}`}>
+    <div className="max-w-7xl mx-auto">{children}</div>
+  </section>
+);
+
+const SectionTitle = ({ title, subtitle }: { title: React.ReactNode, subtitle: string }) => (
+  <motion.div
+    className="text-center mb-16"
+    initial="hidden"
+    whileInView="visible"
+    viewport={{ once: true, amount: 0.5 }}
+    transition={{ staggerChildren: 0.2 }}
+    variants={{ hidden: {}, visible: {} }}
+  >
+    <motion.h2
+      className="text-4xl md:text-5xl font-extrabold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
+      variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}
+    >
+      {title}
+    </motion.h2>
+    <motion.p
+      className="text-lg text-gray-400 max-w-3xl mx-auto"
+      variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, delay: 0.2 } } }}
+    >
+      {subtitle}
+    </motion.p>
+  </motion.div>
+);
+
+const TierCard = ({ tier, index }: { tier: any, index: number }) => (
+  <motion.div
+    className={`group relative bg-black/60 backdrop-blur-md border border-white/20 rounded-2xl p-8 flex flex-col h-full transition-all duration-300 hover:border-blue-400/50 hover:bg-black/70 shadow-2xl ${tier.featured ? 'border-blue-400' : ''}`}
+    variants={{ hidden: { opacity: 0, y: 50 }, visible: { opacity: 1, y: 0 } }}
+    transition={{ duration: 0.5, delay: index * 0.1 }}
+  >
+    {tier.featured && <div className="absolute top-0 right-8 -mt-4 px-3 py-1 text-sm font-semibold rounded-full bg-blue-500 text-white">Most Popular</div>}
+    <div className="text-center mb-8">
+      <h3 className="text-2xl font-bold text-white mb-2">{tier.name}</h3>
+      <div className="text-5xl font-extrabold text-white">{tier.price}</div>
+    </div>
+    <div className="space-y-6 flex-grow mb-8">
+      {tier.description ? (
+        <p className="text-gray-400">{tier.description}</p>
+      ) : (
+        Object.keys(tier).filter(k => !['name', 'price', 'featured'].includes(k)).map(key => (
+          <div key={key}>
+            <h4 className="font-semibold text-blue-300 uppercase tracking-wider text-sm mb-2">{key}</h4>
+            <ul className="space-y-2">
+              {tier[key].map((item: string, idx: number) => (
+                <li key={idx} className="flex items-start gap-3 text-gray-300">
+                  <CheckCircle className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      )}
+      {tier.examples && (
+         <div>
+            <h4 className="font-semibold text-blue-300 uppercase tracking-wider text-sm mb-2">Examples</h4>
+            <ul className="space-y-2">
+              {tier.examples.map((item: string, idx: number) => (
+                <li key={idx} className="flex items-start gap-3 text-gray-300">
+                  <CheckCircle className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+      )}
+    </div>
+  </motion.div>
+);
+
+interface FormField {
+  name: string;
+  label: string;
+  type: 'text' | 'email' | 'phone' | 'select' | 'textarea';
+  required?: boolean;
+  placeholder?: string;
+  options?: { value: string; label: string }[];
 }
 
-const WhySponsorUs = () => {
+const contactFields: FormField[] = [
+  { name: 'companyName', label: 'Company Name', type: 'text', required: true, placeholder: 'Enter your company name' },
+  { name: 'contactPerson', label: 'Contact Person', type: 'text', required: true, placeholder: 'Enter your name' },
+  { name: 'email', label: 'Email', type: 'email', required: true, placeholder: 'Enter your email' },
+  { name: 'phone', label: 'Phone Number', type: 'phone', placeholder: 'Enter your phone number' },
+  { name: 'sponsorshipAmount', label: 'Sponsorship Amount', type: 'select', options: [
+    { value: '50000 - 100000', label: '₹50,000 - ₹1,00,000' },
+    { value: '100000 - 200000', label: '₹1,00,001 - ₹2,00,000' },
+    { value: '200000 - 500000', label: '₹2,00,001 - ₹5,00,000' },
+    { value: '500000+', label: '₹5,00,000+' }
+  ] },
+  { name: 'preferredTiming', label: 'Preferred Call Time', type: 'select', options: [
+    { value: 'Morning', label: 'Morning (9 AM - 12 PM)' },
+    { value: 'Afternoon', label: 'Afternoon (12 PM - 5 PM)' },
+    { value: 'Evening', label: 'Evening (5 PM - 8 PM)' }
+  ] },
+];
+// --- Main Page Component ---
+
+export default function WhySponsorUsPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState('');
-  const [formData, setFormData] = useState<FormData>({
-    companyName: '',
-    contactPerson: '',
-    email: '',
-    phone: '',
-    sponsorshipAmount: '',
-    preferredTiming: '',
-    eventInterests: [],
-    additionalRequests: ''
-  });
-
-  const images = [
-    '/images/Why Sponsor us/1.webp',
-    '/images/Why Sponsor us/2.webp',
-    '/images/Why Sponsor us/3.webp',
-    '/images/Why Sponsor us/4.webp',
-    '/images/Why Sponsor us/5.webp',
-    '/images/Why Sponsor us/6.webp',
-    '/images/Why Sponsor us/7.webp',
-    '/images/Why Sponsor us/8.webp',
-    '/images/Why Sponsor us/9.webp',
-    '/images/Why Sponsor us/10.webp',
-    '/images/Why Sponsor us/11.webp'
-  ];
-
-  const eventOptions = [
-    'Opening Ceremony',
-    'Cultural Events',
-    'Technical Workshops',
-    'Sports Events',
-    'Food Festival',
-    'Closing Ceremony',
-    'Overall Event'
-  ];
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleCheckboxChange = (event: string) => {
-    setFormData(prev => ({
-      ...prev,
-      eventInterests: prev.eventInterests.includes(event)
-        ? prev.eventInterests.filter(e => e !== event)
-        : [...prev.eventInterests, event]
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    try {
-      const response = await fetch('https://formspree.io/f/mzzazdjp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formData,
-          eventInterests: formData.eventInterests.join(', ')
-        }),
-      });
-
-      if (response.ok) {
-        setSubmitMessage('Thank you! We\'ll get back to you soon.');
-        setFormData({
-          companyName: '',
-          contactPerson: '',
-          email: '',
-          phone: '',
-          sponsorshipAmount: '',
-          preferredTiming: '',
-          eventInterests: [],
-          additionalRequests: ''
-        });
-        setTimeout(() => {
-          setIsFormOpen(false);
-          setSubmitMessage('');
-        }, 2000);
-      } else {
-        setSubmitMessage('Something went wrong. Please try again.');
-      }
-    } catch (error) {
-      setSubmitMessage('Network error. Please check your connection.');
-    }
-    
-    setIsSubmitting(false);
-  };
+  // Form state and handlers can be added here if needed
 
   return (
-    <div className="min-h-screen bg-white relative">
-      {/* Images Container */}
-      {images.map((image, index) => (
-        <div key={index} className="w-full">
-          <img 
-            src={image} 
-            alt={`Sponsorship slide ${index + 1}`}
-            className="w-full h-auto object-contain"
-          />
-        </div>
-      ))}
+    <div className="min-h-screen relative overflow-hidden text-white">
+      {/* Background Image */}
+      <div 
+        className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: 'url(/images/backgrounds/eventpage.webp)'
+        }}
+      />
+      
+      {/* Glassy Translucent Overlay with 0.4 opacity */}
+      <div className="fixed inset-0 -z-10 bg-black/40 backdrop-blur-sm" />
 
-      {/* Floating Contact Button */}
-      <motion.button
-        onClick={() => setIsFormOpen(true)}
-        className="fixed bottom-8 right-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-4 rounded-full shadow-2xl z-40 flex items-center gap-3 font-semibold transition-all duration-300 transform hover:scale-105"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 1, type: 'spring', stiffness: 200 }}
-      >
-        <Mail className="w-5 h-5" />
-        <span className="hidden sm:inline">Become a Sponsor</span>
-        <span className="sm:hidden">Sponsor</span>
-      </motion.button>
-
-      {/* Form Modal */}
-      <AnimatePresence>
-        {isFormOpen && (
+      {/* Hero Section */}
+      <section className="relative z-10 min-h-screen flex items-center justify-center px-6 text-center overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"></div>
+        <motion.div
+          className="max-w-5xl mx-auto"
+          initial="hidden"
+          animate="visible"
+          transition={{ staggerChildren: 0.3 }}
+          variants={{ hidden: {}, visible: {} }}
+        >
           <motion.div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="mb-6"
+            variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } } }}
+          >
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold bg-gradient-to-br from-white via-gray-300 to-blue-300 bg-clip-text text-transparent">
+              {generalInfo.festival}
+         </h1>
+            <p className="text-xl md:text-2xl text-blue-300/80 mt-2 tracking-widest">{generalInfo.theme}</p>
+          </motion.div>
+          <motion.p
+            className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto mb-12"
+            variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } } }}
+          >
+            A strategic partnership opportunity to connect your brand with over 60,000 of India's brightest young minds at the intersection of culture and innovation.
+          </motion.p>
+       <motion.div
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } } }}
+          >
+            <button
+              onClick={() => setIsFormOpen(true)}
+              className="group w-full sm:w-auto relative inline-flex items-center justify-center gap-3 px-8 py-4 text-lg font-semibold bg-blue-600 rounded-lg text-white transition-all duration-300 hover:bg-blue-500"
+            >
+              Become a Partner <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+            </button>
+            <a
+              href="/Sponsorship_Deck_Sabrang_2025.pdf"
+              download
+              className="group w-full sm:w-auto relative inline-flex items-center justify-center gap-3 px-8 py-4 text-lg font-semibold bg-white/10 border border-white/20 rounded-lg text-white transition-all duration-300 hover:bg-white/20"
+            >
+              Download Deck <Download className="w-5 h-5" />
+            </a>
+          </motion.div>
+   
+        </motion.div>
+      </section>
+
+      {/* Why Sponsor Us Section */}
+      <Section className="relative !py-8 md:!py-12">
+        <SectionTitle
+          title="The Sabrang Advantage"
+          subtitle="Leverage our platform to achieve your brand's strategic objectives."
+        />
+        <motion.div
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ staggerChildren: 0.15 }}
+        >
+           {whySponsor.map((benefit, index) => (
+             <motion.div
+               key={index}
+               className="bg-black/60 backdrop-blur-md border border-white/20 rounded-2xl p-8 shadow-2xl hover:bg-black/70 transition-all duration-300"
+               variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
+             >
+              <div className="text-blue-400 mb-4"><benefit.icon className="w-10 h-10" /></div>
+              <h3 className="text-xl font-bold text-white mb-3">{benefit.title}</h3>
+              <p className="text-gray-400 leading-relaxed">{benefit.description}</p>
+            </motion.div>
+          ))}
+        </motion.div>
+      </Section>
+
+      {/* Flagship Events Section */}
+      <Section>
+        <SectionTitle
+          title="A Glimpse of the Spectacle"
+          subtitle="Our flagship events are the heart of Sabrang, drawing massive crowds and media attention."
+        />
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {flagshipEvents.slice(0, 4).map((event, index) => {
+            const colors = [
+              'from-purple-600 via-pink-600 to-red-500', // Panache - Fashion
+              'from-blue-600 via-cyan-500 to-teal-400',  // BandJam - Music
+              'from-orange-500 via-red-500 to-pink-500', // Battle Dance - Energy
+              'from-green-500 via-emerald-500 to-teal-400' // Nukkad Natak - Street
+            ];
+            const hoverColors = [
+              'hover:from-purple-500 hover:via-pink-500 hover:to-red-400',
+              'hover:from-blue-500 hover:via-cyan-400 hover:to-teal-300',
+              'hover:from-orange-400 hover:via-red-400 hover:to-pink-400',
+              'hover:from-green-400 hover:via-emerald-400 hover:to-teal-300'
+            ];
+            
+            return (
+              <motion.div
+                key={index}
+                className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${colors[index]} ${hoverColors[index]} transition-all duration-500 hover:scale-105 hover:shadow-2xl`}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+              >
+                {/* Video Card Content */}
+                <div className="relative p-8 h-64 flex flex-col justify-center items-center text-center">
+                  {/* Event Info */}
+                  <div className="relative z-10">
+                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-white/90 transition-colors">
+                      {event.name}
+                    </h3>
+                    <p className="text-white/80 text-sm group-hover:text-white transition-colors">
+                      {event.description}
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Hover Effect Overlay */}
+                <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </motion.div>
+            );
+          })}
+        </div>
+      </Section>
+
+      {/* Sponsorship Tiers Section */}
+      <Section className="bg-gray-900/50">
+        <SectionTitle
+          title="Partnership Tiers"
+          subtitle="Choose a level of partnership that aligns with your brand's vision and goals."
+        />
+        <motion.div
+          className="grid lg:grid-cols-3 gap-8 items-stretch"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          {sponsorshipTiers.filter(t => t.name !== 'In-Kind Sponsors' && t.name !== 'Contact Partnership Team').map((tier, index) => (
+            <TierCard key={index} tier={tier} index={index} />
+          ))}
+        </motion.div>
+        <motion.div
+          className="mt-12"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.5 }} >
+       </motion.div>
+  
+        
+      </Section>
+
+
+      <AnimatePresence>
+       {isFormOpen && (
+          <motion.div
+            className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsFormOpen(false)}
           >
-            <motion.div
-              className="bg-black/60 backdrop-blur-md text-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-white/10"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Form Header */}
-              <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6 rounded-t-2xl">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl font-bold mb-2">Sponsorship Inquiry</h2>
-                    <p className="text-purple-100">Let's discuss partnership opportunities</p>
-                  </div>
-                  <button
-                    onClick={() => setIsFormOpen(false)}
-                    className="text-white/80 hover:text-white p-2 hover:bg-white/20 rounded-full transition-colors"
-                  >
-                    <X className="w-6 h-6" />
-                  </button>
+             <motion.div
+               className="bg-black/80 backdrop-blur-xl text-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-white/20"
+               initial={{ scale: 0.9, opacity: 0 }}
+               animate={{ scale: 1, opacity: 1 }}
+               exit={{ scale: 0.9, opacity: 0 }}
+               transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+               onClick={(e) => e.stopPropagation()}
+             >
+               <div className="bg-black/60 backdrop-blur-md text-white p-6 rounded-t-2xl relative flex justify-between items-center border-b border-white/20">
+                <div>
+                  <h2 className="text-2xl font-bold">Partnership Inquiry</h2>
+                  <p className="text-gray-400">Let's create something extraordinary together.</p>
                 </div>
+                <button
+                  onClick={() => setIsFormOpen(false)}
+                  className="text-gray-400 hover:text-white p-2 hover:bg-white/10 rounded-full transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
               </div>
 
-              {/* Form Body */}
-              <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                {/* Company Name - Required */}
-                <div>
-                  <label className="flex items-center gap-2 text-white/85 font-medium mb-2">
-                    <Building className="w-4 h-4" />
-                    Company Name *
-                  </label>
-                  <input
-                    type="text"
-                    name="companyName"
-                    value={formData.companyName}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-white placeholder-gray-300"
-                    placeholder="Enter your company name"
-                  />
-                </div>
-
-                {/* Contact Person */}
-                <div>
-                  <label className="flex items-center gap-2 text-white/85 font-medium mb-2">
-                    <MessageCircle className="w-4 h-4" />
-                    Contact Person
-                  </label>
-                  <input
-                    type="text"
-                    name="contactPerson"
-                    value={formData.contactPerson}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-white placeholder-gray-300"
-                    placeholder="Your name"
-                  />
-                </div>
-
-                {/* Email and Phone */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="flex items-center gap-2 text-white/85 font-medium mb-2">
-                      <Mail className="w-4 h-4" />
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-white placeholder-gray-300"
-                      placeholder="your@email.com"
-                    />
-                  </div>
-                  <div>
-                    <label className="flex items-center gap-2 text-white/85 font-medium mb-2">
-                      <Phone className="w-4 h-4" />
-                      Phone
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-white placeholder-gray-300"
-                      placeholder="+91 XXXXX XXXXX"
-                    />
-                  </div>
-                </div>
-
-                {/* Sponsorship Amount */}
-                <div>
-                  <label className="flex items-center gap-2 text-white/85 font-medium mb-2">
-                    <span className="text-lg font-bold">₹</span>
-                    Willing to Sponsor Amount
-                  </label>
-                  <select
-                    name="sponsorshipAmount"
-                    value={formData.sponsorshipAmount}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-white appearance-none"
-                    style={{ backgroundColor: 'rgba(0,0,0,0.7)', color: 'white' }}
-                  >
-                    <option value="">Select range</option>
-                    <option value="₹10,000 - ₹25,000">₹10,000 - ₹25,000</option>
-                    <option value="₹25,000 - ₹50,000">₹25,000 - ₹50,000</option>
-                    <option value="₹50,000 - ₹1,00,000">₹50,000 - ₹1,00,000</option>
-                    <option value="₹1,00,000 - ₹2,00,000">₹1,00,000 - ₹2,00,000</option>
-                    <option value="₹2,00,000+">₹2,00,000+</option>
-                    <option value="Open to discussion">Open to discussion</option>
-                  </select>
-                </div>
-
-                {/* Preferred Timing */}
-                <div>
-                  <label className="flex items-center gap-2 text-white/85 font-medium mb-2">
-                    <Clock className="w-4 h-4" />
-                    Preferred Time for Call
-                  </label>
-                  <select
-                    name="preferredTiming"
-                    value={formData.preferredTiming}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-white appearance-none"
-                    style={{ backgroundColor: 'rgba(0,0,0,0.7)', color: 'white' }}
-                  >
-                    <option value="">Select preferred time</option>
-                    <option value="Morning (9 AM - 12 PM)">Morning (9 AM - 12 PM)</option>
-                    <option value="Afternoon (12 PM - 4 PM)">Afternoon (12 PM - 4 PM)</option>
-                    <option value="Evening (4 PM - 7 PM)">Evening (4 PM - 7 PM)</option>
-                    <option value="Anytime">Anytime</option>
-                  </select>
-                </div>
-
-                {/* Event Interests */}
-                <div>
-                  <label className="text-white/85 font-medium mb-3 block">
-                    Events of Interest (Optional)
-                  </label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {eventOptions.map((event) => (
-                      <label key={event} className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={formData.eventInterests.includes(event)}
-                          onChange={() => handleCheckboxChange(event)}
-                          className="w-4 h-4 text-purple-400 bg-black/0 border-white/30 rounded focus:ring-purple-500"
-                        />
-                        <span className="text-sm text-white">{event}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Additional Requests */}
-                <div>
-                  <label className="text-white/85 font-medium mb-2 block">
-                    Additional Requests or Comments
-                  </label>
-                  <textarea
-                    name="additionalRequests"
-                    value={formData.additionalRequests}
-                    onChange={handleInputChange}
-                    rows={4}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none text-white placeholder-gray-300"
-                    placeholder="Any specific requirements, branding needs, or questions..."
-                  />
-                </div>
-
-                {/* Submit Message */}
-                {submitMessage && (
-                  <div className={`p-4 rounded-lg text-center font-medium ${
-                    submitMessage.includes('Thank you') 
-                      ? 'bg-green-100 text-green-700 border border-green-300' 
-                      : 'bg-red-100 text-red-700 border border-red-300'
-                  }`}>
-                    {submitMessage}
-                  </div>
-                )}
-
-                {/* Submit Button */}
-                <motion.button
-                  type="submit"
-                  disabled={isSubmitting || !formData.companyName}
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-400 disabled:to-gray-500 text-white py-4 px-6 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all duration-300 disabled:cursor-not-allowed"
-                  whileHover={{ scale: formData.companyName ? 1.02 : 1 }}
-                  whileTap={{ scale: formData.companyName ? 0.98 : 1 }}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Submitting...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-5 h-5" />
-                      Submit Inquiry
-                    </>
-                  )}
-                </motion.button>
-
-                <p className="text-sm text-gray-300 text-center">
-                  We'll get back to you within 24 hours to discuss partnership opportunities.
-                </p>
-              </form>
-            </motion.div>
+                <form  className="p-8 space-y-4">
+                 {contactFields.map((field, index) => (
+                 <div key={index}>
+                 <label htmlFor={field.name} className="block text-gray-300 text-sm font-medium mb-2">{field.label}</label>
+                   {field.type === 'text' && (
+                     <input
+                     type="text"
+                     id={field.name}
+                     name={field.name}
+                    placeholder={field.placeholder}
+                       className="w-full py-3 px-4 bg-black/40 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-black/60 transition-all duration-300" />
+                      )}
+                                {field.type === 'email' && (
+                     <input
+                     type="email"
+                     id={field.name}
+                     name={field.name}
+                     placeholder={field.placeholder}
+                       className="w-full py-3 px-4 bg-black/40 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-black/60 transition-all duration-300" />
+                      )}
+                            {field.type === 'phone' && (
+                     <input
+                     type="tel"
+                     id={field.name}
+                     name={field.name}
+                    placeholder={field.placeholder}
+                       className="w-full py-3 px-4 bg-black/40 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-black/60 transition-all duration-300" />
+                      )}
+                     {field.type === 'select' && (
+                       <select
+                          id={field.name}
+                          name={field.name}
+                       className="w-full py-3 px-4 bg-black/40 border border-white/20 rounded-lg text-white focus:outline-none focus:border-blue-400 focus:bg-black/60 transition-all duration-300">
+                       <option value="">Select {field.label}</option>
+                        {field.options && field.options.map(option => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
+                        </select>
+                    )}
+                 </div>
+                  ))}
+        
+            <div className="flex items-center justify-between">
+            <button
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        type="submit"
+      >
+        Submit
+      </button>
+  </div>
+    </form>
+       </motion.div>
           </motion.div>
-        )}
-      </AnimatePresence>
+         )}
+
+            </AnimatePresence>
+
+
+        
+     
+
+    
+
     </div>
   );
-};
-
-export default WhySponsorUs;
+}
+  
