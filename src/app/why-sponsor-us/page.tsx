@@ -169,6 +169,7 @@ const WhySponsorUs = () => {
                   <button
                     onClick={() => setIsFormOpen(false)}
                     className="text-white/80 hover:text-white p-2 hover:bg-white/20 rounded-full transition-colors"
+                    title="Close"
                   >
                     <X className="w-6 h-6" />
                   </button>
@@ -254,6 +255,7 @@ const WhySponsorUs = () => {
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-white appearance-none"
                     style={{ backgroundColor: 'rgba(0,0,0,0.7)', color: 'white' }}
+                    title="Sponsorship Amount"
                   >
                     <option value="">Select range</option>
                     <option value="₹10,000 - ₹25,000">₹10,000 - ₹25,000</option>
@@ -277,6 +279,7 @@ const WhySponsorUs = () => {
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-white appearance-none"
                     style={{ backgroundColor: 'rgba(0,0,0,0.7)', color: 'white' }}
+                    title="Preferred Time"
                   >
                     <option value="">Select preferred time</option>
                     <option value="Morning (9 AM - 12 PM)">Morning (9 AM - 12 PM)</option>
