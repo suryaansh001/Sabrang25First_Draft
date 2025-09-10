@@ -7,6 +7,7 @@ import { SidebarDock } from "./SidebarDock";
 import Logo from "./Logo";
 import InfinityTransition from "./InfinityTransition";
 import { NavigationProvider } from "./NavigationContext";
+import TopRightJKLULogo from "./TopRightJKLULogo";
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 
@@ -50,8 +51,15 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
   }, [pathname, isTransitioning, showTransition]);
 
   const handleSidebarNavigate = (href: string) => {
+    // Avoid triggering while a transition is in progress
+    if (showTransition || isTransitioning) return;
+
     // Clean the href to remove query parameters for consistent navigation
     const cleanHref = href.split('?')[0];
+
+    // Ignore navigation to the same path
+    if (cleanHref === pathname) return;
+
     setPendingNavigation(cleanHref);
     setIsTransitioning(true);
     setShowTransition(true);
@@ -84,13 +92,16 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
         <SplashCursor />
       </div>
       <Background />
-      <InfinityTransition 
-        isActive={showTransition} 
-        targetHref={pendingNavigation}
-        onComplete={handleTransitionComplete}
-      />
+      {showTransition && (
+        <InfinityTransition 
+          isActive={showTransition} 
+          targetHref={pendingNavigation}
+          onComplete={handleTransitionComplete}
+        />
+      )}
       <div className="relative z-30 flex-grow">
         <NavigationProvider navigate={handleSidebarNavigate}>
+          <TopRightJKLULogo />
           {mounted && !hideChrome && pathname !== "/why-sponsor-us" && <Logo />}
           <main 
             key={pathname}
