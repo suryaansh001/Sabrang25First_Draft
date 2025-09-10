@@ -327,26 +327,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         
         {/* Removed overlay gradient per request */}
 
-        {/* Simplified decorative overlays - hidden on initial mobile for perf */}
-        <div className="hidden sm:block absolute inset-0 z-10 pointer-events-none">
-          {/* Soft center glow */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 sm:w-80 sm:h-80 rounded-full bg-gradient-to-br from-white/10 via-cyan-300/10 to-purple-500/10 blur-3xl" />
-
-          {/* Simple twinkling particles */}
-          {useMemo(() => Array.from({ length: 12 }).map((_, i) => (
-            <span
-              key={i}
-              className="star-twinkle absolute rounded-full"
-              style={{
-                left: `${(i * 53) % 100}%`,
-                top: `${(i * 37) % 100}%`,
-                width: `${2 + (i % 3)}px`,
-                height: `${2 + (i % 3)}px`,
-                backgroundColor: i % 2 === 0 ? 'rgba(255,255,255,0.9)' : 'rgba(186,230,253,0.9)'
-              }}
-            />
-          )), [])}
-        </div>
+        {/* Decorative overlays removed per request */}
 
         {/* Top-left logo */}
         {!isLoading && (
@@ -355,7 +336,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               <img
                 src="/images/Logo@2x.png"
                 alt="Logo"
-                className="h-9 w-auto cursor-pointer"
+                className="h-12 w-auto cursor-pointer"
                 loading="eager"
                 fetchPriority="high"
                 onError={(e) => {
@@ -611,7 +592,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
             <img
               src="/images/Logo@2x.png"
               alt="Logo"
-              className="h-24 w-auto"
+              className="h-32 w-auto"
               loading="eager"
               fetchPriority="high"
               onError={(e) => {
@@ -628,7 +609,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               Register Now
             </a>
             <a href="/coming-soon" className="w-12 h-12 bg-purple-600/60 hover:bg-purple-600/80 rounded-full text-white transition-all duration-300 border border-purple-400/40 flex items-center justify-center">
-              <LayoutDashboard className="w-5 h-5" />
+              <img src="/JKLU_logo_white.png" alt="JKLU" className="w-6 h-6 object-contain" />
             </a>
           </div>
         )}
@@ -655,13 +636,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
             <VideoBackground />
           </div>
           
-          {/* Simple background elements */}
-          {!isLoading && (
-            <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute top-1/4 left-1/2 w-96 h-96 bg-gradient-to-br from-blue-400/30 to-purple-500/40 rounded-full blur-3xl -translate-x-1/2"></div>
-              <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-gradient-to-tl from-indigo-400/40 to-blue-600/30 rounded-full blur-2xl"></div>
-            </div>
-          )}
+          {/* Background decorative circles removed per request */}
           
           {/* Navigation */}
           <nav className="relative z-40 flex items-center justify-between p-8 pt-0 pointer-events-none">
