@@ -351,7 +351,7 @@ export default function PeopleStrip() {
        committee: "Student Affairs"
      },
      {
-       img: "/images/Team/final/Dheevi_Fozdar.png",
+       img: "/images/Team/final/Dheevi Fozdar.webp",
        bg: "bg-zinc-600",
        name: "Dheevi Fozdar",
        committee: "Hospitality"
