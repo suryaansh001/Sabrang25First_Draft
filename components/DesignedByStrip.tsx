@@ -3,7 +3,7 @@ import Link from 'next/link';
 export default function DesignedByStrip() {
 	return (
 		<div className="fixed bottom-4 right-4 z-50">
-			<Link href="/designed-by" className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group">
+			<Link href="/developers" className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group">
 				{/* Animated Ball Container - centered with text */}
 				<div className="relative w-8 h-8 flex items-center justify-center">
 					{/* Large background ball with low opacity */}

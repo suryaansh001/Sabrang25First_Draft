@@ -609,7 +609,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               Register Now
             </a>
             <a href="/coming-soon" className="p-2 text-white transition-all duration-300 flex items-center justify-center">
-              <img src="/JKLU_logo_white.png" alt="JKLU" className="w-15 h-15 object-contain" />
+            <img src="/JKLU_logo_white.png" alt="JKLU" className="w-15 h-15 object-contain" />
             </a>
           </div>
         )}

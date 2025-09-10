@@ -11,7 +11,7 @@
   font-family: 'Bobogie Groovy';
   src: url('/Font/bobogie-groovy/Bobogie Groovy.otf') format('opentype');
   font-weight: normal;
-  font-style: normal;
+  font-style: normal; 
   font-display: swap;
 }
 
