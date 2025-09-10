@@ -9,7 +9,7 @@ interface TopRightJKLULogoProps {
 const TopRightJKLULogo: React.FC<TopRightJKLULogoProps> = ({ className = '' }) => {
   return (
     <div
-      className={`fixed right-[20px] top-[20px] z-[200] select-none pointer-events-none ${className}`}
+      className={`hidden md:block fixed right-[20px] top-[20px] z-[200] select-none pointer-events-none ${className}`}
       aria-hidden
     >
       <img

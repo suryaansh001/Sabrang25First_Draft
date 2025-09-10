@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function FooterStrip() {
 	return (
-		<div className="w-full bg-black/20 backdrop-blur-sm border-t border-white/10 py-3 px-4 relative z-[20]">
+		<div className="w-full bg-black/20 backdrop-blur-sm border-t border-white/10 py-3 px-4 relative z-[100]">
 			<div className="max-w-7xl mx-auto flex flex-col items-center justify-center gap-1 text-center">
 				{/* University site link */}
 				<img src="/JKLU_logo_white.png" alt="JKLU" className="w-15 h-15 object-contain" />
@@ -15,8 +15,9 @@ export default function FooterStrip() {
 
 				{/* Credits */}
 				<div className="text-white/60 text-xs sm:text-sm">
+				<Link href="/designed-by" className="underline-offset-4 hover:underline hover:text-white">
 					<span>Built and designed by </span>
-					<Link href="/designed-by" className="underline-offset-4 hover:underline hover:text-white">tech_geek</Link>
+					tech_geek</Link>
 				
 				</div>
 			</div>
