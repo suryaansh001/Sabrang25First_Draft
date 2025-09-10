@@ -5,78 +5,21 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, ChevronLeft, CreditCard, ArrowRight } from 'lucide-react';
 import createApiUrl from '../../lib/api';
-import { events as EVENTS_DATA } from '../Events/[id]/rules/events.data';
-
+import { events as EVENTS_DATA } from '../Events/[id]/rules/events.data'; // Keep for info modal
+import { EventCatalogItem, EVENT_CATALOG } from '../../lib/eventCatalog';
 
 // Define missing types
 interface FormField {
   name: string;
   label: string;
-  type: 'text' | 'email' | 'phone' | 'number' | 'select';
+  type: 'text' | 'email' | 'phone' | 'number' | 'select' | 'file';
   required?: boolean;
   placeholder?: string;
   options?: { value: string; label: string }[];
+  accept?: string;
 }
 
 type FieldSet = FormField[];
-
-interface EventCatalogItem {
-  id: number;
-  title: string;
-  price: string;
-  category: string;
-  date: string;
-  time: string;
-  endTime: string;
-  time12hr: string;
-  endTime12hr: string;
-  teamSize?: string;
-}
-
-const formatTime12hr = (time24: string) => {
-  if (!time24) return '';
-  const [hours, minutes] = time24.split(':');
-  const h = parseInt(hours, 10);
-  const suffix = h >= 12 ? 'PM' : 'AM';
-  const h12 = h % 12 || 12;
-  return `${h12}:${minutes} ${suffix}`;
-};
-
-const rawEventCatalog: Omit<EventCatalogItem, 'time12hr' | 'endTime12hr' | 'teamSize'>[] = [
-  { id: 1, title: 'RAMPWALK - PANACHE', price: '₹85-120', category: 'Flagship', date: '25.12.2024', time: '19:00', endTime: '22:00' },
-  { id: 2, title: 'BANDJAM', price: '₹60', category: 'Flagship', date: '27.12.2024', time: '19:30', endTime: '23:00' },
-  { id: 3, title: 'DANCE BATTLE', price: '₹45', category: 'Flagship', date: '28.12.2024', time: '18:00', endTime: '21:00' },
-  { id: 4, title: 'STEP UP', price: '₹40', category: 'Flagship', date: '01.01.2025', time: '18:00', endTime: '21:30' },
-  { id: 5, title: 'ECHOES OF NOOR', price: 'Free', category: 'Flagship', date: '02.01.2025', time: '16:00', endTime: '18:00' },
-  { id: 7, title: 'BIDDING BEFORE WICKET', price: '₹25', category: 'Fun & Games', date: '25.12.2024', time: '14:00', endTime: '16:00' },
-  { id: 8, title: 'SEAL THE DEAL', price: '₹15', category: 'Fun & Games', date: '26.12.2024', time: '15:00', endTime: '17:00' },
-  { id: 9, title: 'VERSEVAAD', price: 'Free', category: 'Flagship', date: '29.12.2024', time: '17:00', endTime: '19:00' },
-  { id: 10, title: 'IN CONVERSATION WITH', price: 'Free', category: 'Workshops & Talks', date: '30.12.2024', time: '16:00', endTime: '18:00' },
-  { id: 11, title: 'CLAY MODELLING', price: '₹40', category: 'Creative Arts', date: '26.12.2024', time: '10:00', endTime: '12:00' },
-  { id: 12, title: 'FOCUS', price: '₹50', category: 'Creative Arts', date: '27.12.2024', time: '14:00', endTime: '16:00' },
-  { id: 13, title: 'BGMI TOURNAMENT', price: '₹50/squad', category: 'Fun & Games', date: '28.12.2024', time: '10:00', endTime: '18:00' },
-  { id: 14, title: 'VALORANT TOURNAMENT', price: '₹100/team', category: 'Fun & Games', date: '29.12.2024', time: '10:00', endTime: '18:00' },
-  { id: 15, title: 'FREE FIRE TOURNAMENT', price: '₹40/squad', category: 'Fun & Games', date: '30.12.2024', time: '10:00', endTime: '18:00' },
-  { id: 17, title: 'DUMB SHOW', price: 'Free', category: 'Fun & Games', date: '31.12.2024', time: '19:00', endTime: '21:00' },
-  { id: 18, title: 'COURTROOM', price: '₹30', category: 'Special Events', date: '01.01.2025', time: '14:00', endTime: '16:00' },
-  { id: 19, title: 'ART RELAY', price: '₹20', category: 'Creative Arts', date: '02.01.2025', time: '10:00', endTime: '12:00' }
-];
-
-const findTeamSizeRule = (rules: string[] | undefined): string | undefined => {
-  if (!rules) return undefined;
-  return rules.find(rule => rule.toLowerCase().startsWith('team size:'));
-};
-
-export const EVENT_CATALOG: EventCatalogItem[] = rawEventCatalog.map(event => {
-  const eventData = EVENTS_DATA.find(e => e.id === event.id);
-  const teamSizeRule = findTeamSizeRule(eventData?.rules);
-  return {
-    ...event,
-    time12hr: formatTime12hr(event.time),
-    endTime12hr: formatTime12hr(event.endTime),
-    teamSize: teamSizeRule ? teamSizeRule.replace('Team Size: ', '') : undefined,
-  };
-});
 
 const SOLO_FIELDS: FieldSet = [
   { name: 'name', label: 'Name', type: 'text', required: true, placeholder: 'Enter your full name' },
@@ -89,7 +32,7 @@ const SOLO_FIELDS: FieldSet = [
   ]},
   { name: 'age', label: 'Age', type: 'number', required: true, placeholder: 'e.g., 20' },
   { name: 'universityName', label: 'Name of University', type: 'text', required: true },
-  { name: 'universityId', label: 'University Identity Card', type: 'text', required: true },
+  { name: 'universityCardImage', label: 'Upload University Card Image', type: 'file', required: true, accept: 'image/*' },
   { name: 'address', label: 'Address', type: 'text', required: true, placeholder: 'Enter your full address' },
 ];
 
@@ -182,6 +125,7 @@ function CheckoutPageContent() {
   const [formErrors, setFormErrors] = useState<Record<string, Record<string, string>>>({});
   const [formDataBySignature, setFormDataBySignature] = useState<Record<string, Record<string, string>>>({});
   const [teamMembersBySignature, setTeamMembersBySignature] = useState<Record<string, Array<Record<string, string>>>>({});
+  const [filesBySignature, setFilesBySignature] = useState<Record<string, Record<string, File>>>({});
   const [infoEvent, setInfoEvent] = useState<import('../Events/[id]/rules/events.data').Event | null>(null);
 
   // Force reduced motion for smooth scrolling experience on this page
@@ -244,7 +188,7 @@ function CheckoutPageContent() {
 
   const eventDataById = useMemo(() => {
     const map = new Map<number, import('../Events/[id]/rules/events.data').Event>();
-    for (const ev of EVENTS_DATA) map.set(ev.id, ev);
+    for (const ev of EVENTS_DATA) map.set(ev.id, ev); // This uses the local import
     return map;
   }, []);
 
@@ -276,10 +220,18 @@ function CheckoutPageContent() {
       errors[group.signature] = {};
       group.fields.forEach(field => {
         if (field.required) {
-          const value = formDataBySignature[group.signature]?.[field.name] || '';
-          if (!value.trim()) {
-            errors[group.signature][field.name] = `${field.label} is required.`;
-            isValid = false;
+          if (field.type === 'file') {
+            const file = filesBySignature[group.signature]?.[field.name];
+            if (!file) {
+              errors[group.signature][field.name] = `${field.label} is required.`;
+              isValid = false;
+            }
+          } else {
+            const value = formDataBySignature[group.signature]?.[field.name] || '';
+            if (!value.trim()) {
+              errors[group.signature][field.name] = `${field.label} is required.`;
+              isValid = false;
+            }
           }
         }
       });
@@ -397,6 +349,42 @@ function CheckoutPageContent() {
     }
   };
 
+  // Handle file uploads
+  const handleFileChange = (signature: string, fieldName: string, file: File | null) => {
+    if (file) {
+      setFilesBySignature(prev => ({
+        ...prev,
+        [signature]: {
+          ...prev[signature],
+          [fieldName]: file
+        }
+      }));
+      // Also store the filename in form data for display purposes
+      setFormDataBySignature(prev => ({
+        ...prev,
+        [signature]: {
+          ...prev[signature],
+          [fieldName]: file.name
+        }
+      }));
+    } else {
+      setFilesBySignature(prev => {
+        const updated = { ...prev };
+        if (updated[signature]) {
+          delete updated[signature][fieldName];
+        }
+        return updated;
+      });
+      setFormDataBySignature(prev => ({
+        ...prev,
+        [signature]: {
+          ...prev[signature],
+          [fieldName]: ''
+        }
+      }));
+    }
+  };
+
   // Helper function to check if two time ranges overlap
   const isTimeOverlapping = (start1: string, end1: string, start2: string, end2: string) => {
     const timeToMinutes = (time: string) => {
@@ -449,14 +437,24 @@ function CheckoutPageContent() {
 
   const proceedToPayment = async () => {
     try {
+      // Create FormData to handle file uploads
+      const formData = new FormData();
+      
+      // Add basic form data
+      formData.append('items', JSON.stringify(selectedEvents.map(e => ({ eventId: e.id, title: e.title, price: e.price }))));
+      formData.append('formsBySignature', JSON.stringify(formDataBySignature));
+      
+      // Add files
+      Object.entries(filesBySignature).forEach(([signature, files]) => {
+        Object.entries(files).forEach(([fieldName, file]) => {
+          formData.append(`files_${signature}_${fieldName}`, file);
+        });
+      });
+
       const response = await fetch(createApiUrl('/payments/cashfree/create-order'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({
-          items: selectedEvents.map(e => ({ eventId: e.id, title: e.title, price: e.price })),
-          formsBySignature: formDataBySignature
-        })
+        body: formData
       });
       if (!response.ok) {
         const errText = await response.text().catch(() => '');
@@ -715,6 +713,27 @@ function CheckoutPageContent() {
                                         <option key={opt.value} value={opt.value}>{opt.label}</option>
                                       ))}
                                     </select>
+                                  ) : field.type === 'file' ? (
+                                    <div className="relative">
+                                      <input
+                                        id={inputId}
+                                        type="file"
+                                        accept={field.accept || '*'}
+                                        required={!!field.required}
+                                        aria-describedby={error ? errorId : undefined}
+                                        className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
+                                        onChange={e => {
+                                          const file = e.target.files?.[0] || null;
+                                          handleFileChange(group.signature, field.name, file);
+                                        }}
+                                      />
+                                      {value && (
+                                        <div className="mt-2 text-xs text-green-400 flex items-center gap-1">
+                                          <span>✓</span>
+                                          <span>Selected: {value}</span>
+                                        </div>
+                                      )}
+                                    </div>
                                   ) : (
                                     <input
                                       id={inputId}
