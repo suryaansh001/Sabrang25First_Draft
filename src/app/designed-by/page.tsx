@@ -14,7 +14,7 @@ const codeTeam = [
 	{ name: 'Yash Mishra', initials: 'YM' , image: '/images/tech_team/yash-mishra.webp', role: 'Frontend Developer &  UI/UX Designer' },
 	{ name: 'Atharv Mehrotra', initials: 'AM' , image: '/images/tech_team/Atharv_Mehrotra.webp', role: 'Backend Developer' },
 	{ name: 'Ayush Sharma', initials: 'AS', image: '/images/tech_team/Ayush_Shrama.webp', role: 'Backend Developer' },
-	{ name: 'Somaya Agr', initials: 'SA' , image: '/images/tech_team/Somaya_Agr.webp', role: 'Frontend Developer' },
+	{ name: 'Somaya Agarwal', initials: 'SA' , image: '/images/tech_team/Somaya_Agr.webp', role: 'Frontend Developer' },
 ];
 
 function FallbackAvatar({ initials }: { initials: string }) {
@@ -90,17 +90,20 @@ export default function DesignedByPage() {
 	console.log('Code team images:', codeTeam.map(m => m.image));
 
 	return (
-		<div className="relative min-h-screen overflow-hidden text-white">
-			<div className="fixed inset-0 -z-10">
-				<div className="absolute inset-0 bg-gradient-to-tr from-slate-900/90 via-purple-900/80 to-indigo-900/90" />
-				<div className="absolute -top-1/3 left-1/2 -translate-x-1/2 w-[140vw] h-[140vw] rounded-full blur-3xl opacity-30" style={{ background: 'radial-gradient(closest-side, rgba(139,92,246,0.4), rgba(236,72,153,0.2), rgba(59,130,246,0.15), transparent)' }} />
+		<div className="min-h-screen text-white">
+			{/* Background (matching checkout page style) */}
+			<div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-neutral-950 to-black">
+				<div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(147,51,234,0.08),transparent_70%)]"></div>
+				<div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(59,130,246,0.06),transparent_70%)]"></div>
+				{/* Aurora overlay to match site's dark neon vibe */}
+				<div className="aurora">
+					<div className="aurora-blob aurora-1"></div>
+					<div className="aurora-blob aurora-2"></div>
+					<div className="aurora-blob aurora-3"></div>
+				</div>
+				{/* Subtle dark overlay for extra contrast */}
+				<div className="absolute inset-0 bg-black/40"></div>
 			</div>
-
-			{/* Tech team themed background */}
-			<div 
-				className="fixed inset-0 -z-20 bg-cover bg-center bg-no-repeat opacity-70"
-				style={{ backgroundImage: 'url(/images/tech_team/tech_team_bg.webp)' }}
-			/>
 
 			{/* Mobile navbar */}
 			<MobileNavbar />
