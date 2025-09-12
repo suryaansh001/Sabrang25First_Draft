@@ -365,7 +365,7 @@ export default function PeopleStrip() {
        committee: "Registrations"
      },
      { 
-       img: "/images/Team/final/pooja.jpeg", 
+       img: "/images/Team/final/Jayash Gehlot.webp", 
        bg: "bg-red-600",
        name: "Jayash Gahlot",
        committee: "Registrations"
