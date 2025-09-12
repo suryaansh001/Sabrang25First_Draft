@@ -5,8 +5,22 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, ChevronLeft, CreditCard, ArrowRight } from 'lucide-react';
 import createApiUrl from '../../lib/api';
-import { events as EVENTS_DATA } from '../Events/[id]/rules/events.data'; // Keep for info modal
-import { EventCatalogItem, EVENT_CATALOG } from '../../lib/eventCatalog';
+import { events as EVENTS_DATA } from '../Events/[id]/rules/events.data';
+import { EventCatalogItem, EVENT_CATALOG as ORIGINAL_EVENT_CATALOG } from '../../lib/eventCatalog';
+
+// Override prices for specific events as requested.
+const EVENT_CATALOG: EventCatalogItem[] = ORIGINAL_EVENT_CATALOG.map(event => {
+  switch (event.title) {
+    case 'Pacnache': // Corrected typo from 'Panache' to 'Pacnache'
+      return { ...event, price: '₹2999' };
+    case 'Dance Battle':
+      return { ...event, price: '₹2499' };
+    case 'Band Jam':
+      return { ...event, price: '₹1499' };
+    default:
+      return event;
+  }
+});
 
 // Define missing types
 interface FormField {
@@ -32,7 +46,7 @@ const SOLO_FIELDS: FieldSet = [
   ]},
   { name: 'age', label: 'Age', type: 'number', required: true, placeholder: 'e.g., 20' },
   { name: 'universityName', label: 'Name of University', type: 'text', required: true },
-  { name: 'universityCardImage', label: 'Upload University Card Image', type: 'file', required: true, accept: 'image/*' },
+  { name: 'universityCardImage', label: 'University Identity Card', type: 'file', required: true, accept: 'image/*' },
   { name: 'address', label: 'Address', type: 'text', required: true, placeholder: 'Enter your full address' },
 ];
 
@@ -56,18 +70,10 @@ const SQUAD_ESPORTS_FIELDS: FieldSet = [
   ...SOLO_FIELDS
 ];
 
-const EVENT_CUSTOM_FIELDS: Partial<Record<number, FieldSet>> = {
-  1: [
-    ...TEAM_FIELDS,
-    { name: 'theme', label: 'Theme Title', type: 'text', required: true }
-  ],
-  12: [
-    ...SOLO_FIELDS,
-    { name: 'cameraModel', label: 'Camera/Phone Model', type: 'text' }
-  ]
-};
+const EVENT_CUSTOM_FIELDS: Partial<Record<number, FieldSet>> = {};
 
 function getDefaultFieldsForEvent(ev: EventCatalogItem): FieldSet {
+  // Restore team-specific forms for relevant events
   if (ev.title.includes('VALORANT')) return TEAM_ESPORTS_FIELDS;
   if (ev.title.includes('BGMI') || ev.title.includes('FREE FIRE')) return SQUAD_ESPORTS_FIELDS;
   if (ev.title.includes('RAMPWALK') || ev.title.includes('DANCE') || ev.title.includes('DUMB SHOW') || ev.title.includes('COURTROOM')) return TEAM_FIELDS;
@@ -89,8 +95,10 @@ const STEPS: { id: Step; name: string }[] = [
 
 function parsePrice(priceStr: string): number {
   if (!priceStr || priceStr.toLowerCase() === 'free') return 0;
-  const match = priceStr.match(/₹(\d+)/);
-  return match ? parseInt(match[1], 10) : 0;
+  const match = priceStr.match(/₹([\d,]+)/);
+  if (!match) return 0;
+  const numeric = match[1].replace(/,/g, '');
+  return parseInt(numeric, 10) || 0;
 }
 
 const Stepper = React.memo(({ currentStep }: { currentStep: Step }) => {
@@ -128,6 +136,8 @@ function CheckoutPageContent() {
   const [filesBySignature, setFilesBySignature] = useState<Record<string, Record<string, File>>>({});
   const [memberFilesBySignature, setMemberFilesBySignature] = useState<Record<string, Record<number, File>>>({});
   const [infoEvent, setInfoEvent] = useState<import('../Events/[id]/rules/events.data').Event | null>(null);
+  // Simple offline payment instructions (QR + bank details)
+  const [paymentProof, setPaymentProof] = useState<File | null>(null);
   const [promoInput, setPromoInput] = useState<string>('');
   const [appliedPromo, setAppliedPromo] = useState<{ code: string; discountAmount: number } | null>(null);
   const [promoStatus, setPromoStatus] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
@@ -482,37 +492,15 @@ function CheckoutPageContent() {
     return start1Min < end2Min && start2Min < end1Min;
   };
 
-  // Check if an event has time conflicts with selected events
-  const hasTimeConflict = (eventId: number) => {
-    const event = EVENT_CATALOG.find(e => e.id === eventId);
-    if (!event) return false;
-
-    return selectedEventIds.some(selectedId => {
-      const selectedEvent = EVENT_CATALOG.find(e => e.id === selectedId);
-      return selectedEvent && 
-             selectedEvent.id !== eventId &&
-             selectedEvent.date === event.date && 
-             isTimeOverlapping(selectedEvent.time, selectedEvent.endTime, event.time, event.endTime);
-    });
+  // Check if an event has time conflicts with selected events (disabled temporarily)
+  const hasTimeConflict = (_eventId: number) => {
+    // Time conflict checks are intentionally disabled for now
+    return false;
   };
 
   // Get conflict message for an event
-  const getConflictMessage = (eventId: number) => {
-    const event = EVENT_CATALOG.find(e => e.id === eventId);
-    if (!event) return '';
-
-    const conflictingEvent = selectedEventIds.find(selectedId => {
-      const selectedEvent = EVENT_CATALOG.find(e => e.id === selectedId);
-      return selectedEvent && 
-             selectedEvent.id !== eventId &&
-             selectedEvent.date === event.date && 
-             isTimeOverlapping(selectedEvent.time, selectedEvent.endTime, event.time, event.endTime);
-    });
-
-    if (conflictingEvent) {
-      const conflictingEventData = EVENT_CATALOG.find(e => e.id === conflictingEvent);
-      return `Time conflict with ${conflictingEventData?.title} (${conflictingEventData?.time}-${conflictingEventData?.endTime})`;
-    }
+  const getConflictMessage = (_eventId: number) => {
+    // Time conflict messaging disabled
     return '';
   };
 
@@ -732,7 +720,7 @@ function CheckoutPageContent() {
                               isSelected
                                     ? 'glass border-fuchsia-400/40 shadow-[0_0_18px_rgba(217,70,239,0.35)] cursor-pointer'
                                 : isDisabled
-                                    ? 'bg-red-500/10 border-red-400/40 cursor-not-allowed opacity-60'
+                                    ? 'glass border-white/10 cursor-pointer opacity-100'
                                     : 'glass border-white/10 hover:border-cyan-400/40 hover:shadow-[0_0_16px_rgba(34,211,238,0.28)] cursor-pointer'
                                 }`}
                               >
@@ -756,10 +744,8 @@ function CheckoutPageContent() {
                                       </button>
                                       {event.teamSize && <span className="text-[11px] text-white/60">👥 {event.teamSize}</span>}
                                 </div>
-                                    <div className="flex items-center gap-2 text-xs text-white/70">
-                                      <span>{event.date}</span>
-                                      <span>{event.time12hr} - {event.endTime12hr}</span>
-                              </div>
+                                    {/* Date/time intentionally hidden on checkout page */}
+                                    <div className="flex items-center gap-2 text-xs text-white/70"></div>
                               {isDisabled && conflictMessage && (
                                       <div className="mt-2 text-xs text-red-400 flex items-center gap-1">
                                         <span>⚠️</span>
@@ -782,7 +768,7 @@ function CheckoutPageContent() {
                     ))}
                   </div>
                   <div>
-                    <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] relative">
+                    <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] static">
                       <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
                       <h3 className="font-semibold text-cyan-200">Selected Events</h3>
                       <ul className="mt-4 space-y-2 text-sm">
@@ -790,7 +776,8 @@ function CheckoutPageContent() {
                           <li key={ev.id} className="flex justify-between">
                             <div>
                               <div className="font-medium">{ev.title}</div>
-                              <div className="text-xs text-white/70">{ev.date} {ev.time12hr}-{ev.endTime12hr}</div>
+                              {/* Date/time intentionally hidden on checkout page */}
+                              <div className="text-xs text-white/70"></div>
                             </div>
                             <span className="text-green-400 font-medium">{ev.price}</span>
                           </li>
@@ -865,6 +852,7 @@ function CheckoutPageContent() {
                                     </select>
                                   ) : field.type === 'file' ? (
                                     <div className="relative">
+                                      <div className="text-xs text-white/60 mb-1">Max file size 10 MB</div>
                                       <input
                                         id={inputId}
                                         type="file"
@@ -874,6 +862,12 @@ function CheckoutPageContent() {
                                         className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
                                         onChange={e => {
                                           const file = e.target.files?.[0] || null;
+                                          if (file && file.size > 10 * 1024 * 1024) {
+                                            alert('File too large. Maximum 10 MB allowed.');
+                                            e.currentTarget.value = '';
+                                            handleFileChange(group.signature, field.name, null);
+                                            return;
+                                          }
                                           handleFileChange(group.signature, field.name, file);
                                         }}
                                       />
@@ -1049,7 +1043,7 @@ function CheckoutPageContent() {
                     </div>
                   </div>
                   <div>
-                    <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] relative overflow-hidden">
+                    <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] static overflow-hidden">
                       <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
                       <h3 className="font-semibold text-cyan-200">Selected Events</h3>
                       <ul className="mt-4 space-y-2 text-sm">
@@ -1057,7 +1051,8 @@ function CheckoutPageContent() {
                           <li key={ev.id} className="flex justify-between">
                             <div>
                               <div className="font-medium">{ev.title}</div>
-                              <div className="text-xs text-white/70">{ev.date} {ev.time12hr}-{ev.endTime12hr}</div>
+                              {/* Date/time intentionally hidden on checkout page */}
+                              <div className="text-xs text-white/70"></div>
                             </div>
                             <span className="text-green-400 font-medium">{ev.price}</span>
                           </li>
@@ -1184,18 +1179,40 @@ function CheckoutPageContent() {
                   <div className="lg:col-span-3">
                     <h2 className="text-xl font-semibold mb-6 title-chroma">Payment</h2>
                     <div className="glass rounded-2xl p-6 border border-white/10">
-                      <div className="bg-yellow-500/15 border border-yellow-400/40 rounded-lg p-4 mb-4 shadow-[0_0_20px_rgba(250,204,21,0.2)] hidden">
-                        <p className="text-sm text-yellow-200">
-                          <strong>Notice:</strong> Checkout is temporarily disabled. Event registration will be available soon.
-                        </p>
+                      <h3 className="font-semibold text-cyan-200 mb-4">Payment</h3>
+                      <div className="space-y-6">
+                        <div>
+                          <div className="text-sm text-white/80 mb-2">Scan the QR code to pay via any UPI app:</div>
+                          <div className="w-56 h-56 bg-white rounded-md flex items-center justify-center text-black font-semibold">QR</div>
+                          {/* Pay Now button removed as requested */}
+                        </div>
+                        <div>
+                          <div className="text-sm text-white/80 mb-2">Or pay via bank transfer:</div>
+                          <div className="rounded-lg bg-white/5 border border-white/10 p-3 text-sm space-y-1">
+                            <div><span className="text-white/60">Account Name:</span> <span className="text-white/90">JKLU Sabrang</span></div>
+                            <div><span className="text-white/60">Account No.:</span> <span className="text-white/90">123456789012</span></div>
+                            <div><span className="text-white/60">IFSC:</span> <span className="text-white/90">HDFC0000001</span></div>
+                            <div><span className="text-white/60">Bank:</span> <span className="text-white/90">HDFC Bank, Jaipur</span></div>
+                          </div>
+                          {/* Pay Now button removed as requested */}
+                        </div>
                       </div>
-                      <p className="text-sm text-white/80">You're almost there. Click the button below to complete your payment securely.</p>
-                  <button
-                        onClick={proceedToPayment}
-                        className="mt-6 inline-flex items-center gap-2 rounded-full px-6 py-3 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 cursor-pointer"
-                  >
-                        <CreditCard className="w-4 h-4" /> Pay ₹{finalPrice}
-                  </button>
+                      <div className="mt-6">
+                        <label className="block text-sm text-white/80 mb-2">Upload payment confirmation screenshot</label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="w-full bg-black/40 border border-white/20 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer"
+                          onChange={e => setPaymentProof(e.target.files?.[0] || null)}
+                        />
+                        {paymentProof && (
+                          <div className="text-xs text-green-400 mt-2">Selected: {paymentProof.name}</div>
+                        )}
+                      </div>
+                      <div className="mt-4 rounded-xl border border-red-400/50 bg-red-500/10 p-4">
+                        <p className="text-sm text-red-200 font-medium">Important</p>
+                        <p className="text-sm text-red-100 mt-1">Tickets and further details will be sent to your email after payment confirmation. Please ensure you upload a clear screenshot of the successful payment.</p>
+                      </div>
                     </div>
                     <div className="flex items-center gap-3 mt-8">
                       <button onClick={goBack} className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer">Back</button>
