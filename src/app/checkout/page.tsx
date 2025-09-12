@@ -126,7 +126,11 @@ function CheckoutPageContent() {
   const [formDataBySignature, setFormDataBySignature] = useState<Record<string, Record<string, string>>>({});
   const [teamMembersBySignature, setTeamMembersBySignature] = useState<Record<string, Array<Record<string, string>>>>({});
   const [filesBySignature, setFilesBySignature] = useState<Record<string, Record<string, File>>>({});
+  const [memberFilesBySignature, setMemberFilesBySignature] = useState<Record<string, Record<number, File>>>({});
   const [infoEvent, setInfoEvent] = useState<import('../Events/[id]/rules/events.data').Event | null>(null);
+  const [promoInput, setPromoInput] = useState<string>('');
+  const [appliedPromo, setAppliedPromo] = useState<{ code: string; discountAmount: number } | null>(null);
+  const [promoStatus, setPromoStatus] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
 
   // Force reduced motion for smooth scrolling experience on this page
   useEffect(() => {
@@ -185,6 +189,48 @@ function CheckoutPageContent() {
   const totalPrice = useMemo(() => {
     return selectedEvents.reduce((total, event) => total + parsePrice(event.price), 0);
   }, [selectedEvents]);
+
+  const finalPrice = useMemo(() => {
+    const discount = appliedPromo?.discountAmount || 0;
+    return Math.max(0, totalPrice - discount);
+  }, [totalPrice, appliedPromo]);
+
+  const getDerivedEmail = () => {
+    // Search across all groups for collegeMailId
+    for (const group of fieldGroups) {
+      const data = formDataBySignature[group.signature] || {};
+      if (data['collegeMailId']) return String(data['collegeMailId']);
+      if (data['email']) return String(data['email']);
+    }
+    return '';
+  };
+
+  const tryApplyPromo = async () => {
+    const code = promoInput.trim().toUpperCase();
+    if (!code) return;
+    setPromoStatus({ loading: true, error: null });
+    try {
+      const userEmail = getDerivedEmail();
+      const response = await fetch(createApiUrl('/admin/promo-codes/validate'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ code, userEmail, orderAmount: totalPrice })
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        const msg = data.message || 'Invalid promo code';
+        setPromoStatus({ loading: false, error: msg });
+        setAppliedPromo(null);
+        return;
+      }
+      setAppliedPromo({ code, discountAmount: data.discountAmount });
+      setPromoStatus({ loading: false, error: null });
+    } catch (e) {
+      setPromoStatus({ loading: false, error: 'Failed to validate promo code' });
+      setAppliedPromo(null);
+    }
+  };
 
   const eventDataById = useMemo(() => {
     const map = new Map<number, import('../Events/[id]/rules/events.data').Event>();
@@ -270,7 +316,19 @@ function CheckoutPageContent() {
 
         members.forEach((m, idx) => {
           SOLO_FIELDS.forEach(field => {
-            if (field.required && !m[field.name]?.trim()) { errors[group.signature][`member_${idx}_${field.name}`] = `${field.label} is required.`; isValid = false; }
+            if (!field.required) return;
+            if (field.type === 'file') {
+              const filePresent = !!(memberFilesBySignature[group.signature]?.[idx]);
+              if (!filePresent) {
+                errors[group.signature][`member_${idx}_${field.name}`] = `${field.label} is required.`;
+                isValid = false;
+              }
+            } else {
+              if (!m[field.name]?.trim()) {
+                errors[group.signature][`member_${idx}_${field.name}`] = `${field.label} is required.`;
+                isValid = false;
+              }
+            }
           });
         });
       }
@@ -385,6 +443,29 @@ function CheckoutPageContent() {
     }
   };
 
+  // Handle team member image uploads
+  const handleMemberFileChange = (signature: string, memberIndex: number, file: File | null) => {
+    if (file) {
+      setMemberFilesBySignature(prev => ({
+        ...prev,
+        [signature]: {
+          ...(prev[signature] || {}),
+          [memberIndex]: file
+        }
+      }));
+    } else {
+      setMemberFilesBySignature(prev => {
+        const updated = { ...(prev || {}) } as Record<string, Record<number, File>>;
+        if (updated[signature]) {
+          const group = { ...updated[signature] };
+          delete group[memberIndex];
+          updated[signature] = group;
+        }
+        return updated;
+      });
+    }
+  };
+
   // Helper function to check if two time ranges overlap
   const isTimeOverlapping = (start1: string, end1: string, start2: string, end2: string) => {
     const timeToMinutes = (time: string) => {
@@ -437,6 +518,75 @@ function CheckoutPageContent() {
 
   const proceedToPayment = async () => {
     try {
+      // First, register the user on backend using existing /register with image upload
+      // Map fields: name -> 'name', collegeMailId -> 'email', and attach a 'profileImage'
+      const registrationForm = new FormData();
+      // Derive name and email from collected forms (pick from the first group that has them)
+      let derivedName: string | undefined;
+      let derivedEmail: string | undefined;
+      let attachedImage: File | undefined;
+
+      for (const group of fieldGroups) {
+        const data = formDataBySignature[group.signature] || {};
+        if (!derivedName && data['name']) derivedName = data['name'];
+        if (!derivedEmail && data['collegeMailId']) derivedEmail = data['collegeMailId'];
+        const files = filesBySignature[group.signature] || {};
+        // Prefer a university card image if present, else take the first file in the group
+        if (!attachedImage) {
+          if (files['universityCardImage']) attachedImage = files['universityCardImage'];
+          else {
+            const firstFile = Object.values(files)[0];
+            if (firstFile) attachedImage = firstFile;
+          }
+        }
+      }
+
+      // Fallbacks to avoid empty fields
+      if (!derivedName) derivedName = 'Participant';
+      if (!derivedEmail) throw new Error('Email is required for registration');
+
+      // Generate a strong random password since checkout flow does not collect one
+      const generatedPassword = Math.random().toString(36).slice(-10) + 'A1!';
+
+      registrationForm.append('name', derivedName);
+      registrationForm.append('email', derivedEmail);
+      registrationForm.append('password', generatedPassword);
+      // Also send flat fields if available
+      const flat = formDataBySignature[fieldGroups[0]?.signature || ''] || {};
+      if (flat['contactNo']) registrationForm.append('contactNo', flat['contactNo']);
+      if (flat['gender']) registrationForm.append('gender', flat['gender']);
+      if (flat['age']) registrationForm.append('age', flat['age']);
+      if (flat['universityName']) registrationForm.append('universityName', flat['universityName']);
+      if (flat['address']) registrationForm.append('address', flat['address']);
+      // Send complex payloads for backend to persist
+      registrationForm.append('formsBySignature', JSON.stringify(formDataBySignature));
+      registrationForm.append('teamMembersBySignature', JSON.stringify(teamMembersBySignature));
+      registrationForm.append('items', JSON.stringify(selectedEvents.map(e => ({ id: e.id, title: e.title, price: e.price }))));
+      if (attachedImage) {
+        registrationForm.append('profileImage', attachedImage);
+      }
+
+      // Append team member images with deterministic keys: memberImage__<signature>__<index>
+      Object.entries(memberFilesBySignature).forEach(([signature, idxMap]) => {
+        Object.entries(idxMap).forEach(([idxStr, file]) => {
+          const idx = Number(idxStr);
+          const encodedSig = encodeURIComponent(signature);
+          registrationForm.append(`memberImage__${encodedSig}__${idx}`, file);
+        });
+      });
+
+      const registrationResponse = await fetch(createApiUrl('/register'), {
+        method: 'POST',
+        credentials: 'include',
+        body: registrationForm
+      });
+
+      if (!registrationResponse.ok) {
+        const errText = await registrationResponse.text().catch(() => '');
+        throw new Error(errText || 'Registration failed');
+      }
+
+      // Continue with payment creation as before
       // Create FormData to handle file uploads
       const formData = new FormData();
       
@@ -454,7 +604,7 @@ function CheckoutPageContent() {
       const response = await fetch(createApiUrl('/payments/cashfree/create-order'), {
         method: 'POST',
         credentials: 'include',
-        body: formData
+        body: (() => { if (appliedPromo?.code) formData.append('promoCode', appliedPromo.code); return formData; })()
       });
       if (!response.ok) {
         const errText = await response.text().catch(() => '');
@@ -632,7 +782,7 @@ function CheckoutPageContent() {
                     ))}
                   </div>
                   <div>
-                    <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] relative overflow-hidden">
+                    <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] relative">
                       <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
                       <h3 className="font-semibold text-cyan-200">Selected Events</h3>
                       <ul className="mt-4 space-y-2 text-sm">
@@ -648,7 +798,7 @@ function CheckoutPageContent() {
                       </ul>
                       <div className="border-t border-white/10 mt-4 pt-4 flex justify-between font-semibold">
                         <span>Total</span>
-                        <span>₹{totalPrice}</span>
+                        <span>₹{finalPrice}</span>
             </div>
                       <button
                         onClick={goNext}
@@ -840,6 +990,29 @@ function CheckoutPageContent() {
                                               <option value="">Select</option>
                                               {(field.options || []).map(opt => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}
                                             </select>
+                                          ) : field.type === 'file' ? (
+                                            <>
+                                              <input
+                                                type="file"
+                                                accept={field.accept || 'image/*'}
+                                                required={!!field.required}
+                                                className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
+                                                onChange={e => {
+                                                  const file = e.target.files?.[0] || null;
+                                                  handleMemberFileChange(group.signature, idx, file);
+                                                  // also store filename for display if needed
+                                                  const filename = file?.name || '';
+                                                  setTeamMembersBySignature(prev => {
+                                                    const arr = [...(prev[group.signature] || [])];
+                                                    arr[idx] = { ...arr[idx], [field.name]: filename };
+                                                    return { ...prev, [group.signature]: arr };
+                                                  });
+                                                }}
+                                              />
+                                              {value && (
+                                                <span className="text-xs text-green-400 mt-1">Selected: {value}</span>
+                                              )}
+                                            </>
                                           ) : (
                                             <input
                                               type={inputType}
@@ -890,9 +1063,57 @@ function CheckoutPageContent() {
                           </li>
                         ))}
                       </ul>
-                      <div className="border-t border-white/10 mt-4 pt-4 flex justify-between font-semibold">
-                        <span>Total</span>
-                        <span>₹{totalPrice}</span>
+                      {/* Promo code input */}
+                      <div className="mt-4 p-4 rounded-xl bg-white/5 border border-white/10">
+                        <h4 className="text-sm font-medium text-white/90 mb-3">Promo Code</h4>
+                        <div className="flex gap-2 items-start flex-wrap md:flex-nowrap">
+                          <input
+                            type="text"
+                            className="min-w-0 flex-1 w-full bg-black/40 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40 text-sm"
+                            placeholder="Enter promo code"
+                            value={promoInput}
+                            onChange={e => setPromoInput(e.target.value.toUpperCase())}
+                          />
+                          {appliedPromo ? (
+                            <button
+                              type="button"
+                              className="shrink-0 px-4 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 text-sm font-medium whitespace-nowrap"
+                              onClick={() => { setAppliedPromo(null); setPromoStatus({ loading: false, error: null }); }}
+                            >
+                              Remove
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              className="shrink-0 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-sm font-medium whitespace-nowrap"
+                              onClick={tryApplyPromo}
+                              disabled={promoStatus.loading}
+                            >
+                              {promoStatus.loading ? 'Applying...' : 'Apply'}
+                            </button>
+                          )}
+                        </div>
+                        {promoStatus.error && <div className="text-xs text-pink-400 mt-2">{promoStatus.error}</div>}
+                        {appliedPromo && (
+                          <div className="text-xs text-green-400 mt-2">Applied {appliedPromo.code}: -₹{appliedPromo.discountAmount}</div>
+                        )}
+                      </div>
+
+                      <div className="border-t border-white/10 mt-4 pt-4 space-y-1 font-semibold">
+                        <div className="flex justify-between">
+                          <span>Subtotal</span>
+                          <span>₹{totalPrice}</span>
+                        </div>
+                        {appliedPromo && (
+                          <div className="flex justify-between text-green-400">
+                            <span>Discount ({appliedPromo.code})</span>
+                            <span>-₹{appliedPromo.discountAmount}</span>
+                          </div>
+                        )}
+                        <div className="flex justify-between text-lg">
+                          <span>Total</span>
+                          <span>₹{finalPrice}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -945,7 +1166,7 @@ function CheckoutPageContent() {
                     <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] relative overflow-hidden">
                       <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
                       <h3 className="font-semibold text-cyan-200">Total</h3>
-                      <div className="mt-4 text-3xl font-bold">₹{totalPrice}</div>
+                      <div className="mt-4 text-3xl font-bold">₹{finalPrice}</div>
                   </div>
                     </div>
                   </div>
@@ -973,7 +1194,7 @@ function CheckoutPageContent() {
                         onClick={proceedToPayment}
                         className="mt-6 inline-flex items-center gap-2 rounded-full px-6 py-3 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 cursor-pointer"
                   >
-                        <CreditCard className="w-4 h-4" /> Pay ₹{totalPrice}
+                        <CreditCard className="w-4 h-4" /> Pay ₹{finalPrice}
                   </button>
                     </div>
                     <div className="flex items-center gap-3 mt-8">
@@ -984,7 +1205,7 @@ function CheckoutPageContent() {
                     <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] relative overflow-hidden">
                       <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
                       <h3 className="font-semibold text-cyan-200">Total</h3>
-                      <div className="mt-4 text-3xl font-bold">₹{totalPrice}</div>
+                      <div className="mt-4 text-3xl font-bold">₹{finalPrice}</div>
                     </div>
                   </div>
                 </div>
