@@ -23,14 +23,18 @@ const CountdownClock: React.FC<CountdownClockProps> = ({ targetDate }) => {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ hours: 0, minutes: 0, seconds: 0 });
   const [isActive, setIsActive] = useState(true);
 
-  const getNextMidnight = () => {
+  const getNextMondayMidnight = () => {
     const now = new Date();
-    const midnight = new Date(now);
-    midnight.setHours(24, 0, 0, 0); // today to 24:00 => next day 00:00
-    return midnight;
+    const target = new Date(now);
+    // Compute days until next Monday (1 = Monday)
+    const day = now.getDay(); // 0 (Sun) - 6 (Sat)
+    const daysUntilNextMonday = (8 - day) % 7 || 7; // ensures 7 when today is Monday
+    target.setDate(now.getDate() + daysUntilNextMonday);
+    target.setHours(0, 0, 0, 0); // set to 00:00 of that Monday
+    return target;
   };
 
-  const resolvedTarget = useMemo(() => (targetDate ? new Date(targetDate) : getNextMidnight()), [targetDate]);
+  const resolvedTarget = useMemo(() => (targetDate ? new Date(targetDate) : getNextMondayMidnight()), [targetDate]);
   const [effectiveTarget, setEffectiveTarget] = useState<Date>(resolvedTarget);
 
   useEffect(() => {
@@ -46,8 +50,8 @@ const CountdownClock: React.FC<CountdownClockProps> = ({ targetDate }) => {
       let difference = endTime.getTime() - now.getTime();
 
       if (difference <= 0) {
-        // roll over to next midnight automatically
-        const next = getNextMidnight();
+        // roll over to next Monday midnight automatically
+        const next = getNextMondayMidnight();
         setEffectiveTarget(next);
         difference = next.getTime() - now.getTime();
         setIsActive(true);

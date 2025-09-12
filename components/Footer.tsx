@@ -64,16 +64,8 @@ const Footer = () => {
               </a>
             </div>
             {/* University Campus Image */}
-            <div className="w-full h-32 rounded-lg overflow-hidden">
-             <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3560.1052887370847!2d75.64772927554135!3d26.836603276692674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396c4af4fe68f403%3A0x3bf05f95df22b8c4!2sJK%20Lakshmipat%20University!5e0!3m2!1sen!2sin!4v1757617754733!5m2!1sen!2sin" 
-                width="100%" 
-                height="100%" 
-                style={{ border: 0 }} 
-                allowFullScreen 
-                loading="lazy" 
-                referrerPolicy="no-referrer-when-downgrade"
-              ></iframe>
+            <div className="w-full h-62 rounded-lg overflow-hidden">
+              <img src="/images/footer_image.webp" alt="Campus" className="w-full h-full object-cover" />
             </div>
           </div>
         </div>
