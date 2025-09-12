@@ -17,7 +17,7 @@ export default function FooterStrip() {
 				<div className="text-white/60 text-xs sm:text-sm">
 					<Link href="/designed-by" className="underline-offset-4 hover:underline hover:text-white">
 						<span>DESIGNED AND DEVELOPED BY </span>
-						TECH GEEKS
+						TECH TEAM
 					</Link>
 				</div>
 			</div>
