@@ -1,5 +1,7 @@
 import React, { useState, useRef, useMemo } from "react";
 import { Linkedin, Instagram, Twitter } from 'lucide-react';
+import CommitteePopup from '../../../components/CommitteePopup';
+import { getCommitteeByName, CommitteeData } from '../../lib/teamData';
 
 // Define the Person type interface
 interface Person {
@@ -15,12 +17,14 @@ const HolographicCard = ({
   person, 
   cardId,
   animationDelay = 0,
-  description
+  description,
+  onViewCommittee
 }: { 
   person: Person; 
   cardId: string;
   animationDelay?: number;
   description?: string;
+  onViewCommittee?: (committeeName: string) => void;
 }) => {
   const [hoveredCard, setHoveredCard] = useState(false);
 
@@ -168,6 +172,20 @@ const HolographicCard = ({
                         </a>
                       )}
                     </div>
+                    
+                    {/* View Complete Committee Button */}
+                    <div className="mt-6 pt-4 border-t border-white/20">
+                      <button 
+                        className="bg-gradient-to-r from-purple-500/80 via-pink-500/80 to-blue-500/80 hover:from-purple-500 hover:via-pink-500 hover:to-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg border border-white/30 hover:border-white/50"
+                        onClick={() => {
+                          if (onViewCommittee) {
+                            onViewCommittee(person.committee);
+                          }
+                        }}
+                      >
+                        View Complete Committee
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -181,7 +199,24 @@ const HolographicCard = ({
 };
 
 export default function PeopleStrip() {
+  // State for popup
+  const [selectedCommittee, setSelectedCommittee] = useState<CommitteeData | null>(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
+  // Function to handle committee popup
+  const handleViewCommittee = (committeeName: string) => {
+    const committeeData = getCommitteeByName(committeeName);
+    if (committeeData) {
+      setSelectedCommittee(committeeData);
+      setIsPopupOpen(true);
+    }
+  };
+
+  // Function to close popup
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+    setSelectedCommittee(null);
+  };
 
    // People array with detailed information for each person
    const people: Person[] = [
@@ -449,6 +484,7 @@ export default function PeopleStrip() {
           cardId={cardId}
           animationDelay={animationDelay}
           description={description}
+          onViewCommittee={handleViewCommittee}
         />
       );
     }
@@ -620,7 +656,12 @@ export default function PeopleStrip() {
 
    return (
      <div className="flex flex-col items-center px-2 sm:px-4 py-4 sm:py-8 w-full overflow-x-hidden">
-
+      {/* Committee Popup */}
+      <CommitteePopup
+        committee={selectedCommittee}
+        isOpen={isPopupOpen}
+        onClose={handleClosePopup}
+      />
       
  
       {/* Student Affairs heading */}
