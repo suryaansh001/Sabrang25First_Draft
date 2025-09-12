@@ -2,30 +2,29 @@
 
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mail, Phone, Building, Send, Users, TrendingUp, Target, Award, CheckCircle, ArrowRight, Download, Briefcase, Megaphone, Eye, Star as StarIcon, Play } from 'lucide-react';
+import { X, Users, CheckCircle, ArrowRight, Download, Megaphone, Eye, Star as StarIcon, Briefcase } from 'lucide-react';
 
 // --- Data from your sponsorship deck ---
 
 const generalInfo = {
   festival: "Sabrang 2025",
-  theme: "Noorvana – From Color to Cosmos",
-  dates: "10th – 12th October 2025",
-  venue: "JK Lakshmipat University, Jaipur"
+  theme: "Noorvana: From Color to Cosmos",
+  description: "Sabrang is JKLU’s premier annual cultural festival, celebrating creativity, entertainment, and immersive experiences. It attracts students, artists, and performers nationwide, creating an atmosphere of music, technology, and artistic expression.",
+  heroSubtitle: "A strategic partnership opportunity to connect your brand with thousands of India's brightest young minds at the intersection of culture and innovation."
 };
 
 const flagshipEvents = [
-  { name: "Panache", description: "Grand runway fashion show" },
-  { name: "BandJam", description: "Showdown of student bands" },
-  { name: "Battle Dance", description: "Solo and crew dance battles" },
-  { name: "Nukkad Natak", description: "Vibrant street theatre" },
-  { name: "Singing Palooza", description: "Vocal performance competition" }
+  { name: "Rampwalk - Panache", description: "The grandest runway event where elegance, charisma, and original fashion collections collide." },
+  { name: "Bandjam", description: "An electrifying competition where instruments roar to life with powerful melodies from talented bands." },
+  { name: "Dance Battle", description: "A high-stakes crew vs. crew dance showdown showcasing choreography and raw freestyle energy." },
+  { name: "Step Up", description: "The ultimate solo dance challenge where individual performers take center stage to test their skill and creativity." },
 ];
 
 const whySponsor = [
-  { title: "Extensive Media Coverage", description: "Gain visibility across print, digital, and social media platforms.", icon: Megaphone },
-  { title: "Unparalleled Visibility", description: "Exposure to students, influencers, and professionals nationwide.", icon: Eye },
-  { title: "High-Energy, Interactive Event", description: "Connect with your audience through carnival-style fun and immersive experiences.", icon: StarIcon },
-  { title: "Engaged Audience", description: "Reach over 60,000+ attendees with a strong Gen Z and millennial base.", icon: Users }
+  { title: "Extensive Media Coverage", description: "Wide promotion across print, digital, and social media.", icon: Megaphone },
+  { title: "Unparalleled Visibility", description: "Prominent logo placement on banners, brochures, certificates, merchandise, digital creatives, and main stage backdrops.", icon: Eye },
+  { title: "Engagement & Activation", description: "Premium stall space, co-hosting rights for flagship events, and high-impact social media promotions.", icon: StarIcon },
+  { title: "Valuable Audience", description: "Connect with thousands of students, influencers, and young professionals from across India.", icon: Users }
 ];
 
 const sponsorshipTiers = [
@@ -33,65 +32,64 @@ const sponsorshipTiers = [
     name: "Title Sponsor",
     price: "₹5,00,000",
     featured: true,
-    branding: [
-      "Event co-branded as “Sabrang 2025 – Presented by [Brand Name]”",
-      "Most prominent logo placement on all assets",
-      "Exclusive press release and website presence"
-    ],
-    activation: [
-      "Premium stall space at a prime location",
-      "Option to sponsor a flagship event",
-      "8+ dedicated social media promotions & aftermovie integration"
-    ],
-    privileges: ["10 VIP passes", "On-stage felicitation", "Branded goodies in fest kits"]
+    sections: {
+      branding: [
+        "“Sabrang 2025 – Presented by [Brand Name]” across all platforms.",
+        "Most prominent logo placement (stage backdrops, brochures, digital creatives, T-shirts, etc.).",
+        "Top-row placement in press releases, website, and communications."
+      ],
+      engagement: [
+        "Premium stall space.",
+        "Sponsor a flagship event.",
+        "Brand announcements.",
+        "8+ social media promotions & sponsor reel in aftermovie."
+      ],
+      privileges: ["10 VIP passes", "On-stage felicitation", "Branded goodies in fest kits"]
+    }
   },
   {
     name: "Co-Powered By",
     price: "₹3,50,000",
     featured: false,
-    branding: [
-      "Event co-branded as “Sabrang 2025 – Co-Powered by [Brand Name]”",
-      "Medium prominence on stage panels, posters, and creatives"
-    ],
-    activation: [
-      "Premium stall space",
-      "Stage announcements & option to co-host a flagship event"
-    ],
-    visibility: [
-      "5–6 featured social posts",
-      "Name in newsletters and sponsor collage reel"
-    ],
-    privileges: ["6 exclusive passes", "Felicitation on final day", "Branded vouchers in kits"]
+    sections: {
+      branding: [
+        "“Co-Powered by [Brand Name]” on all digital and on-ground assets.",
+        "Logo on stage panels, posters, T-shirts, digital creatives (medium prominence)."
+      ],
+      engagement: [
+        "Premium stall space.",
+        "Sponsor a flagship event.",
+        "Announcements.",
+        "5–6 social media promotions & mentions in newsletters."
+      ],
+      privileges: ["6 exclusive passes", "Felicitation on final day", "Vouchers in welcome kits"]
+    }
   },
   {
     name: "Associate Sponsor",
     price: "₹2,50,000",
     featured: false,
-    branding: [
-      "Recognition as “Associate Sponsor” on posters and backdrops",
-      "Logos on selected materials and signage"
-    ],
-    activation: [
-      "Shared stall space (if available)",
-      "One-time stage acknowledgment",
-      "Venue branding in a specific zone"
-    ],
-    visibility: [
-      "3–4 social media shoutouts",
-      "Logo on website and ticketing platform"
-    ],
-    privileges: ["4 general passes", "Appreciation certificate", "Access to media highlights"]
+    sections: {
+      branding: ["Logo on select digital materials, posters, certificates, and venue signage."],
+      engagement: [
+        "Optional stall space.",
+        "One-time stage acknowledgment.",
+        "Branding in zones (food/exhibition).",
+        "3–4 social media shout-outs."
+      ],
+      privileges: ["4 general passes", "Appreciation certificate", "Access to post-event media"]
+    }
   },
   {
     name: "In-Kind Sponsors",
     price: "Flexible Value",
     featured: false,
-    description: "Provide products or services in exchange for branding opportunities equivalent to the contribution value.",
+    description: "Non-monetary contributions to reduce costs & enrich the fest. Visibility is equivalent to the contribution value (logos, stage mentions, stall space, social media shout-outs).",
     examples: [
-      "Product sampling/giveaways",
-      "Printing/merchandise",
-      "Food & refreshment sponsorship",
-      "Photography/videography",
+      "Product sampling",
+      "Merchandise",
+      "Photography",
+      "Food/refreshments",
       "Trophies & certificates"
     ]
   }
@@ -131,11 +129,12 @@ const SectionTitle = ({ title, subtitle }: { title: React.ReactNode, subtitle: s
 
 const TierCard = ({ tier, index }: { tier: any, index: number }) => (
   <motion.div
-    className={`group relative bg-black/60 backdrop-blur-md border border-white/20 rounded-2xl p-8 flex flex-col h-full transition-all duration-300 hover:border-blue-400/50 hover:bg-black/70 shadow-2xl ${tier.featured ? 'border-blue-400' : ''}`}
+      className={`group relative bg-black/60 backdrop-blur-md border rounded-2xl p-8 flex flex-col h-full shadow-2xl ${tier.featured ? 'border-blue-400' : 'border-white/20'}`}
     variants={{ hidden: { opacity: 0, y: 50 }, visible: { opacity: 1, y: 0 } }}
-    transition={{ duration: 0.5, delay: index * 0.1 }}
+    whileHover={{ y: -8, scale: 1.02, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
+    transition={{ type: 'spring', stiffness: 400, damping: 30, delay: index * 0.1 }}
   >
-    {tier.featured && <div className="absolute top-0 right-8 -mt-4 px-3 py-1 text-sm font-semibold rounded-full bg-blue-500 text-white">Most Popular</div>}
+    {tier.featured && <div className="absolute top-0 right-8 -mt-4 px-3 py-1 text-sm font-semibold rounded-full bg-blue-500 text-white shadow-lg shadow-blue-500/50">Most Popular</div>}
     <div className="text-center mb-8">
       <h3 className="text-2xl font-bold text-white mb-2">{tier.name}</h3>
       <div className="text-5xl font-extrabold text-white">{tier.price}</div>
@@ -143,12 +142,12 @@ const TierCard = ({ tier, index }: { tier: any, index: number }) => (
     <div className="space-y-6 flex-grow mb-8">
       {tier.description ? (
         <p className="text-gray-400">{tier.description}</p>
-      ) : (
-        Object.keys(tier).filter(k => !['name', 'price', 'featured'].includes(k)).map(key => (
+      ) : tier.sections ? (
+        Object.entries(tier.sections).map(([key, value]) => (
           <div key={key}>
             <h4 className="font-semibold text-blue-300 uppercase tracking-wider text-sm mb-2">{key}</h4>
             <ul className="space-y-2">
-              {tier[key].map((item: string, idx: number) => (
+              {(value as string[]).map((item: string, idx: number) => (
                 <li key={idx} className="flex items-start gap-3 text-gray-300">
                   <CheckCircle className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" />
                   <span>{item}</span>
@@ -157,7 +156,7 @@ const TierCard = ({ tier, index }: { tier: any, index: number }) => (
             </ul>
           </div>
         ))
-      )}
+      ) : null}
       {tier.examples && (
          <div>
             <h4 className="font-semibold text-blue-300 uppercase tracking-wider text-sm mb-2">Examples</h4>
@@ -177,7 +176,7 @@ const TierCard = ({ tier, index }: { tier: any, index: number }) => (
 
 interface FormField {
   name: string;
-  label: string;
+  label: string; 
   type: 'text' | 'email' | 'phone' | 'select' | 'textarea';
   required?: boolean;
   placeholder?: string;
@@ -185,7 +184,7 @@ interface FormField {
 }
 
 const contactFields: FormField[] = [
-  { name: 'companyName', label: 'Company Name', type: 'text', required: true, placeholder: 'Enter your company name' },
+  { name: 'companyName', label: 'Company Name', type: 'text', required: true, placeholder: 'Enter your company name' }, 
   { name: 'contactPerson', label: 'Contact Person', type: 'text', required: true, placeholder: 'Enter your name' },
   { name: 'email', label: 'Email', type: 'email', required: true, placeholder: 'Enter your email' },
   { name: 'phone', label: 'Phone Number', type: 'phone', placeholder: 'Enter your phone number' },
@@ -237,13 +236,13 @@ export default function WhySponsorUsPage() {
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold bg-gradient-to-br from-white via-gray-300 to-blue-300 bg-clip-text text-transparent">
               {generalInfo.festival}
          </h1>
-            <p className="text-xl md:text-2xl text-blue-300/80 mt-2 tracking-widest">{generalInfo.theme}</p>
+            <p className="text-xl md:text-2xl text-blue-300/80 mt-2 tracking-widest">{generalInfo.theme.split(':')[0]}</p>
           </motion.div>
           <motion.p
             className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto mb-12"
             variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } } }}
           >
-            A strategic partnership opportunity to connect your brand with over 60,000 of India's brightest young minds at the intersection of culture and innovation.
+            {generalInfo.heroSubtitle}
           </motion.p>
        <motion.div
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
@@ -252,7 +251,7 @@ export default function WhySponsorUsPage() {
             <button
               onClick={() => setIsFormOpen(true)}
               className="group w-full sm:w-auto relative inline-flex items-center justify-center gap-3 px-8 py-4 text-lg font-semibold bg-blue-600 rounded-lg text-white transition-all duration-300 hover:bg-blue-500"
-            >
+            > 
               Become a Partner <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </button>
             <a
@@ -260,7 +259,7 @@ export default function WhySponsorUsPage() {
               download
               className="group w-full sm:w-auto relative inline-flex items-center justify-center gap-3 px-8 py-4 text-lg font-semibold bg-white/10 border border-white/20 rounded-lg text-white transition-all duration-300 hover:bg-white/20"
             >
-              Download Deck <Download className="w-5 h-5" />
+              Download Deck <Download className="w-5 h-5" /> 
             </a>
           </motion.div>
    
@@ -301,7 +300,7 @@ export default function WhySponsorUsPage() {
           subtitle="Our flagship events are the heart of Sabrang, drawing massive crowds and media attention."
         />
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {flagshipEvents.slice(0, 4).map((event, index) => {
+          {flagshipEvents.map((event, index) => {
             const colors = [
               'from-purple-600 via-pink-600 to-red-500', // Panache - Fashion
               'from-blue-600 via-cyan-500 to-teal-400',  // BandJam - Music
@@ -318,11 +317,12 @@ export default function WhySponsorUsPage() {
             return (
               <motion.div
                 key={index}
-                className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${colors[index]} ${hoverColors[index]} transition-all duration-500 hover:scale-105 hover:shadow-2xl`}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${colors[index]} ${hoverColors[index]}`}
+                initial={{ opacity: 0, y: 40, scale: 0.95 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                whileHover={{ y: -10, scale: 1.05, boxShadow: "0px 20px 30px rgba(0, 0, 0, 0.3)" }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20, delay: index * 0.1 }}
               >
                 {/* Video Card Content */}
                 <div className="relative p-8 h-64 flex flex-col justify-center items-center text-center">
@@ -357,7 +357,7 @@ export default function WhySponsorUsPage() {
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
         >
-          {sponsorshipTiers.filter(t => t.name !== 'In-Kind Sponsors' && t.name !== 'Contact Partnership Team').map((tier, index) => (
+          {sponsorshipTiers.map((tier, index) => (
             <TierCard key={index} tier={tier} index={index} />
           ))}
         </motion.div>
@@ -404,7 +404,7 @@ export default function WhySponsorUsPage() {
 
                 <form  className="p-8 space-y-4">
                  {contactFields.map((field, index) => (
-                 <div key={index}>
+                 <div key={index}> 
                  <label htmlFor={field.name} className="block text-gray-300 text-sm font-medium mb-2">{field.label}</label>
                    {field.type === 'text' && (
                      <input
@@ -412,7 +412,7 @@ export default function WhySponsorUsPage() {
                      id={field.name}
                      name={field.name}
                     placeholder={field.placeholder}
-                       className="w-full py-3 px-4 bg-black/40 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-black/60 transition-all duration-300" />
+                       className="w-full py-3 px-4 bg-black/40 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-black/60 transition-all duration-300" /> 
                       )}
                                 {field.type === 'email' && (
                      <input
@@ -420,7 +420,7 @@ export default function WhySponsorUsPage() {
                      id={field.name}
                      name={field.name}
                      placeholder={field.placeholder}
-                       className="w-full py-3 px-4 bg-black/40 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-black/60 transition-all duration-300" />
+                       className="w-full py-3 px-4 bg-black/40 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-black/60 transition-all duration-300" /> 
                       )}
                             {field.type === 'phone' && (
                      <input
@@ -428,7 +428,7 @@ export default function WhySponsorUsPage() {
                      id={field.name}
                      name={field.name}
                     placeholder={field.placeholder}
-                       className="w-full py-3 px-4 bg-black/40 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-black/60 transition-all duration-300" />
+                       className="w-full py-3 px-4 bg-black/40 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-black/60 transition-all duration-300" /> 
                       )}
                      {field.type === 'select' && (
                        <select
