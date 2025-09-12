@@ -1,8 +1,6 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
-import Logo from '../public/images/Logo.svg';
 import { FaFacebookF, FaInstagram, FaTwitter, FaLinkedinIn, FaMapMarkerAlt, FaPhone, FaEnvelope } from 'react-icons/fa';
 
 const Footer = () => {
@@ -38,7 +36,7 @@ const Footer = () => {
             <h3 className="text-lg font-bold uppercase mb-6 text-white">Quick Links</h3>
             <div className="space-y-3">
               <a href="/About" className="block text-sm hover:text-gray-300 transition-colors">About</a>
-              <a href="/FAQ" className="block text-sm hover:text-gray-300 transition-colors">Schedule</a>
+              <a href="/schedule/progress" className="block text-sm hover:text-gray-300 transition-colors">Schedule</a>
               <a href="/Team" className="block text-sm hover:text-gray-300 transition-colors">Team</a>
               <a href="https://jklu.edu.in" target="_blank" rel="noopener noreferrer" className="block text-sm hover:text-gray-300 transition-colors">University Website</a>
               <a href="/privacy-policy" className="block text-sm hover:text-gray-300 transition-colors">Privacy Policy</a>
@@ -67,13 +65,15 @@ const Footer = () => {
             </div>
             {/* University Campus Image */}
             <div className="w-full h-32 rounded-lg overflow-hidden">
-              <Image 
-                src="/images/building-6011756_1280.jpg" 
-                alt="JK Lakshmipat University Campus" 
-                width={300} 
-                height={128} 
-                className="w-full h-full object-cover"
-              />
+             <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3560.1052887370847!2d75.64772927554135!3d26.836603276692674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396c4af4fe68f403%3A0x3bf05f95df22b8c4!2sJK%20Lakshmipat%20University!5e0!3m2!1sen!2sin!4v1757617754733!5m2!1sen!2sin" 
+                width="100%" 
+                height="100%" 
+                style={{ border: 0 }} 
+                allowFullScreen 
+                loading="lazy" 
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
             </div>
           </div>
         </div>
