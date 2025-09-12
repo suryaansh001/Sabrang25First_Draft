@@ -14,10 +14,13 @@ const generalInfo = {
 };
 
 const flagshipEvents = [
-  { name: "Panache (Fashion Show)", description: "The grandest runway event showcasing elegance, charisma, and original collections." },
-  { name: "Bandjam", description: "A showdown of student bands across genres (rock, indie, fusion, classical)." },
-  { name: "Dance Battle", description: "One-on-one & crew battles across hip-hop, freestyle, krumping, fusion." },
-  { name: "Sutradhar (Street Play)", description: "Theatrical storytelling with drama, music & social messages." },
+
+  { name: "Panache (Fashion Show)", description: "The grandest runway event showcasing elegance, charisma, and original collections.", href: "/Events/1/rules" },
+  { name: "Bandjam", description: "A showdown of student bands across genres (rock, indie, fusion, classical).", href: "/Events/2/rules" },
+  { name: "Dance Battle", description: "One-on-one & crew battles across hip-hop, freestyle, krumping, fusion.", href: "/Events/3/rules" },
+  { name: "Step Up (Solo Dance)", description: "The ultimate solo dance challenge testing creativity and stage command.", href: "/Events/4/rules" },
+
+
 ];
 
 const whySponsor = [
@@ -315,31 +318,35 @@ export default function WhySponsorUsPage() {
             ];
             
             return (
-              <motion.div
-                key={index}
-                className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${colors[index]} ${hoverColors[index]}`}
-                initial={{ opacity: 0, y: 40, scale: 0.95 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                whileHover={{ y: -10, scale: 1.05, boxShadow: "0px 20px 30px rgba(0, 0, 0, 0.3)" }}
-                viewport={{ once: true }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20, delay: index * 0.1 }}
-              >
-                {/* Video Card Content */}
-                <div className="relative p-8 h-64 flex flex-col justify-center items-center text-center">
-                  {/* Event Info */}
-                  <div className="relative z-10">
-                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-white/90 transition-colors">
-                      {event.name}
-                    </h3>
-                    <p className="text-white/80 text-sm group-hover:text-white transition-colors">
-                      {event.description}
-                    </p>
+              <a href={event.href} aria-label={`View ${event.name}`} className="block group focus:outline-none focus:ring-2 focus:ring-white/40 rounded-2xl" key={event.name}>
+                <motion.div
+                  className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${colors[index]} ${hoverColors[index]}`}
+                  initial={{ opacity: 0, y: 40, scale: 0.95 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  whileHover={{ y: -10, scale: 1.05, boxShadow: "0px 20px 30px rgba(0, 0, 0, 0.3)" }}
+                  viewport={{ once: true }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20, delay: index * 0.1 }}
+                >
+                  {/* Video Card Content */}
+                  <div className="relative p-8 h-64 flex flex-col justify-center items-center text-center">
+                    {/* Event Info */}
+                    <div className="relative z-10">
+                      <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-white/90 transition-colors">
+                        {event.name}
+                      </h3>
+                      <p className="text-white/80 text-sm group-hover:text-white transition-colors">
+                        {event.description}
+                      </p>
+                      <div className="mt-4 inline-flex items-center gap-2 text-white/90 text-sm bg-black/20 border border-white/20 px-4 py-2 rounded-full">
+                        Explore details <ArrowRight className="w-4 h-4" />
+                      </div>
+                    </div>
                   </div>
-                </div>
-                
-                {/* Hover Effect Overlay */}
-                <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </motion.div>
+                  
+                  {/* Hover Effect Overlay */}
+                  <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </motion.div>
+              </a>
             );
           })}
         </div>

@@ -7,7 +7,7 @@ export default function FooterStrip() {
 				{/* University site link */}
 				<img src="/JKLU_logo_white.png" alt="JKLU" className="w-15 h-15 object-contain" />
 				{/* Copyright */}
-				<a href="https://jklu.edu.in" target="_blank" rel="noopener noreferrer" className="hover:text-white underline-offset-4 hover:underline">
+				<a className="hover:text-white underline-offset-4 ">
 					<div className="text-white/70 text-xs sm:text-sm">
 						<span>Sabrang - JK Lakshmipat University © 2025 JKLU. All Right Reserved</span>
 					</div>

@@ -50,7 +50,7 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-bold uppercase mb-6 text-white">Follow Us</h3>
             <div className="flex space-x-4 mb-6">
-              <a href="#" className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
+              <a href="#" className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-[#3b5998]/30 transition-colors">
                 <FaFacebookF className="w-4 h-4" />
               </a>
               <a href="#" className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
@@ -64,16 +64,8 @@ const Footer = () => {
               </a>
             </div>
             {/* University Campus Image */}
-            <div className="w-full h-32 rounded-lg overflow-hidden">
-             <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3560.1052887370847!2d75.64772927554135!3d26.836603276692674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396c4af4fe68f403%3A0x3bf05f95df22b8c4!2sJK%20Lakshmipat%20University!5e0!3m2!1sen!2sin!4v1757617754733!5m2!1sen!2sin" 
-                width="100%" 
-                height="100%" 
-                style={{ border: 0 }} 
-                allowFullScreen 
-                loading="lazy" 
-                referrerPolicy="no-referrer-when-downgrade"
-              ></iframe>
+            <div className="w-full h-62 rounded-lg overflow-hidden">
+              <img src="/images/footer_image.webp" alt="Campus" className="w-full h-full object-cover" />
             </div>
           </div>
         </div>
