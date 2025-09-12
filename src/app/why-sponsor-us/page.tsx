@@ -14,10 +14,10 @@ const generalInfo = {
 };
 
 const flagshipEvents = [
-  { name: "Rampwalk - Panache", description: "The grandest runway event where elegance, charisma, and original fashion collections collide." },
-  { name: "Bandjam", description: "An electrifying competition where instruments roar to life with powerful melodies from talented bands." },
-  { name: "Dance Battle", description: "A high-stakes crew vs. crew dance showdown showcasing choreography and raw freestyle energy." },
-  { name: "Step Up", description: "The ultimate solo dance challenge where individual performers take center stage to test their skill and creativity." },
+  { name: "Panache (Fashion Show)", description: "The grandest runway event showcasing elegance, charisma, and original collections." },
+  { name: "Bandjam", description: "A showdown of student bands across genres (rock, indie, fusion, classical)." },
+  { name: "Dance Battle", description: "One-on-one & crew battles across hip-hop, freestyle, krumping, fusion." },
+  { name: "Sutradhar (Street Play)", description: "Theatrical storytelling with drama, music & social messages." },
 ];
 
 const whySponsor = [
@@ -129,7 +129,7 @@ const SectionTitle = ({ title, subtitle }: { title: React.ReactNode, subtitle: s
 
 const TierCard = ({ tier, index }: { tier: any, index: number }) => (
   <motion.div
-      className={`group relative bg-black/60 backdrop-blur-md border rounded-2xl p-8 flex flex-col h-full shadow-2xl ${tier.featured ? 'border-blue-400' : 'border-white/20'}`}
+    className={`group relative bg-black/60 backdrop-blur-md border rounded-2xl p-8 flex flex-col h-full shadow-2xl ${tier.featured ? 'border-blue-400' : 'border-white/20'}`}
     variants={{ hidden: { opacity: 0, y: 50 }, visible: { opacity: 1, y: 0 } }}
     whileHover={{ y: -8, scale: 1.02, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
     transition={{ type: 'spring', stiffness: 400, damping: 30, delay: index * 0.1 }}
