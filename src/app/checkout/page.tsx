@@ -8,6 +8,9 @@ import createApiUrl from '../../lib/api';
 import { events as EVENTS_DATA } from '../Events/[id]/rules/events.data';
 import { EventCatalogItem, EVENT_CATALOG as ORIGINAL_EVENT_CATALOG } from '../../lib/eventCatalog';
 
+// Control flag to enable/disable the checkout flow.
+const REGISTRATION_OPEN = false;
+
 // Override prices for specific events as requested.
 const EVENT_CATALOG: EventCatalogItem[] = ORIGINAL_EVENT_CATALOG.map(event => {
   switch (event.title) {
@@ -788,15 +791,25 @@ function CheckoutPageContent() {
                         <span>₹{finalPrice}</span>
             </div>
                       <button
-                        onClick={goNext}
-                        disabled={selectedEventIds.length === 0}
+                        onClick={() => {
+                          if (REGISTRATION_OPEN) {
+                            goNext();
+                          } else {
+                            router.push('/Registration-starting-soon');
+                          }
+                        }}
+                        disabled={REGISTRATION_OPEN && selectedEventIds.length === 0}
                         className={`relative w-full mt-6 inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-white font-medium transition-all duration-300 ${
-                          selectedEventIds.length === 0 
+                          REGISTRATION_OPEN && selectedEventIds.length === 0 
                             ? 'bg-gray-600 cursor-not-allowed' 
                             : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:scale-105 cursor-pointer'
                         }`}
                       >
-                        Continue <ArrowRight className="w-4 h-4" />
+                        {REGISTRATION_OPEN ? (
+                          <>Continue <ArrowRight className="w-4 h-4" /></>
+                        ) : (
+                          'Register Now'
+                        )}
                       </button>
                         </div>
                         </div>

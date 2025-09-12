@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+'use client';
+import React, { useState, useEffect, useMemo } from 'react';
 
 interface TimeLeft {
   hours: number;
@@ -14,46 +15,58 @@ interface HexagonalClockProps {
   label: string;
 }
 
-const CountdownClock: React.FC = () => {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
-    hours: 48,
-    minutes: 0,
-    seconds: 0
-  });
+interface CountdownClockProps {
+  targetDate?: string;
+}
 
-  const [startTime] = useState(() => new Date());
+const CountdownClock: React.FC<CountdownClockProps> = ({ targetDate }) => {
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>({ hours: 0, minutes: 0, seconds: 0 });
   const [isActive, setIsActive] = useState(true);
+
+  const getNextMidnight = () => {
+    const now = new Date();
+    const midnight = new Date(now);
+    midnight.setHours(24, 0, 0, 0); // today to 24:00 => next day 00:00
+    return midnight;
+  };
+
+  const resolvedTarget = useMemo(() => (targetDate ? new Date(targetDate) : getNextMidnight()), [targetDate]);
+  const [effectiveTarget, setEffectiveTarget] = useState<Date>(resolvedTarget);
+
+  useEffect(() => {
+    setEffectiveTarget(resolvedTarget);
+  }, [resolvedTarget]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
-    
-    if (isActive) {
-      interval = setInterval(() => {
-        const now = new Date();
-        const endTime = new Date(startTime.getTime() + (48 * 60 * 60 * 1000));
-        const difference = endTime.getTime() - now.getTime();
-        
-        if (difference > 0) {
-          const hours = Math.floor(difference / (1000 * 60 * 60));
-          const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-          
-          setTimeLeft({ hours, minutes, seconds });
-        } else {
-          setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
-          setIsActive(false);
-        }
-      }, 1000);
-    }
-    
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isActive, startTime]);
 
-  const totalSeconds = 48 * 60 * 60;
-  const remainingSeconds = timeLeft.hours * 3600 + timeLeft.minutes * 60 + timeLeft.seconds;
-  const progress = ((totalSeconds - remainingSeconds) / totalSeconds) * 100;
+    const tick = () => {
+      const now = new Date();
+      const endTime = effectiveTarget;
+      let difference = endTime.getTime() - now.getTime();
+
+      if (difference <= 0) {
+        // roll over to next midnight automatically
+        const next = getNextMidnight();
+        setEffectiveTarget(next);
+        difference = next.getTime() - now.getTime();
+        setIsActive(true);
+      }
+
+      const hours = Math.floor(difference / (1000 * 60 * 60));
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+      setTimeLeft({ hours, minutes, seconds });
+    };
+
+    // run immediately so UI updates without waiting a second
+    tick();
+    interval = setInterval(tick, 1000);
+
+    return () => { if (interval) clearInterval(interval); };
+  }, [effectiveTarget]);
+
+  const isFinalMinute = timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds <= 59;
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4 relative overflow-hidden">
@@ -86,13 +99,16 @@ const CountdownClock: React.FC = () => {
       <div className="relative z-10 text-center max-w-6xl w-full">
         {/* Header */}
         <div className="mb-16">
-          <h1 className="text-6xl md:text-8xl font-bold text-white mb-4 tracking-wider font-mono">
-            48:<span className="text-cyan-400">00:</span><span className="text-purple-400">00</span>
+          <h1 className={`text-4xl md:text-6xl font-bold mb-3 tracking-wide ${isFinalMinute ? 'text-red-300 animate-pulse' : 'text-white'}`}>
+            Midnight Reveal Incoming
           </h1>
+          <p className="text-base md:text-lg text-gray-300/90 max-w-2xl mx-auto">
+            Stay tuned — the countdown below ticks to tonight’s 12:00 AM. Something exciting awaits at midnight.
+          </p>
           <div className="flex justify-center items-center space-x-4">
             <div className="w-16 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
             <h2 className="text-lg md:text-xl font-light text-gray-400 tracking-[0.5em] uppercase font-mono">
-              COUNTDOWN
+              {isActive ? 'REVEAL IN' : 'REVEALED'}
             </h2>
             <div className="w-16 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
           </div>
@@ -101,7 +117,7 @@ const CountdownClock: React.FC = () => {
         {/* Futuristic Clock Interface */}
         <div className="flex flex-wrap justify-center gap-12 md:gap-16 mb-16">
           <div className="group">
-            <HexagonalClock value={timeLeft.hours} max={48} color="#00ff88" label="HOURS">
+            <HexagonalClock value={timeLeft.hours} max={24} color="#00ff88" label="HOURS">
               <div className="text-center">
                 <div className="text-5xl md:text-6xl font-bold text-white font-mono mb-2 tracking-wider">
                   {formatTime(timeLeft.hours)}
@@ -143,70 +159,7 @@ const CountdownClock: React.FC = () => {
           </div>
         </div>
 
-        {/* Digital Progress Bar */}
-        <div className="w-full max-w-4xl mx-auto mb-12">
-          <div className="bg-gray-900 border-2 border-gray-700 rounded-lg p-6">
-            <div className="flex justify-between text-sm text-gray-400 mb-4 font-mono">
-              <span className="text-green-400">[START]</span>
-              <span className="text-white">{progress.toFixed(2)}% COMPLETE</span>
-              <span className="text-red-400">[END]</span>
-            </div>
-            <div className="w-full bg-gray-800 rounded-full h-3 border border-gray-600">
-              <div 
-                className="h-3 rounded-full transition-all duration-1000 ease-out relative overflow-hidden"
-                style={{ 
-                  width: `${progress}%`,
-                  background: 'linear-gradient(90deg, #00ff88, #00d4ff, #ff0080)',
-                  boxShadow: '0 0 20px rgba(0, 255, 136, 0.5)'
-                }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent animate-pulse"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* System Status */}
-        <div className="bg-gray-900 border-2 border-gray-700 rounded-lg p-6 max-w-2xl mx-auto mb-8">
-          <div className="flex items-center justify-center space-x-4">
-            <div className="flex space-x-1">
-              <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-              <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse delay-300"></div>
-              <div className="w-3 h-3 bg-red-400 rounded-full animate-pulse delay-600"></div>
-            </div>
-            {isActive ? (
-              <div className="text-green-400 font-mono text-lg">
-                SYSTEM ACTIVE - COUNTDOWN IN PROGRESS
-              </div>
-            ) : (
-              <div className="text-red-400 font-mono text-lg animate-pulse">
-                SEQUENCE COMPLETE - MISSION SUCCESS
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Terminal Info */}
-        <div className="bg-black border border-gray-700 rounded p-4 font-mono text-sm text-gray-400 max-w-lg mx-auto">
-          <div className="text-green-400">$ system_info</div>
-          <div>Started: {startTime.toLocaleString()}</div>
-          <div>Duration: 48:00:00</div>
-          <div>Status: <span className={isActive ? 'text-green-400' : 'text-red-400'}>{isActive ? 'RUNNING' : 'TERMINATED'}</span></div>
-        </div>
-
-        {/* Corner HUD Elements */}
-        <div className="absolute top-4 left-4 text-green-400 font-mono text-xs opacity-60">
-          [SYS_01]
-        </div>
-        <div className="absolute top-4 right-4 text-cyan-400 font-mono text-xs opacity-60">
-          [ONLINE]
-        </div>
-        <div className="absolute bottom-4 left-4 text-pink-500 font-mono text-xs opacity-60">
-          [ACTIVE]
-        </div>
-        <div className="absolute bottom-4 right-4 text-purple-400 font-mono text-xs opacity-60">
-          [CNTR_48]
-        </div>
+        {/* Removed progress bar and additional status sections as requested */}
       </div>
     </div>
   );
