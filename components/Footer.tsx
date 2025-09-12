@@ -50,7 +50,7 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-bold uppercase mb-6 text-white">Follow Us</h3>
             <div className="flex space-x-4 mb-6">
-              <a href="#" className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
+              <a href="#" className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-[#3b5998]/30 transition-colors">
                 <FaFacebookF className="w-4 h-4" />
               </a>
               <a href="#" className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
