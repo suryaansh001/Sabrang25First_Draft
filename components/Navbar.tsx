@@ -148,7 +148,7 @@ const Navbar: React.FC = () => {
 						</button>
               </>
             ) : (
-              <a href="/coming-soon" className="block mt-3 w-full">
+              <a href="/Registration-starting-soon" className="block mt-3 w-full">
                 <span className="block w-full px-4 py-2 text-sm text-white bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-500 rounded-lg hover:from-purple-700 hover:via-pink-700 hover:to-cyan-600 transition-all duration-300 transform hover:scale-[1.02] transition">Register Now</span>
               </a>
             )}
@@ -170,7 +170,7 @@ const Navbar: React.FC = () => {
 					</button>
           </div>
         ) : (
-          <a href="/coming-soon" className="relative inline-flex items-center gap-2 rounded-full px-6 py-3 text-white text-base font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-500 shadow-[0_10px_40px_rgba(147,51,234,0.3)] hover:shadow-[0_10px_40px_rgba(147,51,234,0.5)] hover:scale-105 transition-all duration-300 transform">
+          <a href="/Registration-starting-soon" className="relative inline-flex items-center gap-2 rounded-full px-6 py-3 text-white text-base font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-500 shadow-[0_10px_40px_rgba(147,51,234,0.3)] hover:shadow-[0_10px_40px_rgba(147,51,234,0.5)] hover:scale-105 transition-all duration-300 transform">
             <span className="relative z-10">Register Now</span>
             <span className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-pink-600 to-purple-600 opacity-0 hover:opacity-100 transition-opacity duration-500"></span>
           </a>

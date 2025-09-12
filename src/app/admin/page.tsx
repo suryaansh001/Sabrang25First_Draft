@@ -11,7 +11,8 @@ import {
   BarChart3, 
   Settings,
   Calendar,
-  Gift
+  Gift,
+  Mail
 } from "lucide-react";
 import ProtectedRoute from "../../../components/ProtectedRoute";
 import createApiUrl from "../../lib/api";
@@ -78,6 +79,13 @@ function AdminDashboard() {
       icon: <Users className="w-6 h-6" />,
       gradient: "from-purple-500 to-pink-600",
       hoverGradient: "from-purple-600 to-pink-700"
+    },
+    {
+      title: "Email Management",
+      href: "/admin/email-management",
+      icon: <Mail className="w-6 h-6" />,
+      gradient: "from-cyan-500 to-blue-600",
+      hoverGradient: "from-cyan-600 to-blue-700"
     },
     {
       title: "Promo Codes",
