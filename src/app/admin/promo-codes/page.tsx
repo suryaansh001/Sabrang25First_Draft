@@ -121,23 +121,60 @@ function PromoCodesPage() {
 
   const createPromoCode = async () => {
     try {
-      const response = await fetch(createApiUrl('/admin/promo-codes'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(formData)
-      });
+      // If usage limit > 1, use bulk creation with random codes
+      if (formData.usageLimit > 1) {
+        const bulkData = {
+          codePrefix: formData.code || 'PROMO',
+          count: formData.usageLimit,
+          discountType: formData.discountType,
+          discountValue: formData.discountValue,
+          maxDiscountAmount: formData.maxDiscountAmount,
+          minOrderAmount: formData.minOrderAmount,
+          validUntil: formData.validUntil,
+          allowedEmailDomains: formData.allowedEmailDomains || [],
+          applicableEvents: formData.applicableEvents || [],
+          description: formData.description
+        };
 
-      if (response.ok) {
-        const result = await response.json();
-        setPromoCodes([result.promoCode, ...promoCodes]);
-        setShowCreateForm(false);
-        resetForm();
+        const response = await fetch(createApiUrl('/admin/promo-codes/bulk'), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(bulkData)
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          alert(`Successfully created ${result.codes.length} promo codes!`);
+          fetchPromoCodes(); // Refresh the list
+          setShowCreateForm(false);
+          resetForm();
+        } else {
+          const error = await response.json();
+          alert(error.message || 'Failed to create promo codes');
+        }
       } else {
-        const error = await response.json();
-        alert(error.message || 'Failed to create promo code');
+        // Single promo code creation
+        const response = await fetch(createApiUrl('/admin/promo-codes'), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          setPromoCodes([result.promoCode, ...promoCodes]);
+          setShowCreateForm(false);
+          resetForm();
+        } else {
+          const error = await response.json();
+          alert(error.message || 'Failed to create promo code');
+        }
       }
     } catch (error) {
       console.error('Failed to create promo code:', error);
@@ -461,15 +498,22 @@ function PromoCodesPage() {
             }} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Promo Code</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Promo Code {formData.usageLimit > 1 ? '(Prefix for multiple codes)' : ''}
+                  </label>
                   <input
                     type="text"
                     value={formData.code}
                     onChange={(e) => setFormData({...formData, code: e.target.value.toUpperCase()})}
                     className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="SAVE20"
+                    placeholder={formData.usageLimit > 1 ? "SABRANG25" : "SAVE20"}
                     required
                   />
+                  {formData.usageLimit > 1 && (
+                    <p className="text-xs text-gray-400 mt-1">
+                      {formData.usageLimit} random codes will be generated with this prefix
+                    </p>
+                  )}
                 </div>
 
                 <div>
