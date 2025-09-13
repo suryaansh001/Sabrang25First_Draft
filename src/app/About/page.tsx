@@ -13,6 +13,28 @@ const AboutPage = () => {
   const router = useRouter();
   const { navigate } = useNavigation();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+
+  // Prevent background scrolling when mobile menu is open
+  React.useEffect(() => {
+    if (mobileMenuOpen) {
+      // Prevent scrolling on the body
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+    } else {
+      // Restore scrolling
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    };
+  }, [mobileMenuOpen]);
   const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
     { title: 'Home', href: '/', icon: <Home className="w-5 h-5" /> },
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
@@ -53,7 +75,7 @@ const AboutPage = () => {
 
       {/* Mobile menu overlay */}
       {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
+        <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md overflow-hidden">
           <div className="absolute top-4 right-4">
             <button
               aria-label="Close menu"

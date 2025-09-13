@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, MapPin, Clock, Users, Star, Filter, Crown, Check, Share2, Home, HelpCircle, Handshake, Mail, Info, ChevronUp } from 'lucide-react';
+import { X, Calendar, MapPin, Clock, Users, Star, Filter, Crown, Check, Share2, Home, HelpCircle, Handshake, Mail, Info, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
 import Logo from '../../../components/Logo';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '../../../components/NavigationContext';
@@ -337,6 +337,41 @@ export default function EventsPage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [showCopyMessage, setShowCopyMessage] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [clickedEventId, setClickedEventId] = useState<number | null>(null);
+
+
+  // Prevent background scrolling when modal or mobile menu is open
+  useEffect(() => {
+    if (selectedEvent || mobileMenuOpen) {
+      // Save current scroll position
+      setScrollPosition(window.scrollY);
+      
+      // Prevent scrolling on the body
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.top = `-${window.scrollY}px`;
+    } else {
+      // Restore scrolling
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+      
+      // Restore scroll position
+      window.scrollTo(0, scrollPosition);
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+    };
+  }, [selectedEvent, mobileMenuOpen, scrollPosition]);
+
   const [showScrollTop, setShowScrollTop] = useState(false);
   // ComingSoonOverlay removed – show main content directly
   const [isPageLoaded, setIsPageLoaded] = useState(true);
@@ -355,12 +390,42 @@ export default function EventsPage() {
   ];
 
   const handleCardClick = (event: Event) => {
+    // Save current scroll position and event ID before opening modal
+    setScrollPosition(window.scrollY);
+    setClickedEventId(event.id);
     setSelectedEvent(event);
   };
 
   const handleClose = () => {
     setSelectedEvent(null);
     setShowRules(false);
+    
+    // Smooth scroll back to the saved position after a short delay
+    setTimeout(() => {
+      if (clickedEventId) {
+        // Try to scroll to the specific event card
+        const eventElement = document.querySelector(`[data-event-id="${clickedEventId}"]`);
+        if (eventElement) {
+          eventElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+        } else {
+          // Fallback to saved scroll position
+          window.scrollTo({
+            top: scrollPosition,
+            behavior: 'smooth'
+          });
+        }
+      } else {
+        // Fallback to saved scroll position
+        window.scrollTo({
+          top: scrollPosition,
+          behavior: 'smooth'
+        });
+      }
+      setClickedEventId(null);
+    }, 100);
   };
   
 
@@ -420,11 +485,60 @@ export default function EventsPage() {
     return categoryMatch && flagshipMatch;
   });
 
+  // Calculate navigation state
+  const currentEventIndex = selectedEvent ? filteredEvents.findIndex(event => event.id === selectedEvent.id) : -1;
+  const hasPrevious = currentEventIndex > 0;
+  const hasNext = currentEventIndex < filteredEvents.length - 1;
+
+  // Navigation functions for event modal
+  const handlePreviousEvent = () => {
+    if (hasPrevious) {
+      setSelectedEvent(filteredEvents[currentEventIndex - 1]);
+    }
+  };
+
+  const handleNextEvent = () => {
+    if (hasNext) {
+      setSelectedEvent(filteredEvents[currentEventIndex + 1]);
+    }
+  };
+
+  // Keyboard navigation for event modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!selectedEvent) return;
+      
+      switch (e.key) {
+        case 'Escape':
+          handleClose();
+          break;
+        case 'ArrowLeft':
+          if (hasPrevious) {
+            e.preventDefault();
+            handlePreviousEvent();
+          }
+          break;
+        case 'ArrowRight':
+          if (hasNext) {
+            e.preventDefault();
+            handleNextEvent();
+          }
+          break;
+      }
+    };
+
+    if (selectedEvent) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [selectedEvent, hasPrevious, hasNext]);
+
   // A helper to get catalog data for an event
   const getEventCatalogData = (eventId: number) => {
     // The EVENT_CATALOG is 1-indexed on `id` and might not be a complete list.
     return EVENT_CATALOG.find(e => e.id === eventId);
   };
+
 
   // If any event is selected, immediately show the overlay and hide everything else
   if (selectedEvent) {
@@ -440,6 +554,39 @@ export default function EventsPage() {
             >
               <X className="w-5 h-5 mx-auto" />
             </button>
+
+            {/* Navigation Arrows */}
+            {hasPrevious && (
+              <button
+                aria-label="Previous event"
+                onClick={handlePreviousEvent}
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-[10001] w-12 h-12 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center group"
+              >
+                <ChevronLeft className="w-6 h-6 group-hover:scale-110 transition-transform" />
+              </button>
+            )}
+
+            {hasNext && (
+              <button
+                aria-label="Next event"
+                onClick={handleNextEvent}
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-[10001] w-12 h-12 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center group"
+              >
+                <ChevronRight className="w-6 h-6 group-hover:scale-110 transition-transform" />
+              </button>
+            )}
+
+            {/* Navigation hints */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[10001] text-center">
+              <div className="px-4 py-2 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 text-white text-xs">
+                {hasPrevious && hasNext ? '← → Navigate' : hasPrevious ? '← Previous' : hasNext ? 'Next →' : ''}
+              </div>
+            </div>
+
+            {/* Event Counter */}
+            <div className="absolute top-4 left-4 z-[10001] px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-sm">
+              {currentEventIndex + 1} / {filteredEvents.length}
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2">
               <div className="relative aspect-[4/3] md:aspect-auto md:h-full bg-black/40">
                 <img
@@ -450,7 +597,7 @@ export default function EventsPage() {
                 />
                 <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/70 to-transparent" />
               </div>
-              <div className="p-6 md:p-8 text-white space-y-5 md:space-y-6 overflow-y-auto max-h-[80vh] md:border-l md:border-white/10">
+              <div className="p-6 md:p-8 text-white space-y-5 md:space-y-6 overflow-y-auto max-h-[70vh] md:max-h-[75vh] md:border-l md:border-white/10">
                 <div>
                   <h2 className="text-2xl md:text-3xl font-bold mb-2 tracking-tight">{selectedEvent.title}</h2>
                   <div className="flex flex-wrap items-center gap-3 text-sm text-gray-300">
@@ -674,6 +821,7 @@ export default function EventsPage() {
                     {filteredEvents.map((event, index) => (
                       <motion.div
                         key={event.id}
+                        data-event-id={event.id}
                         initial={{ opacity: 0, y: 24 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.35, delay: index * 0.04 }}
@@ -806,7 +954,7 @@ export default function EventsPage() {
 
           {/* Mobile menu overlay */}
           {mobileMenuOpen && (
-            <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
+            <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md overflow-hidden">
               <div className="absolute top-4 right-4">
                 <button
                   aria-label="Close menu"

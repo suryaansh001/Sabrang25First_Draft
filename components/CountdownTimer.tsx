@@ -73,7 +73,7 @@ const CountdownClock: React.FC<CountdownClockProps> = ({ targetDate }) => {
   const isFinalMinute = timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds <= 59;
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-black flex items-center justify-center p-2 sm:p-4 relative overflow-hidden">
       {/* Grid Background */}
       <div 
         className="absolute inset-0 opacity-20"
@@ -82,15 +82,15 @@ const CountdownClock: React.FC<CountdownClockProps> = ({ targetDate }) => {
             linear-gradient(rgba(0, 255, 136, 0.1) 1px, transparent 1px),
             linear-gradient(90deg, rgba(0, 255, 136, 0.1) 1px, transparent 1px)
           `,
-          backgroundSize: '50px 50px'
+          backgroundSize: '30px 30px'
         }}
       ></div>
 
-      {/* Neon Glowing Orbs */}
-      <div className="absolute top-10 left-10 w-32 h-32 bg-cyan-400 rounded-full blur-3xl opacity-20 animate-pulse"></div>
-      <div className="absolute top-20 right-20 w-24 h-24 bg-purple-500 rounded-full blur-3xl opacity-20 animate-pulse delay-1000"></div>
-      <div className="absolute bottom-20 left-1/4 w-28 h-28 bg-pink-500 rounded-full blur-3xl opacity-20 animate-pulse delay-500"></div>
-      <div className="absolute bottom-32 right-1/3 w-20 h-20 bg-yellow-400 rounded-full blur-3xl opacity-20 animate-pulse delay-700"></div>
+      {/* Neon Glowing Orbs - Mobile Optimized */}
+      <div className="absolute top-4 left-4 sm:top-10 sm:left-10 w-16 h-16 sm:w-32 sm:h-32 bg-cyan-400 rounded-full blur-3xl opacity-20 animate-pulse"></div>
+      <div className="absolute top-8 right-4 sm:top-20 sm:right-20 w-12 h-12 sm:w-24 sm:h-24 bg-purple-500 rounded-full blur-3xl opacity-20 animate-pulse delay-1000"></div>
+      <div className="absolute bottom-16 left-1/4 sm:bottom-20 w-14 h-14 sm:w-28 sm:h-28 bg-pink-500 rounded-full blur-3xl opacity-20 animate-pulse delay-500"></div>
+      <div className="absolute bottom-24 right-1/3 sm:bottom-32 w-10 h-10 sm:w-20 sm:h-20 bg-yellow-400 rounded-full blur-3xl opacity-20 animate-pulse delay-700"></div>
 
       {/* Scan Lines Effect */}
       <div className="absolute inset-0 pointer-events-none">
@@ -100,36 +100,36 @@ const CountdownClock: React.FC<CountdownClockProps> = ({ targetDate }) => {
         <div className="absolute w-full h-px bg-yellow-400 opacity-30 animate-pulse delay-300" style={{ top: '80%' }}></div>
       </div>
 
-      <div className="relative z-10 text-center max-w-6xl w-full">
+      <div className="relative z-10 text-center max-w-6xl w-full px-2 sm:px-0">
         {/* Header */}
-        <div className="mb-16">
-          <h1 className={`text-4xl md:text-6xl font-bold mb-3 tracking-wide ${isFinalMinute ? 'text-red-300 animate-pulse' : 'text-white'}`}>
+        <div className="mb-8 sm:mb-16">
+          <h1 className={`text-2xl sm:text-4xl md:text-6xl font-bold mb-2 sm:mb-3 tracking-wide px-2 ${isFinalMinute ? 'text-red-300 animate-pulse' : 'text-white'}`}>
             Midnight Reveal Incoming
           </h1>
-          <p className="text-base md:text-lg text-gray-300/90 max-w-2xl mx-auto">
-            Stay tuned — the countdown below ticks to tonight’s 12:00 AM. Something exciting awaits at midnight.
+          <p className="text-sm sm:text-base md:text-lg text-gray-300/90 max-w-2xl mx-auto px-4">
+            Stay tuned — the countdown below ticks to tonight's 12:00 AM. Something exciting awaits at midnight.
           </p>
-          <div className="flex justify-center items-center space-x-4">
-            <div className="w-16 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
-            <h2 className="text-lg md:text-xl font-light text-gray-400 tracking-[0.5em] uppercase font-mono">
+          <div className="flex justify-center items-center space-x-2 sm:space-x-4 mt-4">
+            <div className="w-8 sm:w-16 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
+            <h2 className="text-sm sm:text-lg md:text-xl font-light text-gray-400 tracking-[0.3em] sm:tracking-[0.5em] uppercase font-mono">
               {isActive ? 'REVEAL IN' : 'REVEALED'}
             </h2>
-            <div className="w-16 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
+            <div className="w-8 sm:w-16 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
           </div>
         </div>
 
-        {/* Futuristic Clock Interface */}
-        <div className="flex flex-wrap justify-center gap-12 md:gap-16 mb-16">
+         {/* Futuristic Clock Interface - One Line Layout */}
+         <div className="flex flex-row justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-12 mb-8 sm:mb-16 overflow-x-auto px-2">
           <div className="group">
             <HexagonalClock value={timeLeft.hours} max={24} color="#00ff88" label="HOURS">
               <div className="text-center">
-                <div className="text-5xl md:text-6xl font-bold text-white font-mono mb-2 tracking-wider">
+                 <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white font-mono mb-1 sm:mb-2 tracking-wider">
                   {formatTime(timeLeft.hours)}
                 </div>
-                <div className="text-xs text-green-400 font-bold tracking-[0.3em] font-mono opacity-80">
+                <div className="text-xs text-green-400 font-bold tracking-[0.2em] sm:tracking-[0.3em] font-mono opacity-80">
                   H:R:S
                 </div>
-                <div className="mt-2 w-8 h-px bg-green-400 mx-auto opacity-60"></div>
+                <div className="mt-1 sm:mt-2 w-6 sm:w-8 h-px bg-green-400 mx-auto opacity-60"></div>
               </div>
             </HexagonalClock>
           </div>
@@ -137,13 +137,13 @@ const CountdownClock: React.FC<CountdownClockProps> = ({ targetDate }) => {
           <div className="group">
             <HexagonalClock value={timeLeft.minutes} max={60} color="#00d4ff" label="MINUTES">
               <div className="text-center">
-                <div className="text-5xl md:text-6xl font-bold text-white font-mono mb-2 tracking-wider">
+                 <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white font-mono mb-1 sm:mb-2 tracking-wider">
                   {formatTime(timeLeft.minutes)}
                 </div>
-                <div className="text-xs text-cyan-400 font-bold tracking-[0.3em] font-mono opacity-80">
+                <div className="text-xs text-cyan-400 font-bold tracking-[0.2em] sm:tracking-[0.3em] font-mono opacity-80">
                   M:I:N
                 </div>
-                <div className="mt-2 w-8 h-px bg-cyan-400 mx-auto opacity-60"></div>
+                <div className="mt-1 sm:mt-2 w-6 sm:w-8 h-px bg-cyan-400 mx-auto opacity-60"></div>
               </div>
             </HexagonalClock>
           </div>
@@ -151,13 +151,13 @@ const CountdownClock: React.FC<CountdownClockProps> = ({ targetDate }) => {
           <div className="group">
             <HexagonalClock value={timeLeft.seconds} max={60} color="#ff0080" label="SECONDS">
               <div className="text-center">
-                <div className="text-5xl md:text-6xl font-bold text-white font-mono mb-2 tracking-wider">
+                 <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white font-mono mb-1 sm:mb-2 tracking-wider">
                   {formatTime(timeLeft.seconds)}
                 </div>
-                <div className="text-xs text-pink-500 font-bold tracking-[0.3em] font-mono opacity-80">
+                <div className="text-xs text-pink-500 font-bold tracking-[0.2em] sm:tracking-[0.3em] font-mono opacity-80">
                   S:E:C
                 </div>
-                <div className="mt-2 w-8 h-px bg-pink-500 mx-auto opacity-60"></div>
+                <div className="mt-1 sm:mt-2 w-6 sm:w-8 h-px bg-pink-500 mx-auto opacity-60"></div>
               </div>
             </HexagonalClock>
           </div>
@@ -177,7 +177,7 @@ const HexagonalClock: React.FC<HexagonalClockProps> = ({ value, max, children, c
   return (
     <div className="relative">
       {/* Hexagonal Container */}
-      <div className="relative w-48 h-48 flex items-center justify-center">
+      <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 flex items-center justify-center flex-shrink-0">
         {/* Background Hexagon */}
         <div 
           className="absolute inset-0 border-2 border-gray-700"
@@ -207,11 +207,11 @@ const HexagonalClock: React.FC<HexagonalClockProps> = ({ value, max, children, c
           }}
         ></div>
         
-        {/* Corner Brackets */}
-        <div className="absolute top-2 left-8 w-4 h-4 border-l-2 border-t-2 border-gray-500"></div>
-        <div className="absolute top-2 right-8 w-4 h-4 border-r-2 border-t-2 border-gray-500"></div>
-        <div className="absolute bottom-2 left-8 w-4 h-4 border-l-2 border-b-2 border-gray-500"></div>
-        <div className="absolute bottom-2 right-8 w-4 h-4 border-r-2 border-b-2 border-gray-500"></div>
+         {/* Corner Brackets */}
+         <div className="absolute top-1 left-4 sm:top-2 sm:left-8 w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 border-l-2 border-t-2 border-gray-500"></div>
+         <div className="absolute top-1 right-4 sm:top-2 sm:right-8 w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 border-r-2 border-t-2 border-gray-500"></div>
+         <div className="absolute bottom-1 left-4 sm:bottom-2 sm:left-8 w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 border-l-2 border-b-2 border-gray-500"></div>
+         <div className="absolute bottom-1 right-4 sm:bottom-2 sm:right-8 w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 border-r-2 border-b-2 border-gray-500"></div>
         
         {/* Center Content */}
         <div className="relative z-10 text-center">
@@ -223,25 +223,25 @@ const HexagonalClock: React.FC<HexagonalClockProps> = ({ value, max, children, c
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="absolute w-1 bg-gray-800 transition-all duration-500"
-              style={{
-                height: '20px',
-                background: percentage > (i * 16.67) ? color : '#1f2937',
-                filter: percentage > (i * 16.67) ? `drop-shadow(0 0 5px ${color})` : 'none',
-                transform: `rotate(${i * 60}deg)`,
-                transformOrigin: 'center 96px',
-                top: '50%',
-                left: '50%',
-                marginLeft: '-2px',
-                marginTop: '-96px'
-              }}
+              className="absolute w-0.5 sm:w-1 bg-gray-800 transition-all duration-500"
+               style={{
+                 height: '8px',
+                 background: percentage > (i * 16.67) ? color : '#1f2937',
+                 filter: percentage > (i * 16.67) ? `drop-shadow(0 0 5px ${color})` : 'none',
+                 transform: `rotate(${i * 60}deg)`,
+                 transformOrigin: 'center 48px',
+                 top: '50%',
+                 left: '50%',
+                 marginLeft: '-1px',
+                 marginTop: '-48px'
+               }}
             />
           ))}
         </div>
       </div>
       
       {/* Label */}
-      <div className="text-center mt-4">
+      <div className="text-center mt-2 sm:mt-4">
         <div className="text-xs font-mono tracking-widest" style={{ color }}>
           [{label}]
         </div>
