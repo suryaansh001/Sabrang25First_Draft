@@ -237,7 +237,7 @@ const InfinityTransition: React.FC<InfinityTransitionProps> = ({ isActive, onCom
   if (!isActive) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] pointer-events-auto">
+    <div className="fixed inset-0 z-[99999] pointer-events-auto">
       {/* Full black background - always visible when active */}
       <div className="absolute inset-0 bg-black" />
       
