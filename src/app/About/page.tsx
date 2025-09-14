@@ -382,7 +382,13 @@ const AboutPage = () => {
             <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">
               {/* Step Up */}
               <div className="relative group h-[180px] md:h-[280px] bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl md:rounded-2xl overflow-hidden">
-                <div className="absolute inset-0 bg-black/25" />
+                {/* Background Image */}
+                <img 
+                  src="/images/stepup.JPG" 
+                  alt="Step Up Solo Dance"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/40" />
                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
                   <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
                   <h3 className="text-base md:text-2xl font-bold text-white mb-2">Step Up</h3>
