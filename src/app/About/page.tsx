@@ -3,6 +3,9 @@
 import React from 'react';
 import Image from 'next/image';
 import Logo from '../../../components/Logo';
+import SplitText from '../../../components/SplitText';
+import BlurText from '../../../components/BlurText';
+import TextType from '../../../components/Texttype';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '../../../components/NavigationContext';
 import { Home, Info, Calendar, Star, Clock, Users, HelpCircle, Handshake, Mail, X } from 'lucide-react';
@@ -128,10 +131,18 @@ const AboutPage = () => {
                 SABRANG
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-medium" style={{ fontFamily: "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
-              Experience the grandest cultural fest. Unleash your talent, witness captivating performances, 
-              and create unforgettable memories that will last a lifetime.
-            </p>
+            <TextType
+              text="Experience the grandest cultural fest. Unleash your talent, witness captivating performances, and create unforgettable memories that will last a lifetime."
+              as="p"
+              className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-medium"
+              typingSpeed={25}
+              initialDelay={500}
+              showCursor={true}
+              cursorCharacter="|"
+              cursorBlinkDuration={0.8}
+              startOnVisible={true}
+              style={{ fontFamily: "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}
+            />
           </div>
         </section>
 
@@ -166,23 +177,64 @@ const AboutPage = () => {
               
               {/* Right: Content */}
               <div className="space-y-6 bg-black/40 py-6 px-6 rounded-xl relative z-10">
-                <h2 className="text-4xl md:text-5xl font-bold">
-                  <span className="text-[#f1e4fe]">
-                    What is Sabrang?
-                  </span>
-                </h2>
-                <p className="text-lg md:text-xl text-gray-300 leading-relaxed">
-                  Sabrang isn't just a fest — it's an explosion of talent, creativity, and cosmic energy. 
-                  Over three thrilling days, JKLU transforms into a universe of music, dance, art, technology, 
-                  and pure celebration.
-                </p>
-                <p className="text-lg md:text-xl text-gray-300 leading-relaxed">
-                  With a massive prize pool, flagship events, celebrity performances, and non-stop entertainment, 
-                  Sabrang is where memories are made and legends are born.
-                </p>
+                <SplitText
+                  text="What is Sabrang?"
+                  className="text-4xl md:text-5xl font-bold text-[#f1e4fe]"
+                  tag="h2"
+                  delay={30}
+                  duration={0.4}
+                  ease="power3.out"
+                  splitType="words"
+                  from={{ opacity: 0, y: 50, rotationX: 90 }}
+                  to={{ opacity: 1, y: 0, rotationX: 0 }}
+                  threshold={0.1}
+                  rootMargin="-50px"
+                  textAlign="left"
+                />
+                <SplitText
+                  text="Sabrang isn't just a fest — it's an explosion of talent, creativity, and cosmic energy. Over three thrilling days, JKLU transforms into a universe of music, dance, art, technology, and pure celebration."
+                  className="text-lg md:text-xl text-gray-300 leading-relaxed"
+                  tag="p"
+                  delay={40}
+                  duration={0.3}
+                  ease="power2.out"
+                  splitType="words"
+                  from={{ opacity: 0, y: 30 }}
+                  to={{ opacity: 1, y: 0 }}
+                  threshold={0.2}
+                  rootMargin="-100px"
+                  textAlign="left"
+                />
+                <SplitText
+                  text="With a massive prize pool, flagship events, celebrity performances, and non-stop entertainment, Sabrang is where memories are made and legends are born."
+                  className="text-lg md:text-xl text-gray-300 leading-relaxed"
+                  tag="p"
+                  delay={50}
+                  duration={0.3}
+                  ease="power2.out"
+                  splitType="words"
+                  from={{ opacity: 0, y: 30 }}
+                  to={{ opacity: 1, y: 0 }}
+                  threshold={0.2}
+                  rootMargin="-100px"
+                  textAlign="left"
+                />
                 <div className="flex items-center space-x-4 pt-4">
                   <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
-                  <span className="text-purple-400 font-medium">Experience the Magic</span>
+                  <SplitText
+                    text="Experience the Magic"
+                    className="text-purple-400 font-medium"
+                    tag="span"
+                    delay={60}
+                    duration={0.25}
+                    ease="power2.out"
+                    splitType="chars"
+                    from={{ opacity: 0, scale: 0.5 }}
+                    to={{ opacity: 1, scale: 1 }}
+                    threshold={0.3}
+                    rootMargin="-80px"
+                    textAlign="left"
+                  />
                 </div>
               </div>
             </div>
@@ -226,7 +278,7 @@ const AboutPage = () => {
             <div className="text-center max-w-4xl mx-auto">
               {/* Content */}
               <div className="space-y-6 bg-black/30 rounded-xl py-8">
-                <h2 className="text-4xl md:text-5xl font-bold">
+                <h2 className="text-4xl md:text-5xl font-bold text-center">
                   <span className="text-[#fae8ff]">
                     Why It's OP
                   </span>
@@ -381,14 +433,15 @@ const AboutPage = () => {
             {/* Additional Flagship Cards */}
             <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">
               {/* Step Up */}
-              <div className="relative group h-[180px] md:h-[280px] bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl md:rounded-2xl overflow-hidden">
-                {/* Background Image */}
-                <img 
-                  src="/images/stepup.JPG" 
-                  alt="Step Up Solo Dance"
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black/40" />
+              <div className="relative group h-[180px] md:h-[280px] rounded-xl md:rounded-2xl overflow-hidden">
+                <div className="absolute inset-0">
+                  <img 
+                    src="/images/stepup.JPG" 
+                    alt="Step Up Solo Dance"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                </div>
                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
                   <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
                   <h3 className="text-base md:text-2xl font-bold text-white mb-2">Step Up</h3>
@@ -544,6 +597,22 @@ const AboutPage = () => {
         
         .animate-float {
           animation: float 3s ease-in-out infinite;
+        }
+        
+        /* TextType component styles */
+        .text-type {
+          display: inline-block;
+          white-space: pre-wrap;
+        }
+        
+        .text-type__cursor {
+          margin-left: 0.25rem;
+          display: inline-block;
+          opacity: 1;
+        }
+        
+        .text-type__cursor--hidden {
+          display: none;
         }
       `}</style>
     </div>
