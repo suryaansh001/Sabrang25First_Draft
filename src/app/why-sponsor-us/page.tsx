@@ -4,6 +4,7 @@ import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Users, CheckCircle, ArrowRight, Download, Megaphone, Eye, Star as StarIcon, Briefcase, Home, Info, Calendar, Clock, HelpCircle, Handshake, Mail } from 'lucide-react';
 import { useNavigation } from '../../../components/NavigationContext';
+import emailjs from '@emailjs/browser';
 
 // --- Data from your sponsorship deck ---
 
@@ -151,7 +152,7 @@ const TierCard = ({ tier, index }: { tier: any, index: number }) => (
 interface FormField {
   name: string;
   label: string; 
-  type: 'text' | 'email' | 'phone' | 'select' | 'textarea';
+  type: 'text' | 'email' | 'phone' | 'number' | 'select';
   required?: boolean;
   placeholder?: string;
   options?: { value: string; label: string }[];
@@ -161,13 +162,8 @@ const contactFields: FormField[] = [
   { name: 'companyName', label: 'Company Name', type: 'text', required: true, placeholder: 'Enter your company name' }, 
   { name: 'contactPerson', label: 'Contact Person', type: 'text', required: true, placeholder: 'Enter your name' },
   { name: 'email', label: 'Email', type: 'email', required: true, placeholder: 'Enter your email' },
-  { name: 'phone', label: 'Phone Number', type: 'phone', placeholder: 'Enter your phone number' },
-  { name: 'sponsorshipAmount', label: 'Sponsorship Amount', type: 'select', options: [
-    { value: '50000 - 100000', label: '₹50,000 - ₹1,00,000' },
-    { value: '100000 - 200000', label: '₹1,00,001 - ₹2,00,000' },
-    { value: '200000 - 500000', label: '₹2,00,001 - ₹5,00,000' },
-    { value: '500000+', label: '₹5,00,000+' }
-  ] },
+  { name: 'phone', label: 'Phone Number', type: 'phone', required: true, placeholder: 'Enter your phone number' },
+  { name: 'sponsorshipAmount', label: 'Sponsorship Amount (₹)', type: 'number', placeholder: 'Enter amount in rupees (optional)' },
   { name: 'preferredTiming', label: 'Preferred Call Time', type: 'select', options: [
     { value: 'Morning', label: 'Morning (9 AM - 12 PM)' },
     { value: 'Afternoon', label: 'Afternoon (12 PM - 5 PM)' },
@@ -179,7 +175,84 @@ const contactFields: FormField[] = [
 export default function WhySponsorUsPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    companyName: '',
+    contactPerson: '',
+    email: '',
+    phone: '',
+    sponsorshipAmount: '',
+    preferredTiming: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
   const { navigate } = useNavigation();
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitMessage('');
+
+    // Validate required fields
+    if (!formData.companyName || !formData.contactPerson || !formData.email || !formData.phone) {
+      setSubmitMessage('Please fill in all required fields.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      // Initialize EmailJS (you only need to do this once in your app)
+      emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || '');
+
+      // Prepare template parameters
+      const templateParams = {
+        company_name: formData.companyName,
+        contact_person: formData.contactPerson,
+        from_email: formData.email,
+        phone: formData.phone,
+        sponsorship_amount: formData.sponsorshipAmount ? `₹${parseInt(formData.sponsorshipAmount).toLocaleString('en-IN')}` : 'Not specified',
+        preferred_timing: formData.preferredTiming || 'Not specified',
+        to_email: process.env.NEXT_PUBLIC_RECIPIENT_EMAIL || 'partnerships@sabrang.com',
+        submission_date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+      };
+
+      // Send email using EmailJS
+      await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '',
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || '',
+        templateParams
+      );
+
+      setSubmitMessage('Thank you! Your partnership inquiry has been sent successfully. We will contact you soon.');
+      setFormData({
+        companyName: '',
+        contactPerson: '',
+        email: '',
+        phone: '',
+        sponsorshipAmount: '',
+        preferredTiming: ''
+      });
+      
+      // Close modal after 3 seconds
+      setTimeout(() => {
+        setIsFormOpen(false);
+        setSubmitMessage('');
+      }, 3000);
+
+    } catch (error) {
+      console.error('EmailJS Error:', error);
+      setSubmitMessage('There was an error sending your message. Please try again or contact us directly.');
+    }
+    
+    setIsSubmitting(false);
+  };
 
   // Prevent background scrolling when modal is open
   React.useEffect(() => {
@@ -595,16 +668,21 @@ export default function WhySponsorUsPage() {
                 </button>
               </div>
 
-                <form  className="p-8 space-y-4">
+                <form onSubmit={handleSubmit} className="p-8 space-y-4">
                  {contactFields.map((field, index) => (
                  <div key={index}> 
-                 <label htmlFor={field.name} className="block text-gray-300 text-sm font-medium mb-2">{field.label}</label>
+                 <label htmlFor={field.name} className="block text-gray-300 text-sm font-medium mb-2">
+                   {field.label} {field.required && <span className="text-red-400">*</span>}
+                 </label>
                    {field.type === 'text' && (
                      <input
                      type="text"
                      id={field.name}
                      name={field.name}
-                    placeholder={field.placeholder}
+                     value={formData[field.name as keyof typeof formData]}
+                     onChange={handleInputChange}
+                     placeholder={field.placeholder}
+                     required={field.required}
                        className="w-full py-3 px-4 bg-black/40 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-black/60 transition-all duration-300" /> 
                       )}
                                 {field.type === 'email' && (
@@ -612,7 +690,10 @@ export default function WhySponsorUsPage() {
                      type="email"
                      id={field.name}
                      name={field.name}
+                     value={formData[field.name as keyof typeof formData]}
+                     onChange={handleInputChange}
                      placeholder={field.placeholder}
+                     required={field.required}
                        className="w-full py-3 px-4 bg-black/40 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-black/60 transition-all duration-300" /> 
                       )}
                             {field.type === 'phone' && (
@@ -620,13 +701,29 @@ export default function WhySponsorUsPage() {
                      type="tel"
                      id={field.name}
                      name={field.name}
+                     value={formData[field.name as keyof typeof formData]}
+                     onChange={handleInputChange}
                     placeholder={field.placeholder}
+                    required={field.required}
+                       className="w-full py-3 px-4 bg-black/40 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-black/60 transition-all duration-300" /> 
+                      )}
+                            {field.type === 'number' && (
+                     <input
+                     type="number"
+                     id={field.name}
+                     name={field.name}
+                     value={formData[field.name as keyof typeof formData]}
+                     onChange={handleInputChange}
+                    placeholder={field.placeholder}
+                    min="0"
                        className="w-full py-3 px-4 bg-black/40 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-black/60 transition-all duration-300" /> 
                       )}
                      {field.type === 'select' && (
                        <select
                           id={field.name}
                           name={field.name}
+                          value={formData[field.name as keyof typeof formData]}
+                          onChange={handleInputChange}
                        className="w-full py-3 px-4 bg-black/40 border border-white/20 rounded-lg text-white focus:outline-none focus:border-blue-400 focus:bg-black/60 transition-all duration-300">
                        <option value="">Select {field.label}</option>
                         {field.options && field.options.map(option => (
@@ -636,14 +733,21 @@ export default function WhySponsorUsPage() {
                     )}
                  </div>
                   ))}
+
+                  {submitMessage && (
+                    <div className={`p-4 rounded-lg text-center ${submitMessage.includes('successfully') ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
+                      {submitMessage}
+                    </div>
+                  )}
         
             <div className="flex items-center justify-between">
             <button
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        type="submit"
-      >
-        Submit
-      </button>
+              className={`bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition-all duration-300 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
+              type="submit"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Sending...' : 'Send Partnership Inquiry'}
+            </button>
   </div>
     </form>
        </motion.div>
