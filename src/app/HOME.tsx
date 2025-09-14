@@ -422,13 +422,13 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
             <div className="max-w-sm mx-auto">
                              {/* Main Title */}
                <h1 className="font-black leading-tight mb-6 whitespace-nowrap overflow-visible">
-                 <span className="preload inline text-5xl sm:text-7xl md:text-8xl text-white drop-shadow-lg" style={{ 
+                 <span className="preload inline text-6xl sm:text-8xl md:text-9xl text-orange-50 drop-shadow-lg" style={{ 
                    fontFamily: "'Quivert', sans-serif",
-                   textShadow: '0 0 20px rgba(255,255,255,0.3)'
+                   textShadow: '0 0 20px rgba(255,248,240,0.4)'
                  }}>
                    SABRANG
                  </span>
-                 <span className="inline-block text-6xl sm:text-6xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 ml-2 sm:ml-3 md:ml-4 leading-[1.1] align-baseline" style={{ 
+                 <span className="inline-block text-10xl sm:text-7xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 ml-2 sm:ml-3 md:ml-4 leading-[1.1] align-baseline" style={{ 
                    fontFamily: "'TAN Nimbus', sans-serif",
                    textShadow: '0 0 15px rgba(34,211,238,0.4)'
                  }}>
@@ -502,13 +502,31 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
 
       {/* Mobile Content Sections - separate from hero */}
       {!isLoading && (
-        <div className="block lg:hidden relative bg-gradient-to-b from-black/80 via-purple-900/40 to-black/90 min-h-screen overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: '800px 1200px' }}>
+        <div className="block lg:hidden relative min-h-screen overflow-hidden" style={{ 
+          contentVisibility: 'auto', 
+          containIntrinsicSize: '800px 1200px',
+          background: `
+            radial-gradient(ellipse at top, rgba(147, 51, 234, 0.3) 0%, transparent 50%),
+            radial-gradient(ellipse at bottom, rgba(59, 130, 246, 0.2) 0%, transparent 50%),
+            radial-gradient(ellipse at center, rgba(236, 72, 153, 0.15) 0%, transparent 70%),
+            linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(30, 0, 50, 0.8) 25%, rgba(0, 20, 40, 0.8) 50%, rgba(50, 0, 30, 0.8) 75%, rgba(0, 0, 0, 0.9) 100%)
+          `
+        }}>
           {/* Special Mobile Content Background */}
           <div className="absolute inset-0 pointer-events-none">
+            {/* Animated gradient overlays */}
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 via-transparent to-blue-600/10 animate-pulse" style={{ animationDuration: '8s' }}></div>
+            <div className="absolute inset-0 bg-gradient-to-tl from-pink-500/8 via-transparent to-cyan-500/8 animate-pulse" style={{ animationDuration: '12s', animationDelay: '2s' }}></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/6 via-transparent to-emerald-500/6 animate-pulse" style={{ animationDuration: '10s', animationDelay: '4s' }}></div>
+            
             {/* Animated background orbs */}
             <div className="absolute top-1/4 right-1/4 w-40 h-40 bg-gradient-to-br from-blue-500/20 to-purple-600/30 rounded-full blur-2xl animate-pulse" style={{ animationDuration: '6s' }}></div>
             <div className="absolute bottom-1/4 left-1/4 w-32 h-32 bg-gradient-to-tl from-pink-500/20 to-orange-500/30 rounded-full blur-xl animate-pulse" style={{ animationDuration: '8s', animationDelay: '2s' }}></div>
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-gradient-to-br from-cyan-500/15 to-indigo-600/25 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s', animationDelay: '1s' }}></div>
+            
+            {/* Additional floating gradient orbs */}
+            <div className="absolute top-1/3 left-1/6 w-24 h-24 bg-gradient-to-br from-yellow-400/15 to-red-500/20 rounded-full blur-xl animate-pulse" style={{ animationDuration: '7s', animationDelay: '3s' }}></div>
+            <div className="absolute bottom-1/3 right-1/6 w-28 h-28 bg-gradient-to-tl from-green-400/15 to-teal-500/20 rounded-full blur-2xl animate-pulse" style={{ animationDuration: '9s', animationDelay: '1.5s' }}></div>
             
             {/* Floating geometric shapes */}
             <div className="absolute inset-0">
@@ -527,10 +545,32 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               ))}
             </div>
 
-            {/* Subtle light rays */}
+            {/* Animated gradient lines */}
             <div className="absolute inset-0 overflow-hidden">
+              {/* Horizontal gradient lines */}
               <div className="absolute top-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-400/30 to-transparent opacity-50 animate-pulse" style={{ animationDuration: '5s' }} />
               <div className="absolute top-3/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent opacity-50 animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }} />
+              <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-pink-400/25 to-transparent opacity-40 animate-pulse" style={{ animationDuration: '7s', animationDelay: '2s' }} />
+              <div className="absolute top-1/6 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-400/20 to-transparent opacity-35 animate-pulse" style={{ animationDuration: '8s', animationDelay: '3s' }} />
+              
+              {/* Vertical gradient lines */}
+              <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-yellow-400/25 to-transparent opacity-40 animate-pulse" style={{ animationDuration: '6s', animationDelay: '1.5s' }} />
+              <div className="absolute top-0 left-3/4 w-px h-full bg-gradient-to-b from-transparent via-green-400/20 to-transparent opacity-35 animate-pulse" style={{ animationDuration: '7s', animationDelay: '2.5s' }} />
+              <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-transparent via-orange-400/30 to-transparent opacity-45 animate-pulse" style={{ animationDuration: '8s', animationDelay: '0.5s' }} />
+              
+              {/* Diagonal gradient lines */}
+              <div className="absolute top-0 left-0 w-full h-full">
+                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-indigo-400/20 to-transparent opacity-30 transform rotate-12 animate-pulse" style={{ animationDuration: '9s', animationDelay: '1s' }} />
+                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-emerald-400/25 to-transparent opacity-35 transform -rotate-12 animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
+                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-rose-400/20 to-transparent opacity-30 transform rotate-6 animate-pulse" style={{ animationDuration: '11s', animationDelay: '3s' }} />
+              </div>
+              
+              {/* Moving gradient lines */}
+              <div className="absolute inset-0">
+                <div className="absolute top-1/3 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent opacity-60 animate-pulse" style={{ animationDuration: '4s', animationDelay: '0s' }} />
+                <div className="absolute top-2/3 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-purple-500/35 to-transparent opacity-55 animate-pulse" style={{ animationDuration: '5s', animationDelay: '1s' }} />
+                <div className="absolute top-1/5 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-pink-500/30 to-transparent opacity-50 animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }} />
+              </div>
             </div>
           </div>
           {/* Hero Introduction Section */}
@@ -563,17 +603,26 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
             
             <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
               {[
-                { title: 'About', icon: <Info className="w-6 h-6" />, href: '/About', color: 'from-blue-500 to-cyan-500', glowColor: 'shadow-blue-500/20' },
-                { title: 'Events', icon: <Calendar className="w-6 h-6" />, href: '/Events', color: 'from-purple-500 to-pink-500', glowColor: 'shadow-purple-500/20' },
-                { title: 'Highlights', icon: <Star className="w-6 h-6" />, href: '/Gallery', color: 'from-yellow-500 to-orange-500', glowColor: 'shadow-yellow-500/20' },
-                { title: 'Schedule', icon: <Clock className="w-6 h-6" />, href: '/schedule/progress', color: 'from-green-500 to-emerald-500', glowColor: 'shadow-green-500/20' }
+                { title: 'About', icon: <Info className="w-6 h-6" />, href: '/About', color: 'from-blue-500 to-cyan-500', glowColor: 'shadow-blue-500/20', bgImage: '/images/about-section/about_back.webp' },
+                { title: 'Events', icon: <Calendar className="w-6 h-6" />, href: '/Events', color: 'from-purple-500 to-pink-500', glowColor: 'shadow-purple-500/20', bgImage: '/images/backgrounds/eventpage.webp' },
+                { title: 'Highlights', icon: <Star className="w-6 h-6" />, href: '/Gallery', color: 'from-yellow-500 to-orange-500', glowColor: 'shadow-yellow-500/20', bgImage: '/images/gallery_desktop/1.webp' },
+                { title: 'Schedule', icon: <Clock className="w-6 h-6" />, href: '/schedule/progress', color: 'from-green-500 to-emerald-500', glowColor: 'shadow-green-500/20', bgImage: '/images/Schedule.jpg' }
               ].map((item, index) => (
                 <button
                   key={item.title}
                   onClick={() => { navigate(item.href); }}
                   className={`group relative p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 hover:border-white/40 active:scale-[0.98] transition-all duration-300 text-center overflow-hidden hover:${item.glowColor} hover:shadow-lg`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                  style={{ 
+                    background: `linear-gradient(135deg, ${item.color.includes('blue') ? 'rgba(59, 130, 246, 0.1)' : item.color.includes('purple') ? 'rgba(147, 51, 234, 0.1)' : item.color.includes('yellow') ? 'rgba(234, 179, 8, 0.1)' : 'rgba(34, 197, 94, 0.1)'}, rgba(255, 255, 255, 0.05))`,
+                    animationDelay: `${index * 0.1}s`
+                  }}
                 >
+                  {/* Background image with low opacity */}
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10 group-hover:opacity-15 transition-opacity duration-500"
+                    style={{ backgroundImage: `url(${item.bgImage})` }}
+                  ></div>
+                  
                   {/* Animated background gradient */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-15 transition-opacity duration-500`}></div>
                   
@@ -751,10 +800,10 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
             <div className="relative z-10 flex items-center justify-center h-full">
               <div className="text-center">
                                                  <h1 className="text-8xl md:text-7xl lg:text-9xl font-black text-white leading-none">
-                  <span className="text-orange-100 drop-shadow-lg text-9xl md:text-11xl lg:text-[11rem]" style={{ 
+                  <span className="text-orange-50 drop-shadow-lg text-9xl md:text-11xl lg:text-[11rem]" style={{ 
                     fontFamily: "'Quivert', sans-serif", 
                     letterSpacing: '0.02em',
-                    textShadow: '0 0 30px rgba(255,165,0,0.4)'
+                    textShadow: '0 0 30px rgba(255,248,240,0.5)'
                   }}>
                     SABRANG
                   </span><br />

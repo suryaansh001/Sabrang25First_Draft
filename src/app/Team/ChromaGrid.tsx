@@ -27,6 +27,18 @@ const HolographicCard = ({
   onViewCommittee?: (committeeName: string) => void;
 }) => {
   const [hoveredCard, setHoveredCard] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
+
+  // Check if device is mobile
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Add error handling for undefined person
   if (!person) {
@@ -41,13 +53,24 @@ const HolographicCard = ({
     );
   }
 
-  // Handle mouse events for flip card functionality
+  // Handle mouse events for flip card functionality (desktop only)
   const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
-    setHoveredCard(true);
+    if (!isMobile) {
+      setHoveredCard(true);
+    }
   };
 
   const handleMouseLeave = () => {
-    setHoveredCard(false);
+    if (!isMobile) {
+      setHoveredCard(false);
+    }
+  };
+
+  // Handle click events for mobile flip functionality
+  const handleClick = () => {
+    if (isMobile) {
+      setIsClicked(!isClicked);
+    }
   };
 
   return (
@@ -60,33 +83,43 @@ const HolographicCard = ({
         }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onClick={handleClick}
       >
         {/* Thick Holographic Border with Name */}
         <div className={`
           absolute -inset-1 rounded-lg opacity-75 transition-all duration-500 
           bg-gradient-to-r from-purple-500/40 via-pink-500/40 to-blue-500/40 blur-sm
-          ${hoveredCard ? 'opacity-100' : ''}
+          ${(hoveredCard || (isMobile && isClicked)) ? 'opacity-100' : ''}
         `} />
         
         {/* Name on Border - Top */}
         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
           <div className="bg-gradient-to-r from-purple-500/90 via-pink-500/90 to-blue-500/90 px-3 py-1 rounded-full border-2 border-white/30 backdrop-blur-sm">
-            <h3 className={`text-xs sm:text-sm font-bold text-white whitespace-nowrap transition-all duration-300 ${hoveredCard ? 'scale-105' : ''}`}>
+            <h3 className={`text-xs sm:text-sm font-bold text-white whitespace-nowrap transition-all duration-300 ${(hoveredCard || (isMobile && isClicked)) ? 'scale-105' : ''}`}>
               {person.name || 'Unknown'}
             </h3>
           </div>
         </div>
+
+        {/* Mobile Tap Indicator */}
+        {isMobile && !isClicked && (
+          <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 z-20">
+            <div className="bg-black/60 backdrop-blur-sm px-4 py-1 rounded-full border border-white/20">
+              <span className="text-xs text-white/80 font-medium">Tap</span>
+            </div>
+          </div>
+        )}
 
         {/* Flip Card Container */}
         <div className="relative h-80 w-full sm:h-96 sm:w-72 perspective-1000">
           <div
             className="relative w-full h-full transition-transform duration-700 ease-out transform-style-preserve-3d"
             style={{ 
-              transform: hoveredCard ? 'rotateY(180deg)' : 'rotateY(0deg)'
+              transform: (hoveredCard || (isMobile && isClicked)) ? 'rotateY(180deg)' : 'rotateY(0deg)'
             }}
           >
             {/* FRONT - Image Only */}
-            <div className={`absolute inset-0 w-full h-full rounded-lg backdrop-blur-xl bg-white/10 border-4 border-white/30 overflow-hidden shadow-2xl backface-hidden transition-opacity duration-300 ${hoveredCard ? 'opacity-0' : 'opacity-100'}`}>
+            <div className={`absolute inset-0 w-full h-full rounded-lg backdrop-blur-xl bg-white/10 border-4 border-white/30 overflow-hidden shadow-2xl backface-hidden transition-opacity duration-300 ${(hoveredCard || (isMobile && isClicked)) ? 'opacity-0' : 'opacity-100'}`}>
               {/* Main Image */}
               <img
                 src={person.img || ''}
@@ -124,7 +157,7 @@ const HolographicCard = ({
 
             {/* BACK */}
                         {/* BACK - Social Media Links */}
-            <div className={`absolute inset-0 w-full h-full rounded-lg border-4 border-white/40 overflow-hidden shadow-2xl text-white p-4 sm:p-6 backface-hidden rotate-y-180 transition-opacity duration-300 ${hoveredCard ? 'opacity-100' : 'opacity-0'}`} style={{ transform: 'rotateY(180deg)' }}>
+            <div className={`absolute inset-0 w-full h-full rounded-lg border-4 border-white/40 overflow-hidden shadow-2xl text-white p-4 sm:p-6 backface-hidden rotate-y-180 transition-opacity duration-300 ${(hoveredCard || (isMobile && isClicked)) ? 'opacity-100' : 'opacity-0'}`} style={{ transform: 'rotateY(180deg)' }}>
               {/* Enhanced background with person's image as backdrop */}
               <div className="absolute inset-0">
                 <img

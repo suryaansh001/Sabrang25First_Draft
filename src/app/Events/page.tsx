@@ -576,12 +576,6 @@ export default function EventsPage() {
               </button>
             )}
 
-            {/* Navigation hints */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[10001] text-center">
-              <div className="px-4 py-2 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 text-white text-xs">
-                {hasPrevious && hasNext ? '← → Navigate' : hasPrevious ? '← Previous' : hasNext ? 'Next →' : ''}
-              </div>
-            </div>
 
             {/* Event Counter */}
             <div className="absolute top-4 left-4 z-[10001] px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-sm">
@@ -873,7 +867,7 @@ export default function EventsPage() {
                           <div className="relative z-10 flex justify-between items-start">
                             <div className="px-2 md:px-3 py-0.5 md:py-1 bg-black/50 border border-green-400/50 rounded-sm backdrop-blur-sm">
                               <span className="text-[10px] md:text-xs font-bold text-green-400 uppercase tracking-widest" style={{ fontFamily: 'monospace' }}>
-                                {event.isFlagship ? '⚡ CLASSIFIED' : event.category}
+                                {event.isFlagship ? '⚡ FLAGSHIP' : event.category}
                               </span>
                             </div>
                             {event.isFlagship && (
