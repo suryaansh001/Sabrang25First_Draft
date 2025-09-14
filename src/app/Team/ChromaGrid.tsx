@@ -418,12 +418,7 @@ export default function PeopleStrip() {
        name: "Anushka Pathak",
        committee: "Student Affairs"
      },
-     {
-       img: "/images/Team/final/Dheevi Fozdar.webp",
-       bg: "bg-zinc-600",
-       name: "Dheevi Fozdar",
-       committee: "Hospitality"
-     },
+     
      {
        img: "/images/Team/final/Naman Shukla.webp",
        bg: "bg-stone-600",
