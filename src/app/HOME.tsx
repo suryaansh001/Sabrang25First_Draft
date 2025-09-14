@@ -436,7 +436,16 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                  </span>
                </h1>
               
-             
+              {/* Date */}
+              <div className="mb-6">
+                <p className="text-white/90 text-lg font-bold tracking-widest" style={{ 
+                  fontFamily: "'Times New Roman', sans-serif",
+                  textShadow: '0 0 10px rgba(255,255,255,0.3)',
+                  letterSpacing: '0.1em'
+                }}>
+                  October 09-11, 2025
+                </p>
+              </div>
               
               {/* Tagline */}
               <p className="text-gray-300 text-base mb-8 leading-relaxed">
@@ -814,6 +823,17 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                     2025
                   </span>
                 </h1>
+                
+                {/* Desktop Date */}
+                <div className="mt-8">
+                  <p className="text-white/90 text-xl font-bold tracking-widest" style={{ 
+                    fontFamily: "'Times New Roman', sans-serif",
+                    textShadow: '0 0 15px rgba(255,255,255,0.4)',
+                    letterSpacing: '0.15em'
+                  }}>
+                    October 09-11, 2025
+                  </p>
+                </div>
               </div>
             </div>
           )}

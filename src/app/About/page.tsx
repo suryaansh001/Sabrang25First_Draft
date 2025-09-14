@@ -140,7 +140,7 @@ const AboutPage = () => {
               showCursor={true}
               cursorCharacter="|"
               cursorBlinkDuration={0.8}
-              startOnVisible={true}
+              startOnVisible={false}
               style={{ fontFamily: "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}
             />
           </div>
@@ -187,8 +187,8 @@ const AboutPage = () => {
                   splitType="words"
                   from={{ opacity: 0, y: 50, rotationX: 90 }}
                   to={{ opacity: 1, y: 0, rotationX: 0 }}
-                  threshold={0.1}
-                  rootMargin="-50px"
+                  threshold={0}
+                  rootMargin="0px"
                   textAlign="left"
                 />
                 <SplitText
@@ -201,8 +201,8 @@ const AboutPage = () => {
                   splitType="words"
                   from={{ opacity: 0, y: 30 }}
                   to={{ opacity: 1, y: 0 }}
-                  threshold={0.2}
-                  rootMargin="-100px"
+                  threshold={0}
+                  rootMargin="0px"
                   textAlign="left"
                 />
                 <SplitText
@@ -215,8 +215,8 @@ const AboutPage = () => {
                   splitType="words"
                   from={{ opacity: 0, y: 30 }}
                   to={{ opacity: 1, y: 0 }}
-                  threshold={0.2}
-                  rootMargin="-100px"
+                  threshold={0}
+                  rootMargin="0px"
                   textAlign="left"
                 />
                 <div className="flex items-center space-x-4 pt-4">
@@ -231,8 +231,8 @@ const AboutPage = () => {
                     splitType="chars"
                     from={{ opacity: 0, scale: 0.5 }}
                     to={{ opacity: 1, scale: 1 }}
-                    threshold={0.3}
-                    rootMargin="-80px"
+                    threshold={0}
+                    rootMargin="0px"
                     textAlign="left"
                   />
                 </div>
@@ -450,9 +450,16 @@ const AboutPage = () => {
               </div>
 
               {/* Echoes of Noor */}
-              <div className="relative group h-[180px] md:h-[280px] bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl md:rounded-2xl overflow-hidden">
-                <div className="absolute inset-0 bg-black/25" />
-                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
+               <div className="relative group h-[180px] md:h-[280px] rounded-xl md:rounded-2xl overflow-hidden">
+                 <div className="absolute inset-0">
+                   <img 
+                     src="/images/about-section/Echoes_of_Noor.webp" 
+                     alt="Echoes of Noor"
+                     className="w-full h-full object-cover opacity-70"
+                   />
+                   <div className="absolute inset-0 bg-gradient-to-br from-black-600/80 to-pink-600/80"></div>
+                 </div>
+                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
                   <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
                   <h3 className="text-base md:text-2xl font-bold text-white mb-2">Echoes of Noor</h3>
                   <p className="text-xs md:text-sm text-gray-200">Spoken word & poetry</p>
@@ -460,8 +467,15 @@ const AboutPage = () => {
               </div>
 
               {/* VerseVaad */}
-              <div className="relative group h-[180px] md:h-[280px] bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl md:rounded-2xl overflow-hidden">
-                <div className="absolute inset-0 bg-black/25" />
+              <div className="relative group h-[180px] md:h-[280px] rounded-xl md:rounded-2xl overflow-hidden">
+                <div className="absolute inset-0">
+                  <img 
+                    src="/images/about-section/Versevaad.webp" 
+                    alt="VerseVaad"
+                    className="w-full h-full object-cover opacity-70"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-br from-black-700/90 to-cyan-600/80"></div>
+                </div>
                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
                   <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
                   <h3 className="text-base md:text-2xl font-bold text-white mb-2">VerseVaad</h3>
