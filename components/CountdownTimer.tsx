@@ -28,7 +28,7 @@ const CountdownClock: React.FC<CountdownClockProps> = ({ targetDate }) => {
     const target = new Date(now);
     // Compute days until next Monday (1 = Monday)
     const day = now.getDay(); // 0 (Sun) - 6 (Sat)
-    const daysUntilNextMonday = (8 - day) % 7 || 7; // ensures 7 when today is Monday
+    const daysUntilNextMonday = (9 - day) % 7 || 7; // ensures 7 when today is Monday
     target.setDate(now.getDate() + daysUntilNextMonday);
     target.setHours(0, 0, 0, 0); // set to 00:00 of that Monday
     return target;
