@@ -5,12 +5,104 @@ import Logo from '../../../components/Logo';
 import Footer from '../../../components/Footer';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '../../../components/NavigationContext';
-import { Home, Info, Calendar, Star, Users, HelpCircle, Handshake, Mail as MailIcon, X, Phone, MessageCircle } from 'lucide-react';
+import { Home, Info, Calendar, Star, Users, HelpCircle, Handshake, Mail as MailIcon, X, Phone, MessageCircle, Send, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import emailjs from '@emailjs/browser';
 
 const Contact = () => {
   const router = useRouter();
   const { navigate } = useNavigation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  // Contact form state
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    query: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
+  const [showForm, setShowForm] = useState(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitMessage('');
+
+    // Validate required fields
+    if (!formData.name || !formData.email || !formData.phone || !formData.query) {
+      setSubmitMessage('Please fill in all required fields.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setSubmitMessage('Please enter a valid email address.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Phone validation (basic)
+    const phoneRegex = /^[0-9+\-\s()]{10,15}$/;
+    if (!phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
+      setSubmitMessage('Please enter a valid phone number.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      // Initialize EmailJS
+      emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_CONTACT_PUBLIC_KEY || '');
+
+      // Prepare template parameters
+      const templateParams = {
+        from_name: formData.name,
+        from_email: formData.email,
+        phone: formData.phone,
+        query: formData.query,
+        to_email: process.env.NEXT_PUBLIC_CONTACT_RECIPIENT_EMAIL || 'info@sabrang.com',
+        submission_date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+      };
+
+      // Send email using EmailJS
+      await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_CONTACT_SERVICE_ID || '',
+        process.env.NEXT_PUBLIC_EMAILJS_CONTACT_TEMPLATE_ID || '',
+        templateParams
+      );
+
+      setSubmitMessage('Thank you! Your query has been sent successfully. We will get back to you soon.');
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        query: ''
+      });
+      
+      // Close form after 3 seconds
+      setTimeout(() => {
+        setShowForm(false);
+        setSubmitMessage('');
+      }, 3000);
+
+    } catch (error) {
+      console.error('EmailJS Error:', error);
+      setSubmitMessage('There was an error sending your message. Please try again or contact us directly.');
+    }
+    
+    setIsSubmitting(false);
+  };
 
   const mobileNavItems = [
     { title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
@@ -201,6 +293,168 @@ const Contact = () => {
             </div>
           </div>
         </div>
+
+        {/* Contact Form Section */}
+        <div className="max-w-4xl mx-auto mb-20">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-4">Have a Query?</h2>
+            <p className="text-gray-300 mb-6">
+              Can't find the information you need? Send us your question and we'll get back to you quickly.
+            </p>
+            <button
+              onClick={() => setShowForm(true)}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
+            >
+              <MessageCircle className="w-5 h-5" />
+              Send us a Message
+            </button>
+          </div>
+        </div>
+
+        {/* Contact Form Modal */}
+        <AnimatePresence>
+          {showForm && (
+            <motion.div
+              className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowForm(false)}
+            >
+              <motion.div
+                className="bg-black/90 backdrop-blur-xl text-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-white/20"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="bg-black/60 backdrop-blur-md text-white p-6 rounded-t-2xl relative flex justify-between items-center border-b border-white/20">
+                  <div>
+                    <h2 className="text-2xl font-bold">Contact Us</h2>
+                    <p className="text-gray-400">We'd love to hear from you. Send us a message!</p>
+                  </div>
+                  <button
+                    onClick={() => setShowForm(false)}
+                    className="text-gray-400 hover:text-white p-2 hover:bg-white/10 rounded-full transition-colors"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+
+                <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                  {/* Important Notice */}
+                  <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-yellow-200 text-sm font-medium mb-1">Important Notice</p>
+                      <p className="text-yellow-100 text-sm">
+                        Please ensure that the phone number and email address you enter are valid. 
+                        We will use these to contact you regarding your query.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Name Field */}
+                  <div>
+                    <label htmlFor="name" className="block text-gray-300 text-sm font-medium mb-2">
+                      Full Name <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      placeholder="Enter your full name"
+                      required
+                      className="w-full py-3 px-4 bg-black/40 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-black/60 transition-all duration-300"
+                    />
+                  </div>
+
+                  {/* Email Field */}
+                  <div>
+                    <label htmlFor="email" className="block text-gray-300 text-sm font-medium mb-2">
+                      Email Address <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="Enter a valid email address"
+                      required
+                      className="w-full py-3 px-4 bg-black/40 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-black/60 transition-all duration-300"
+                    />
+                  </div>
+
+                  {/* Phone Field */}
+                  <div>
+                    <label htmlFor="phone" className="block text-gray-300 text-sm font-medium mb-2">
+                      Phone Number <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      placeholder="Enter a valid phone number (with country code if international)"
+                      required
+                      className="w-full py-3 px-4 bg-black/40 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-black/60 transition-all duration-300"
+                    />
+                  </div>
+
+                  {/* Query Field */}
+                  <div>
+                    <label htmlFor="query" className="block text-gray-300 text-sm font-medium mb-2">
+                      Your Query <span className="text-red-400">*</span>
+                    </label>
+                    <textarea
+                      id="query"
+                      name="query"
+                      value={formData.query}
+                      onChange={handleInputChange}
+                      placeholder="Please describe your question or concern in detail..."
+                      required
+                      rows={5}
+                      className="w-full py-3 px-4 bg-black/40 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-black/60 transition-all duration-300 resize-vertical"
+                    />
+                  </div>
+
+                  {/* Submit Message */}
+                  {submitMessage && (
+                    <div className={`p-4 rounded-lg text-center ${submitMessage.includes('successfully') ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
+                      {submitMessage}
+                    </div>
+                  )}
+
+                  {/* Submit Button */}
+                  <div className="flex items-center justify-end">
+                    <button
+                      className={`inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition-all duration-300 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
+                      type="submit"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4" />
+                          Send Message
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Simple FAQ teaser */}
         <div className="max-w-4xl mx-auto mb-20 text-center">
