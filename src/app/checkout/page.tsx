@@ -8,6 +8,7 @@ import { Check, ChevronLeft, CreditCard, ArrowRight } from 'lucide-react';
 import createApiUrl from '../../lib/api';
 import { events as EVENTS_DATA } from '../Events/[id]/rules/events.data';
 import { EventCatalogItem, EVENT_CATALOG as ORIGINAL_EVENT_CATALOG } from '../../lib/eventCatalog';
+import { load } from '@cashfreepayments/cashfree-js';
 
 // Control flag to enable/disable the checkout flow.
 const REGISTRATION_OPEN = true;
@@ -41,7 +42,7 @@ type FieldSet = FormField[];
 
 const SOLO_FIELDS: FieldSet = [
   { name: 'name', label: 'Name', type: 'text', required: true, placeholder: 'Enter your full name' },
-  { name: 'collegeMailId', label: 'Email', type: 'email', required: true, placeholder: 'you@example.com' },
+  { name: 'email', label: 'Email', type: 'email', required: true, placeholder: 'you@example.com' },
   { name: 'contactNo', label: 'Mobile Number', type: 'phone', required: true, placeholder: '10-digit number' },
   { name: 'rollNumber', label: 'Roll Number', type: 'text', required: false, placeholder: 'Your roll number' },
   { name: 'gender', label: 'Gender', type: 'select', required: true, options: [
@@ -51,8 +52,6 @@ const SOLO_FIELDS: FieldSet = [
   ]},
   { name: 'age', label: 'Age', type: 'number', required: true, placeholder: 'e.g., 20' },
   { name: 'universityName', label: 'College Name', type: 'text', required: true, placeholder: 'Your college/university' },
-  { name: 'referralCode', label: 'Referral Code', type: 'text', required: false, placeholder: 'Optional' },
-  { name: 'universityCardImage', label: 'University Identity Card', type: 'file', required: true, accept: 'image/*' },
   { name: 'address', label: 'Address', type: 'text', required: true, placeholder: 'Enter your full address' },
 ];
 
@@ -131,7 +130,7 @@ function CheckoutPageContent() {
   const [showComingSoon, setShowComingSoon] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const cashfreeLoadedRef = useRef<boolean>(false);
+  const cashfreeRef = useRef<any>(null);
 
   const [step, setStep] = useState<Step>('select');
   const [reducedMotion, setReducedMotion] = useState<boolean>(true);
@@ -142,11 +141,31 @@ function CheckoutPageContent() {
   const [filesBySignature, setFilesBySignature] = useState<Record<string, Record<string, File>>>({});
   const [memberFilesBySignature, setMemberFilesBySignature] = useState<Record<string, Record<number, File>>>({});
   const [infoEvent, setInfoEvent] = useState<import('../Events/[id]/rules/events.data').Event | null>(null);
-  // Simple offline payment instructions (QR + bank details)
-  const [paymentProof, setPaymentProof] = useState<File | null>(null);
   const [promoInput, setPromoInput] = useState<string>('');
   const [appliedPromo, setAppliedPromo] = useState<{ code: string; discountAmount: number } | null>(null);
   const [promoStatus, setPromoStatus] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
+  
+  // Payment states
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [paymentSessionId, setPaymentSessionId] = useState<string | null>(null);
+
+  // Initialize Cashfree SDK
+  useEffect(() => {
+    const initializeCashfree = async () => {
+      try {
+        const cashfreeMode = process.env.NEXT_PUBLIC_CASHFREE_MODE || 'production';
+        cashfreeRef.current = await load({
+          mode: cashfreeMode as 'production' | 'sandbox'
+        });
+        console.log('✅ Cashfree SDK initialized');
+      } catch (error) {
+        console.error('❌ Failed to initialize Cashfree SDK:', error);
+      }
+    };
+
+    initializeCashfree();
+  }, []);
 
   // Force reduced motion for smooth scrolling experience on this page
   useEffect(() => {
@@ -224,11 +243,11 @@ function CheckoutPageContent() {
   }, [totalPrice, appliedPromo]);
 
   const getDerivedEmail = () => {
-    // Search across all groups for collegeMailId
+    // Search across all groups for email
     for (const group of fieldGroups) {
       const data = formDataBySignature[group.signature] || {};
-      if (data['collegeMailId']) return String(data['collegeMailId']);
       if (data['email']) return String(data['email']);
+      if (data['collegeMailId']) return String(data['collegeMailId']);
     }
     return '';
   };
@@ -239,7 +258,7 @@ function CheckoutPageContent() {
     setPromoStatus({ loading: true, error: null });
     try {
       const userEmail = getDerivedEmail();
-      const response = await fetch(createApiUrl('/admin/promo-codes/validate'), {
+      const response = await fetch(createApiUrl('/api/payment/validate-promo'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -284,7 +303,6 @@ function CheckoutPageContent() {
       }
     });
   };
-
 
   const validateForms = () => {
     const errors: Record<string, Record<string, string>> = {};
@@ -394,21 +412,143 @@ function CheckoutPageContent() {
     if (step === 'payment') { setStep('review'); return; }
   };
 
-  // Helper function to load Cashfree SDK
-  const loadCashfreeSdk = async () => {
-    if (cashfreeLoadedRef.current) return;
-    
-    return new Promise<void>((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
-      script.onload = () => {
-        cashfreeLoadedRef.current = true;
-        resolve();
+  // Create payment session on backend
+  const createPaymentSession = async () => {
+    try {
+      setPaymentLoading(true);
+      setPaymentError(null);
+
+      // Prepare user details from form data
+      const userDetails: any = {};
+      const firstGroup = fieldGroups[0];
+      if (firstGroup) {
+        const data = formDataBySignature[firstGroup.signature] || {};
+        Object.assign(userDetails, data);
+      }
+
+      // Prepare team members
+      const teamMembers: any[] = [];
+      Object.entries(teamMembersBySignature).forEach(([signature, members]) => {
+        teamMembers.push(...members);
+      });
+
+      userDetails.teamMembers = teamMembers;
+
+      // Prepare items for payment
+      const items = selectedEvents.map(event => ({
+        eventId: event.id,
+        eventName: event.title,
+        price: parsePrice(event.price)
+      }));
+
+      const requestBody = {
+        userDetails,
+        items,
+        totalAmount: finalPrice,
+        promoCode: appliedPromo ? {
+          code: appliedPromo.code,
+          discountAmount: appliedPromo.discountAmount
+        } : null,
+        metadata: {
+          source: 'checkout',
+          formData: formDataBySignature,
+          teamMembers: teamMembersBySignature
+        }
       };
-      script.onerror = () => reject(new Error('Failed to load Cashfree SDK'));
-      document.head.appendChild(script);
-    });
+
+      console.log('Creating payment session with:', requestBody);
+
+      const response = await fetch(createApiUrl('/api/payment/create-session'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Failed to create payment session');
+      }
+
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to create payment session');
+      }
+
+      setPaymentSessionId(data.data.paymentSessionId);
+      return data.data;
+    } catch (error) {
+      console.error('Payment session creation error:', error);
+      setPaymentError(error instanceof Error ? error.message : 'Failed to create payment session');
+      throw error;
+    } finally {
+      setPaymentLoading(false);
+    }
   };
+
+  // Process payment using Cashfree
+  const proceedToPayment = async () => {
+    try {
+      if (!cashfreeRef.current) {
+        throw new Error('Cashfree SDK not initialized');
+      }
+
+      // Create payment session on backend
+      const sessionData = await createPaymentSession();
+      
+      if (!sessionData.paymentSessionId) {
+        throw new Error('No payment session ID received');
+      }
+
+      console.log('Proceeding with payment session:', sessionData.paymentSessionId);
+
+      // Open Cashfree checkout
+      const checkoutOptions = {
+        paymentSessionId: sessionData.paymentSessionId,
+        redirectTarget: "_self",
+      };
+
+      await cashfreeRef.current.checkout(checkoutOptions);
+
+    } catch (error) {
+      console.error('Payment error:', error);
+      setPaymentError(error instanceof Error ? error.message : 'Payment failed');
+    }
+  };
+
+  // Check payment status after redirect
+  const checkPaymentStatus = async (orderId: string) => {
+    try {
+      const response = await fetch(createApiUrl(`/api/payment/status/${orderId}`), {
+        method: 'GET',
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to check payment status');
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Payment status check error:', error);
+      return null;
+    }
+  };
+
+  // Check for payment status updates from URL parameters
+  useEffect(() => {
+    const orderId = searchParams.get('order_id');
+    const status = searchParams.get('status');
+    
+    if (orderId && status) {
+      // Redirect to success page with order details
+      router.push(`/payment/success?order_id=${orderId}&status=${status}`);
+    }
+  }, [searchParams, router]);
 
   // Handle field changes
   const handleFieldChange = (signature: string, fieldName: string, value: string) => {
@@ -520,128 +660,6 @@ function CheckoutPageContent() {
   const getConflictMessage = (_eventId: number) => {
     // Time conflict messaging disabled
     return '';
-  };
-
-  const proceedToPayment = async () => {
-    try {
-      // First, register the user on backend using existing /register with image upload
-      // Map fields: name -> 'name', collegeMailId -> 'email', and attach a 'profileImage'
-      const registrationForm = new FormData();
-      // Derive name and email from collected forms (pick from the first group that has them)
-      let derivedName: string | undefined;
-      let derivedEmail: string | undefined;
-      let attachedImage: File | undefined;
-
-      for (const group of fieldGroups) {
-        const data = formDataBySignature[group.signature] || {};
-        if (!derivedName && data['name']) derivedName = data['name'];
-        if (!derivedEmail && data['collegeMailId']) derivedEmail = data['collegeMailId'];
-        const files = filesBySignature[group.signature] || {};
-        // Prefer a university card image if present, else take the first file in the group
-        if (!attachedImage) {
-          if (files['universityCardImage']) attachedImage = files['universityCardImage'];
-          else {
-            const firstFile = Object.values(files)[0];
-            if (firstFile) attachedImage = firstFile;
-          }
-        }
-      }
-
-      // Fallbacks to avoid empty fields
-      if (!derivedName) derivedName = 'Participant';
-      if (!derivedEmail) throw new Error('Email is required for registration');
-
-      // Generate a strong random password since checkout flow does not collect one
-      const generatedPassword = Math.random().toString(36).slice(-10) + 'A1!';
-
-      registrationForm.append('name', derivedName);
-      registrationForm.append('email', derivedEmail);
-      registrationForm.append('password', generatedPassword);
-      // Also send flat fields if available
-      const flat = formDataBySignature[fieldGroups[0]?.signature || ''] || {};
-      if (flat['contactNo']) registrationForm.append('contactNo', flat['contactNo']);
-      if (flat['gender']) registrationForm.append('gender', flat['gender']);
-      if (flat['age']) registrationForm.append('age', flat['age']);
-      if (flat['universityName']) registrationForm.append('universityName', flat['universityName']);
-      if (flat['address']) registrationForm.append('address', flat['address']);
-      // Send complex payloads for backend to persist
-      registrationForm.append('formsBySignature', JSON.stringify(formDataBySignature));
-      registrationForm.append('teamMembersBySignature', JSON.stringify(teamMembersBySignature));
-      registrationForm.append('items', JSON.stringify(selectedEvents.map(e => ({ id: e.id, title: e.title, price: e.price }))));
-      if (attachedImage) {
-        registrationForm.append('profileImage', attachedImage);
-      }
-
-      // Append team member images with deterministic keys: memberImage__<signature>__<index>
-      Object.entries(memberFilesBySignature).forEach(([signature, idxMap]) => {
-        Object.entries(idxMap).forEach(([idxStr, file]) => {
-          const idx = Number(idxStr);
-          const encodedSig = encodeURIComponent(signature);
-          registrationForm.append(`memberImage__${encodedSig}__${idx}`, file);
-        });
-      });
-
-      const registrationResponse = await fetch(createApiUrl('/register'), {
-        method: 'POST',
-        credentials: 'include',
-        body: registrationForm
-      });
-
-      if (!registrationResponse.ok) {
-        const errText = await registrationResponse.text().catch(() => '');
-        throw new Error(errText || 'Registration failed');
-      }
-
-      // Continue with payment creation as before
-      // Create FormData to handle file uploads
-      const formData = new FormData();
-      
-      // Add basic form data
-      formData.append('items', JSON.stringify(selectedEvents.map(e => ({ eventId: e.id, title: e.title, price: e.price }))));
-      formData.append('formsBySignature', JSON.stringify(formDataBySignature));
-      
-      // Add files
-      Object.entries(filesBySignature).forEach(([signature, files]) => {
-        Object.entries(files).forEach(([fieldName, file]) => {
-          formData.append(`files_${signature}_${fieldName}`, file);
-        });
-      });
-
-      const response = await fetch(createApiUrl('/payments/cashfree/create-order'), {
-        method: 'POST',
-        credentials: 'include',
-        body: (() => { if (appliedPromo?.code) formData.append('promoCode', appliedPromo.code); return formData; })()
-      });
-      if (!response.ok) {
-        const errText = await response.text().catch(() => '');
-        throw new Error(errText || 'Failed to create order');
-      }
-      const data = await response.json();
-      if (data.payment_link) {
-        window.location.href = data.payment_link as string;
-        return;
-      }
-      const orderToken = data.order_token || data.payment_session_id || data.token;
-      const mode = data.mode || (window.location.hostname === 'localhost' ? 'sandbox' : 'production');
-      if (!orderToken) throw new Error('Missing payment session token from server');
-      await loadCashfreeSdk();
-      const anyWindow = window as unknown as Record<string, any>;
-      const cf = anyWindow.Cashfree || anyWindow?.cashfree;
-      if (!cf) throw new Error('Cashfree SDK not available');
-      if (typeof cf?.initialize === 'function') {
-        const ins = cf.initialize({ mode });
-        await ins.checkout({ paymentSessionId: orderToken });
-        return;
-      }
-      if (typeof cf?.payments === 'function') {
-        const ins = cf.payments({ mode });
-        await ins.checkout({ paymentSessionId: orderToken });
-        return;
-      }
-      throw new Error('Unsupported Cashfree SDK interface');
-    } finally {
-      // Keep user on page
-    }
   };
 
   // Group events by category
@@ -1209,50 +1227,115 @@ function CheckoutPageContent() {
                   <div className="lg:col-span-3">
                     <h2 className="text-xl font-semibold mb-6 title-chroma">Payment</h2>
                     <div className="glass rounded-2xl p-6 border border-white/10">
-                      <h3 className="font-semibold text-cyan-200 mb-4">Payment</h3>
+                      <h3 className="font-semibold text-cyan-200 mb-4">Secure Payment with Cashfree</h3>
+                      
+                      {paymentError && (
+                        <div className="mb-4 p-4 bg-red-500/20 border border-red-500/50 rounded-lg">
+                          <p className="text-red-200 text-sm">{paymentError}</p>
+                        </div>
+                      )}
+
                       <div className="space-y-6">
-                        <div>
-                          <div className="text-sm text-white/80 mb-2">Scan the QR code to pay via any UPI app:</div>
-                          <div className="w-56 h-56 bg-white rounded-md flex items-center justify-center text-black font-semibold">QR</div>
-                          {/* Pay Now button removed as requested */}
-                        </div>
-                        <div>
-                          <div className="text-sm text-white/80 mb-2">Or pay via bank transfer:</div>
-                          <div className="rounded-lg bg-white/5 border border-white/10 p-3 text-sm space-y-1">
-                            <div><span className="text-white/60">Account Name:</span> <span className="text-white/90">JKLU Sabrang</span></div>
-                            <div><span className="text-white/60">Account No.:</span> <span className="text-white/90">123456789012</span></div>
-                            <div><span className="text-white/60">IFSC:</span> <span className="text-white/90">HDFC0000001</span></div>
-                            <div><span className="text-white/60">Bank:</span> <span className="text-white/90">HDFC Bank, Jaipur</span></div>
+                        <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                          <h4 className="text-white/90 font-medium mb-2">Payment Details</h4>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-white/70">Subtotal:</span>
+                              <span className="text-white/90">₹{totalPrice}</span>
+                            </div>
+                            {appliedPromo && (
+                              <div className="flex justify-between text-green-400">
+                                <span>Discount ({appliedPromo.code}):</span>
+                                <span>-₹{appliedPromo.discountAmount}</span>
+                              </div>
+                            )}
+                            <div className="border-t border-white/10 pt-2 flex justify-between font-semibold">
+                              <span>Total Amount:</span>
+                              <span>₹{finalPrice}</span>
+                            </div>
                           </div>
-                          {/* Pay Now button removed as requested */}
+                        </div>
+
+                        <div className="text-center">
+                          <button
+                            onClick={proceedToPayment}
+                            disabled={paymentLoading}
+                            className={`relative w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 text-white font-medium transition-all duration-300 ${
+                              paymentLoading
+                                ? 'bg-gray-600 cursor-not-allowed' 
+                                : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:scale-105 cursor-pointer'
+                            }`}
+                          >
+                            {paymentLoading ? (
+                              <>
+                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                Processing...
+                              </>
+                            ) : (
+                              <>
+                                <CreditCard className="w-5 h-5" />
+                                Pay ₹{finalPrice} Securely
+                              </>
+                            )}
+                          </button>
+                        </div>
+
+                        <div className="text-center text-sm text-white/60">
+                          <p>Powered by Cashfree Payments</p>
+                          <p className="mt-1">Your payment information is secure and encrypted</p>
                         </div>
                       </div>
-                      <div className="mt-6">
-                        <label className="block text-sm text-white/80 mb-2">Upload payment confirmation screenshot</label>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="w-full bg-black/40 border border-white/20 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer"
-                          onChange={e => setPaymentProof(e.target.files?.[0] || null)}
-                        />
-                        {paymentProof && (
-                          <div className="text-xs text-green-400 mt-2">Selected: {paymentProof.name}</div>
-                        )}
-                      </div>
-                      <div className="mt-4 rounded-xl border border-red-400/50 bg-red-500/10 p-4">
-                        <p className="text-sm text-red-200 font-medium">Important</p>
-                        <p className="text-sm text-red-100 mt-1">Tickets and further details will be sent to your email after payment confirmation. Please ensure you upload a clear screenshot of the successful payment.</p>
+
+                      <div className="mt-6 rounded-xl border border-blue-400/50 bg-blue-500/10 p-4">
+                        <p className="text-sm text-blue-200 font-medium">Important</p>
+                        <p className="text-sm text-blue-100 mt-1">
+                          After successful payment, you will receive a confirmation email with your event tickets and QR codes. 
+                          Please keep this email safe as you'll need to show the QR code at the event venue.
+                        </p>
                       </div>
                     </div>
+                    
                     <div className="flex items-center gap-3 mt-8">
-                      <button onClick={goBack} className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer">Back</button>
+                      <button 
+                        onClick={goBack} 
+                        disabled={paymentLoading}
+                        className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Back
+                      </button>
                     </div>
                   </div>
+                  
                   <div>
                     <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] relative overflow-hidden">
                       <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
-                      <h3 className="font-semibold text-cyan-200">Total</h3>
-                      <div className="mt-4 text-3xl font-bold">₹{finalPrice}</div>
+                      <h3 className="font-semibold text-cyan-200">Order Summary</h3>
+                      
+                      <div className="mt-4 space-y-2">
+                        {selectedEvents.map(event => (
+                          <div key={event.id} className="flex justify-between text-sm">
+                            <span className="text-white/80">{event.title}</span>
+                            <span className="text-white/90">{event.price}</span>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <div className="border-t border-white/10 mt-4 pt-4">
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="text-white/70">Subtotal:</span>
+                          <span className="text-white/90">₹{totalPrice}</span>
+                        </div>
+                        {appliedPromo && (
+                          <div className="flex justify-between text-sm text-green-400 mb-2">
+                            <span>Discount:</span>
+                            <span>-₹{appliedPromo.discountAmount}</span>
+                          </div>
+                        )}
+                        <div className="flex justify-between font-bold text-lg">
+                          <span>Total:</span>
+                          <span>₹{finalPrice}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
