@@ -187,6 +187,10 @@ interface GalaxyProps {
   repulsionStrength?: number;
   autoCenterRepulsion?: number;
   transparent?: boolean;
+  // Performance controls
+  resolutionScale?: number; // downscale internal render size (0.5-1)
+  maxFps?: number; // cap animation FPS
+  pauseWhenOffscreen?: boolean; // pause when not visible
 }
 
 export default function Galaxy({
@@ -206,6 +210,9 @@ export default function Galaxy({
   rotationSpeed = 0.1,
   autoCenterRepulsion = 0,
   transparent = true,
+  resolutionScale = 0.9,
+  maxFps = 30,
+  pauseWhenOffscreen = true,
   ...rest
 }: GalaxyProps) {
   const ctnDom = useRef<HTMLDivElement>(null);
@@ -213,6 +220,8 @@ export default function Galaxy({
   const smoothMousePos = useRef({ x: 0.5, y: 0.5 });
   const targetMouseActive = useRef(0.0);
   const smoothMouseActive = useRef(0.0);
+  const isVisibleRef = useRef(true);
+  const lastFrameTimeRef = useRef(0);
 
   useEffect(() => {
     if (!ctnDom.current) return;
@@ -234,7 +243,7 @@ export default function Galaxy({
     let program: Program;
 
     function resize() {
-      const scale = 1;
+      const scale = Math.max(0.5, Math.min(1, resolutionScale));
       renderer.setSize(ctn.offsetWidth * scale, ctn.offsetHeight * scale);
       if (program) {
         program.uniforms.uResolution.value = new Color(
@@ -282,6 +291,15 @@ export default function Galaxy({
 
     function update(t: number) {
       animateId = requestAnimationFrame(update);
+      // Pause when offscreen for performance
+      if (pauseWhenOffscreen && !isVisibleRef.current) return;
+
+      // Cap FPS
+      const now = t;
+      const minDelta = 1000 / Math.max(10, maxFps);
+      if (now - lastFrameTimeRef.current < minDelta) return;
+      lastFrameTimeRef.current = now;
+
       if (!disableAnimation) {
         program.uniforms.uTime.value = t * 0.001;
         program.uniforms.uStarSpeed.value = (t * 0.001 * starSpeed) / 10.0;
@@ -301,6 +319,16 @@ export default function Galaxy({
     }
     animateId = requestAnimationFrame(update);
     ctn.appendChild(gl.canvas);
+
+    // Observe visibility to pause when offscreen
+    let observer: IntersectionObserver | null = null;
+    if (pauseWhenOffscreen && 'IntersectionObserver' in window) {
+      observer = new IntersectionObserver(entries => {
+        const entry = entries[0];
+        isVisibleRef.current = !!entry?.isIntersecting;
+      }, { root: null, threshold: 0 });
+      observer.observe(ctn);
+    }
 
     function handleMouseMove(e: MouseEvent) {
       const rect = ctn.getBoundingClientRect();
@@ -322,6 +350,7 @@ export default function Galaxy({
     return () => {
       cancelAnimationFrame(animateId);
       window.removeEventListener('resize', resize);
+      observer?.disconnect();
       if (mouseInteraction) {
         ctn.removeEventListener('mousemove', handleMouseMove);
         ctn.removeEventListener('mouseleave', handleMouseLeave);
@@ -345,7 +374,10 @@ export default function Galaxy({
     rotationSpeed,
     repulsionStrength,
     autoCenterRepulsion,
-    transparent
+    transparent,
+    resolutionScale,
+    maxFps,
+    pauseWhenOffscreen
   ]);
 
   return <div ref={ctnDom} className="galaxy-container" {...rest} />;

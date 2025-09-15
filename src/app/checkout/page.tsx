@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useRef, useState, Suspense } from 'react';
 import Galaxy from '../../../components/galaxybg';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ChevronLeft, CreditCard, ArrowRight } from 'lucide-react';
+import { Check, ChevronLeft, CreditCard, ArrowRight, X, Home, Info, Calendar, Star, Clock, Users, HelpCircle, Handshake, Mail } from 'lucide-react';
 import createApiUrl from '../../lib/api';
 import { events as EVENTS_DATA } from '../Events/[id]/rules/events.data';
 import { EventCatalogItem, EVENT_CATALOG as ORIGINAL_EVENT_CATALOG } from '../../lib/eventCatalog';
@@ -43,7 +43,6 @@ const SOLO_FIELDS: FieldSet = [
   { name: 'name', label: 'Name', type: 'text', required: true, placeholder: 'Enter your full name' },
   { name: 'collegeMailId', label: 'Email', type: 'email', required: true, placeholder: 'you@example.com' },
   { name: 'contactNo', label: 'Mobile Number', type: 'phone', required: true, placeholder: '10-digit number' },
-  { name: 'rollNumber', label: 'Roll Number', type: 'text', required: false, placeholder: 'Your roll number' },
   { name: 'gender', label: 'Gender', type: 'select', required: true, options: [
     { value: 'male', label: 'Male' },
     { value: 'female', label: 'Female' },
@@ -147,6 +146,7 @@ function CheckoutPageContent() {
   const [promoInput, setPromoInput] = useState<string>('');
   const [appliedPromo, setAppliedPromo] = useState<{ code: string; discountAmount: number } | null>(null);
   const [promoStatus, setPromoStatus] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Force reduced motion for smooth scrolling experience on this page
   useEffect(() => {
@@ -660,7 +660,7 @@ function CheckoutPageContent() {
       {/* Background with Galaxy */}
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-neutral-950 to-black">
         {/* Galaxy background */}
-        <Galaxy transparent={true} mouseInteraction={false} density={1} glowIntensity={0.35} saturation={0.15} rotationSpeed={0.05} twinkleIntensity={0.4} autoCenterRepulsion={0.1} />
+        <Galaxy transparent={true} mouseInteraction={false} density={0.8} glowIntensity={0.25} saturation={0.1} rotationSpeed={0.04} twinkleIntensity={0.3} autoCenterRepulsion={0.08} resolutionScale={0.75} maxFps={30} pauseWhenOffscreen={true} />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(147,51,234,0.08),transparent_70%)]"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(59,130,246,0.06),transparent_70%)]"></div>
         {/* Heavy animated background disabled for performance */}
@@ -675,17 +675,28 @@ function CheckoutPageContent() {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-8">
+        {/* Mobile hamburger */}
+        <button
+          aria-label="Open menu"
+          onClick={() => setMobileMenuOpen(true)}
+          className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
+        >
+          <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
+          <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
+          <span className="block h-0.5 bg-white/80 rounded-full w-4" />
+        </button>
+
+        {/* Back button beneath hamburger */}
+        <button
+          onClick={() => router.back()}
+          className="lg:hidden fixed top-16 right-4 z-50 px-2 py-1 text-white text-base active:scale-95 transition"
+          aria-label="Go back"
+        >
+          <span className="mr-1">&lt;</span> Back
+        </button>
       {/* Header */}
         <div className="grid grid-cols-3 items-center mb-8">
-          <div className="justify-self-start">
-            <button
-              onClick={goBack} 
-              className="flex items-center gap-2 text-white/70 hover:text-purple-300 transition cursor-pointer"
-            >
-              <ChevronLeft className="w-5 h-5" />
-              Back
-            </button>
-          </div>
+          <div className="justify-self-start"></div>
           <div className="justify-self-center text-center">
             <h1 className="text-2xl font-bold title-chroma title-glow-animation">
               Event Registration
@@ -809,24 +820,16 @@ function CheckoutPageContent() {
             </div>
                       <button
                         onClick={() => {
-                          if (REGISTRATION_OPEN) {
-                            goNext();
-                          } else {
-                            router.push('/Registration-starting-soon');
-                          }
+                          goNext();
                         }}
-                        disabled={REGISTRATION_OPEN && selectedEventIds.length === 0}
+                        disabled={selectedEventIds.length === 0}
                         className={`relative w-full mt-6 inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-white font-medium transition-all duration-300 ${
-                          REGISTRATION_OPEN && selectedEventIds.length === 0 
+                          selectedEventIds.length === 0 
                             ? 'bg-gray-600 cursor-not-allowed' 
                             : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:scale-105 cursor-pointer'
                         }`}
                       >
-                        {REGISTRATION_OPEN ? (
-                          <>Continue <ArrowRight className="w-4 h-4" /></>
-                        ) : (
-                          'Register Now'
-                        )}
+                        <>Continue <ArrowRight className="w-4 h-4" /></>
                       </button>
                         </div>
                         </div>
@@ -1306,6 +1309,44 @@ function CheckoutPageContent() {
           </motion.div>
         )}
       </AnimatePresence>
+      {/* Mobile menu overlay */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md overflow-hidden">
+          <div className="absolute top-4 right-4">
+            <button
+              aria-label="Close menu"
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
+            >
+              <X className="w-6 h-6 text-white" />
+            </button>
+          </div>
+          <div className="pt-20 px-6 h-full overflow-y-auto">
+            <div className="grid grid-cols-1 gap-3 pb-8">
+              {[{ title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
+                { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
+                { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
+                { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
+                { title: 'Schedule', href: '/schedule/progress', icon: <Clock className="w-5 h-5" /> },
+                { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
+                { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
+                { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
+                { title: 'Contact', href: '/Contact', icon: <Mail className="w-5 h-5" /> }].map((item) => (
+                <button
+                  key={item.title}
+                  onClick={() => { setMobileMenuOpen(false); router.push(item.href); }}
+                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                >
+                  <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
+                    {item.icon}
+                  </span>
+                  <span className="font-medium">{item.title}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

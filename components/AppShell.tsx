@@ -84,7 +84,7 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
   }, []);
 
   const hideChrome = pathname === "/" || pathname?.startsWith("/home") || pathname === "/Login" || pathname === "/Signup";
-  const hideLogo = pathname === "/" || pathname?.startsWith("/home") || pathname === "/Login" || pathname === "/Signup" || pathname === "/Registration-starting-soon";
+  const hideLogo = pathname === "/" || pathname?.startsWith("/home") || pathname === "/Login" || pathname === "/Signup";
 
   return (
     <div className="flex-1 flex flex-col">
@@ -104,7 +104,7 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
         <NavigationProvider navigate={handleSidebarNavigate}>
           {pathname !== "/" && <TopRightJKLULogo />}
           {mounted && !hideLogo && pathname !== "/why-sponsor-us" && <Logo />}
-          {mounted && pathname === "/Registration-starting-soon" && <Logo className="hidden lg:block" />}
+          {mounted && false && <Logo className="hidden lg:block" />}
           <main 
             key={pathname}
             className={`${

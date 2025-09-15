@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, MapPin, Clock, Users, Star, Filter, Crown, Check, Share2, Home, HelpCircle, Handshake, Mail, Info, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, Calendar, MapPin, Clock, Users, Star, Filter, Crown, Check, Share2, Home, HelpCircle, Handshake, Mail, Info, ChevronUp, ChevronLeft, ChevronRight, ShoppingCart } from 'lucide-react';
 import Logo from '../../../components/Logo';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '../../../components/NavigationContext';
@@ -378,6 +378,13 @@ export default function EventsPage() {
   const [isPageLoaded, setIsPageLoaded] = useState(true);
   const showComingSoon = false;
 
+  // Map EVENT_CATALOG by id for accurate prices
+  const catalogById = useMemo(() => {
+    const m = new Map<number, EventCatalogItem>();
+    EVENT_CATALOG.forEach(ev => m.set(ev.id, ev));
+    return m;
+  }, []);
+
   const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
     { title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
@@ -666,7 +673,7 @@ export default function EventsPage() {
                   <button onClick={() => router.push(`/Events/${selectedEvent.id}/rules`)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border bg-white/10 text-white hover:bg-white/15 border-white/20 transition">
                     <Info className="w-4 h-4" /> Rules
                   </button>
-                  <button onClick={() => router.push(`/Registration-starting-soon`)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition shadow-lg">
+                  <button onClick={() => router.push(`/checkout`)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition shadow-lg">
                     Checkout
                   </button>
                   <button onClick={handleShare} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 transition">
@@ -942,10 +949,16 @@ export default function EventsPage() {
                             </div>
                           </div>
 
-                          {/* Bottom section - Add to cart bar */}
+                          {/* Bottom section - Price + Add to cart bar */}
                           <div className="relative z-10 text-center space-y-2 md:space-y-3">
                             <div className="flex items-center justify-center space-x-2">
                               <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-green-400 rounded-full animate-ping" />
+                            </div>
+                            {/* Price badge (from EVENT_CATALOG if available) */}
+                            <div className="flex justify-center mb-8">
+                              <div className="text-white text-[10px] md:text-xs">
+                                {catalogById.get(event.id)?.price || event.price}
+                              </div>
                             </div>
                             <div className="absolute inset-x-0 bottom-0 px-2 md:px-3 py-2 bg-gradient-to-t from-black/85 via-black/60 to-transparent">
                               <button
@@ -993,6 +1006,20 @@ export default function EventsPage() {
             <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
             <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
             <span className="block h-0.5 bg-white/80 rounded-full w-4" />
+          </button>
+
+          {/* Mobile cart button at top-right with 100px right padding */}
+          <button
+            aria-label="Open cart"
+            onClick={() => router.push(`/checkout?selected=${cartIds.join(',')}`)}
+            className={`lg:hidden fixed top-4 right-[100px] z-50 w-12 h-12 rounded-full flex items-center justify-center text-white active:scale-95 transition shadow-xl ${cartIds.length ? 'bg-gradient-to-r from-purple-600 to-pink-600 ring-2 ring-white/20' : 'bg-black/60 backdrop-blur-md border border-white/20 hover:bg-white/10'}`}
+          >
+            <div className="relative">
+              <ShoppingCart className="w-5 h-5" />
+              <span className={`absolute -top-2 -right-2 inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-full text-[11px] font-semibold shadow-md ${cartIds.length ? 'bg-white text-black animate-pulse' : 'bg-white/20 text-white'}`}>
+                {cartIds.length}
+              </span>
+            </div>
           </button>
 
           {/* Mobile menu overlay */}
