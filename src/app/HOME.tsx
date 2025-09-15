@@ -831,7 +831,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                     textShadow: '0 0 15px rgba(255,255,255,0.4)',
                     letterSpacing: '0.15em'
                   }}>
-                    October 09-11, 2025
+                    October 10-12, 2025
                   </p>
                 </div>
               </div>
