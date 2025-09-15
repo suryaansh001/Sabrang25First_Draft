@@ -454,7 +454,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               
               {/* CTA Button */}
               <div className="flex items-center justify-center">
-                <a href="/Registration-starting-soon" className="btn-prism pointer-events-auto transform hover:scale-105 transition-transform duration-300">
+                <a href="/Events" className="btn-prism pointer-events-auto transform hover:scale-105 transition-transform duration-300">
                   <span className="text-lg font-semibold">Register Now</span>
                 </a>
               </div>
@@ -669,7 +669,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               {/* Enhanced Register Button */}
               <div className="relative group">
                 <a 
-                  href="/Registration-starting-soon" 
+                  href="/Events" 
                   className="relative inline-block px-10 py-5 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-full text-white font-bold text-lg hover:from-purple-700 hover:via-pink-700 hover:to-blue-700 transition-all duration-500 transform hover:scale-105 active:scale-95 shadow-2xl hover:shadow-purple-500/25"
                 >
                   <span className="relative z-10">Register Now</span>
@@ -762,10 +762,10 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         {/* Register Now Button */}
         {!isLoading && (
           <div className="absolute top-6 right-6 z-50 flex items-center space-x-5">
-            <a href="/Registration-starting-soon" className="px-28 py-5 bg-black/40 backdrop-blur-sm rounded-full text-white text-sm font-medium hover:bg-black/60 transition-all duration-300 border border-white/30">
+            <a href="/Events" className="px-28 py-5 bg-black/40 backdrop-blur-sm rounded-full text-white text-sm font-medium hover:bg-black/60 transition-all duration-300 border border-white/30">
               Register Now
             </a>
-            <a href="/Registration-starting-soon" className="p-2 text-white transition-all duration-300 flex items-center justify-center">
+            <a href="/Events" className="p-2 text-white transition-all duration-300 flex items-center justify-center">
             <img src="/JKLU_logo_white.png" alt="JKLU" className="w-15 h-15 object-contain" />
             </a>
           </div>
