@@ -339,6 +339,7 @@ export default function EventsPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [clickedEventId, setClickedEventId] = useState<number | null>(null);
+  const [cartIds, setCartIds] = useState<number[]>([]);
 
 
   // Prevent background scrolling when modal or mobile menu is open
@@ -426,6 +427,10 @@ export default function EventsPage() {
       }
       setClickedEventId(null);
     }, 100);
+  };
+  
+  const toggleCart = (eventId: number) => {
+    setCartIds(prev => prev.includes(eventId) ? prev.filter(id => id !== eventId) : [...prev, eventId]);
   };
   
 
@@ -734,6 +739,24 @@ export default function EventsPage() {
             </div>
           </motion.div>
 
+          {/* Cart button - to the left of flagship toggle on large screens */}
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.45 }}
+            className="hidden lg:fixed lg:top-6 lg:right-[360px] lg:z-50 lg:block"
+          >
+            <button
+              onClick={() => router.push(`/checkout?selected=${cartIds.join(',')}`)}
+              className="relative px-4 py-2 rounded-2xl bg-black/60 backdrop-blur-md border border-white/20 text-white hover:bg-white/10 transition cursor-pointer"
+            >
+              <span className="mr-2">Cart</span>
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-xs font-semibold">
+                {cartIds.length}
+              </span>
+            </button>
+          </motion.div>
+
           <AnimatePresence mode="wait">
             {
               <motion.main
@@ -898,18 +921,23 @@ export default function EventsPage() {
                             </div>
                           </div>
 
-                          {/* Bottom section - Suspenseful elements */}
+                          {/* Bottom section - Add to cart bar */}
                           <div className="relative z-10 text-center space-y-2 md:space-y-3">
-                            {/* Mysterious status */}
                             <div className="flex items-center justify-center space-x-2">
                               <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-green-400 rounded-full animate-ping" />
                             </div>
-                            
-                            {/* Mysterious button */}
-                            <div className="inline-block px-2 md:px-4 py-1 md:py-2 bg-black/50 border border-green-400/50 rounded-sm backdrop-blur-sm hover:bg-green-400/20 transition-all duration-300 transform hover:scale-105 group">
-                              <span className="text-[10px] md:text-xs font-bold text-green-400 uppercase tracking-widest" style={{ fontFamily: 'monospace' }}>
-                                Coming Soon ..
-                              </span>
+                            <div className="absolute inset-x-0 bottom-0 px-2 md:px-3 py-2 bg-gradient-to-t from-black/85 via-black/60 to-transparent">
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }}
+                                className={`mx-auto flex items-center justify-center gap-2 rounded-full px-3 py-1.5 md:px-4 md:py-2 border text-[10px] md:text-xs transition-all duration-200 cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/30 border-purple-400/60 text-white shadow-[0_0_12px_rgba(168,85,247,0.45)]' : 'bg-white/10 border-white/30 text-white/90 hover:bg-white/15'}`}
+                                aria-pressed={cartIds.includes(event.id)}
+                              >
+                                <span className={`inline-block w-3.5 h-3.5 md:w-4 md:h-4 rounded-full ring-1 ${cartIds.includes(event.id) ? 'bg-purple-500 ring-purple-300' : 'bg-transparent ring-white/40'}`}></span>
+                                <span className="uppercase tracking-wider" style={{ fontFamily: 'monospace' }}>
+                                  {cartIds.includes(event.id) ? 'Added' : 'Add to cart'}
+                                </span>
+                              </button>
                             </div>
                           </div>
 

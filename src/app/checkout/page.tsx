@@ -9,7 +9,7 @@ import { events as EVENTS_DATA } from '../Events/[id]/rules/events.data';
 import { EventCatalogItem, EVENT_CATALOG as ORIGINAL_EVENT_CATALOG } from '../../lib/eventCatalog';
 
 // Control flag to enable/disable the checkout flow.
-const REGISTRATION_OPEN = false;
+const REGISTRATION_OPEN = true;
 
 // Override prices for specific events as requested.
 const EVENT_CATALOG: EventCatalogItem[] = ORIGINAL_EVENT_CATALOG.map(event => {
@@ -40,15 +40,17 @@ type FieldSet = FormField[];
 
 const SOLO_FIELDS: FieldSet = [
   { name: 'name', label: 'Name', type: 'text', required: true, placeholder: 'Enter your full name' },
-  { name: 'collegeMailId', label: 'College Mail ID', type: 'email', required: true, placeholder: 'you@example.edu' },
-  { name: 'contactNo', label: 'Contact No.', type: 'phone', required: true, placeholder: '10-digit number' },
+  { name: 'collegeMailId', label: 'Email', type: 'email', required: true, placeholder: 'you@example.com' },
+  { name: 'contactNo', label: 'Mobile Number', type: 'phone', required: true, placeholder: '10-digit number' },
+  { name: 'rollNumber', label: 'Roll Number', type: 'text', required: false, placeholder: 'Your roll number' },
   { name: 'gender', label: 'Gender', type: 'select', required: true, options: [
     { value: 'male', label: 'Male' },
     { value: 'female', label: 'Female' },
     { value: 'other', label: 'Other' },
   ]},
   { name: 'age', label: 'Age', type: 'number', required: true, placeholder: 'e.g., 20' },
-  { name: 'universityName', label: 'Name of University', type: 'text', required: true },
+  { name: 'universityName', label: 'College Name', type: 'text', required: true, placeholder: 'Your college/university' },
+  { name: 'referralCode', label: 'Referral Code', type: 'text', required: false, placeholder: 'Optional' },
   { name: 'universityCardImage', label: 'University Identity Card', type: 'file', required: true, accept: 'image/*' },
   { name: 'address', label: 'Address', type: 'text', required: true, placeholder: 'Enter your full address' },
 ];
@@ -149,6 +151,18 @@ function CheckoutPageContent() {
   useEffect(() => {
     setReducedMotion(true);
   }, []);
+
+  // Preselect events passed via query param selected=1,2,3
+  useEffect(() => {
+    const selectedParam = searchParams.get('selected');
+    if (selectedParam) {
+      const ids = selectedParam
+        .split(',')
+        .map(s => parseInt(s.trim(), 10))
+        .filter(n => !Number.isNaN(n));
+      if (ids.length) setSelectedEventIds(ids);
+    }
+  }, [searchParams]);
 
   const selectedEvents = useMemo(() => EVENT_CATALOG.filter(e => selectedEventIds.includes(e.id)), [selectedEventIds]);
 
