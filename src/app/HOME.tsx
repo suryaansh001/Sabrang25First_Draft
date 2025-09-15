@@ -443,7 +443,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                   textShadow: '0 0 10px rgba(255,255,255,0.3)',
                   letterSpacing: '0.1em'
                 }}>
-                  October 09-11, 2025
+                  October 10-12, 2025
                 </p>
               </div>
               
