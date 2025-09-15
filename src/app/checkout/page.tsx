@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState, Suspense } from 'react';
+import Galaxy from '../../../components/galaxybg';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, ChevronLeft, CreditCard, ArrowRight } from 'lucide-react';
@@ -656,8 +657,10 @@ function CheckoutPageContent() {
 
   return (
     <div className="min-h-screen text-white">
-      {/* Background (lighter under reduced motion) */}
+      {/* Background with Galaxy */}
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-neutral-950 to-black">
+        {/* Galaxy background */}
+        <Galaxy transparent={true} mouseInteraction={false} density={1} glowIntensity={0.35} saturation={0.15} rotationSpeed={0.05} twinkleIntensity={0.4} autoCenterRepulsion={0.1} />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(147,51,234,0.08),transparent_70%)]"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(59,130,246,0.06),transparent_70%)]"></div>
         {/* Heavy animated background disabled for performance */}
