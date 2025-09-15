@@ -432,6 +432,27 @@ export default function EventsPage() {
   const toggleCart = (eventId: number) => {
     setCartIds(prev => prev.includes(eventId) ? prev.filter(id => id !== eventId) : [...prev, eventId]);
   };
+
+  // Load cart from localStorage on first mount
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('sabrang_cart');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          const ids = parsed.map(n => parseInt(String(n), 10)).filter(n => !Number.isNaN(n));
+          setCartIds(ids);
+        }
+      }
+    } catch {}
+  }, []);
+
+  // Persist cart whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem('sabrang_cart', JSON.stringify(cartIds));
+    } catch {}
+  }, [cartIds]);
   
 
   const handleShare = async () => {
