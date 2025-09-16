@@ -15,18 +15,35 @@ import {load} from '@cashfreepayments/cashfree-js';
 const REGISTRATION_OPEN = true;
 
 // Override prices for specific events as requested.
-const EVENT_CATALOG: EventCatalogItem[] = ORIGINAL_EVENT_CATALOG.map(event => {
-  switch (event.title) {
-    case 'Pacnache': // Corrected typo from 'Panache' to 'Pacnache'
-      return { ...event, price: '₹2999' };
-    case 'Dance Battle':
-      return { ...event, price: '₹2499' };
-    case 'Band Jam':
-      return { ...event, price: '₹1499' };
-    default:
-      return event;
+Override prices for specific events as requested.
+const EVENT_CATALOG: EventCatalogItem[] = [
+  ...ORIGINAL_EVENT_CATALOG.map(event => {
+    switch (event.title) {
+      case 'Pacnache': // Corrected typo from 'Panache' to 'Pacnache'
+        return { ...event, price: '₹2999' };
+      case 'Dance Battle':
+        return { ...event, price: '₹2499' };
+      case 'Band Jam':
+        return { ...event, price: '₹1499' };
+      default:
+        return event;
+    }
+  }),
+  // Demo event for testing payments
+  {
+    id: 999,
+    title: 'Demo Event',
+    category: 'Demo',
+    price: '₹1',
+    teamSize: 'Individual',
+    description: 'Demo event for testing payment integration with Cashfree. Only costs Rs 1 for easy testing.',
+    rules: ['This is a demo event for testing purposes only', 'Payment processing test event'],
+    contact: 'demo@sabrang.com',
+    prizes: 'Testing completion certificate',
+    image: '/images/events/demo.jpg'
   }
-});
+];
+
 
 // Define missing types
 interface FormField {
