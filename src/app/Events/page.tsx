@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, MapPin, Clock, Users, Star, Filter, Crown, Check, Share2, Home, HelpCircle, Handshake, Mail, Info, ChevronUp } from 'lucide-react';
+import { X, Calendar, MapPin, Clock, Users, Star, Filter, Crown, Check, Share2, Home, HelpCircle, Handshake, Mail, Info, ChevronUp, ChevronLeft, ChevronRight, ShoppingCart } from 'lucide-react';
 import Logo from '../../../components/Logo';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '../../../components/NavigationContext';
@@ -337,10 +337,53 @@ export default function EventsPage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [showCopyMessage, setShowCopyMessage] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [clickedEventId, setClickedEventId] = useState<number | null>(null);
+  const [cartIds, setCartIds] = useState<number[]>([]);
+
+
+  // Prevent background scrolling when modal or mobile menu is open
+  useEffect(() => {
+    if (selectedEvent || mobileMenuOpen) {
+      // Save current scroll position
+      setScrollPosition(window.scrollY);
+      
+      // Prevent scrolling on the body
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.top = `-${window.scrollY}px`;
+    } else {
+      // Restore scrolling
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+      
+      // Restore scroll position
+      window.scrollTo(0, scrollPosition);
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+    };
+  }, [selectedEvent, mobileMenuOpen, scrollPosition]);
+
   const [showScrollTop, setShowScrollTop] = useState(false);
   // ComingSoonOverlay removed – show main content directly
   const [isPageLoaded, setIsPageLoaded] = useState(true);
   const showComingSoon = false;
+
+  // Map EVENT_CATALOG by id for accurate prices
+  const catalogById = useMemo(() => {
+    const m = new Map<number, EventCatalogItem>();
+    EVENT_CATALOG.forEach(ev => m.set(ev.id, ev));
+    return m;
+  }, []);
 
   const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
     { title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
@@ -355,13 +398,68 @@ export default function EventsPage() {
   ];
 
   const handleCardClick = (event: Event) => {
+    // Save current scroll position and event ID before opening modal
+    setScrollPosition(window.scrollY);
+    setClickedEventId(event.id);
     setSelectedEvent(event);
   };
 
   const handleClose = () => {
     setSelectedEvent(null);
     setShowRules(false);
+    
+    // Smooth scroll back to the saved position after a short delay
+    setTimeout(() => {
+      if (clickedEventId) {
+        // Try to scroll to the specific event card
+        const eventElement = document.querySelector(`[data-event-id="${clickedEventId}"]`);
+        if (eventElement) {
+          eventElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+        } else {
+          // Fallback to saved scroll position
+          window.scrollTo({
+            top: scrollPosition,
+            behavior: 'smooth'
+          });
+        }
+      } else {
+        // Fallback to saved scroll position
+        window.scrollTo({
+          top: scrollPosition,
+          behavior: 'smooth'
+        });
+      }
+      setClickedEventId(null);
+    }, 100);
   };
+  
+  const toggleCart = (eventId: number) => {
+    setCartIds(prev => prev.includes(eventId) ? prev.filter(id => id !== eventId) : [...prev, eventId]);
+  };
+
+  // Load cart from localStorage on first mount
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('sabrang_cart');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          const ids = parsed.map(n => parseInt(String(n), 10)).filter(n => !Number.isNaN(n));
+          setCartIds(ids);
+        }
+      }
+    } catch {}
+  }, []);
+
+  // Persist cart whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem('sabrang_cart', JSON.stringify(cartIds));
+    } catch {}
+  }, [cartIds]);
   
 
   const handleShare = async () => {
@@ -420,11 +518,60 @@ export default function EventsPage() {
     return categoryMatch && flagshipMatch;
   });
 
+  // Calculate navigation state
+  const currentEventIndex = selectedEvent ? filteredEvents.findIndex(event => event.id === selectedEvent.id) : -1;
+  const hasPrevious = currentEventIndex > 0;
+  const hasNext = currentEventIndex < filteredEvents.length - 1;
+
+  // Navigation functions for event modal
+  const handlePreviousEvent = () => {
+    if (hasPrevious) {
+      setSelectedEvent(filteredEvents[currentEventIndex - 1]);
+    }
+  };
+
+  const handleNextEvent = () => {
+    if (hasNext) {
+      setSelectedEvent(filteredEvents[currentEventIndex + 1]);
+    }
+  };
+
+  // Keyboard navigation for event modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!selectedEvent) return;
+      
+      switch (e.key) {
+        case 'Escape':
+          handleClose();
+          break;
+        case 'ArrowLeft':
+          if (hasPrevious) {
+            e.preventDefault();
+            handlePreviousEvent();
+          }
+          break;
+        case 'ArrowRight':
+          if (hasNext) {
+            e.preventDefault();
+            handleNextEvent();
+          }
+          break;
+      }
+    };
+
+    if (selectedEvent) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [selectedEvent, hasPrevious, hasNext]);
+
   // A helper to get catalog data for an event
   const getEventCatalogData = (eventId: number) => {
     // The EVENT_CATALOG is 1-indexed on `id` and might not be a complete list.
     return EVENT_CATALOG.find(e => e.id === eventId);
   };
+
 
   // If any event is selected, immediately show the overlay and hide everything else
   if (selectedEvent) {
@@ -440,6 +587,33 @@ export default function EventsPage() {
             >
               <X className="w-5 h-5 mx-auto" />
             </button>
+
+            {/* Navigation Arrows */}
+            {hasPrevious && (
+              <button
+                aria-label="Previous event"
+                onClick={handlePreviousEvent}
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-[10001] w-12 h-12 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center group"
+              >
+                <ChevronLeft className="w-6 h-6 group-hover:scale-110 transition-transform" />
+              </button>
+            )}
+
+            {hasNext && (
+              <button
+                aria-label="Next event"
+                onClick={handleNextEvent}
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-[10001] w-12 h-12 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center group"
+              >
+                <ChevronRight className="w-6 h-6 group-hover:scale-110 transition-transform" />
+              </button>
+            )}
+
+
+            {/* Event Counter */}
+            <div className="absolute top-4 left-4 z-[10001] px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-sm">
+              {currentEventIndex + 1} / {filteredEvents.length}
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2">
               <div className="relative aspect-[4/3] md:aspect-auto md:h-full bg-black/40">
                 <img
@@ -450,7 +624,7 @@ export default function EventsPage() {
                 />
                 <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/70 to-transparent" />
               </div>
-              <div className="p-6 md:p-8 text-white space-y-5 md:space-y-6 overflow-y-auto max-h-[80vh] md:border-l md:border-white/10">
+              <div className="p-6 md:p-8 text-white space-y-5 md:space-y-6 overflow-y-auto max-h-[70vh] md:max-h-[75vh] md:border-l md:border-white/10">
                 <div>
                   <h2 className="text-2xl md:text-3xl font-bold mb-2 tracking-tight">{selectedEvent.title}</h2>
                   <div className="flex flex-wrap items-center gap-3 text-sm text-gray-300">
@@ -499,7 +673,7 @@ export default function EventsPage() {
                   <button onClick={() => router.push(`/Events/${selectedEvent.id}/rules`)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border bg-white/10 text-white hover:bg-white/15 border-white/20 transition">
                     <Info className="w-4 h-4" /> Rules
                   </button>
-                  <button onClick={() => router.push(`/Registration-starting-soon`)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition shadow-lg">
+                  <button onClick={() => router.push(`/checkout`)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition shadow-lg">
                     Checkout
                   </button>
                   <button onClick={handleShare} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 transition">
@@ -593,6 +767,24 @@ export default function EventsPage() {
             </div>
           </motion.div>
 
+          {/* Cart button - to the left of flagship toggle on large screens */}
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.45 }}
+            className="hidden lg:fixed lg:top-6 lg:right-[360px] lg:z-50 lg:block"
+          >
+            <button
+              onClick={() => router.push(`/checkout?selected=${cartIds.join(',')}`)}
+              className="relative px-4 py-2 rounded-2xl bg-black/60 backdrop-blur-md border border-white/20 text-white hover:bg-white/10 transition cursor-pointer"
+            >
+              <span className="mr-2">Cart</span>
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-xs font-semibold">
+                {cartIds.length}
+              </span>
+            </button>
+          </motion.div>
+
           <AnimatePresence mode="wait">
             {
               <motion.main
@@ -674,6 +866,7 @@ export default function EventsPage() {
                     {filteredEvents.map((event, index) => (
                       <motion.div
                         key={event.id}
+                        data-event-id={event.id}
                         initial={{ opacity: 0, y: 24 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.35, delay: index * 0.04 }}
@@ -725,7 +918,7 @@ export default function EventsPage() {
                           <div className="relative z-10 flex justify-between items-start">
                             <div className="px-2 md:px-3 py-0.5 md:py-1 bg-black/50 border border-green-400/50 rounded-sm backdrop-blur-sm">
                               <span className="text-[10px] md:text-xs font-bold text-green-400 uppercase tracking-widest" style={{ fontFamily: 'monospace' }}>
-                                {event.isFlagship ? '⚡ CLASSIFIED' : event.category}
+                                {event.isFlagship ? '⚡ FLAGSHIP' : event.category}
                               </span>
                             </div>
                             {event.isFlagship && (
@@ -756,18 +949,29 @@ export default function EventsPage() {
                             </div>
                           </div>
 
-                          {/* Bottom section - Suspenseful elements */}
+                          {/* Bottom section - Price + Add to cart bar */}
                           <div className="relative z-10 text-center space-y-2 md:space-y-3">
-                            {/* Mysterious status */}
                             <div className="flex items-center justify-center space-x-2">
                               <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-green-400 rounded-full animate-ping" />
                             </div>
-                            
-                            {/* Mysterious button */}
-                            <div className="inline-block px-2 md:px-4 py-1 md:py-2 bg-black/50 border border-green-400/50 rounded-sm backdrop-blur-sm hover:bg-green-400/20 transition-all duration-300 transform hover:scale-105 group">
-                              <span className="text-[10px] md:text-xs font-bold text-green-400 uppercase tracking-widest" style={{ fontFamily: 'monospace' }}>
-                                Coming Soon ..
-                              </span>
+                            {/* Price badge (from EVENT_CATALOG if available) */}
+                            <div className="flex justify-center mb-8">
+                              <div className="text-white text-[10px] md:text-xs">
+                                {catalogById.get(event.id)?.price || event.price}
+                              </div>
+                            </div>
+                            <div className="absolute inset-x-0 bottom-0 px-2 md:px-3 py-2 bg-gradient-to-t from-black/85 via-black/60 to-transparent">
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }}
+                                className={`mx-auto flex items-center justify-center gap-2 rounded-full px-3 py-1.5 md:px-4 md:py-2 border text-[10px] md:text-xs transition-all duration-200 cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/30 border-purple-400/60 text-white shadow-[0_0_12px_rgba(168,85,247,0.45)]' : 'bg-white/10 border-white/30 text-white/90 hover:bg-white/15'}`}
+                                aria-pressed={cartIds.includes(event.id)}
+                              >
+                                <span className={`inline-block w-3.5 h-3.5 md:w-4 md:h-4 rounded-full ring-1 ${cartIds.includes(event.id) ? 'bg-purple-500 ring-purple-300' : 'bg-transparent ring-white/40'}`}></span>
+                                <span className="uppercase tracking-wider" style={{ fontFamily: 'monospace' }}>
+                                  {cartIds.includes(event.id) ? 'Added' : 'Add to cart'}
+                                </span>
+                              </button>
                             </div>
                           </div>
 
@@ -804,9 +1008,23 @@ export default function EventsPage() {
             <span className="block h-0.5 bg-white/80 rounded-full w-4" />
           </button>
 
+          {/* Mobile cart button at top-right with 100px right padding */}
+          <button
+            aria-label="Open cart"
+            onClick={() => router.push(`/checkout?selected=${cartIds.join(',')}`)}
+            className={`lg:hidden fixed top-4 right-[100px] z-50 w-12 h-12 rounded-full flex items-center justify-center text-white active:scale-95 transition shadow-xl ${cartIds.length ? 'bg-gradient-to-r from-purple-600 to-pink-600 ring-2 ring-white/20' : 'bg-black/60 backdrop-blur-md border border-white/20 hover:bg-white/10'}`}
+          >
+            <div className="relative">
+              <ShoppingCart className="w-5 h-5" />
+              <span className={`absolute -top-2 -right-2 inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-full text-[11px] font-semibold shadow-md ${cartIds.length ? 'bg-white text-black animate-pulse' : 'bg-white/20 text-white'}`}>
+                {cartIds.length}
+              </span>
+            </div>
+          </button>
+
           {/* Mobile menu overlay */}
           {mobileMenuOpen && (
-            <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
+            <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md overflow-hidden">
               <div className="absolute top-4 right-4">
                 <button
                   aria-label="Close menu"

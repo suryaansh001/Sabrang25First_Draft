@@ -27,6 +27,18 @@ const HolographicCard = ({
   onViewCommittee?: (committeeName: string) => void;
 }) => {
   const [hoveredCard, setHoveredCard] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
+
+  // Check if device is mobile
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Add error handling for undefined person
   if (!person) {
@@ -41,13 +53,24 @@ const HolographicCard = ({
     );
   }
 
-  // Handle mouse events for flip card functionality
+  // Handle mouse events for flip card functionality (desktop only)
   const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
-    setHoveredCard(true);
+    if (!isMobile) {
+      setHoveredCard(true);
+    }
   };
 
   const handleMouseLeave = () => {
-    setHoveredCard(false);
+    if (!isMobile) {
+      setHoveredCard(false);
+    }
+  };
+
+  // Handle click events for mobile flip functionality
+  const handleClick = () => {
+    if (isMobile) {
+      setIsClicked(!isClicked);
+    }
   };
 
   return (
@@ -60,33 +83,43 @@ const HolographicCard = ({
         }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onClick={handleClick}
       >
         {/* Thick Holographic Border with Name */}
         <div className={`
           absolute -inset-1 rounded-lg opacity-75 transition-all duration-500 
           bg-gradient-to-r from-purple-500/40 via-pink-500/40 to-blue-500/40 blur-sm
-          ${hoveredCard ? 'opacity-100' : ''}
+          ${(hoveredCard || (isMobile && isClicked)) ? 'opacity-100' : ''}
         `} />
         
         {/* Name on Border - Top */}
         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
           <div className="bg-gradient-to-r from-purple-500/90 via-pink-500/90 to-blue-500/90 px-3 py-1 rounded-full border-2 border-white/30 backdrop-blur-sm">
-            <h3 className={`text-xs sm:text-sm font-bold text-white whitespace-nowrap transition-all duration-300 ${hoveredCard ? 'scale-105' : ''}`}>
+            <h3 className={`text-xs sm:text-sm font-bold text-white whitespace-nowrap transition-all duration-300 ${(hoveredCard || (isMobile && isClicked)) ? 'scale-105' : ''}`}>
               {person.name || 'Unknown'}
             </h3>
           </div>
         </div>
+
+        {/* Mobile Tap Indicator */}
+        {isMobile && !isClicked && (
+          <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 z-20">
+            <div className="bg-black/60 backdrop-blur-sm px-4 py-1 rounded-full border border-white/20">
+              <span className="text-xs text-white/80 font-medium">Tap</span>
+            </div>
+          </div>
+        )}
 
         {/* Flip Card Container */}
         <div className="relative h-80 w-full sm:h-96 sm:w-72 perspective-1000">
           <div
             className="relative w-full h-full transition-transform duration-700 ease-out transform-style-preserve-3d"
             style={{ 
-              transform: hoveredCard ? 'rotateY(180deg)' : 'rotateY(0deg)'
+              transform: (hoveredCard || (isMobile && isClicked)) ? 'rotateY(180deg)' : 'rotateY(0deg)'
             }}
           >
             {/* FRONT - Image Only */}
-            <div className={`absolute inset-0 w-full h-full rounded-lg backdrop-blur-xl bg-white/10 border-4 border-white/30 overflow-hidden shadow-2xl backface-hidden transition-opacity duration-300 ${hoveredCard ? 'opacity-0' : 'opacity-100'}`}>
+            <div className={`absolute inset-0 w-full h-full rounded-lg backdrop-blur-xl bg-white/10 border-4 border-white/30 overflow-hidden shadow-2xl backface-hidden transition-opacity duration-300 ${(hoveredCard || (isMobile && isClicked)) ? 'opacity-0' : 'opacity-100'}`}>
               {/* Main Image */}
               <img
                 src={person.img || ''}
@@ -124,7 +157,7 @@ const HolographicCard = ({
 
             {/* BACK */}
                         {/* BACK - Social Media Links */}
-            <div className={`absolute inset-0 w-full h-full rounded-lg border-4 border-white/40 overflow-hidden shadow-2xl text-white p-4 sm:p-6 backface-hidden rotate-y-180 transition-opacity duration-300 ${hoveredCard ? 'opacity-100' : 'opacity-0'}`} style={{ transform: 'rotateY(180deg)' }}>
+            <div className={`absolute inset-0 w-full h-full rounded-lg border-4 border-white/40 overflow-hidden shadow-2xl text-white p-4 sm:p-6 backface-hidden rotate-y-180 transition-opacity duration-300 ${(hoveredCard || (isMobile && isClicked)) ? 'opacity-100' : 'opacity-0'}`} style={{ transform: 'rotateY(180deg)' }}>
               {/* Enhanced background with person's image as backdrop */}
               <div className="absolute inset-0">
                 <img
@@ -445,6 +478,7 @@ export default function PeopleStrip() {
     style = {},
     isCommitteeCard = false,
     isOH = false,
+    isStudentAffairs = false,
     description
   }: { 
     person: Person; 
@@ -456,6 +490,7 @@ export default function PeopleStrip() {
     style?: React.CSSProperties;
     isCommitteeCard?: boolean;
     isOH?: boolean;
+    isStudentAffairs?: boolean;
     description?: string;
   }) => {
     // Removed hover handlers for expanded card
@@ -497,30 +532,8 @@ export default function PeopleStrip() {
            <div className="absolute -inset-2 bg-gradient-to-r from-purple-500/30 via-pink-500/30 to-blue-500/30 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-all duration-700" />
            
            <div className={`relative w-full h-full rounded-lg overflow-hidden shadow-2xl border-2 border-white/20 group-hover:border-white/40 transition-all duration-500`}>
-             {/* Enhanced Background with multiple layers */}
-             <div className="absolute inset-0">
-               {/* Primary gradient background */}
-               <div className={`absolute inset-0 ${person.bg} rounded-lg opacity-90`} />
-               
-               {/* Animated overlay pattern */}
-               <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/20 rounded-lg" />
-               
-               {/* Floating geometric shapes */}
-               <div className="absolute top-4 right-4 w-8 h-8 bg-white/20 rounded-full" />
-               <div className="absolute bottom-6 left-6 w-6 h-6 bg-white/15 rounded-full" />
-               <div className="absolute top-1/2 left-4 w-4 h-4 bg-white/25 rounded-full" />
-             </div>
-
-             {/* Enhanced splash background */}
-              <img
-                src="/images/BG-TEAM.png"
-                alt="splash"
-               className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay pointer-events-none group-hover:opacity-80 transition-all duration-500"
-               loading="lazy"
-             />
-
-             {/* Main Image with enhanced styling */}
-             <div className="relative z-10 w-full h-full flex items-center justify-center p-4">
+             {/* Main Image with enhanced styling - no background gradients */}
+             <div className="relative z-10 w-full h-full flex items-center justify-center">
                <img
                  src={person.img}
                  alt={person.name}
@@ -558,6 +571,77 @@ export default function PeopleStrip() {
            <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out rounded-lg" />
          </div>
        );
+    }
+
+    // Student Affairs card style with gradient backgrounds
+    if (isStudentAffairs) {
+      return (
+        <div className={`relative ${sizeClasses[size]} ${className} ${transformClass} cursor-pointer transition-all duration-700 ease-out group hover:scale-110 hover:z-20`} style={cardStyle}>
+          {/* Enhanced Glow Effect for Student Affairs */}
+          <div className="absolute -inset-2 bg-gradient-to-r from-purple-500/30 via-pink-500/30 to-blue-500/30 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-all duration-700" />
+          
+          <div className={`relative w-full h-full rounded-lg overflow-hidden shadow-2xl border-2 border-white/20 group-hover:border-white/40 transition-all duration-500`}>
+            {/* Enhanced Background with multiple layers */}
+            <div className="absolute inset-0">
+              {/* Primary gradient background */}
+              <div className={`absolute inset-0 ${person.bg} rounded-lg opacity-90`} />
+              
+              {/* Animated overlay pattern */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/20 rounded-lg" />
+              
+              {/* Floating geometric shapes */}
+              <div className="absolute top-4 right-4 w-8 h-8 bg-white/20 rounded-full" />
+              <div className="absolute bottom-6 left-6 w-6 h-6 bg-white/15 rounded-full" />
+              <div className="absolute top-1/2 left-4 w-4 h-4 bg-white/25 rounded-full" />
+            </div>
+
+            {/* Enhanced splash background */}
+            <img
+              src="/images/BG-TEAM.png"
+              alt="splash"
+              className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay pointer-events-none group-hover:opacity-80 transition-all duration-500"
+              loading="lazy"
+            />
+
+            {/* Main Image with enhanced styling */}
+            <div className="relative z-10 w-full h-full flex items-center justify-center p-4">
+              <img
+                src={person.img}
+                alt={person.name}
+                className="w-full h-full object-cover rounded-lg transition-all duration-500 ease-out group-hover:scale-105 group-hover:rotate-1 relative z-20"
+                loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+              
+              {/* Image border glow */}
+              <div className="absolute inset-0 rounded-lg ring-2 ring-white/30 group-hover:ring-white/50 transition-all duration-500" />
+            </div>
+            
+            {/* Enhanced text overlay with better contrast */}
+            <div className="absolute bottom-0 left-0 right-0 p-4 text-white z-30">
+              {/* Background for text readability */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent rounded-b-lg" />
+              
+              {/* Text content */}
+              <div className="relative z-10 text-center">
+                <h3 className="text-lg lg:text-xl font-bold mb-1 text-shadow-lg group-hover:text-white transition-all duration-300 truncate">
+                  {person.name}
+                </h3>
+                
+                {/* Student Affairs role indicator */}
+                <div className="mt-2 inline-flex items-center px-2 py-1 bg-white/20 backdrop-blur-sm rounded-md border border-white/30">
+                  <span className="text-xs font-semibold text-white">⭐ Student Affairs</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Enhanced hover overlay indicator */}
+          <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out rounded-lg" />
+        </div>
+      );
     }
 
     // Default card style for other cases
@@ -686,7 +770,7 @@ export default function PeopleStrip() {
                 cardId={`student-affairs-${index}`}
                 className={`w-[200px] sm:w-[180px] md:w-[240px] lg:w-[280px] xl:w-[320px] h-[320px] sm:h-[300px] md:h-[400px] lg:h-[480px] xl:h-[540px] overflow-hidden rounded-lg shadow-2xl flex-shrink-0 relative`}
                 transformClass=""
-                isOH
+                isStudentAffairs
               />
             </div>
           ))}
@@ -695,7 +779,7 @@ export default function PeopleStrip() {
 
       {/* Organizing Head heading */}
       <div 
-        className="text-center mt-24"
+        className="text-center"
       >
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-2xl tracking-widest uppercase px-4" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
           Organizing Head
@@ -703,7 +787,7 @@ export default function PeopleStrip() {
       </div>
       
              {/* Organizing Heads cards - enhanced layout and styling */}
-       <div className="relative mt-[-8] mb-24 sm:mb-28 lg:mb-32">
+       <div className="relative mt-0 mb-24 sm:mb-28 lg:mb-32">
                  {/* Background decorative elements */}
          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
            <div className="w-full max-w-4xl h-1 bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-30" />

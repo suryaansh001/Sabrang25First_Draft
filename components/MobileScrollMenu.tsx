@@ -18,6 +18,7 @@ import {
 
 interface MobileScrollMenuProps {
   onNavigate: (href: string) => void;
+  alwaysVisible?: boolean;
 }
 
 const navigationItems = [
@@ -32,8 +33,8 @@ const navigationItems = [
   { title: 'Contact', icon: <Mail className="w-5 h-5" />, href: '/Contact' },
 ];
 
-const MobileScrollMenu: React.FC<MobileScrollMenuProps> = ({ onNavigate }) => {
-  const [isVisible, setIsVisible] = useState(false);
+const MobileScrollMenu: React.FC<MobileScrollMenuProps> = ({ onNavigate, alwaysVisible = false }) => {
+  const [isVisible, setIsVisible] = useState(alwaysVisible);
   const [isExpanded, setIsExpanded] = useState(false);
   const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up');
   const lastScrollYRef = useRef(0);
@@ -41,6 +42,12 @@ const MobileScrollMenu: React.FC<MobileScrollMenuProps> = ({ onNavigate }) => {
   const router = useRouter();
 
   useEffect(() => {
+    // If alwaysVisible is true, don't add scroll listener
+    if (alwaysVisible) {
+      setIsVisible(true);
+      return;
+    }
+
     let ticking = false;
     const handleScroll = () => {
       if (ticking) return;
@@ -64,7 +71,7 @@ const MobileScrollMenu: React.FC<MobileScrollMenuProps> = ({ onNavigate }) => {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [alwaysVisible]);
 
   const handleMenuToggle = useCallback(() => {
     setIsExpanded((v) => !v);

@@ -6,6 +6,7 @@ import MobileScrollMenu from '../../components/MobileScrollMenu';
 import { useVideo } from '../../components/VideoContext';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '../../components/NavigationContext';
+import ShinyText from '../../components/shinytext';
 
 
 // Beautiful First-Load Background Component
@@ -236,6 +237,28 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
     };
   }, []);
 
+  // Prevent background scrolling when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      // Prevent scrolling on the body
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+    } else {
+      // Restore scrolling
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    };
+  }, [mobileMenuOpen]);
+
   const mobileNavItems = useMemo(() => [
     { title: 'Home', href: '/', icon: <Home className="w-5 h-5" /> },
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
@@ -324,6 +347,40 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         <div className="absolute inset-0">
           <MobileVideoBackground />
         </div>
+
+        {/* Special Mobile Background Effects */}
+        <div className="absolute inset-0 pointer-events-none">
+          {/* Animated gradient orbs */}
+          <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-gradient-to-br from-purple-400/30 to-pink-500/40 rounded-full blur-xl animate-pulse" style={{ animationDuration: '4s' }}></div>
+          <div className="absolute top-1/2 right-1/4 w-24 h-24 bg-gradient-to-tl from-cyan-400/30 to-blue-500/40 rounded-full blur-lg animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }}></div>
+          <div className="absolute bottom-1/3 left-1/3 w-28 h-28 bg-gradient-to-r from-orange-400/25 to-red-500/35 rounded-full blur-xl animate-pulse" style={{ animationDuration: '5s', animationDelay: '2s' }}></div>
+          
+          {/* Floating particles */}
+          <div className="absolute inset-0">
+            {Array.from({ length: 15 }).map((_, i) => (
+              <div
+                key={i}
+                className="absolute w-1 h-1 bg-white/40 rounded-full animate-bounce"
+                style={{
+                  left: `${(i * 73) % 100}%`,
+                  top: `${(i * 47) % 100}%`,
+                  animationDuration: `${3 + (i % 3)}s`,
+                  animationDelay: `${(i * 0.3) % 2}s`,
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Animated light streaks */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-purple-400/50 to-transparent opacity-60 animate-pulse" style={{ animationDuration: '3s' }} />
+            <div className="absolute top-1/3 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent opacity-60 animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
+            <div className="absolute top-2/3 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-pink-400/50 to-transparent opacity-60 animate-pulse" style={{ animationDuration: '3.5s', animationDelay: '0.5s' }} />
+          </div>
+
+          {/* Center spotlight effect */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-white/10 via-purple-500/20 to-transparent rounded-full blur-2xl animate-pulse" style={{ animationDuration: '8s' }} />
+        </div>
         
         {/* Removed overlay gradient per request */}
 
@@ -366,13 +423,13 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
             <div className="max-w-sm mx-auto">
                              {/* Main Title */}
                <h1 className="font-black leading-tight mb-6 whitespace-nowrap overflow-visible">
-                 <span className="preload inline text-5xl sm:text-7xl md:text-8xl text-white drop-shadow-lg" style={{ 
+                 <span className="preload inline text-6xl sm:text-8xl md:text-9xl text-orange-50 drop-shadow-lg" style={{ 
                    fontFamily: "'Quivert', sans-serif",
-                   textShadow: '0 0 20px rgba(255,255,255,0.3)'
+                   textShadow: '0 0 20px rgba(255,248,240,0.4)'
                  }}>
                    SABRANG
                  </span>
-                 <span className="inline-block text-6xl sm:text-6xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 ml-2 sm:ml-3 md:ml-4 leading-[1.1] align-baseline" style={{ 
+                 <span className="inline-block text-10xl sm:text-7xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 ml-2 sm:ml-3 md:ml-4 leading-[1.1] align-baseline" style={{ 
                    fontFamily: "'TAN Nimbus', sans-serif",
                    textShadow: '0 0 15px rgba(34,211,238,0.4)'
                  }}>
@@ -380,7 +437,14 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                  </span>
                </h1>
               
-             
+              {/* Date */}
+              <div className="mb-6">
+                <ShinyText 
+                  text="October 10-12, 2025"
+                  speed={6}
+                  className="text-white/90 text-lg font-bold tracking-widest"
+                />
+              </div>
               
               {/* Tagline */}
               <p className="text-gray-300 text-base mb-8 leading-relaxed">
@@ -389,7 +453,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               
               {/* CTA Button */}
               <div className="flex items-center justify-center">
-                <a href="/Registration-starting-soon" className="btn-prism pointer-events-auto transform hover:scale-105 transition-transform duration-300">
+                <a href="/Events" className="btn-prism pointer-events-auto transform hover:scale-105 transition-transform duration-300">
                   <span className="text-lg font-semibold">Register Now</span>
                 </a>
               </div>
@@ -407,7 +471,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
 
         {/* Mobile menu overlay */}
         {mobileMenuOpen && (
-          <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
+          <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md overflow-hidden">
             <div className="absolute top-4 right-4">
               <button
                 aria-label="Close menu"
@@ -417,8 +481,8 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                 <X className="w-6 h-6 text-white" />
               </button>
             </div>
-            <div className="pt-20 px-6">
-              <div className="grid grid-cols-1 gap-3">
+            <div className="pt-20 px-6 h-full overflow-y-auto">
+              <div className="grid grid-cols-1 gap-3 pb-8">
                 {mobileNavItems.map((item) => (
                   <button
                     key={item.title}
@@ -446,19 +510,95 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
 
       {/* Mobile Content Sections - separate from hero */}
       {!isLoading && (
-        <div className="block lg:hidden relative bg-gradient-to-b from-black/80 via-purple-900/40 to-black/90 min-h-screen" style={{ contentVisibility: 'auto', containIntrinsicSize: '800px 1200px' }}>
+        <div className="block lg:hidden relative min-h-screen overflow-hidden" style={{ 
+          contentVisibility: 'auto', 
+          containIntrinsicSize: '800px 1200px',
+          background: `
+            radial-gradient(ellipse at top, rgba(147, 51, 234, 0.3) 0%, transparent 50%),
+            radial-gradient(ellipse at bottom, rgba(59, 130, 246, 0.2) 0%, transparent 50%),
+            radial-gradient(ellipse at center, rgba(236, 72, 153, 0.15) 0%, transparent 70%),
+            linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(30, 0, 50, 0.8) 25%, rgba(0, 20, 40, 0.8) 50%, rgba(50, 0, 30, 0.8) 75%, rgba(0, 0, 0, 0.9) 100%)
+          `
+        }}>
+          {/* Special Mobile Content Background */}
+          <div className="absolute inset-0 pointer-events-none">
+            {/* Animated gradient overlays */}
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 via-transparent to-blue-600/10 animate-pulse" style={{ animationDuration: '8s' }}></div>
+            <div className="absolute inset-0 bg-gradient-to-tl from-pink-500/8 via-transparent to-cyan-500/8 animate-pulse" style={{ animationDuration: '12s', animationDelay: '2s' }}></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/6 via-transparent to-emerald-500/6 animate-pulse" style={{ animationDuration: '10s', animationDelay: '4s' }}></div>
+            
+            {/* Animated background orbs */}
+            <div className="absolute top-1/4 right-1/4 w-40 h-40 bg-gradient-to-br from-blue-500/20 to-purple-600/30 rounded-full blur-2xl animate-pulse" style={{ animationDuration: '6s' }}></div>
+            <div className="absolute bottom-1/4 left-1/4 w-32 h-32 bg-gradient-to-tl from-pink-500/20 to-orange-500/30 rounded-full blur-xl animate-pulse" style={{ animationDuration: '8s', animationDelay: '2s' }}></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-gradient-to-br from-cyan-500/15 to-indigo-600/25 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s', animationDelay: '1s' }}></div>
+            
+            {/* Additional floating gradient orbs */}
+            <div className="absolute top-1/3 left-1/6 w-24 h-24 bg-gradient-to-br from-yellow-400/15 to-red-500/20 rounded-full blur-xl animate-pulse" style={{ animationDuration: '7s', animationDelay: '3s' }}></div>
+            <div className="absolute bottom-1/3 right-1/6 w-28 h-28 bg-gradient-to-tl from-green-400/15 to-teal-500/20 rounded-full blur-2xl animate-pulse" style={{ animationDuration: '9s', animationDelay: '1.5s' }}></div>
+            
+            {/* Floating geometric shapes */}
+            <div className="absolute inset-0">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-2 h-2 bg-white/20 rounded-sm animate-bounce"
+                  style={{
+                    left: `${(i * 89) % 100}%`,
+                    top: `${(i * 67) % 100}%`,
+                    animationDuration: `${4 + (i % 4)}s`,
+                    animationDelay: `${(i * 0.5) % 3}s`,
+                    transform: `rotate(${i * 45}deg)`,
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Animated gradient lines */}
+            <div className="absolute inset-0 overflow-hidden">
+              {/* Horizontal gradient lines */}
+              <div className="absolute top-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-400/30 to-transparent opacity-50 animate-pulse" style={{ animationDuration: '5s' }} />
+              <div className="absolute top-3/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent opacity-50 animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }} />
+              <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-pink-400/25 to-transparent opacity-40 animate-pulse" style={{ animationDuration: '7s', animationDelay: '2s' }} />
+              <div className="absolute top-1/6 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-400/20 to-transparent opacity-35 animate-pulse" style={{ animationDuration: '8s', animationDelay: '3s' }} />
+              
+              {/* Vertical gradient lines */}
+              <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-yellow-400/25 to-transparent opacity-40 animate-pulse" style={{ animationDuration: '6s', animationDelay: '1.5s' }} />
+              <div className="absolute top-0 left-3/4 w-px h-full bg-gradient-to-b from-transparent via-green-400/20 to-transparent opacity-35 animate-pulse" style={{ animationDuration: '7s', animationDelay: '2.5s' }} />
+              <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-transparent via-orange-400/30 to-transparent opacity-45 animate-pulse" style={{ animationDuration: '8s', animationDelay: '0.5s' }} />
+              
+              {/* Diagonal gradient lines */}
+              <div className="absolute top-0 left-0 w-full h-full">
+                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-indigo-400/20 to-transparent opacity-30 transform rotate-12 animate-pulse" style={{ animationDuration: '9s', animationDelay: '1s' }} />
+                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-emerald-400/25 to-transparent opacity-35 transform -rotate-12 animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
+                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-rose-400/20 to-transparent opacity-30 transform rotate-6 animate-pulse" style={{ animationDuration: '11s', animationDelay: '3s' }} />
+              </div>
+              
+              {/* Moving gradient lines */}
+              <div className="absolute inset-0">
+                <div className="absolute top-1/3 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent opacity-60 animate-pulse" style={{ animationDuration: '4s', animationDelay: '0s' }} />
+                <div className="absolute top-2/3 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-purple-500/35 to-transparent opacity-55 animate-pulse" style={{ animationDuration: '5s', animationDelay: '1s' }} />
+                <div className="absolute top-1/5 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-pink-500/30 to-transparent opacity-50 animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }} />
+              </div>
+            </div>
+          </div>
           {/* Hero Introduction Section */}
-          <section className="px-6 py-20">
-            <div className="text-center">
-              <div className="w-16 h-1 bg-gradient-to-r from-purple-400 to-pink-400 mx-auto mb-6 rounded-full"></div>
-              <h2 className="text-4xl font-bold text-white mb-6" style={{ fontFamily: "'Quivert', sans-serif" }}>Sabrang 25</h2>
-              <p className="text-gray-300 text-lg leading-relaxed max-w-md mx-auto">
+          <section className="px-6 py-20 relative">
+            <div className="text-center relative z-10">
+              <div className="w-16 h-1 bg-gradient-to-r from-purple-400 to-pink-400 mx-auto mb-6 rounded-full animate-pulse" style={{ animationDuration: '2s' }}></div>
+              <h2 className="text-4xl font-bold text-white mb-6 animate-fade-in-up" style={{ fontFamily: "'Quivert', sans-serif" }}>Sabrang 25</h2>
+              <p className="text-gray-300 text-lg leading-relaxed max-w-md mx-auto animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                 Unforgettable celebration of culture, creativity, and community.
               </p>
-              <div className="mt-6 flex items-center justify-center space-x-2">
+              <div className="mt-6 flex items-center justify-center space-x-2 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
                 <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
                 <span className="text-purple-300 text-sm">Experience the Magic</span>
               </div>
+            </div>
+            
+            {/* Special floating elements for this section */}
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute top-1/4 left-1/4 w-20 h-20 bg-gradient-to-br from-purple-500/20 to-pink-500/30 rounded-full blur-xl animate-pulse" style={{ animationDuration: '4s' }}></div>
+              <div className="absolute bottom-1/4 right-1/4 w-16 h-16 bg-gradient-to-tl from-cyan-500/20 to-blue-500/30 rounded-full blur-lg animate-pulse" style={{ animationDuration: '5s', animationDelay: '1s' }}></div>
             </div>
           </section>
 
@@ -471,32 +611,48 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
             
             <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
               {[
-                { title: 'About', icon: <Info className="w-6 h-6" />, href: '/About', color: 'from-blue-500 to-cyan-500' },
-                { title: 'Events', icon: <Calendar className="w-6 h-6" />, href: '/Events', color: 'from-purple-500 to-pink-500' },
-                { title: 'Highlights', icon: <Star className="w-6 h-6" />, href: '/Gallery', color: 'from-yellow-500 to-orange-500' },
-                { title: 'Schedule', icon: <Clock className="w-6 h-6" />, href: '/schedule/progress', color: 'from-green-500 to-emerald-500' }
+                { title: 'About', icon: <Info className="w-6 h-6" />, href: '/About', color: 'from-blue-500 to-cyan-500', glowColor: 'shadow-blue-500/20', bgImage: '/images/about-section/about_back.webp' },
+                { title: 'Events', icon: <Calendar className="w-6 h-6" />, href: '/Events', color: 'from-purple-500 to-pink-500', glowColor: 'shadow-purple-500/20', bgImage: '/images/backgrounds/eventpage.webp' },
+                { title: 'Highlights', icon: <Star className="w-6 h-6" />, href: '/Gallery', color: 'from-yellow-500 to-orange-500', glowColor: 'shadow-yellow-500/20', bgImage: '/images/gallery_desktop/1.webp' },
+                { title: 'Schedule', icon: <Clock className="w-6 h-6" />, href: '/schedule/progress', color: 'from-green-500 to-emerald-500', glowColor: 'shadow-green-500/20', bgImage: '/images/Schedule.jpg' }
               ].map((item, index) => (
                 <button
                   key={item.title}
                   onClick={() => { navigate(item.href); }}
-                  className="group relative p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 hover:border-white/40 active:scale-[0.98] transition-all duration-300 text-center overflow-hidden"
+                  className={`group relative p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 hover:border-white/40 active:scale-[0.98] transition-all duration-300 text-center overflow-hidden hover:${item.glowColor} hover:shadow-lg`}
+                  style={{ 
+                    background: `linear-gradient(135deg, ${item.color.includes('blue') ? 'rgba(59, 130, 246, 0.1)' : item.color.includes('purple') ? 'rgba(147, 51, 234, 0.1)' : item.color.includes('yellow') ? 'rgba(234, 179, 8, 0.1)' : 'rgba(34, 197, 94, 0.1)'}, rgba(255, 255, 255, 0.05))`,
+                    animationDelay: `${index * 0.1}s`
+                  }}
                 >
-                  {/* Background gradient on hover */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
+                  {/* Background image with low opacity */}
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10 group-hover:opacity-15 transition-opacity duration-500"
+                    style={{ backgroundImage: `url(${item.bgImage})` }}
+                  ></div>
                   
-                  {/* Icon container */}
-                  <div className="relative z-10 w-14 h-14 bg-white/15 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-white/20 transition-all duration-300 group-hover:scale-110">
-                    <div className="text-white group-hover:text-white transition-colors duration-300">
+                  {/* Animated background gradient */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-15 transition-opacity duration-500`}></div>
+                  
+                  {/* Floating particles inside card */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <div className="absolute top-2 right-2 w-1 h-1 bg-white/60 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+                    <div className="absolute bottom-2 left-2 w-1 h-1 bg-white/40 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+                  </div>
+                  
+                  {/* Icon container with enhanced effects */}
+                  <div className="relative z-10 w-14 h-14 bg-white/15 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-white/25 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-white/20">
+                    <div className="text-white group-hover:text-white transition-colors duration-300 group-hover:drop-shadow-lg">
                       {item.icon}
                     </div>
                   </div>
                   
-                  {/* Title */}
-                  <span className="relative z-10 font-semibold text-white text-sm group-hover:text-white transition-colors duration-300">
+                  {/* Title with enhanced styling */}
+                  <span className="relative z-10 font-semibold text-white text-sm group-hover:text-white transition-colors duration-300 group-hover:drop-shadow-md">
                     {item.title}
                   </span>
                   
-                  {/* Hover effect */}
+                  {/* Enhanced hover effect */}
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </button>
               ))}
@@ -512,7 +668,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               {/* Enhanced Register Button */}
               <div className="relative group">
                 <a 
-                  href="/Registration-starting-soon" 
+                  href="/Events" 
                   className="relative inline-block px-10 py-5 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-full text-white font-bold text-lg hover:from-purple-700 hover:via-pink-700 hover:to-blue-700 transition-all duration-500 transform hover:scale-105 active:scale-95 shadow-2xl hover:shadow-purple-500/25"
                 >
                   <span className="relative z-10">Register Now</span>
@@ -605,10 +761,10 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         {/* Register Now Button */}
         {!isLoading && (
           <div className="absolute top-6 right-6 z-50 flex items-center space-x-5">
-            <a href="/Registration-starting-soon" className="px-28 py-5 bg-black/40 backdrop-blur-sm rounded-full text-white text-sm font-medium hover:bg-black/60 transition-all duration-300 border border-white/30">
+            <a href="/Events" className="px-28 py-5 bg-black/40 backdrop-blur-sm rounded-full text-white text-sm font-medium hover:bg-black/60 transition-all duration-300 border border-white/30">
               Register Now
             </a>
-            <a href="/Registration-starting-soon" className="p-2 text-white transition-all duration-300 flex items-center justify-center">
+            <a href="/Events" className="p-2 text-white transition-all duration-300 flex items-center justify-center">
             <img src="/JKLU_logo_white.png" alt="JKLU" className="w-15 h-15 object-contain" />
             </a>
           </div>
@@ -652,10 +808,10 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
             <div className="relative z-10 flex items-center justify-center h-full">
               <div className="text-center">
                                                  <h1 className="text-8xl md:text-7xl lg:text-9xl font-black text-white leading-none">
-                  <span className="text-white drop-shadow-lg text-9xl md:text-11xl lg:text-[11rem]" style={{ 
+                  <span className="text-orange-50 drop-shadow-lg text-9xl md:text-11xl lg:text-[11rem]" style={{ 
                     fontFamily: "'Quivert', sans-serif", 
                     letterSpacing: '0.02em',
-                    textShadow: '0 0 30px rgba(255,255,255,0.4)'
+                    textShadow: '0 0 30px rgba(255,248,240,0.5)'
                   }}>
                     SABRANG
                   </span><br />
@@ -666,6 +822,15 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                     2025
                   </span>
                 </h1>
+                
+                {/* Desktop Date */}
+                <div className="mt-8">
+                  <ShinyText 
+                    text="October 10-12, 2025"
+                    speed={6}
+                    className="text-white/90 text-xl font-bold tracking-widest"
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -757,32 +922,46 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
           50% { opacity: 1; transform: scale(1.2); }
         }
 
-        /* Mobile responsive improvements */
-        @media (max-width: 640px) {
-          .mobile-hero-title {
-            font-size: 3.5rem;
-            line-height: 1;
-          }
-          
-          .mobile-hero-subtitle {
-            font-size: 1rem;
-          }
-          
-          .mobile-explore-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.75rem;
-          }
-        }
+         /* Mobile responsive improvements */
+         @media (max-width: 640px) {
+           .mobile-hero-title {
+             font-size: 3.5rem;
+             line-height: 1;
+           }
+           
+           .mobile-hero-subtitle {
+             font-size: 1rem;
+           }
+           
+           .mobile-explore-grid {
+             grid-template-columns: repeat(2, 1fr);
+             gap: 0.75rem;
+           }
+           
+           /* Ensure 25 text is fully visible on mobile */
+           h1 span:last-child {
+             font-size: 2.5rem !important;
+             line-height: 1.2 !important;
+             margin-top: 0.2rem !important;
+           }
+         }
 
-        @media (max-width: 480px) {
-          .mobile-hero-title {
-            font-size: 3rem;
-          }
-          
-          .mobile-explore-grid {
-            gap: 0.5rem;
-          }
-        }
+         @media (max-width: 480px) {
+           .mobile-hero-title {
+             font-size: 3rem;
+           }
+           
+           .mobile-explore-grid {
+             gap: 0.5rem;
+           }
+           
+           /* Even smaller text for very small screens but ensure visibility */
+           h1 span:last-child {
+             font-size: 2rem !important;
+             line-height: 1.3 !important;
+             margin-top: 0.3rem !important;
+           }
+         }
 
         /* Custom scrollbar for mobile */
         @media (max-width: 768px) {
@@ -812,6 +991,53 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
 
         .mobile-transition:hover {
           transform: translateY(-2px);
+        }
+
+        /* Custom fade-in animations for mobile */
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-fade-in-up {
+          animation: fadeInUp 0.8s ease-out forwards;
+          opacity: 0;
+        }
+
+        /* Enhanced mobile card animations */
+        @keyframes cardFloat {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-5px);
+          }
+        }
+
+        .mobile-card-float {
+          animation: cardFloat 3s ease-in-out infinite;
+        }
+
+        /* Mobile particle effects */
+        @keyframes particleFloat {
+          0%, 100% {
+            transform: translateY(0px) rotate(0deg);
+            opacity: 0.3;
+          }
+          50% {
+            transform: translateY(-20px) rotate(180deg);
+            opacity: 0.8;
+          }
+        }
+
+        .mobile-particle {
+          animation: particleFloat 4s ease-in-out infinite;
         }
       `}</style>
     </div>

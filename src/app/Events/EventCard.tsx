@@ -60,15 +60,18 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
                 </div>
             </div>
 
-            {/* Bottom section - Suspenseful elements */}
+            {/* Bottom section - Add to cart control */}
             <div className="relative z-10 text-center space-y-3">
                 <div className="flex items-center justify-center space-x-2">
                     <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-ping" />
                 </div>
-                <div className="inline-block px-4 py-2 bg-black/50 border border-green-400/50 rounded-sm backdrop-blur-sm">
-                    <span className="text-xs font-bold text-green-400 uppercase tracking-widest" style={{ fontFamily: 'monospace' }}>
-                        Coming Soon ..
+                <div className="absolute inset-x-0 bottom-0 px-3 py-2 bg-gradient-to-t from-black/85 via-black/60 to-transparent">
+                  <label className="flex items-center justify-center gap-2 text-white text-xs select-none cursor-pointer">
+                    <input type="checkbox" className="accent-purple-500 w-4 h-4 cursor-pointer" />
+                    <span className="uppercase tracking-wider" style={{ fontFamily: 'monospace' }}>
+                      Add to cart
                     </span>
+                  </label>
                 </div>
             </div>
 

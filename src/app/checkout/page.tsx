@@ -1,15 +1,18 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState, Suspense } from 'react';
+import Galaxy from '../../../components/galaxybg';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ChevronLeft, CreditCard, ArrowRight } from 'lucide-react';
+import { Check, ChevronLeft, CreditCard, ArrowRight, X, Home, Info, Calendar, Star, Clock, Users, HelpCircle, Handshake, Mail } from 'lucide-react';
 import createApiUrl from '../../lib/api';
 import { events as EVENTS_DATA } from '../Events/[id]/rules/events.data';
 import { EventCatalogItem, EVENT_CATALOG as ORIGINAL_EVENT_CATALOG } from '../../lib/eventCatalog';
+import {load} from '@cashfreepayments/cashfree-js';
+
 
 // Control flag to enable/disable the checkout flow.
-const REGISTRATION_OPEN = false;
+const REGISTRATION_OPEN = true;
 
 // Override prices for specific events as requested.
 const EVENT_CATALOG: EventCatalogItem[] = ORIGINAL_EVENT_CATALOG.map(event => {
@@ -40,15 +43,16 @@ type FieldSet = FormField[];
 
 const SOLO_FIELDS: FieldSet = [
   { name: 'name', label: 'Name', type: 'text', required: true, placeholder: 'Enter your full name' },
-  { name: 'collegeMailId', label: 'College Mail ID', type: 'email', required: true, placeholder: 'you@example.edu' },
-  { name: 'contactNo', label: 'Contact No.', type: 'phone', required: true, placeholder: '10-digit number' },
+  { name: 'collegeMailId', label: 'Email', type: 'email', required: true, placeholder: 'you@example.com' },
+  { name: 'contactNo', label: 'Mobile Number', type: 'phone', required: true, placeholder: '10-digit number' },
   { name: 'gender', label: 'Gender', type: 'select', required: true, options: [
     { value: 'male', label: 'Male' },
     { value: 'female', label: 'Female' },
     { value: 'other', label: 'Other' },
   ]},
   { name: 'age', label: 'Age', type: 'number', required: true, placeholder: 'e.g., 20' },
-  { name: 'universityName', label: 'Name of University', type: 'text', required: true },
+  { name: 'universityName', label: 'College Name', type: 'text', required: true, placeholder: 'Your college/university' },
+  { name: 'referralCode', label: 'Referral Code', type: 'text', required: false, placeholder: 'Optional' },
   { name: 'universityCardImage', label: 'University Identity Card', type: 'file', required: true, accept: 'image/*' },
   { name: 'address', label: 'Address', type: 'text', required: true, placeholder: 'Enter your full address' },
 ];
@@ -144,11 +148,32 @@ function CheckoutPageContent() {
   const [promoInput, setPromoInput] = useState<string>('');
   const [appliedPromo, setAppliedPromo] = useState<{ code: string; discountAmount: number } | null>(null);
   const [promoStatus, setPromoStatus] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [paymentSession, setPaymentSession] = useState<{
+    paymentSessionId: string;
+    orderId: string;
+    amount: number;
+    mode: string;
+  } | null>(null);
+  const [paymentMode, setPaymentMode] = useState<'card' | 'upi'>('card');
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   // Force reduced motion for smooth scrolling experience on this page
   useEffect(() => {
     setReducedMotion(true);
   }, []);
+
+  // Preselect events passed via query param selected=1,2,3
+  useEffect(() => {
+    const selectedParam = searchParams.get('selected');
+    if (selectedParam) {
+      const ids = selectedParam
+        .split(',')
+        .map(s => parseInt(s.trim(), 10))
+        .filter(n => !Number.isNaN(n));
+      if (ids.length) setSelectedEventIds(ids);
+    }
+  }, [searchParams]);
 
   const selectedEvents = useMemo(() => EVENT_CATALOG.filter(e => selectedEventIds.includes(e.id)), [selectedEventIds]);
 
@@ -269,7 +294,6 @@ function CheckoutPageContent() {
       }
     });
   };
-
 
   const validateForms = () => {
     const errors: Record<string, Record<string, string>> = {};
@@ -508,6 +532,7 @@ function CheckoutPageContent() {
   };
 
   const proceedToPayment = async () => {
+    console.log('🚀 proceedToPayment function called');
     try {
       // First, register the user on backend using existing /register with image upload
       // Map fields: name -> 'name', collegeMailId -> 'email', and attach a 'profileImage'
@@ -577,55 +602,80 @@ function CheckoutPageContent() {
         throw new Error(errText || 'Registration failed');
       }
 
-      // Continue with payment creation as before
-      // Create FormData to handle file uploads
-      const formData = new FormData();
-      
-      // Add basic form data
-      formData.append('items', JSON.stringify(selectedEvents.map(e => ({ eventId: e.id, title: e.title, price: e.price }))));
-      formData.append('formsBySignature', JSON.stringify(formDataBySignature));
-      
-      // Add files
-      Object.entries(filesBySignature).forEach(([signature, files]) => {
-        Object.entries(files).forEach(([fieldName, file]) => {
-          formData.append(`files_${signature}_${fieldName}`, file);
-        });
-      });
+      // Create payment order using the new simple backend endpoint
+      const orderData = {
+        amount: finalPrice.toString(),
+        customerName: derivedName,
+        customerEmail: derivedEmail,
+        customerPhone: flat['contactNo'] || '9999999999'
+      };
 
-      const response = await fetch(createApiUrl('/payments/cashfree/create-order'), {
+      console.log('🚀 Creating payment order with data:', orderData);
+      const response = await fetch(createApiUrl('/payments/create-order'), {
         method: 'POST',
         credentials: 'include',
-        body: (() => { if (appliedPromo?.code) formData.append('promoCode', appliedPromo.code); return formData; })()
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(orderData)
       });
+
       if (!response.ok) {
         const errText = await response.text().catch(() => '');
         throw new Error(errText || 'Failed to create order');
       }
+
       const data = await response.json();
-      if (data.payment_link) {
-        window.location.href = data.payment_link as string;
-        return;
+      console.log('✅ Payment order created:', data);
+
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to create payment order');
       }
-      const orderToken = data.order_token || data.payment_session_id || data.token;
-      const mode = data.mode || (window.location.hostname === 'localhost' ? 'sandbox' : 'production');
-      if (!orderToken) throw new Error('Missing payment session token from server');
-      await loadCashfreeSdk();
-      const anyWindow = window as unknown as Record<string, any>;
-      const cf = anyWindow.Cashfree || anyWindow?.cashfree;
-      if (!cf) throw new Error('Cashfree SDK not available');
-      if (typeof cf?.initialize === 'function') {
-        const ins = cf.initialize({ mode });
-        await ins.checkout({ paymentSessionId: orderToken });
-        return;
-      }
-      if (typeof cf?.payments === 'function') {
-        const ins = cf.payments({ mode });
-        await ins.checkout({ paymentSessionId: orderToken });
-        return;
-      }
-      throw new Error('Unsupported Cashfree SDK interface');
+
+      // Store payment session data for the payment component
+      setPaymentSession({
+        paymentSessionId: data.data.payment_session_id,
+        orderId: data.data.order_id,
+        amount: data.data.amount,
+        mode: 'production' // Using production since we have prod credentials
+      });
+
+      // Move to payment step
+      setStep('payment');
+
+    } catch (error) {
+      console.error('❌ Payment initialization failed:', error);
+      alert(`Payment initialization failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  // Initialize Cashfree payment
+  const initializeCashfreePayment = async () => {
+    if (!paymentSession) {
+      alert('No payment session available. Please try again.');
+      return;
+    }
+
+    setIsProcessingPayment(true);
+    try {
+      console.log('🔗 Initializing Cashfree payment...');
+      const cashfree = await load({ 
+        mode: "production" // Using production since we have prod credentials
+      });
+      
+      const checkoutOptions = {
+        paymentSessionId: paymentSession.paymentSessionId,
+        redirectTarget: '_self' as const
+      };
+      
+      console.log('� Launching Cashfree checkout with options:', checkoutOptions);
+      await cashfree.checkout(checkoutOptions);
+      
+    } catch (error) {
+      console.error('❌ Cashfree payment failed:', error);
+      alert(`Payment failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
-      // Keep user on page
+      setIsProcessingPayment(false);
     }
   };
 
@@ -642,8 +692,10 @@ function CheckoutPageContent() {
 
   return (
     <div className="min-h-screen text-white">
-      {/* Background (lighter under reduced motion) */}
+      {/* Background with Galaxy */}
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-neutral-950 to-black">
+        {/* Galaxy background */}
+        <Galaxy transparent={true} mouseInteraction={false} density={0.8} glowIntensity={0.25} saturation={0.1} rotationSpeed={0.04} twinkleIntensity={0.3} autoCenterRepulsion={0.08} resolutionScale={0.75} maxFps={30} pauseWhenOffscreen={true} />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(147,51,234,0.08),transparent_70%)]"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(59,130,246,0.06),transparent_70%)]"></div>
         {/* Heavy animated background disabled for performance */}
@@ -658,17 +710,28 @@ function CheckoutPageContent() {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-8">
+        {/* Mobile hamburger */}
+        <button
+          aria-label="Open menu"
+          onClick={() => setMobileMenuOpen(true)}
+          className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
+        >
+          <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
+          <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
+          <span className="block h-0.5 bg-white/80 rounded-full w-4" />
+        </button>
+
+        {/* Back button beneath hamburger */}
+        <button
+          onClick={() => router.back()}
+          className="lg:hidden fixed top-16 right-4 z-50 px-2 py-1 text-white text-base active:scale-95 transition"
+          aria-label="Go back"
+        >
+          <span className="mr-1">&lt;</span> Back
+        </button>
       {/* Header */}
         <div className="grid grid-cols-3 items-center mb-8">
-          <div className="justify-self-start">
-            <button
-              onClick={goBack} 
-              className="flex items-center gap-2 text-white/70 hover:text-purple-300 transition cursor-pointer"
-            >
-              <ChevronLeft className="w-5 h-5" />
-              Back
-            </button>
-          </div>
+          <div className="justify-self-start"></div>
           <div className="justify-self-center text-center">
             <h1 className="text-2xl font-bold title-chroma title-glow-animation">
               Event Registration
@@ -792,24 +855,16 @@ function CheckoutPageContent() {
             </div>
                       <button
                         onClick={() => {
-                          if (REGISTRATION_OPEN) {
-                            goNext();
-                          } else {
-                            router.push('/Registration-starting-soon');
-                          }
+                          goNext();
                         }}
-                        disabled={REGISTRATION_OPEN && selectedEventIds.length === 0}
+                        disabled={selectedEventIds.length === 0}
                         className={`relative w-full mt-6 inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-white font-medium transition-all duration-300 ${
-                          REGISTRATION_OPEN && selectedEventIds.length === 0 
+                          selectedEventIds.length === 0 
                             ? 'bg-gray-600 cursor-not-allowed' 
                             : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:scale-105 cursor-pointer'
                         }`}
                       >
-                        {REGISTRATION_OPEN ? (
-                          <>Continue <ArrowRight className="w-4 h-4" /></>
-                        ) : (
-                          'Register Now'
-                        )}
+                        <>Continue <ArrowRight className="w-4 h-4" /></>
                       </button>
                         </div>
                         </div>
@@ -1167,7 +1222,7 @@ function CheckoutPageContent() {
                     </div>
                     <div className="flex items-center gap-3 mt-8">
                       <button onClick={goBack} className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer">Back</button>
-                      <button onClick={goNext} className="px-5 py-2 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 transition cursor-pointer">Proceed to Payment</button>
+                      <button onClick={proceedToPayment} className="px-5 py-2 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 transition cursor-pointer">Proceed to Payment</button>
                     </div>
                       </div>
                   <div>
@@ -1190,52 +1245,112 @@ function CheckoutPageContent() {
               >
                 <div className="grid lg:grid-cols-4 gap-8">
                   <div className="lg:col-span-3">
-                    <h2 className="text-xl font-semibold mb-6 title-chroma">Payment</h2>
-                    <div className="glass rounded-2xl p-6 border border-white/10">
-                      <h3 className="font-semibold text-cyan-200 mb-4">Payment</h3>
+                    <h2 className="text-xl font-semibold mb-6 title-chroma">Complete Payment</h2>
+                    
+                    {!paymentSession ? (
+                      <div className="glass rounded-2xl p-6 border border-white/10">
+                        <div className="text-center">
+                          <div className="text-white/60 mb-4">Initializing payment...</div>
+                          <div className="text-sm text-white/40">Please wait while we prepare your payment session.</div>
+                        </div>
+                      </div>
+                    ) : (
                       <div className="space-y-6">
-                        <div>
-                          <div className="text-sm text-white/80 mb-2">Scan the QR code to pay via any UPI app:</div>
-                          <div className="w-56 h-56 bg-white rounded-md flex items-center justify-center text-black font-semibold">QR</div>
-                          {/* Pay Now button removed as requested */}
-                        </div>
-                        <div>
-                          <div className="text-sm text-white/80 mb-2">Or pay via bank transfer:</div>
-                          <div className="rounded-lg bg-white/5 border border-white/10 p-3 text-sm space-y-1">
-                            <div><span className="text-white/60">Account Name:</span> <span className="text-white/90">JKLU Sabrang</span></div>
-                            <div><span className="text-white/60">Account No.:</span> <span className="text-white/90">123456789012</span></div>
-                            <div><span className="text-white/60">IFSC:</span> <span className="text-white/90">HDFC0000001</span></div>
-                            <div><span className="text-white/60">Bank:</span> <span className="text-white/90">HDFC Bank, Jaipur</span></div>
+                        {/* Payment Interface */}
+                        <div className="glass rounded-2xl p-6 border border-white/10">
+                          <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-semibold text-cyan-200">Secure Payment</h3>
+                            <div className="text-2xl font-bold text-green-400">
+                              ₹{paymentSession.amount}
+                            </div>
                           </div>
-                          {/* Pay Now button removed as requested */}
+
+                          <div className="space-y-4">
+                            <div className="text-sm text-white/80 mb-4">
+                              Click below to proceed to secure payment. You can pay using Credit/Debit Cards or UPI (GPay, PhonePe, Paytm, etc.)
+                            </div>
+                            <button
+                              onClick={initializeCashfreePayment}
+                              disabled={isProcessingPayment}
+                              className="w-full bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-3 text-lg"
+                            >
+                              {isProcessingPayment ? (
+                                <>
+                                  <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                  Processing...
+                                </>
+                              ) : (
+                                <>
+                                  <CreditCard className="w-6 h-6" />
+                                  Pay ₹{paymentSession.amount} Securely
+                                </>
+                              )}
+                            </button>
+                          </div>
+
+                          <div className="mt-6 grid grid-cols-3 gap-4 text-center">
+                            <div className="flex flex-col items-center p-3 rounded-lg bg-white/5">
+                              <CreditCard className="w-8 h-8 text-blue-400 mb-2" />
+                              <span className="text-xs text-white/70">Cards</span>
+                            </div>
+                            <div className="flex flex-col items-center p-3 rounded-lg bg-white/5">
+                              <div className="w-8 h-8 rounded bg-gradient-to-r from-green-400 to-blue-500 mb-2"></div>
+                              <span className="text-xs text-white/70">UPI</span>
+                            </div>
+                            <div className="flex flex-col items-center p-3 rounded-lg bg-white/5">
+                              <div className="w-8 h-8 rounded bg-gradient-to-r from-orange-400 to-red-500 mb-2"></div>
+                              <span className="text-xs text-white/70">Wallets</span>
+                            </div>
+                          </div>
+
+                          <div className="mt-4 rounded-xl border border-green-400/50 bg-green-500/10 p-4">
+                            <p className="text-sm text-green-200 font-medium">🔒 Secure Payment</p>
+                            <p className="text-sm text-green-100 mt-1">
+                              Your payment is processed securely by Cashfree Payments. Your card/bank details are encrypted and never stored on our servers.
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Order Summary */}
+                        <div className="glass rounded-2xl p-6 border border-white/10">
+                          <h3 className="font-semibold text-cyan-200 mb-4">Order Summary</h3>
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-white/70">Order ID:</span>
+                              <span className="text-white/90 font-mono">{paymentSession.orderId}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-white/70">Amount:</span>
+                              <span className="text-white/90">₹{paymentSession.amount}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-white/70">Payment Mode:</span>
+                              <span className="text-white/90">{paymentSession.mode}</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div className="mt-6">
-                        <label className="block text-sm text-white/80 mb-2">Upload payment confirmation screenshot</label>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="w-full bg-black/40 border border-white/20 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer"
-                          onChange={e => setPaymentProof(e.target.files?.[0] || null)}
-                        />
-                        {paymentProof && (
-                          <div className="text-xs text-green-400 mt-2">Selected: {paymentProof.name}</div>
-                        )}
-                      </div>
-                      <div className="mt-4 rounded-xl border border-red-400/50 bg-red-500/10 p-4">
-                        <p className="text-sm text-red-200 font-medium">Important</p>
-                        <p className="text-sm text-red-100 mt-1">Tickets and further details will be sent to your email after payment confirmation. Please ensure you upload a clear screenshot of the successful payment.</p>
-                      </div>
-                    </div>
+                    )}
+
+                    {/* Navigation */}
                     <div className="flex items-center gap-3 mt-8">
                       <button onClick={goBack} className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer">Back</button>
                     </div>
                   </div>
+
+                  {/* Sidebar */}
                   <div>
                     <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] relative overflow-hidden">
                       <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
                       <h3 className="font-semibold text-cyan-200">Total</h3>
                       <div className="mt-4 text-3xl font-bold">₹{finalPrice}</div>
+                      
+                      {paymentSession && (
+                        <div className="mt-4 pt-4 border-t border-white/10">
+                          <div className="text-sm text-white/60">Secure payment powered by</div>
+                          <div className="text-sm font-semibold text-cyan-300 mt-1">Cashfree Payments</div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1289,6 +1404,44 @@ function CheckoutPageContent() {
           </motion.div>
         )}
       </AnimatePresence>
+      {/* Mobile menu overlay */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md overflow-hidden">
+          <div className="absolute top-4 right-4">
+            <button
+              aria-label="Close menu"
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
+            >
+              <X className="w-6 h-6 text-white" />
+            </button>
+          </div>
+          <div className="pt-20 px-6 h-full overflow-y-auto">
+            <div className="grid grid-cols-1 gap-3 pb-8">
+              {[{ title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
+                { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
+                { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
+                { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
+                { title: 'Schedule', href: '/schedule/progress', icon: <Clock className="w-5 h-5" /> },
+                { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
+                { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
+                { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
+                { title: 'Contact', href: '/Contact', icon: <Mail className="w-5 h-5" /> }].map((item) => (
+                <button
+                  key={item.title}
+                  onClick={() => { setMobileMenuOpen(false); router.push(item.href); }}
+                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                >
+                  <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
+                    {item.icon}
+                  </span>
+                  <span className="font-medium">{item.title}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
