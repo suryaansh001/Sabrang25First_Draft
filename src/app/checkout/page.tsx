@@ -611,7 +611,7 @@ function CheckoutPageContent() {
       };
 
       console.log('🚀 Creating payment order with data:', orderData);
-      const response = await fetch(createApiUrl('/payments/create-order'), {
+      const response = await fetch(createApiUrl('/api/payments/create-order'), {
         method: 'POST',
         credentials: 'include',
         headers: {
