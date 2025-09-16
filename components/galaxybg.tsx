@@ -187,6 +187,9 @@ interface GalaxyProps {
   repulsionStrength?: number;
   autoCenterRepulsion?: number;
   transparent?: boolean;
+  resolutionScale?: number;
+  maxFps?: number;
+  pauseWhenOffscreen?: boolean;
 }
 
 export default function Galaxy({
@@ -206,6 +209,9 @@ export default function Galaxy({
   rotationSpeed = 0.1,
   autoCenterRepulsion = 0,
   transparent = true,
+  resolutionScale = 1,
+  maxFps = 60,
+  pauseWhenOffscreen = true,
   ...rest
 }: GalaxyProps) {
   const ctnDom = useRef<HTMLDivElement>(null);
@@ -234,7 +240,7 @@ export default function Galaxy({
     let program: Program;
 
     function resize() {
-      const scale = 1;
+      const scale = Math.max(0.1, resolutionScale);
       renderer.setSize(ctn.offsetWidth * scale, ctn.offsetHeight * scale);
       if (program) {
         program.uniforms.uResolution.value = new Color(
@@ -279,13 +285,24 @@ export default function Galaxy({
 
     const mesh = new Mesh(gl, { geometry, program });
     let animateId: number;
+    let lastFrameTime = 0;
+    const minFrameTime = 1000 / Math.max(1, maxFps);
+    let isPaused = false;
 
     function update(t: number) {
       animateId = requestAnimationFrame(update);
+      if (pauseWhenOffscreen && isPaused) {
+        return;
+      }
       if (!disableAnimation) {
         program.uniforms.uTime.value = t * 0.001;
         program.uniforms.uStarSpeed.value = (t * 0.001 * starSpeed) / 10.0;
       }
+
+      if (t - lastFrameTime < minFrameTime) {
+        return;
+      }
+      lastFrameTime = t;
 
       const lerpFactor = 0.05;
       smoothMousePos.current.x += (targetMousePos.current.x - smoothMousePos.current.x) * lerpFactor;
@@ -319,12 +336,30 @@ export default function Galaxy({
       ctn.addEventListener('mouseleave', handleMouseLeave);
     }
 
+    let visibilityHandler: (() => void) | null = null;
+    let intersectionObserver: IntersectionObserver | null = null;
+    if (pauseWhenOffscreen) {
+      visibilityHandler = () => {
+        isPaused = document.hidden;
+      };
+      document.addEventListener('visibilitychange', visibilityHandler);
+      intersectionObserver = new IntersectionObserver((entries) => {
+        const entry = entries[0];
+        isPaused = !entry.isIntersecting;
+      });
+      intersectionObserver.observe(ctn);
+    }
+
     return () => {
       cancelAnimationFrame(animateId);
       window.removeEventListener('resize', resize);
       if (mouseInteraction) {
         ctn.removeEventListener('mousemove', handleMouseMove);
         ctn.removeEventListener('mouseleave', handleMouseLeave);
+      }
+      if (pauseWhenOffscreen) {
+        if (visibilityHandler) document.removeEventListener('visibilitychange', visibilityHandler);
+        intersectionObserver?.disconnect();
       }
       ctn.removeChild(gl.canvas);
       gl.getExtension('WEBGL_lose_context')?.loseContext();
@@ -345,7 +380,10 @@ export default function Galaxy({
     rotationSpeed,
     repulsionStrength,
     autoCenterRepulsion,
-    transparent
+    transparent,
+    resolutionScale,
+    maxFps,
+    pauseWhenOffscreen
   ]);
 
   return <div ref={ctnDom} className="galaxy-container" {...rest} />;

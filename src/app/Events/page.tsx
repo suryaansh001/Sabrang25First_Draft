@@ -1,14 +1,8 @@
 'use client';
 
-<<<<<<< HEAD
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, MapPin, Clock, Users, Star, Filter, Crown, Check, Share2, Home, HelpCircle, Handshake, Mail, Info, ChevronUp, ChevronLeft, ChevronRight, ShoppingCart } from 'lucide-react';
-=======
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, MapPin, Clock, Users, Star, Filter, Crown, Check, Share2, Home, HelpCircle, Handshake, Mail, Info, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
->>>>>>> b456328f64cb849619545135aa3f9e4597006db4
 import Logo from '../../../components/Logo';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '../../../components/NavigationContext';
@@ -384,7 +378,6 @@ export default function EventsPage() {
   const [isPageLoaded, setIsPageLoaded] = useState(true);
   const showComingSoon = false;
 
-<<<<<<< HEAD
   // Map EVENT_CATALOG by id for accurate prices
   const catalogById = useMemo(() => {
     const m = new Map<number, EventCatalogItem>();
@@ -392,8 +385,6 @@ export default function EventsPage() {
     return m;
   }, []);
 
-=======
->>>>>>> b456328f64cb849619545135aa3f9e4597006db4
   const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
     { title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
@@ -682,11 +673,7 @@ export default function EventsPage() {
                   <button onClick={() => router.push(`/Events/${selectedEvent.id}/rules`)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border bg-white/10 text-white hover:bg-white/15 border-white/20 transition">
                     <Info className="w-4 h-4" /> Rules
                   </button>
-<<<<<<< HEAD
                   <button onClick={() => router.push(`/checkout`)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition shadow-lg">
-=======
-                  <button onClick={() => router.push(`/Registration-starting-soon`)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition shadow-lg">
->>>>>>> b456328f64cb849619545135aa3f9e4597006db4
                     Checkout
                   </button>
                   <button onClick={handleShare} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 transition">
@@ -962,24 +949,17 @@ export default function EventsPage() {
                             </div>
                           </div>
 
-<<<<<<< HEAD
                           {/* Bottom section - Price + Add to cart bar */}
-=======
-                          {/* Bottom section - Add to cart bar */}
->>>>>>> b456328f64cb849619545135aa3f9e4597006db4
                           <div className="relative z-10 text-center space-y-2 md:space-y-3">
                             <div className="flex items-center justify-center space-x-2">
                               <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-green-400 rounded-full animate-ping" />
                             </div>
-<<<<<<< HEAD
                             {/* Price badge (from EVENT_CATALOG if available) */}
                             <div className="flex justify-center mb-8">
                               <div className="text-white text-[10px] md:text-xs">
                                 {catalogById.get(event.id)?.price || event.price}
                               </div>
                             </div>
-=======
->>>>>>> b456328f64cb849619545135aa3f9e4597006db4
                             <div className="absolute inset-x-0 bottom-0 px-2 md:px-3 py-2 bg-gradient-to-t from-black/85 via-black/60 to-transparent">
                               <button
                                 type="button"
@@ -1028,7 +1008,6 @@ export default function EventsPage() {
             <span className="block h-0.5 bg-white/80 rounded-full w-4" />
           </button>
 
-<<<<<<< HEAD
           {/* Mobile cart button at top-right with 100px right padding */}
           <button
             aria-label="Open cart"
@@ -1043,8 +1022,6 @@ export default function EventsPage() {
             </div>
           </button>
 
-=======
->>>>>>> b456328f64cb849619545135aa3f9e4597006db4
           {/* Mobile menu overlay */}
           {mobileMenuOpen && (
             <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md overflow-hidden">
