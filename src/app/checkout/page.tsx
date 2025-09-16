@@ -8,7 +8,8 @@ import { Check, ChevronLeft, CreditCard, ArrowRight } from 'lucide-react';
 import createApiUrl from '../../lib/api';
 import { events as EVENTS_DATA } from '../Events/[id]/rules/events.data';
 import { EventCatalogItem, EVENT_CATALOG as ORIGINAL_EVENT_CATALOG } from '../../lib/eventCatalog';
-import { load } from '@cashfreepayments/cashfree-js';
+import {load} from '@cashfreepayments/cashfree-js';
+
 
 // Control flag to enable/disable the checkout flow.
 const REGISTRATION_OPEN = true;
