@@ -272,12 +272,12 @@ export default function PeopleStrip() {
          linkedin: "https://www.linkedin.com/in/prabal-agrawal23?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
        }
      },
-     { 
-       img: "/images/Team/final/ShouryaPrajapat.webp", 
-       bg: "bg-teal-500",
-       name: "Shourya Prajapat",
-       committee: "Photography"
-     },
+    //  { 
+    //    img: "/images/Team/final/ShouryaPrajapat.webp", 
+    //    bg: "bg-teal-500",
+    //    name: "Shourya Prajapat",
+    //    committee: "Photography"
+    //  },
      { 
        img: "/images/Team/final/Ekansh Saraswat.webp", 
        bg: "bg-yellow-500",
@@ -385,12 +385,12 @@ export default function PeopleStrip() {
        name: "Anushka Pathak",
        committee: "Student Affairs"
      },
-     {
-       img: "/images/Team/final/Dheevi Fozdar.webp",
-       bg: "bg-zinc-600",
-       name: "Dheevi Fozdar",
-       committee: "Hospitality"
-     },
+    //  {
+    //    img: "/images/Team/final/Dheevi Fozdar.webp",
+    //    bg: "bg-zinc-600",
+    //    name: "Dheevi Fozdar",
+    //    committee: "Hospitality"
+    //  },
      {
        img: "/images/Team/final/Naman Shukla.webp",
        bg: "bg-stone-600",
