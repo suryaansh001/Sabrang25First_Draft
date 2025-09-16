@@ -532,6 +532,7 @@ function CheckoutPageContent() {
   };
 
   const proceedToPayment = async () => {
+    console.log('🚀 proceedToPayment function called');
     try {
       // First, register the user on backend using existing /register with image upload
       // Map fields: name -> 'name', collegeMailId -> 'email', and attach a 'profileImage'
@@ -601,40 +602,22 @@ function CheckoutPageContent() {
         throw new Error(errText || 'Registration failed');
       }
 
-      // Create payment order using the new backend endpoint
-      const formData = new FormData();
-      
-      // Add basic form data
-      formData.append('items', JSON.stringify(selectedEvents.map((e: any) => ({ id: e.id, title: e.title, price: e.price }))));
-      formData.append('formsBySignature', JSON.stringify(formDataBySignature));
-      formData.append('teamMembersBySignature', JSON.stringify(teamMembersBySignature));
-      
-      // Add promo code if applied
-      if (appliedPromo?.code) {
-        formData.append('promoCode', appliedPromo.code);
-      }
-      
-      // Add files
-      Object.entries(filesBySignature).forEach(([signature, files]) => {
-        Object.entries(files as Record<string, File>).forEach(([fieldName, file]) => {
-          formData.append(`files_${signature}_${fieldName}`, file);
-        });
-      });
+      // Create payment order using the new simple backend endpoint
+      const orderData = {
+        amount: finalPrice.toString(),
+        customerName: derivedName,
+        customerEmail: derivedEmail,
+        customerPhone: flat['contactNo'] || '9999999999'
+      };
 
-      // Add team member images
-      Object.entries(memberFilesBySignature).forEach(([signature, idxMap]) => {
-        Object.entries(idxMap as Record<number, File>).forEach(([idxStr, file]) => {
-          const idx = Number(idxStr);
-          const encodedSig = encodeURIComponent(signature);
-          formData.append(`memberImage__${encodedSig}__${idx}`, file);
-        });
-      });
-
-      console.log('🚀 Creating payment order...');
-      const response = await fetch(createApiUrl('/payments/cashfree/create-order'), {
+      console.log('🚀 Creating payment order with data:', orderData);
+      const response = await fetch(createApiUrl('/payments/create-order'), {
         method: 'POST',
         credentials: 'include',
-        body: formData
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(orderData)
       });
 
       if (!response.ok) {
@@ -651,10 +634,10 @@ function CheckoutPageContent() {
 
       // Store payment session data for the payment component
       setPaymentSession({
-        paymentSessionId: data.payment_session_id || data.order_token,
-        orderId: data.orderId,
-        amount: data.amount,
-        mode: data.mode || 'production'
+        paymentSessionId: data.data.payment_session_id,
+        orderId: data.data.order_id,
+        amount: data.data.amount,
+        mode: 'production' // Using production since we have prod credentials
       });
 
       // Move to payment step
@@ -675,24 +658,19 @@ function CheckoutPageContent() {
 
     setIsProcessingPayment(true);
     try {
-      const cashfree = await load({ mode: paymentSession.mode as 'sandbox' | 'production' });
+      console.log('🔗 Initializing Cashfree payment...');
+      const cashfree = await load({ 
+        mode: "production" // Using production since we have prod credentials
+      });
       
-      if (paymentMode === 'card') {
-        // Card payment - redirect to hosted checkout
-        const checkoutOptions = {
-          paymentSessionId: paymentSession.paymentSessionId,
-          redirectTarget: '_self' as const
-        };
-        await cashfree.checkout(checkoutOptions);
-      } else {
-        // UPI payment - show QR code
-        // For UPI, we'll use the hosted checkout but with UPI preference
-        const checkoutOptions = {
-          paymentSessionId: paymentSession.paymentSessionId,
-          redirectTarget: '_self' as const
-        };
-        await cashfree.checkout(checkoutOptions);
-      }
+      const checkoutOptions = {
+        paymentSessionId: paymentSession.paymentSessionId,
+        redirectTarget: '_self' as const
+      };
+      
+      console.log('� Launching Cashfree checkout with options:', checkoutOptions);
+      await cashfree.checkout(checkoutOptions);
+      
     } catch (error) {
       console.error('❌ Cashfree payment failed:', error);
       alert(`Payment failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -1244,7 +1222,7 @@ function CheckoutPageContent() {
                     </div>
                     <div className="flex items-center gap-3 mt-8">
                       <button onClick={goBack} className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer">Back</button>
-                      <button onClick={goNext} className="px-5 py-2 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 transition cursor-pointer">Proceed to Payment</button>
+                      <button onClick={proceedToPayment} className="px-5 py-2 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 transition cursor-pointer">Proceed to Payment</button>
                     </div>
                       </div>
                   <div>
@@ -1278,99 +1256,55 @@ function CheckoutPageContent() {
                       </div>
                     ) : (
                       <div className="space-y-6">
-                        {/* Payment Method Selection */}
-                        <div className="glass rounded-2xl p-6 border border-white/10">
-                          <h3 className="font-semibold text-cyan-200 mb-4">Choose Payment Method</h3>
-                          <div className="grid grid-cols-2 gap-4">
-                            <button
-                              onClick={() => setPaymentMode('card')}
-                              className={`p-4 rounded-xl border-2 transition-all ${
-                                paymentMode === 'card'
-                                  ? 'border-purple-400 bg-purple-500/20 text-purple-200'
-                                  : 'border-white/20 bg-white/5 text-white/70 hover:border-white/30'
-                              }`}
-                            >
-                              <CreditCard className="w-6 h-6 mx-auto mb-2" />
-                              <div className="text-sm font-medium">Credit/Debit Card</div>
-                              <div className="text-xs text-white/60 mt-1">Visa, Mastercard, RuPay</div>
-                            </button>
-                            <button
-                              onClick={() => setPaymentMode('upi')}
-                              className={`p-4 rounded-xl border-2 transition-all ${
-                                paymentMode === 'upi'
-                                  ? 'border-purple-400 bg-purple-500/20 text-purple-200'
-                                  : 'border-white/20 bg-white/5 text-white/70 hover:border-white/30'
-                              }`}
-                            >
-                              <div className="w-6 h-6 mx-auto mb-2 rounded bg-gradient-to-r from-green-400 to-blue-500"></div>
-                              <div className="text-sm font-medium">UPI Payment</div>
-                              <div className="text-xs text-white/60 mt-1">GPay, PhonePe, Paytm</div>
-                            </button>
-                          </div>
-                        </div>
-
                         {/* Payment Interface */}
                         <div className="glass rounded-2xl p-6 border border-white/10">
                           <div className="flex items-center justify-between mb-4">
-                            <h3 className="font-semibold text-cyan-200">
-                              {paymentMode === 'card' ? 'Card Payment' : 'UPI Payment'}
-                            </h3>
+                            <h3 className="font-semibold text-cyan-200">Secure Payment</h3>
                             <div className="text-2xl font-bold text-green-400">
                               ₹{paymentSession.amount}
                             </div>
                           </div>
 
-                          {paymentMode === 'card' ? (
-                            <div className="space-y-4">
-                              <div className="text-sm text-white/80 mb-4">
-                                Click below to proceed to secure card payment powered by Cashfree
-                              </div>
-                              <button
-                                onClick={initializeCashfreePayment}
-                                disabled={isProcessingPayment}
-                                className="w-full bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2"
-                              >
-                                {isProcessingPayment ? (
-                                  <>
-                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                    Processing...
-                                  </>
-                                ) : (
-                                  <>
-                                    <CreditCard className="w-5 h-5" />
-                                    Pay ₹{paymentSession.amount} with Card
-                                  </>
-                                )}
-                              </button>
+                          <div className="space-y-4">
+                            <div className="text-sm text-white/80 mb-4">
+                              Click below to proceed to secure payment. You can pay using Credit/Debit Cards or UPI (GPay, PhonePe, Paytm, etc.)
                             </div>
-                          ) : (
-                            <div className="space-y-4">
-                              <div className="text-sm text-white/80 mb-4">
-                                Click below to pay via UPI (QR code will be shown)
-                              </div>
-                              <button
-                                onClick={initializeCashfreePayment}
-                                disabled={isProcessingPayment}
-                                className="w-full bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2"
-                              >
-                                {isProcessingPayment ? (
-                                  <>
-                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                    Processing...
-                                  </>
-                                ) : (
-                                  <>
-                                    <div className="w-5 h-5 rounded bg-gradient-to-r from-green-400 to-blue-500"></div>
-                                    Pay ₹{paymentSession.amount} with UPI
-                                  </>
-                                )}
-                              </button>
-                              <div id="upi-container" className="mt-4"></div>
+                            <button
+                              onClick={initializeCashfreePayment}
+                              disabled={isProcessingPayment}
+                              className="w-full bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-3 text-lg"
+                            >
+                              {isProcessingPayment ? (
+                                <>
+                                  <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                  Processing...
+                                </>
+                              ) : (
+                                <>
+                                  <CreditCard className="w-6 h-6" />
+                                  Pay ₹{paymentSession.amount} Securely
+                                </>
+                              )}
+                            </button>
+                          </div>
+
+                          <div className="mt-6 grid grid-cols-3 gap-4 text-center">
+                            <div className="flex flex-col items-center p-3 rounded-lg bg-white/5">
+                              <CreditCard className="w-8 h-8 text-blue-400 mb-2" />
+                              <span className="text-xs text-white/70">Cards</span>
                             </div>
-                          )}
+                            <div className="flex flex-col items-center p-3 rounded-lg bg-white/5">
+                              <div className="w-8 h-8 rounded bg-gradient-to-r from-green-400 to-blue-500 mb-2"></div>
+                              <span className="text-xs text-white/70">UPI</span>
+                            </div>
+                            <div className="flex flex-col items-center p-3 rounded-lg bg-white/5">
+                              <div className="w-8 h-8 rounded bg-gradient-to-r from-orange-400 to-red-500 mb-2"></div>
+                              <span className="text-xs text-white/70">Wallets</span>
+                            </div>
+                          </div>
 
                           <div className="mt-4 rounded-xl border border-green-400/50 bg-green-500/10 p-4">
-                            <p className="text-sm text-green-200 font-medium">Secure Payment</p>
+                            <p className="text-sm text-green-200 font-medium">🔒 Secure Payment</p>
                             <p className="text-sm text-green-100 mt-1">
                               Your payment is processed securely by Cashfree Payments. Your card/bank details are encrypted and never stored on our servers.
                             </p>
