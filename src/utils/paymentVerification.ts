@@ -1,6 +1,39 @@
 // Example of how to verify payments after checkout
 
-import { fetchCashfreePayments } from '../utils/cashfreeOrders';
+import createApiUrl from '../lib/api';
+
+/**
+ * Fetch payment details from Cashfree via backend
+ * @param orderId - The Cashfree order ID
+ * @returns Promise<any>
+ */
+export const fetchCashfreePayments = async (orderId: string): Promise<any> => {
+  try {
+    console.log(`🔍 Fetching payment details for order: ${orderId}`);
+    
+    const response = await fetch(createApiUrl(`/api/payment/fetch-payments/${orderId}`), {
+      method: 'GET',
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Failed to fetch payment details');
+    }
+
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.message || 'Failed to fetch payment details');
+    }
+    
+    console.log('✅ Payment details fetched successfully:', data.data);
+    return data.data;
+  } catch (error: any) {
+    console.error('❌ Failed to fetch payment details:', error);
+    throw new Error(error.message || 'Failed to fetch payment details');
+  }
+};
 
 /**
  * Verify payment status after user completes payment

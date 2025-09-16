@@ -413,41 +413,12 @@ function CheckoutPageContent() {
     if (step === 'payment') { setStep('review'); return; }
   };
 
-  // Create payment session on backend (new flow)
-  const createPaymentSession = async () => {
+  // Create order and get payment session (updated flow as per Cashfree docs)
+  const createOrderAndGetSession = async () => {
     try {
       setPaymentLoading(true);
       setPaymentError(null);
 
-      // Step 1: Store order data on backend first
-      const orderData = await storeOrderData();
-      
-      // Step 2: Create Cashfree order on frontend
-      const cashfreeOrder = await createCashfreeOrderOnFrontend(orderData);
-      
-      // Step 3: Update backend with payment session ID
-      await updatePaymentSession(orderData.orderId, cashfreeOrder.payment_session_id, cashfreeOrder.order_id);
-      
-      // Return the payment session ID for checkout
-      setPaymentSessionId(cashfreeOrder.payment_session_id);
-      return {
-        paymentSessionId: cashfreeOrder.payment_session_id,
-        orderId: orderData.orderId,
-        amount: orderData.amount,
-        cashfreeOrderId: cashfreeOrder.order_id
-      };
-    } catch (error) {
-      console.error('Payment session creation error:', error);
-      setPaymentError(error instanceof Error ? error.message : 'Failed to create payment session');
-      throw error;
-    } finally {
-      setPaymentLoading(false);
-    }
-  };
-
-  // Store order data on backend (Step 1)
-  const storeOrderData = async () => {
-    try {
       // Prepare user details from form data
       const userDetails: any = {};
       const firstGroup = fieldGroups[0];
@@ -486,9 +457,10 @@ function CheckoutPageContent() {
         }
       };
 
-      console.log('Storing order data with:', requestBody);
+      console.log('Creating order with:', requestBody);
 
-      const response = await fetch(createApiUrl('/api/payment/store-order'), {
+      // Create order on backend (which will also create Cashfree order)
+      const response = await fetch(createApiUrl('/api/payment/create-order'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -499,72 +471,24 @@ function CheckoutPageContent() {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(errorText || 'Failed to store order data');
+        throw new Error(errorText || 'Failed to create order');
       }
 
       const data = await response.json();
       
       if (!data.success) {
-        throw new Error(data.message || 'Failed to store order data');
+        throw new Error(data.message || 'Failed to create order');
       }
 
-      console.log('✅ Order data stored successfully:', data.data);
+      console.log('✅ Order created successfully:', data.data);
+      setPaymentSessionId(data.data.paymentSessionId);
       return data.data;
     } catch (error) {
-      console.error('❌ Failed to store order data:', error);
+      console.error('Order creation error:', error);
+      setPaymentError(error instanceof Error ? error.message : 'Failed to create order');
       throw error;
-    }
-  };
-
-  // Create Cashfree order on frontend (Step 2)
-  const createCashfreeOrderOnFrontend = async (orderData: any) => {
-    try {
-      const { createCashfreeOrder, buildCashfreeOrderRequest } = await import('../../utils/cashfreeOrders');
-      
-      const orderRequest = buildCashfreeOrderRequest(orderData, orderData.amount);
-      console.log('Creating Cashfree order with:', orderRequest);
-      
-      const cashfreeOrder = await createCashfreeOrder(orderRequest);
-      console.log('✅ Cashfree order created:', cashfreeOrder);
-      
-      return cashfreeOrder;
-    } catch (error) {
-      console.error('❌ Failed to create Cashfree order:', error);
-      throw new Error('Failed to create Cashfree order: ' + (error instanceof Error ? error.message : 'Unknown error'));
-    }
-  };
-
-  // Update payment session on backend (Step 3)
-  const updatePaymentSession = async (orderId: string, paymentSessionId: string, cashfreeOrderId: string) => {
-    try {
-      const response = await fetch(createApiUrl('/api/payment/update-session'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          orderId,
-          paymentSessionId,
-          cashfreeOrderId
-        })
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Failed to update payment session');
-      }
-
-      const data = await response.json();
-      
-      if (!data.success) {
-        throw new Error(data.message || 'Failed to update payment session');
-      }
-
-      console.log('✅ Payment session updated successfully');
-    } catch (error) {
-      console.error('❌ Failed to update payment session:', error);
-      throw error;
+    } finally {
+      setPaymentLoading(false);
     }
   };
 
@@ -575,8 +499,8 @@ function CheckoutPageContent() {
         throw new Error('Cashfree SDK not initialized');
       }
 
-      // Create payment session on backend
-      const sessionData = await createPaymentSession();
+      // Create order and get payment session from backend
+      const sessionData = await createOrderAndGetSession();
       
       if (!sessionData.paymentSessionId) {
         throw new Error('No payment session ID received');
