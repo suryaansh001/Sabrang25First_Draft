@@ -460,7 +460,7 @@ function CheckoutPageContent() {
       console.log('Creating order with:', requestBody);
 
       // Create order on backend (which will also create Cashfree order)
-      const response = await fetch(createApiUrl('/api/payment/create-order'), {
+      const response = await fetch(createApiUrl('/api/payment/create-session'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
