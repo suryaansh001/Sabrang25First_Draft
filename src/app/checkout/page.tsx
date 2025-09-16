@@ -637,7 +637,7 @@ function CheckoutPageContent() {
         paymentSessionId: data.data.payment_session_id,
         orderId: data.data.order_id,
         amount: data.data.amount,
-        mode: data.data.environment || 'sandbox' // Use the environment returned by backend
+        mode: 'production' // Always use production mode
       });
 
       // Move to payment step
@@ -649,13 +649,14 @@ function CheckoutPageContent() {
     }
   };
 
-  // Initialize Cashfree SDK - cleaner approach based on user's preferred structure
+  // Initialize Cashfree SDK - always production mode
   let cashfree: any;
   const initializeSDK = async () => {
     try {
-      const mode = paymentSession?.mode === 'production' ? 'production' : 'sandbox';
-      cashfree = await load({ mode });
-      console.log('✅ Cashfree SDK initialized in mode:', mode);
+      cashfree = await load({
+        mode: "production"
+      });
+      console.log('✅ Cashfree SDK initialized in production mode');
     } catch (error) {
       console.error('❌ Failed to initialize Cashfree SDK:', error);
     }
@@ -707,9 +708,9 @@ function CheckoutPageContent() {
       console.log('🔗 Initializing Cashfree payment...');
       console.log('Payment Session:', paymentSession);
       
-      // Use the mode from the backend response (sandbox or production)
+      // Always use production mode
       const cashfree = await load({ 
-        mode: paymentSession.mode === 'production' ? 'production' : 'sandbox'
+        mode: "production"
       });
       
       const checkoutOptions = {
