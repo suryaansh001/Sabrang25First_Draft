@@ -6,6 +6,7 @@ import MobileScrollMenu from '../../components/MobileScrollMenu';
 import { useVideo } from '../../components/VideoContext';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '../../components/NavigationContext';
+import ShinyText from '../../components/shinytext';
 
 
 // Beautiful First-Load Background Component
@@ -438,13 +439,11 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               
               {/* Date */}
               <div className="mb-6">
-                <p className="text-white/90 text-lg font-bold tracking-widest" style={{ 
-                  fontFamily: "'Times New Roman', sans-serif",
-                  textShadow: '0 0 10px rgba(255,255,255,0.3)',
-                  letterSpacing: '0.1em'
-                }}>
-                  October 10-12, 2025
-                </p>
+                <ShinyText 
+                  text="October 10-12, 2025"
+                  speed={6}
+                  className="text-white/90 text-lg font-bold tracking-widest"
+                />
               </div>
               
               {/* Tagline */}
@@ -826,13 +825,11 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                 
                 {/* Desktop Date */}
                 <div className="mt-8">
-                  <p className="text-white/90 text-xl font-bold tracking-widest" style={{ 
-                    fontFamily: "'Times New Roman', sans-serif",
-                    textShadow: '0 0 15px rgba(255,255,255,0.4)',
-                    letterSpacing: '0.15em'
-                  }}>
-                    October 10-12, 2025
-                  </p>
+                  <ShinyText 
+                    text="October 10-12, 2025"
+                    speed={6}
+                    className="text-white/90 text-xl font-bold tracking-widest"
+                  />
                 </div>
               </div>
             </div>
