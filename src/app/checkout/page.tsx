@@ -149,6 +149,14 @@ function CheckoutPageContent() {
   const [appliedPromo, setAppliedPromo] = useState<{ code: string; discountAmount: number } | null>(null);
   const [promoStatus, setPromoStatus] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [paymentSession, setPaymentSession] = useState<{
+    paymentSessionId: string;
+    orderId: string;
+    amount: number;
+    mode: string;
+  } | null>(null);
+  const [paymentMode, setPaymentMode] = useState<'card' | 'upi'>('card');
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   // Force reduced motion for smooth scrolling experience on this page
   useEffect(() => {
@@ -593,55 +601,103 @@ function CheckoutPageContent() {
         throw new Error(errText || 'Registration failed');
       }
 
-      // Continue with payment creation as before
-      // Create FormData to handle file uploads
+      // Create payment order using the new backend endpoint
       const formData = new FormData();
       
       // Add basic form data
-      formData.append('items', JSON.stringify(selectedEvents.map(e => ({ eventId: e.id, title: e.title, price: e.price }))));
+      formData.append('items', JSON.stringify(selectedEvents.map((e: any) => ({ id: e.id, title: e.title, price: e.price }))));
       formData.append('formsBySignature', JSON.stringify(formDataBySignature));
+      formData.append('teamMembersBySignature', JSON.stringify(teamMembersBySignature));
+      
+      // Add promo code if applied
+      if (appliedPromo?.code) {
+        formData.append('promoCode', appliedPromo.code);
+      }
       
       // Add files
       Object.entries(filesBySignature).forEach(([signature, files]) => {
-        Object.entries(files).forEach(([fieldName, file]) => {
+        Object.entries(files as Record<string, File>).forEach(([fieldName, file]) => {
           formData.append(`files_${signature}_${fieldName}`, file);
         });
       });
 
+      // Add team member images
+      Object.entries(memberFilesBySignature).forEach(([signature, idxMap]) => {
+        Object.entries(idxMap as Record<number, File>).forEach(([idxStr, file]) => {
+          const idx = Number(idxStr);
+          const encodedSig = encodeURIComponent(signature);
+          formData.append(`memberImage__${encodedSig}__${idx}`, file);
+        });
+      });
+
+      console.log('🚀 Creating payment order...');
       const response = await fetch(createApiUrl('/payments/cashfree/create-order'), {
         method: 'POST',
         credentials: 'include',
-        body: (() => { if (appliedPromo?.code) formData.append('promoCode', appliedPromo.code); return formData; })()
+        body: formData
       });
+
       if (!response.ok) {
         const errText = await response.text().catch(() => '');
         throw new Error(errText || 'Failed to create order');
       }
+
       const data = await response.json();
-      if (data.payment_link) {
-        window.location.href = data.payment_link as string;
-        return;
+      console.log('✅ Payment order created:', data);
+
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to create payment order');
       }
-      const orderToken = data.order_token || data.payment_session_id || data.token;
-      const mode = data.mode || (window.location.hostname === 'localhost' ? 'sandbox' : 'production');
-      if (!orderToken) throw new Error('Missing payment session token from server');
-      await loadCashfreeSdk();
-      const anyWindow = window as unknown as Record<string, any>;
-      const cf = anyWindow.Cashfree || anyWindow?.cashfree;
-      if (!cf) throw new Error('Cashfree SDK not available');
-      if (typeof cf?.initialize === 'function') {
-        const ins = cf.initialize({ mode });
-        await ins.checkout({ paymentSessionId: orderToken });
-        return;
+
+      // Store payment session data for the payment component
+      setPaymentSession({
+        paymentSessionId: data.payment_session_id || data.order_token,
+        orderId: data.orderId,
+        amount: data.amount,
+        mode: data.mode || 'production'
+      });
+
+      // Move to payment step
+      setStep('payment');
+
+    } catch (error) {
+      console.error('❌ Payment initialization failed:', error);
+      alert(`Payment initialization failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  // Initialize Cashfree payment
+  const initializeCashfreePayment = async () => {
+    if (!paymentSession) {
+      alert('No payment session available. Please try again.');
+      return;
+    }
+
+    setIsProcessingPayment(true);
+    try {
+      const cashfree = await load({ mode: paymentSession.mode as 'sandbox' | 'production' });
+      
+      if (paymentMode === 'card') {
+        // Card payment - redirect to hosted checkout
+        const checkoutOptions = {
+          paymentSessionId: paymentSession.paymentSessionId,
+          redirectTarget: '_self' as const
+        };
+        await cashfree.checkout(checkoutOptions);
+      } else {
+        // UPI payment - show QR code
+        // For UPI, we'll use the hosted checkout but with UPI preference
+        const checkoutOptions = {
+          paymentSessionId: paymentSession.paymentSessionId,
+          redirectTarget: '_self' as const
+        };
+        await cashfree.checkout(checkoutOptions);
       }
-      if (typeof cf?.payments === 'function') {
-        const ins = cf.payments({ mode });
-        await ins.checkout({ paymentSessionId: orderToken });
-        return;
-      }
-      throw new Error('Unsupported Cashfree SDK interface');
+    } catch (error) {
+      console.error('❌ Cashfree payment failed:', error);
+      alert(`Payment failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
-      // Keep user on page
+      setIsProcessingPayment(false);
     }
   };
 
@@ -1211,52 +1267,156 @@ function CheckoutPageContent() {
               >
                 <div className="grid lg:grid-cols-4 gap-8">
                   <div className="lg:col-span-3">
-                    <h2 className="text-xl font-semibold mb-6 title-chroma">Payment</h2>
-                    <div className="glass rounded-2xl p-6 border border-white/10">
-                      <h3 className="font-semibold text-cyan-200 mb-4">Payment</h3>
+                    <h2 className="text-xl font-semibold mb-6 title-chroma">Complete Payment</h2>
+                    
+                    {!paymentSession ? (
+                      <div className="glass rounded-2xl p-6 border border-white/10">
+                        <div className="text-center">
+                          <div className="text-white/60 mb-4">Initializing payment...</div>
+                          <div className="text-sm text-white/40">Please wait while we prepare your payment session.</div>
+                        </div>
+                      </div>
+                    ) : (
                       <div className="space-y-6">
-                        <div>
-                          <div className="text-sm text-white/80 mb-2">Scan the QR code to pay via any UPI app:</div>
-                          <div className="w-56 h-56 bg-white rounded-md flex items-center justify-center text-black font-semibold">QR</div>
-                          {/* Pay Now button removed as requested */}
-                        </div>
-                        <div>
-                          <div className="text-sm text-white/80 mb-2">Or pay via bank transfer:</div>
-                          <div className="rounded-lg bg-white/5 border border-white/10 p-3 text-sm space-y-1">
-                            <div><span className="text-white/60">Account Name:</span> <span className="text-white/90">JKLU Sabrang</span></div>
-                            <div><span className="text-white/60">Account No.:</span> <span className="text-white/90">123456789012</span></div>
-                            <div><span className="text-white/60">IFSC:</span> <span className="text-white/90">HDFC0000001</span></div>
-                            <div><span className="text-white/60">Bank:</span> <span className="text-white/90">HDFC Bank, Jaipur</span></div>
+                        {/* Payment Method Selection */}
+                        <div className="glass rounded-2xl p-6 border border-white/10">
+                          <h3 className="font-semibold text-cyan-200 mb-4">Choose Payment Method</h3>
+                          <div className="grid grid-cols-2 gap-4">
+                            <button
+                              onClick={() => setPaymentMode('card')}
+                              className={`p-4 rounded-xl border-2 transition-all ${
+                                paymentMode === 'card'
+                                  ? 'border-purple-400 bg-purple-500/20 text-purple-200'
+                                  : 'border-white/20 bg-white/5 text-white/70 hover:border-white/30'
+                              }`}
+                            >
+                              <CreditCard className="w-6 h-6 mx-auto mb-2" />
+                              <div className="text-sm font-medium">Credit/Debit Card</div>
+                              <div className="text-xs text-white/60 mt-1">Visa, Mastercard, RuPay</div>
+                            </button>
+                            <button
+                              onClick={() => setPaymentMode('upi')}
+                              className={`p-4 rounded-xl border-2 transition-all ${
+                                paymentMode === 'upi'
+                                  ? 'border-purple-400 bg-purple-500/20 text-purple-200'
+                                  : 'border-white/20 bg-white/5 text-white/70 hover:border-white/30'
+                              }`}
+                            >
+                              <div className="w-6 h-6 mx-auto mb-2 rounded bg-gradient-to-r from-green-400 to-blue-500"></div>
+                              <div className="text-sm font-medium">UPI Payment</div>
+                              <div className="text-xs text-white/60 mt-1">GPay, PhonePe, Paytm</div>
+                            </button>
                           </div>
-                          {/* Pay Now button removed as requested */}
+                        </div>
+
+                        {/* Payment Interface */}
+                        <div className="glass rounded-2xl p-6 border border-white/10">
+                          <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-semibold text-cyan-200">
+                              {paymentMode === 'card' ? 'Card Payment' : 'UPI Payment'}
+                            </h3>
+                            <div className="text-2xl font-bold text-green-400">
+                              ₹{paymentSession.amount}
+                            </div>
+                          </div>
+
+                          {paymentMode === 'card' ? (
+                            <div className="space-y-4">
+                              <div className="text-sm text-white/80 mb-4">
+                                Click below to proceed to secure card payment powered by Cashfree
+                              </div>
+                              <button
+                                onClick={initializeCashfreePayment}
+                                disabled={isProcessingPayment}
+                                className="w-full bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2"
+                              >
+                                {isProcessingPayment ? (
+                                  <>
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    Processing...
+                                  </>
+                                ) : (
+                                  <>
+                                    <CreditCard className="w-5 h-5" />
+                                    Pay ₹{paymentSession.amount} with Card
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="space-y-4">
+                              <div className="text-sm text-white/80 mb-4">
+                                Click below to pay via UPI (QR code will be shown)
+                              </div>
+                              <button
+                                onClick={initializeCashfreePayment}
+                                disabled={isProcessingPayment}
+                                className="w-full bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2"
+                              >
+                                {isProcessingPayment ? (
+                                  <>
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    Processing...
+                                  </>
+                                ) : (
+                                  <>
+                                    <div className="w-5 h-5 rounded bg-gradient-to-r from-green-400 to-blue-500"></div>
+                                    Pay ₹{paymentSession.amount} with UPI
+                                  </>
+                                )}
+                              </button>
+                              <div id="upi-container" className="mt-4"></div>
+                            </div>
+                          )}
+
+                          <div className="mt-4 rounded-xl border border-green-400/50 bg-green-500/10 p-4">
+                            <p className="text-sm text-green-200 font-medium">Secure Payment</p>
+                            <p className="text-sm text-green-100 mt-1">
+                              Your payment is processed securely by Cashfree Payments. Your card/bank details are encrypted and never stored on our servers.
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Order Summary */}
+                        <div className="glass rounded-2xl p-6 border border-white/10">
+                          <h3 className="font-semibold text-cyan-200 mb-4">Order Summary</h3>
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-white/70">Order ID:</span>
+                              <span className="text-white/90 font-mono">{paymentSession.orderId}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-white/70">Amount:</span>
+                              <span className="text-white/90">₹{paymentSession.amount}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-white/70">Payment Mode:</span>
+                              <span className="text-white/90">{paymentSession.mode}</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div className="mt-6">
-                        <label className="block text-sm text-white/80 mb-2">Upload payment confirmation screenshot</label>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="w-full bg-black/40 border border-white/20 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer"
-                          onChange={e => setPaymentProof(e.target.files?.[0] || null)}
-                        />
-                        {paymentProof && (
-                          <div className="text-xs text-green-400 mt-2">Selected: {paymentProof.name}</div>
-                        )}
-                      </div>
-                      <div className="mt-4 rounded-xl border border-red-400/50 bg-red-500/10 p-4">
-                        <p className="text-sm text-red-200 font-medium">Important</p>
-                        <p className="text-sm text-red-100 mt-1">Tickets and further details will be sent to your email after payment confirmation. Please ensure you upload a clear screenshot of the successful payment.</p>
-                      </div>
-                    </div>
+                    )}
+
+                    {/* Navigation */}
                     <div className="flex items-center gap-3 mt-8">
                       <button onClick={goBack} className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer">Back</button>
                     </div>
                   </div>
+
+                  {/* Sidebar */}
                   <div>
                     <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] relative overflow-hidden">
                       <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
                       <h3 className="font-semibold text-cyan-200">Total</h3>
                       <div className="mt-4 text-3xl font-bold">₹{finalPrice}</div>
+                      
+                      {paymentSession && (
+                        <div className="mt-4 pt-4 border-t border-white/10">
+                          <div className="text-sm text-white/60">Secure payment powered by</div>
+                          <div className="text-sm font-semibold text-cyan-300 mt-1">Cashfree Payments</div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
