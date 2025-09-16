@@ -104,11 +104,7 @@ function AppShellContent({ children }: { children: React.ReactNode }) {
         <NavigationProvider navigate={handleSidebarNavigate}>
           {pathname !== "/" && <TopRightJKLULogo />}
           {mounted && !hideLogo && pathname !== "/why-sponsor-us" && <Logo />}
-<<<<<<< HEAD
           {mounted && false && <Logo className="hidden lg:block" />}
-=======
-          {mounted && pathname === "/Registration-starting-soon" && <Logo className="hidden lg:block" />}
->>>>>>> b456328f64cb849619545135aa3f9e4597006db4
           <main 
             key={pathname}
             className={`${
