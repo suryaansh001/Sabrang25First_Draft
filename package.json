@@ -11,6 +11,10 @@
     "check-videos": "node scripts/check-videos.js"
   },
   "dependencies": {
+<<<<<<< HEAD
+=======
+    "@cashfreepayments/cashfree-js": "^1.0.5",
+>>>>>>> b456328f64cb849619545135aa3f9e4597006db4
     "@emailjs/browser": "^4.4.1",
     "@gsap/react": "^2.1.2",
     "@react-three/fiber": "^9.2.0",
