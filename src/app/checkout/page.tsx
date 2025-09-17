@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState, Suspense } from 'react';
-import Galaxy from '../../../components/galaxybg';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, ChevronLeft, CreditCard, ArrowRight, X, Home, Info, Calendar, Star, Clock, Users, HelpCircle, Handshake, Mail } from 'lucide-react';
@@ -742,13 +741,10 @@ function CheckoutPageContent() {
 
   return (
     <div className="min-h-screen text-white">
-      {/* Background with Galaxy */}
+      {/* Simple background */}
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-neutral-950 to-black">
-        {/* Galaxy background */}
-        <Galaxy transparent={true} mouseInteraction={false} density={0.8} glowIntensity={0.25} saturation={0.1} rotationSpeed={0.04} twinkleIntensity={0.3} autoCenterRepulsion={0.08} resolutionScale={0.75} maxFps={30} pauseWhenOffscreen={true} />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(147,51,234,0.08),transparent_70%)]"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(59,130,246,0.06),transparent_70%)]"></div>
-        {/* Heavy animated background disabled for performance */}
         {/* Aurora overlay to match site's dark neon vibe */}
         <div className="aurora">
           <div className="aurora-blob aurora-1"></div>
