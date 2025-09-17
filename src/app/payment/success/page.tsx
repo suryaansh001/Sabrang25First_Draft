@@ -44,7 +44,7 @@ function PaymentSuccessContent() {
     // Check payment status
     const checkPaymentStatus = async () => {
       try {
-        const response = await fetch(createApiUrl(`/api/payment/status/${orderId}`), {
+        const response = await fetch(createApiUrl(`/api/payments/status/${orderId}`), {
           method: 'GET',
           credentials: 'include'
         });

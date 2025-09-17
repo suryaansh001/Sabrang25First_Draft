@@ -611,7 +611,7 @@ function CheckoutPageContent() {
       };
 
       console.log('🚀 Creating payment order with data:', orderData);
-      const response = await fetch(createApiUrl('/payments/create-order'), {
+      const response = await fetch(createApiUrl('/api/payments/create-order'), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -637,7 +637,7 @@ function CheckoutPageContent() {
         paymentSessionId: data.data.payment_session_id,
         orderId: data.data.order_id,
         amount: data.data.amount,
-        mode: 'production' // Using production since we have prod credentials
+        mode: 'production' // Always use production mode
       });
 
       // Move to payment step
@@ -646,6 +646,53 @@ function CheckoutPageContent() {
     } catch (error) {
       console.error('❌ Payment initialization failed:', error);
       alert(`Payment initialization failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  // Initialize Cashfree SDK - always production mode
+  let cashfree: any;
+  const initializeSDK = async () => {
+    try {
+      cashfree = await load({
+        mode: "production"
+      });
+      console.log('✅ Cashfree SDK initialized in production mode');
+    } catch (error) {
+      console.error('❌ Failed to initialize Cashfree SDK:', error);
+    }
+  };
+
+  // Initialize SDK when payment session is available
+  useEffect(() => {
+    if (paymentSession) {
+      initializeSDK();
+    }
+  }, [paymentSession]);
+
+  // Clean payment function following user's preferred structure
+  const doPayment = async () => {
+    if (!paymentSession || !cashfree) {
+      alert('Payment session not ready. Please try again.');
+      return;
+    }
+
+    setIsProcessingPayment(true);
+    try {
+      console.log('🚀 Starting payment with session ID:', paymentSession.paymentSessionId);
+      
+      const checkoutOptions = {
+        paymentSessionId: paymentSession.paymentSessionId,
+        redirectTarget: "_self" as const,
+      };
+      
+      console.log('💳 Launching Cashfree checkout with options:', checkoutOptions);
+      await cashfree.checkout(checkoutOptions);
+      
+    } catch (error) {
+      console.error('❌ Payment failed:', error);
+      alert(`Payment failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsProcessingPayment(false);
     }
   };
 
@@ -659,8 +706,11 @@ function CheckoutPageContent() {
     setIsProcessingPayment(true);
     try {
       console.log('🔗 Initializing Cashfree payment...');
+      console.log('Payment Session:', paymentSession);
+      
+      // Always use production mode
       const cashfree = await load({ 
-        mode: "production" // Using production since we have prod credentials
+        mode: "production"
       });
       
       const checkoutOptions = {
@@ -1270,7 +1320,7 @@ function CheckoutPageContent() {
                               Click below to proceed to secure payment. You can pay using Credit/Debit Cards or UPI (GPay, PhonePe, Paytm, etc.)
                             </div>
                             <button
-                              onClick={initializeCashfreePayment}
+                              onClick={doPayment}
                               disabled={isProcessingPayment}
                               className="w-full bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-3 text-lg"
                             >
