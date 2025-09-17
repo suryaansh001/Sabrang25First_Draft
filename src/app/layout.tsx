@@ -3,7 +3,9 @@ import "./globals.css";
 import { quivertFont, tanNimbusFont } from "./fonts";
 import AppShell from "../../components/AppShell";
 import { VideoProvider } from "../../components/VideoContext";
+
 import FooterStrip from "../../components/FooterStrip";
+import ChatbotContent from "../../components/ChatbotContent";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://sabrang.jklu.edu.in'),
@@ -112,10 +114,14 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         <VideoProvider>
-          <div className="min-h-screen flex flex-col">
-            <AppShell>{children}</AppShell>
-            <FooterStrip />
-          </div>
+        
+            <div className="min-h-screen flex flex-col">
+              <AppShell>{children}</AppShell>
+              <FooterStrip />
+              <ChatbotContent />
+              
+            </div>
+          
         </VideoProvider>
       </body>
     </html>
