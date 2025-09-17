@@ -11,7 +11,8 @@ function Chatbot() {
   const [isLoading, setIsLoading] = useState(false);
   const conversationIdRef = useRef<string | null>(null);
 
-  const API_BASE = (typeof process !== "undefined" && (process as any).env?.NEXT_PUBLIC_CHATBOT_API_BASE) || "https://backendmuj-production.up.railway.app";
+  // Call our Next.js server proxy to avoid browser CORS
+  const API_PROXY = "/api/chat";
 
   useEffect(() => {
     try {
@@ -29,11 +30,11 @@ function Chatbot() {
   }, []);
 
   async function postMessage(path: string, payload: any) {
-    return fetch(`${API_BASE}${path}`, {
+    return fetch(`${API_PROXY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
-      mode: 'cors',
+      // same-origin: we hit our own Next API, no CORS needed
     });
   }
 
@@ -54,12 +55,7 @@ function Chatbot() {
     };
 
     try {
-      let res = await postMessage('/chat/', payload);
-
-      // Fallback without trailing slash if the first attempt fails due to routing setups
-      if (!res.ok && res.status === 404) {
-        res = await postMessage('/chat', payload);
-      }
+      const res = await postMessage('/chat/', payload);
 
       if (!res.ok) {
         const text = await res.text().catch(() => "");
