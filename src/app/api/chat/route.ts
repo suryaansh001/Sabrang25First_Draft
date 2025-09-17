@@ -7,12 +7,16 @@ const BACKEND_BASE = process.env.CHATBOT_API_BASE || process.env.NEXT_PUBLIC_CHA
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000); // 30s safety timeout
 
     const res = await fetch(`${BACKEND_BASE}/chat/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
+      signal: controller.signal,
     });
+    clearTimeout(timeout);
 
     const text = await res.text();
     const contentType = res.headers.get("content-type") || "application/json";
@@ -26,7 +30,11 @@ export async function POST(req: NextRequest) {
 
     return new NextResponse(text, { status: 200, headers: { "content-type": contentType } });
   } catch (err: any) {
-    return NextResponse.json({ error: "Proxy error", message: err?.message || String(err) }, { status: 500 });
+    const isAbort = err?.name === "AbortError";
+    return NextResponse.json(
+      { error: "Proxy error", message: isAbort ? "Upstream timeout" : (err?.message || String(err)) },
+      { status: 504 }
+    );
   }
 }
 
