@@ -533,90 +533,50 @@ function CheckoutPageContent() {
   const proceedToPayment = async () => {
     console.log('🚀 proceedToPayment function called');
     try {
-      // First, register the user on backend using existing /register with image upload
-      // Map fields: name -> 'name', collegeMailId -> 'email', and attach a 'profileImage'
-      const registrationForm = new FormData();
-      // Derive name and email from collected forms (pick from the first group that has them)
+      // Derive name and email from collected forms
       let derivedName: string | undefined;
       let derivedEmail: string | undefined;
-      let attachedImage: File | undefined;
-
       for (const group of fieldGroups) {
         const data = formDataBySignature[group.signature] || {};
         if (!derivedName && data['name']) derivedName = data['name'];
         if (!derivedEmail && data['collegeMailId']) derivedEmail = data['collegeMailId'];
-        const files = filesBySignature[group.signature] || {};
-        // Prefer a university card image if present, else take the first file in the group
-        if (!attachedImage) {
-          if (files['universityCardImage']) attachedImage = files['universityCardImage'];
-          else {
-            const firstFile = Object.values(files)[0];
-            if (firstFile) attachedImage = firstFile;
-          }
-        }
+        if (!derivedEmail && data['email']) derivedEmail = data['email'];
       }
 
-      // Fallbacks to avoid empty fields
       if (!derivedName) derivedName = 'Participant';
-      if (!derivedEmail) throw new Error('Email is required for registration');
+      if (!derivedEmail) throw new Error('Email is required for checkout');
 
-      // Generate a strong random password since checkout flow does not collect one
-      const generatedPassword = Math.random().toString(36).slice(-10) + 'A1!';
-
-      registrationForm.append('name', derivedName);
-      registrationForm.append('email', derivedEmail);
-      registrationForm.append('password', generatedPassword);
-      // Also send flat fields if available
       const flat = formDataBySignature[fieldGroups[0]?.signature || ''] || {};
-      if (flat['contactNo']) registrationForm.append('contactNo', flat['contactNo']);
-      if (flat['gender']) registrationForm.append('gender', flat['gender']);
-      if (flat['age']) registrationForm.append('age', flat['age']);
-      if (flat['universityName']) registrationForm.append('universityName', flat['universityName']);
-      if (flat['address']) registrationForm.append('address', flat['address']);
-      // Send complex payloads for backend to persist
-      registrationForm.append('formsBySignature', JSON.stringify(formDataBySignature));
-      registrationForm.append('teamMembersBySignature', JSON.stringify(teamMembersBySignature));
-      registrationForm.append('items', JSON.stringify(selectedEvents.map(e => ({ id: e.id, title: e.title, price: e.price }))));
-      if (attachedImage) {
-        registrationForm.append('profileImage', attachedImage);
-      }
 
-      // Append team member images with deterministic keys: memberImage__<signature>__<index>
-      Object.entries(memberFilesBySignature).forEach(([signature, idxMap]) => {
-        Object.entries(idxMap).forEach(([idxStr, file]) => {
-          const idx = Number(idxStr);
-          const encodedSig = encodeURIComponent(signature);
-          registrationForm.append(`memberImage__${encodedSig}__${idx}`, file);
-        });
-      });
-
-      const registrationResponse = await fetch(createApiUrl('/register'), {
-        method: 'POST',
-        credentials: 'include',
-        body: registrationForm
-      });
-
-      if (!registrationResponse.ok) {
-        const errText = await registrationResponse.text().catch(() => '');
-        throw new Error(errText || 'Registration failed');
-      }
-
-      // Create payment order using the new simple backend endpoint
-      const orderData = {
-        amount: finalPrice.toString(),
-        customerName: derivedName,
-        customerEmail: derivedEmail,
-        customerPhone: flat['contactNo'] || '9999999999'
+      // Build advanced order payload so backend saves Purchase and registers post-payment
+      const orderPayload = {
+        userDetails: {
+          name: derivedName,
+          email: derivedEmail,
+          contactNo: flat['contactNo'] || '',
+          gender: flat['gender'] || '',
+          age: flat['age'] ? Number(flat['age']) : undefined,
+          universityName: flat['universityName'] || '',
+          address: flat['address'] || '',
+          formData: formDataBySignature,
+          teamMembers: Object.values(teamMembersBySignature).flat()
+        },
+        items: selectedEvents.map(e => ({
+          eventId: e.id,
+          eventName: e.title,
+          price: parsePrice(e.price)
+        })),
+        totalAmount: finalPrice,
+        promoCode: appliedPromo ? { code: appliedPromo.code, discountAmount: appliedPromo.discountAmount } : null,
+        metadata: { source: 'checkout' }
       };
 
-      console.log('🚀 Creating payment order with data:', orderData);
-      const response = await fetch(createApiUrl('/api/payments/create-order'), {
+      console.log('🚀 Creating payment order (advanced) with:', orderPayload);
+      const response = await fetch(createApiUrl('/api/payment/create-order'), {
         method: 'POST',
         credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(orderData)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderPayload)
       });
 
       if (!response.ok) {
@@ -633,10 +593,10 @@ function CheckoutPageContent() {
 
       // Store payment session data for the payment component
       setPaymentSession({
-        paymentSessionId: data.data.payment_session_id,
-        orderId: data.data.order_id,
+        paymentSessionId: data.data.paymentSessionId || data.data.payment_session_id,
+        orderId: data.data.orderId || data.data.order_id,
         amount: data.data.amount,
-        mode: 'production' // Always use production mode
+        mode: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox'
       });
 
       // Move to payment step
