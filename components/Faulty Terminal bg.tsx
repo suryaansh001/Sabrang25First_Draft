@@ -23,6 +23,11 @@ export interface FaultyTerminalProps extends React.HTMLAttributes<HTMLDivElement
   dpr?: number;
   pageLoadAnimation?: boolean;
   brightness?: number;
+  /**
+   * Render resolution scale (0.4 - 1). Smaller values render fewer pixels for performance and then upscale the canvas.
+   * Example: 0.6 renders at 60% of container size, then stretches to fit visually.
+   */
+  resolutionScale?: number;
 }
 
 const vertexShader = `
@@ -258,9 +263,10 @@ export default function FaultyTerminal({
   tint = '#ffffff',
   mouseReact = true,
   mouseStrength = 0.2,
-  dpr = typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, 2) : 1,
+  dpr = typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, 1.25) : 1,
   pageLoadAnimation = true,
   brightness = 1,
+  resolutionScale = 0.6,
   className,
   style,
   ...rest
@@ -335,7 +341,13 @@ export default function FaultyTerminal({
 
     function resize() {
       if (!ctn || !renderer) return;
-      renderer.setSize(ctn.offsetWidth, ctn.offsetHeight);
+      const scale = Math.max(0.4, Math.min(1, resolutionScale));
+      const w = Math.max(1, Math.floor(ctn.offsetWidth * scale));
+      const h = Math.max(1, Math.floor(ctn.offsetHeight * scale));
+      renderer.setSize(w, h);
+      // Stretch the canvas to fill container while rendering fewer pixels
+      gl.canvas.style.width = '100%';
+      gl.canvas.style.height = '100%';
       program.uniforms.iResolution.value = new Color(
         gl.canvas.width,
         gl.canvas.height,
@@ -416,6 +428,7 @@ export default function FaultyTerminal({
     mouseStrength,
     pageLoadAnimation,
     brightness,
+    resolutionScale,
     handleMouseMove
   ]);
 

@@ -7,16 +7,16 @@ import { useState, useEffect } from 'react';
 type Member = { name: string; initials: string; image?: string; role?: string };
 
 const coreMember = [
-	{ name: 'Suryansh Sharma', initials: 'SS' , image: '/images/tech_team/Suryansh_Sharma.webp', role: 'Core Developer' },
+	{ name: 'Suryansh Sharma', initials: 'SS' , image: '/images/tech_team/Suryansh_Sharma-Photoroom.png', role: 'Core Developer' },
 ];
 
 const codeTeam = [
-	{ name: 'Devam Gupta', initials: 'DG', image: '/images/tech_team/Devam_Gupta.webp', role: 'Frontend Developer & UI/UX Designer' },
-	{ name: 'Aman Pratap Singh', initials: 'APS', image: '/images/tech_team/Aman_Pratap_Singh.webp', role: 'Frontend Developer & UI/UX Designer' },
-	{ name: 'Yash Mishra', initials: 'YM' , image: '/images/tech_team/yash-mishra.webp', role: 'Frontend Developer & UI/UX Designer' },
-	{ name: 'Atharv Mehrotra', initials: 'AM' , image: '/images/tech_team/Atharv_Mehrotra.webp', role: 'Backend Developer' },
-	{ name: 'Ayush Sharma', initials: 'AS', image: '/images/tech_team/Ayush_Shrama.webp', role: 'Backend Developer' },
-	{ name: 'Somaya Agarwal', initials: 'SA' , image: '/images/tech_team/Somaya_Agr.webp', role: 'Frontend Developer' },
+	{ name: 'Devam Gupta', initials: 'DG', image: '/images/tech_team/Devam_Gupta-Photoroom.png', role: 'Frontend Developer & UI/UX Designer' },
+	{ name: 'Aman Pratap Singh', initials: 'APS', image: '/images/tech_team/Aman_Pratap_Singh-Photoroom.png', role: 'Frontend Developer & UI/UX Designer' },
+	{ name: 'Yash Mishra', initials: 'YM' , image: '/images/tech_team/yash-mishra-Photoroom.png', role: 'Frontend Developer & UI/UX Designer' },
+	{ name: 'Atharv Mehrotra', initials: 'AM' , image: '/images/tech_team/Atharv_Mehrotra-Photoroom.png', role: 'Backend Developer' },
+	{ name: 'Ayush Sharma', initials: 'AS', image: '/images/tech_team/Ayush_Shrama-Photoroom.png', role: 'Backend Developer' },
+	{ name: 'Somaya Agarwal', initials: 'SA' , image: '/images/tech_team/Somaya_Agr-Photoroom.png', role: 'Frontend Developer' },
 ];
 
 function FallbackAvatar({ initials }: { initials: string }) {
@@ -100,35 +100,46 @@ function TeamSection({ title, members, isMainHeading = false, isCoreSection = fa
 							{/* Animated border glow */}
 							<div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-400/30 via-pink-400/30 to-indigo-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-sm scale-105"></div>
 							
-							<div className={`relative w-full ${
-								isMainHeading && m.name === 'Suryansh Sharma' ? 'aspect-[3/4] min-h-[500px]' : 'aspect-[3/4] min-h-[450px]'
-							}`}>
-								{m.image ? (
-									<>
-										<img 
-											src={m.image} 
-											alt={m.name} 
-											className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-											onError={(e) => {
-												console.log('Image failed to load:', m.image);
-												e.currentTarget.style.display = 'none';
-												// Show fallback avatar when image fails
-												const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-												if (fallback) fallback.style.display = 'block';
-											}}
-										/>
-										<div className="absolute inset-0 hidden">
-											<FallbackAvatar initials={m.initials} />
-										</div>
-									</>
-								) : (
-									<FallbackAvatar initials={m.initials} />
-								)}
+                            <div className={`relative w-full ${
+                                isMainHeading && m.name === 'Suryansh Sharma' ? 'aspect-[3/4] min-h-[500px]' : 'aspect-[3/4] min-h-[450px]'
+                            }`}>
+                                {m.image ? (
+                                    <>
+                                        {/* Backdrop for transparent PNGs */}
+                                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(139,92,246,0.25),transparent_55%)]" />
+                                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_85%,rgba(34,211,238,0.18),transparent_50%)]" />
+                                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_10%,rgba(236,72,153,0.18),transparent_45%)]" />
+
+                                        <img 
+                                            src={m.image} 
+                                            alt={m.name} 
+                                            className={`absolute inset-0 w-full h-full object-contain opacity-95 drop-shadow-[0_10px_30px_rgba(0,0,0,0.55)] transition-transform duration-700 will-change-transform ${
+                                                 ['Aman Pratap Singh','Ayush Sharma','Devam Gupta'].includes(m.name)
+                                                   ? 'p-0 sm:p-0.5 scale-[1.28] group-hover:scale-[1.34]'
+                                                   : m.name === 'Yash Mishra'
+                                                     ? 'p-0 sm:p-0.5 scale-[1.38] group-hover:scale-[1.46]'
+                                                     : 'p-2 sm:p-3 group-hover:scale-105'
+                                             } ${m.name === 'Yash Mishra' ? '-translate-y-[20px]' : (m.name !== 'Atharv Mehrotra' && m.name !== 'Devam Gupta' ? '-translate-y-[50px]' : '')}`}
+                                            onError={(e) => {
+                                                console.log('Image failed to load:', m.image);
+                                                e.currentTarget.style.display = 'none';
+                                                // Show fallback avatar when image fails
+                                                const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                                                if (fallback) fallback.style.display = 'block';
+                                            }}
+                                        />
+                                        <div className="absolute inset-0 hidden">
+                                            <FallbackAvatar initials={m.initials} />
+                                        </div>
+                                    </>
+                                ) : (
+                                    <FallbackAvatar initials={m.initials} />
+                                )}
 								
-								{/* Enhanced gradient overlays with glassmorphism */}
-								<div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-								<div className="absolute inset-0 bg-gradient-to-br from-purple-500/15 via-transparent to-indigo-500/15" />
-								<div className="absolute inset-0 bg-gradient-to-tl from-transparent via-white/5 to-transparent" />
+                                {/* Overlays tuned for face-only images */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-indigo-500/10" />
+                                <div className="absolute inset-0 bg-gradient-to-tl from-transparent via-white/5 to-transparent" />
 								
 								{/* Enhanced shimmer effect */}
 								<div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1200"></div>
