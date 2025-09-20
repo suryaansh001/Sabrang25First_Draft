@@ -368,6 +368,13 @@ function CheckoutPageContent() {
             if (!value.trim()) {
               errors[group.signature][field.name] = `${field.label} is required.`;
               isValid = false;
+            } else if (field.name === 'contactNo') {
+              // Validate phone number format (exactly 10 digits)
+              const phoneRegex = /^\d{10}$/;
+              if (!phoneRegex.test(value.trim())) {
+                errors[group.signature][field.name] = 'Mobile number must be exactly 10 digits.';
+                isValid = false;
+              }
             }
           }
         }
@@ -418,6 +425,13 @@ function CheckoutPageContent() {
               if (!m[field.name]?.trim()) {
                 errors[group.signature][`member_${idx}_${field.name}`] = `${field.label} is required.`;
                 isValid = false;
+              } else if (field.name === 'contactNo') {
+                // Validate phone number format (exactly 10 digits)
+                const phoneRegex = /^\d{10}$/;
+                if (!phoneRegex.test(m[field.name].trim())) {
+                  errors[group.signature][`member_${idx}_${field.name}`] = 'Mobile number must be exactly 10 digits.';
+                  isValid = false;
+                }
               }
             }
           });
