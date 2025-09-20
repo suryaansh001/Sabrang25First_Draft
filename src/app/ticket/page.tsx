@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaDownload, FaQrcode, FaUser, FaEnvelope, FaUsers, FaSearch } from 'react-icons/fa';
 import createApiUrl from '../../lib/api';
-import ProtectedRoute from '../../../components/ProtectedRoute';
 
 interface TeamMember {
   id: string;
@@ -329,11 +328,5 @@ function TicketPage() {
   );
 }
 
-// Wrap the component with ProtectedRoute
-export default function ProtectedTicketPage() {
-  return (
-    <ProtectedRoute>
-      <TicketPage />
-    </ProtectedRoute>
-  );
-}
+// Export the component directly without ProtectedRoute
+export default TicketPage;
