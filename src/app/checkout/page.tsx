@@ -232,7 +232,8 @@ function CheckoutPageContent() {
             const event = group.events[0];
             if (event) {
               const teamConfig = getTeamSizeConfig(event.title);
-              if (teamConfig) {
+              // Only create team member forms for events that support multiple members
+              if (teamConfig && teamConfig.max > 1) {
                 const minMembers = teamConfig.min;
                 // Calculate how many additional member forms we need (-1 because leader is in main form)
                 const requiredAdditionalMembers = Math.max(0, minMembers - 1);
@@ -1048,6 +1049,14 @@ function CheckoutPageContent() {
                       {(() => {
                         const isTeamGroup = group.fields.some(f => f.name === 'numMembers' || f.name === 'teamName' || f.name === 'captainName');
                         if (!isTeamGroup) return null;
+                        
+                        // Additional check: only show team member forms for events that actually support multiple members
+                        const event = group.events[0];
+                        const teamConfig = event ? getTeamSizeConfig(event.title) : null;
+                        const supportsMultipleMembers = teamConfig && teamConfig.max > 1;
+                        
+                        if (!supportsMultipleMembers) return null;
+                        
                         const members = teamMembersBySignature[group.signature] || [];
                         const groupErrors = formErrors[group.signature] || {};
                         return (
