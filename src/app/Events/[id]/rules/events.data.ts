@@ -9,6 +9,29 @@ export interface Event {
 	rules?: string[];
 	criteria?: Criterion[];
 	prizePool?: string;
+	flagshipBenefits?: {
+		supportArtists: {
+			maxCount: number;
+			description: string;
+			requirements: string;
+		};
+		hospitality: string;
+		greenRoom: string;
+		visitorPasses: {
+			maxCount: number;
+			value: string;
+			description: string;
+		};
+		operationalNotes: string[];
+	};
+	flagshipSoloBenefits?: {
+		hospitality: string;
+		visitorPasses: {
+			maxCount: number;
+			value: string;
+			description: string;
+		};
+	};
 }
 
 export const events: Event[] = [
@@ -37,7 +60,25 @@ export const events: Event[] = [
 			'Choreography & walk',
 			'Costume/styling & props',
 			'Coordination & flow'
-		]
+		],
+		flagshipBenefits: {
+			supportArtists: {
+				maxCount: 3,
+				description: 'Permission to bring up to 3 support artists (e.g., makeup, stylist, manager)',
+				requirements: 'Support artists must wear provided wristbands/badges and follow venue rules'
+			},
+			hospitality: 'Snacks (tea/coffee) for team + support artists during reporting/performance window',
+			greenRoom: 'One dedicated green room (time-bound as per slot)',
+			visitorPasses: {
+				maxCount: 3,
+				value: '₹69 each',
+				description: '3 free Visitor Passes per registered team'
+			},
+			operationalNotes: [
+				'Green room allocation is strictly for the assigned slot/time; no storage after slot',
+				'Support artists must wear the provided wristbands/badges and follow venue rules'
+			]
+		}
 	},
 	{
 		id: 2,
@@ -54,7 +95,7 @@ export const events: Event[] = [
 			'Any rule violations or inappropriate behaviour may result in disqualification.'
 		],
 		criteria: [
-			'Judges’ decisions will be final and binding. Bands will be judged on:',
+			'Judges\' decisions will be final and binding. Bands will be judged on:',
 			'Vocals',
 			'Rhythm',
 			'Tone Quality',
@@ -68,7 +109,25 @@ export const events: Event[] = [
 					'Penalties will be applied if the time limit is exceeded.'
 				]
 			}
-		]
+		],
+		flagshipBenefits: {
+			supportArtists: {
+				maxCount: 3,
+				description: 'Permission to bring up to 3 support artists (e.g., makeup, stylist, manager)',
+				requirements: 'Support artists must wear provided wristbands/badges and follow venue rules'
+			},
+			hospitality: 'Snacks (tea/coffee) for team + support artists during reporting/performance window',
+			greenRoom: 'One dedicated green room (time-bound as per slot)',
+			visitorPasses: {
+				maxCount: 3,
+				value: '₹69 each',
+				description: '3 free Visitor Passes per registered team'
+			},
+			operationalNotes: [
+				'Green room allocation is strictly for the assigned slot/time; no storage after slot',
+				'Support artists must wear the provided wristbands/badges and follow venue rules'
+			]
+		}
 	},
 	{
 		id: 3,
@@ -103,7 +162,25 @@ export const events: Event[] = [
 					'Exceeding the time limit will result in negative marking.'
 				]
 			}
-		]
+		],
+		flagshipBenefits: {
+			supportArtists: {
+				maxCount: 3,
+				description: 'Permission to bring up to 3 support artists (e.g., makeup, stylist, manager)',
+				requirements: 'Support artists must wear provided wristbands/badges and follow venue rules'
+			},
+			hospitality: 'Snacks (tea/coffee) for team + support artists during reporting/performance window',
+			greenRoom: 'One dedicated green room (time-bound as per slot)',
+			visitorPasses: {
+				maxCount: 3,
+				value: '₹69 each',
+				description: '3 free Visitor Passes per registered team'
+			},
+			operationalNotes: [
+				'Green room allocation is strictly for the assigned slot/time; no storage after slot',
+				'Support artists must wear the provided wristbands/badges and follow venue rules'
+			]
+		}
 	},
 	{
 		id: 4,
@@ -140,7 +217,7 @@ export const events: Event[] = [
 					'Each participant will have a total time of 2 minutes for performance.',
 					'Exceeding the time limit will result in negative marking.',
 					'No use of any karaoke and instruments allowed in this round.',
-					'A certain number of participants will be allowed to proceed to the final round based on the judges’ evaluation.'
+					'A certain number of participants will be allowed to proceed to the final round based on the judges\' evaluation.'
 				]
 			},
 			{
@@ -151,9 +228,31 @@ export const events: Event[] = [
 					'Use of pre-approved, safe props allowed. (no harmful or hazardous materials are allowed.)'
 				]
 			}
-		]
+		],
+		flagshipSoloBenefits: {
+			hospitality: 'Snacks (tea/coffee) during reporting/performance window',
+			visitorPasses: {
+				maxCount: 2,
+				value: '₹69 each',
+				description: '2 free Visitor Passes per registration'
+			}
+		}
 	},
-	{ id: 5, title: 'ECHOES OF NOOR', image: '/images/Logo@2x.png', category: 'Flagship', prizePool: '₹17,000' },
+	{ 
+		id: 5, 
+		title: 'ECHOES OF NOOR', 
+		image: '/images/Logo@2x.png', 
+		category: 'Flagship', 
+		prizePool: '₹17,000',
+		flagshipSoloBenefits: {
+			hospitality: 'Snacks (tea/coffee) during reporting/performance window',
+			visitorPasses: {
+				maxCount: 2,
+				value: '₹69 each',
+				description: '2 free Visitor Passes per registration'
+			}
+		}
+	},
 	{
 		id: 7,
 		title: 'BIDDING BEFORE WICKET',
@@ -261,13 +360,21 @@ export const events: Event[] = [
 				items: [
 					'Preparation: Participants will be provided with a set of specific words. A 5-minute preparation period will be allotted to compose a rap incorporating these words.',
 					'Performance: Raps must be performed live immediately after the preparation time. All provided words must be used meaningfully within the rap.',
-					'Prohibited Aids: No mobile phones, notebooks, paper, or any external writing tools allowed during this round. You can’t read off of your phone/Canibus’ notebook if you forget your bars.',
+					'Prohibited Aids: No mobile phones, notebooks, paper, or any external writing tools allowed during this round. You can\'t read off of your phone/Canibus\' notebook if you forget your bars.',
 					'Time Limit: Maximum of 2 minutes per performance.',
 					'Content Guidelines: Maintain clean content; avoid vulgarity and offensive language.',
 					'Judging Criteria: Effective incorporation of given words, Creativity and improvisation, Flow and coherence, Audience response.'
 				]
 			}
-		]
+		],
+		flagshipSoloBenefits: {
+			hospitality: 'Snacks (tea/coffee) during reporting/performance window',
+			visitorPasses: {
+				maxCount: 2,
+				value: '₹69 each',
+				description: '2 free Visitor Passes per registration'
+			}
+		}
 	},
 	{
 		id: 10,

@@ -56,6 +56,34 @@ const SOLO_FIELDS: FieldSet = [
   { name: 'address', label: 'Address', type: 'text', required: true, placeholder: 'Enter your full address' },
 ];
 
+const VISITOR_PASS_FIELDS: FieldSet = [
+  { name: 'name', label: 'Visitor Name', type: 'text', required: true, placeholder: 'Enter visitor full name' },
+  { name: 'collegeMailId', label: 'Email', type: 'email', required: true, placeholder: 'visitor@example.com' },
+  { name: 'contactNo', label: 'Mobile Number', type: 'phone', required: true, placeholder: '10-digit number' },
+  { name: 'gender', label: 'Gender', type: 'select', required: true, options: [
+    { value: 'male', label: 'Male' },
+    { value: 'female', label: 'Female' },
+    { value: 'other', label: 'Other' },
+  ]},
+  { name: 'age', label: 'Age', type: 'number', required: true, placeholder: 'e.g., 20' },
+  { name: 'universityName', label: 'Institution Name', type: 'text', required: true, placeholder: 'Visitor school/college/university' },
+  { name: 'address', label: 'Address', type: 'text', required: true, placeholder: 'Enter visitor full address' },
+];
+
+const SUPPORT_ARTIST_FIELDS: FieldSet = [
+  { name: 'name', label: 'Support Artist Name', type: 'text', required: true, placeholder: 'Enter support artist full name' },
+  { name: 'role', label: 'Role/Profession', type: 'text', required: true, placeholder: 'e.g., Makeup Artist, Stylist, Manager' },
+  { name: 'contactNo', label: 'Mobile Number', type: 'phone', required: true, placeholder: '10-digit number' },
+  { name: 'email', label: 'Email', type: 'email', required: true, placeholder: 'artist@example.com' },
+  { name: 'idNumber', label: 'ID Number', type: 'text', required: true, placeholder: 'Government ID or Passport number' },
+  { name: 'idType', label: 'ID Type', type: 'select', required: true, options: [
+    { value: 'aadhar', label: 'Aadhar Card' },
+    { value: 'passport', label: 'Passport' },
+    { value: 'driving', label: 'Driving License' },
+    { value: 'other', label: 'Other' },
+  ]},
+];
+
 const TEAM_ESPORTS_FIELDS: FieldSet = [
   { name: 'teamName', label: 'Team Name', type: 'text', required: true },
   { name: 'leaderDiscord', label: 'Leader Discord ID', type: 'text', required: true },
@@ -116,6 +144,16 @@ function isTeamEvent(eventTitle: string): boolean {
   return config ? config.max > 1 : false;
 }
 
+function isFlagshipGroupEvent(eventTitle: string): boolean {
+  const flagshipGroupEvents = ['RAMPWALK - PANACHE', 'DANCE BATTLE', 'BANDJAM'];
+  return flagshipGroupEvents.includes(eventTitle);
+}
+
+function isFlagshipSoloEvent(eventTitle: string): boolean {
+  const flagshipSoloEvents = ['STEP UP', 'ECHOES OF NOOR', 'VERSEVAAD'];
+  return flagshipSoloEvents.includes(eventTitle);
+}
+
 type Step = 'select' | 'forms' | 'review' | 'payment';
 
 const STEPS: { id: Step; name: string }[] = [
@@ -162,6 +200,14 @@ function CheckoutPageContent() {
   const [step, setStep] = useState<Step>('select');
   const [reducedMotion, setReducedMotion] = useState<boolean>(true);
   const [selectedEventIds, setSelectedEventIds] = useState<number[]>([]);
+  const [visitorPassQuantity, setVisitorPassQuantity] = useState<number>(0);
+  const [visitorPassDetails, setVisitorPassDetails] = useState<Array<Record<string, string>>>([]);
+  const [supportArtistQuantity, setSupportArtistQuantity] = useState<number>(0);
+  const [supportArtistDetails, setSupportArtistDetails] = useState<Array<Record<string, string>>>([]);
+  const [flagshipVisitorPassQuantity, setFlagshipVisitorPassQuantity] = useState<number>(0);
+  const [flagshipVisitorPassDetails, setFlagshipVisitorPassDetails] = useState<Array<Record<string, string>>>([]);
+  const [flagshipSoloVisitorPassQuantity, setFlagshipSoloVisitorPassQuantity] = useState<number>(0);
+  const [flagshipSoloVisitorPassDetails, setFlagshipSoloVisitorPassDetails] = useState<Array<Record<string, string>>>([]);
   const [formErrors, setFormErrors] = useState<Record<string, Record<string, string>>>({});
   const [formDataBySignature, setFormDataBySignature] = useState<Record<string, Record<string, string>>>({});
   const [teamMembersBySignature, setTeamMembersBySignature] = useState<Record<string, Array<Record<string, string>>>>({});
@@ -182,6 +228,43 @@ function CheckoutPageContent() {
   } | null>(null);
   const [paymentMode, setPaymentMode] = useState<'card' | 'upi'>('card');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
+  // Initialize arrays when quantities change
+  useEffect(() => {
+    if (supportArtistQuantity > supportArtistDetails.length) {
+      const newDetails = [...supportArtistDetails];
+      while (newDetails.length < supportArtistQuantity) {
+        newDetails.push({});
+      }
+      setSupportArtistDetails(newDetails);
+    } else if (supportArtistQuantity < supportArtistDetails.length) {
+      setSupportArtistDetails(supportArtistDetails.slice(0, supportArtistQuantity));
+    }
+  }, [supportArtistQuantity]);
+
+  useEffect(() => {
+    if (flagshipVisitorPassQuantity > flagshipVisitorPassDetails.length) {
+      const newDetails = [...flagshipVisitorPassDetails];
+      while (newDetails.length < flagshipVisitorPassQuantity) {
+        newDetails.push({});
+      }
+      setFlagshipVisitorPassDetails(newDetails);
+    } else if (flagshipVisitorPassQuantity < flagshipVisitorPassDetails.length) {
+      setFlagshipVisitorPassDetails(flagshipVisitorPassDetails.slice(0, flagshipVisitorPassQuantity));
+    }
+  }, [flagshipVisitorPassQuantity]);
+
+  useEffect(() => {
+    if (flagshipSoloVisitorPassQuantity > flagshipSoloVisitorPassDetails.length) {
+      const newDetails = [...flagshipSoloVisitorPassDetails];
+      while (newDetails.length < flagshipSoloVisitorPassQuantity) {
+        newDetails.push({});
+      }
+      setFlagshipSoloVisitorPassDetails(newDetails);
+    } else if (flagshipSoloVisitorPassQuantity < flagshipSoloVisitorPassDetails.length) {
+      setFlagshipSoloVisitorPassDetails(flagshipSoloVisitorPassDetails.slice(0, flagshipSoloVisitorPassQuantity));
+    }
+  }, [flagshipSoloVisitorPassQuantity]);
 
   // Force reduced motion for smooth scrolling experience on this page
   useEffect(() => {
@@ -278,9 +361,22 @@ function CheckoutPageContent() {
     }
   }, [step, fieldGroups]);
 
+  // Auto-create visitor pass details when quantity changes
+  useEffect(() => {
+    setVisitorPassDetails(prev => {
+      const newDetails = Array.from({ length: visitorPassQuantity }, (_, index) => {
+        // Keep existing data if available, otherwise create new empty form
+        return prev[index] || VISITOR_PASS_FIELDS.reduce((acc, f) => ({ ...acc, [f.name]: '' }), {});
+      });
+      return newDetails;
+    });
+  }, [visitorPassQuantity]);
+
   const totalPrice = useMemo(() => {
-    return selectedEvents.reduce((total, event) => total + parsePrice(event.price), 0);
-  }, [selectedEvents]);
+    const eventTotal = selectedEvents.reduce((total, event) => total + parsePrice(event.price), 0);
+    const visitorPassTotal = visitorPassQuantity * 69; // ₹69 per visitor pass
+    return eventTotal + visitorPassTotal;
+  }, [selectedEvents, visitorPassQuantity]);
 
   const finalPrice = useMemo(() => {
     const discount = appliedPromo?.discountAmount || 0;
@@ -352,6 +448,105 @@ function CheckoutPageContent() {
   const validateForms = () => {
     const errors: Record<string, Record<string, string>> = {};
     let isValid = true;
+
+    // Validate visitor pass details
+    if (visitorPassQuantity > 0) {
+      errors['visitorPasses'] = {};
+      visitorPassDetails.forEach((visitor, index) => {
+        VISITOR_PASS_FIELDS.forEach(field => {
+          if (field.required) {
+            const value = visitor[field.name] || '';
+            if (!value.trim()) {
+              errors['visitorPasses'][`visitor_${index}_${field.name}`] = `${field.label} is required for visitor ${index + 1}.`;
+              isValid = false;
+            } else if (field.name === 'contactNo') {
+              // Validate phone number format (exactly 10 digits)
+              const phoneRegex = /^\d{10}$/;
+              if (!phoneRegex.test(value.trim())) {
+                errors['visitorPasses'][`visitor_${index}_${field.name}`] = 'Mobile number must be exactly 10 digits.';
+                isValid = false;
+              }
+            }
+          }
+        });
+      });
+    }
+
+    // Validate support artist details
+    if (supportArtistQuantity > 0) {
+      errors['supportArtists'] = {};
+      supportArtistDetails.forEach((artist, index) => {
+        SUPPORT_ARTIST_FIELDS.forEach(field => {
+          if (field.required) {
+            const value = artist[field.name] || '';
+            if (!value.trim()) {
+              errors['supportArtists'][`artist_${index}_${field.name}`] = `${field.label} is required for support artist ${index + 1}.`;
+              isValid = false;
+            } else if (field.name === 'contactNo') {
+              // Validate phone number format (exactly 10 digits)
+              const phoneRegex = /^\d{10}$/;
+              if (!phoneRegex.test(value.trim())) {
+                errors['supportArtists'][`artist_${index}_${field.name}`] = 'Mobile number must be exactly 10 digits.';
+                isValid = false;
+              }
+            } else if (field.name === 'email') {
+              // Validate email format
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              if (!emailRegex.test(value.trim())) {
+                errors['supportArtists'][`artist_${index}_${field.name}`] = 'Please enter a valid email address.';
+                isValid = false;
+              }
+            }
+          }
+        });
+      });
+    }
+
+    // Validate flagship visitor pass details
+    if (flagshipVisitorPassQuantity > 0) {
+      errors['flagshipVisitorPasses'] = {};
+      flagshipVisitorPassDetails.forEach((visitor, index) => {
+        VISITOR_PASS_FIELDS.forEach(field => {
+          if (field.required) {
+            const value = visitor[field.name] || '';
+            if (!value.trim()) {
+              errors['flagshipVisitorPasses'][`flagship_visitor_${index}_${field.name}`] = `${field.label} is required for flagship visitor ${index + 1}.`;
+              isValid = false;
+            } else if (field.name === 'contactNo') {
+              // Validate phone number format (exactly 10 digits)
+              const phoneRegex = /^\d{10}$/;
+              if (!phoneRegex.test(value.trim())) {
+                errors['flagshipVisitorPasses'][`flagship_visitor_${index}_${field.name}`] = 'Mobile number must be exactly 10 digits.';
+                isValid = false;
+              }
+            }
+          }
+        });
+      });
+    }
+
+    // Validate flagship solo visitor pass details
+    if (flagshipSoloVisitorPassQuantity > 0) {
+      errors['flagshipSoloVisitorPasses'] = {};
+      flagshipSoloVisitorPassDetails.forEach((visitor, index) => {
+        VISITOR_PASS_FIELDS.forEach(field => {
+          if (field.required) {
+            const value = visitor[field.name] || '';
+            if (!value.trim()) {
+              errors['flagshipSoloVisitorPasses'][`flagship_solo_visitor_${index}_${field.name}`] = `${field.label} is required for flagship solo visitor ${index + 1}.`;
+              isValid = false;
+            } else if (field.name === 'contactNo') {
+              // Validate phone number format (exactly 10 digits)
+              const phoneRegex = /^\d{10}$/;
+              if (!phoneRegex.test(value.trim())) {
+                errors['flagshipSoloVisitorPasses'][`flagship_solo_visitor_${index}_${field.name}`] = 'Mobile number must be exactly 10 digits.';
+                isValid = false;
+              }
+            }
+          }
+        });
+      });
+    }
 
     fieldGroups.forEach(group => {
       errors[group.signature] = {};
@@ -445,7 +640,7 @@ function CheckoutPageContent() {
 
   const goNext = () => {
     if (step === 'select') {
-      if (selectedEventIds.length === 0) return;
+      if (selectedEventIds.length === 0 && visitorPassQuantity === 0) return;
       setStep('forms');
       return;
     }
@@ -646,6 +841,8 @@ function CheckoutPageContent() {
       registrationForm.append('formsBySignature', JSON.stringify(formDataBySignature));
       registrationForm.append('teamMembersBySignature', JSON.stringify(teamMembersBySignature));
       registrationForm.append('items', JSON.stringify(selectedEvents.map(e => ({ id: e.id, title: e.title, price: e.price }))));
+      registrationForm.append('visitorPassQuantity', visitorPassQuantity.toString());
+      registrationForm.append('visitorPassDetails', JSON.stringify(visitorPassDetails));
       if (attachedImage) {
         registrationForm.append('profileImage', attachedImage);
       }
@@ -889,6 +1086,161 @@ function CheckoutPageContent() {
                       </div>
                     )}
                     <h2 className="text-xl font-semibold mb-6 title-chroma">Choose Your Events</h2>
+                    
+                    {/* Visitor Pass Section */}
+                    <div className="mb-8">
+                      <h3 className="text-lg font-medium text-white mb-4">
+                        <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent">Visitor Passes</span>
+                      </h3>
+                      <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-yellow-200 mb-2">Visitor Pass</h4>
+                            <p className="text-sm text-white/70 mb-3">
+                              Required for non-participant entry to Sabrang venues. Valid for the dates and venues printed on the pass.
+                            </p>
+                            <div className="flex items-center gap-2 text-sm text-white/60">
+                              <span>Price: ₹69 per pass</span>
+                              <span>•</span>
+                              <span>Non-transferable</span>
+                              <span>•</span>
+                              <span>Non-refundable</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={() => setVisitorPassQuantity(Math.max(0, visitorPassQuantity - 1))}
+                              disabled={visitorPassQuantity === 0}
+                              className="w-8 h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                            >
+                              -
+                            </button>
+                            <span className="text-lg font-semibold min-w-[2rem] text-center">{visitorPassQuantity}</span>
+                            <button
+                              onClick={() => setVisitorPassQuantity(visitorPassQuantity + 1)}
+                              className="w-8 h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 flex items-center justify-center"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                        {visitorPassQuantity > 0 && (
+                          <div className="mt-4 pt-4 border-t border-white/10">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-white/70">Visitor Passes ({visitorPassQuantity})</span>
+                              <span className="text-yellow-400 font-medium">₹{visitorPassQuantity * 69}</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Flagship Group Event Benefits Section */}
+                    {selectedEvents.some(event => isFlagshipGroupEvent(event.title)) && (
+                      <div className="mb-8">
+                        <h3 className="text-lg font-medium text-white mb-4">
+                          <span className="bg-gradient-to-r from-purple-300 via-pink-400 to-rose-400 bg-clip-text text-transparent">Flagship Group Benefits</span>
+                        </h3>
+                        <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_22px_rgba(168,85,247,0.18)]">
+                          <div className="mb-6">
+                            <h4 className="font-semibold text-purple-200 mb-2">Support Artists</h4>
+                            <p className="text-sm text-white/70 mb-3">
+                              Bring up to 3 support artists (makeup, stylist, manager) for your team performance.
+                            </p>
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={() => setSupportArtistQuantity(Math.max(0, supportArtistQuantity - 1))}
+                                disabled={supportArtistQuantity === 0}
+                                className="w-8 h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                              >
+                                -
+                              </button>
+                              <span className="text-lg font-semibold min-w-[2rem] text-center">{supportArtistQuantity}</span>
+                              <button
+                                onClick={() => setSupportArtistQuantity(Math.min(3, supportArtistQuantity + 1))}
+                                disabled={supportArtistQuantity >= 3}
+                                className="w-8 h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                              >
+                                +
+                              </button>
+                              <span className="text-xs text-white/60">(Max 3)</span>
+                            </div>
+                          </div>
+                          
+                          <div className="mb-6">
+                            <h4 className="font-semibold text-purple-200 mb-2">Free Visitor Passes</h4>
+                            <p className="text-sm text-white/70 mb-3">
+                              3 complimentary visitor passes (worth ₹69 each) included with your flagship group registration.
+                            </p>
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={() => setFlagshipVisitorPassQuantity(Math.max(0, flagshipVisitorPassQuantity - 1))}
+                                disabled={flagshipVisitorPassQuantity === 0}
+                                className="w-8 h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                              >
+                                -
+                              </button>
+                              <span className="text-lg font-semibold min-w-[2rem] text-center">{flagshipVisitorPassQuantity}</span>
+                              <button
+                                onClick={() => setFlagshipVisitorPassQuantity(Math.min(3, flagshipVisitorPassQuantity + 1))}
+                                disabled={flagshipVisitorPassQuantity >= 3}
+                                className="w-8 h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                              >
+                                +
+                              </button>
+                              <span className="text-xs text-white/60">(Max 3)</span>
+                            </div>
+                          </div>
+
+                          <div className="text-xs text-white/60 space-y-1">
+                            <p>• Green room access (time-bound as per slot)</p>
+                            <p>• Snacks (tea/coffee) for team + support artists</p>
+                            <p>• Support artists must wear provided wristbands/badges</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Flagship Solo Event Benefits Section */}
+                    {selectedEvents.some(event => isFlagshipSoloEvent(event.title)) && (
+                      <div className="mb-8">
+                        <h3 className="text-lg font-medium text-white mb-4">
+                          <span className="bg-gradient-to-r from-blue-300 via-indigo-400 to-purple-400 bg-clip-text text-transparent">Flagship Solo Benefits</span>
+                        </h3>
+                        <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_22px_rgba(59,130,246,0.18)]">
+                          <div className="mb-6">
+                            <h4 className="font-semibold text-blue-200 mb-2">Free Visitor Passes</h4>
+                            <p className="text-sm text-white/70 mb-3">
+                              2 complimentary visitor passes (worth ₹69 each) included with your flagship solo registration.
+                            </p>
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={() => setFlagshipSoloVisitorPassQuantity(Math.max(0, flagshipSoloVisitorPassQuantity - 1))}
+                                disabled={flagshipSoloVisitorPassQuantity === 0}
+                                className="w-8 h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                              >
+                                -
+                              </button>
+                              <span className="text-lg font-semibold min-w-[2rem] text-center">{flagshipSoloVisitorPassQuantity}</span>
+                              <button
+                                onClick={() => setFlagshipSoloVisitorPassQuantity(Math.min(2, flagshipSoloVisitorPassQuantity + 1))}
+                                disabled={flagshipSoloVisitorPassQuantity >= 2}
+                                className="w-8 h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                              >
+                                +
+                              </button>
+                              <span className="text-xs text-white/60">(Max 2)</span>
+                            </div>
+                          </div>
+
+                          <div className="text-xs text-white/60 space-y-1">
+                            <p>• Snacks (tea/coffee) during reporting/performance window</p>
+                            <p>• 2 complimentary visitor passes included</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {Array.from(eventsByCategory.entries()).map(([category, events]) => (
                       <div key={category} className="mb-8">
                         <h3 className="text-lg font-medium text-white mb-4"><span className="bg-gradient-to-r from-cyan-300 via-fuchsia-400 to-emerald-300 bg-clip-text text-transparent">{category}</span></h3>
@@ -958,8 +1310,44 @@ function CheckoutPageContent() {
                   <div>
                     <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] static">
                       <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
-                      <h3 className="font-semibold text-cyan-200">Selected Events</h3>
+                      <h3 className="font-semibold text-cyan-200">Selected Items</h3>
                       <ul className="mt-4 space-y-2 text-sm">
+                        {visitorPassQuantity > 0 && (
+                          <li className="flex justify-between">
+                            <div>
+                              <div className="font-medium">Visitor Passes ({visitorPassQuantity})</div>
+                              <div className="text-xs text-white/70">Non-participant entry</div>
+                            </div>
+                            <span className="text-yellow-400 font-medium">₹{visitorPassQuantity * 69}</span>
+                          </li>
+                        )}
+                        {flagshipVisitorPassQuantity > 0 && (
+                          <li className="flex justify-between">
+                            <div>
+                              <div className="font-medium">Flagship Visitor Passes ({flagshipVisitorPassQuantity})</div>
+                              <div className="text-xs text-white/70">Complimentary with flagship registration</div>
+                            </div>
+                            <span className="text-green-400 font-medium">Free</span>
+                          </li>
+                        )}
+                        {supportArtistQuantity > 0 && (
+                          <li className="flex justify-between">
+                            <div>
+                              <div className="font-medium">Support Artists ({supportArtistQuantity})</div>
+                              <div className="text-xs text-white/70">Flagship group benefit</div>
+                            </div>
+                            <span className="text-green-400 font-medium">Free</span>
+                          </li>
+                        )}
+                        {flagshipSoloVisitorPassQuantity > 0 && (
+                          <li className="flex justify-between">
+                            <div>
+                              <div className="font-medium">Flagship Solo Visitor Passes ({flagshipSoloVisitorPassQuantity})</div>
+                              <div className="text-xs text-white/70">Complimentary with flagship solo registration</div>
+                            </div>
+                            <span className="text-green-400 font-medium">Free</span>
+                          </li>
+                        )}
                         {selectedEvents.map(ev => (
                           <li key={ev.id} className="flex justify-between">
                             <div>
@@ -979,9 +1367,9 @@ function CheckoutPageContent() {
                         onClick={() => {
                           goNext();
                         }}
-                        disabled={selectedEventIds.length === 0}
+                        disabled={selectedEventIds.length === 0 && visitorPassQuantity === 0}
                         className={`relative w-full mt-6 inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-white font-medium transition-all duration-300 ${
-                          selectedEventIds.length === 0 
+                          (selectedEventIds.length === 0 && visitorPassQuantity === 0)
                             ? 'bg-gray-600 cursor-not-allowed' 
                             : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:scale-105 cursor-pointer'
                         }`}
@@ -1008,6 +1396,137 @@ function CheckoutPageContent() {
                       <p className="text-sm text-gray-400">No events selected. Go back and pick at least one event.</p>
                     )}
                     <div className="space-y-8">
+                      {/* Visitor Pass Details Section */}
+                      {visitorPassQuantity > 0 && (
+                        <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
+                          <div className="mb-4">
+                            <h3 className="font-semibold text-yellow-200">Visitor Pass Details ({visitorPassQuantity} passes)</h3>
+                            <p className="text-xs text-gray-400">Fill details for each visitor pass. Each visitor will receive their own pass.</p>
+                          </div>
+                          <div className="space-y-6">
+                            {visitorPassDetails.map((visitor, index) => (
+                              <div key={index} className="glass rounded-xl p-4 border border-white/10">
+                                <div className="flex justify-between items-center mb-4">
+                                  <h4 className="text-sm font-medium text-white/90">Visitor {index + 1}</h4>
+                                </div>
+                                <div className="grid md:grid-cols-2 gap-4">
+                                  {VISITOR_PASS_FIELDS.map(field => {
+                                    const error = (formErrors['visitorPasses'] || {})[`visitor_${index}_${field.name}`];
+                                    const value = visitor[field.name] || '';
+                                    const inputType = field.type === 'phone' ? 'tel' : (field.type === 'number' ? 'number' : (field.type === 'email' ? 'email' : 'text'));
+                                    return (
+                                      <div key={field.name} className="flex flex-col">
+                                        <label className="text-xs text-white/70 mb-1">
+                                          {field.label}{field.required && <span className="text-pink-400">*</span>}
+                                        </label>
+                                        {field.type === 'select' ? (
+                                          <select
+                                            required={!!field.required}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm`}
+                                            value={value}
+                                            onChange={e => {
+                                              const newDetails = [...visitorPassDetails];
+                                              newDetails[index] = { ...newDetails[index], [field.name]: e.target.value };
+                                              setVisitorPassDetails(newDetails);
+                                            }}
+                                          >
+                                            <option value="">Select</option>
+                                            {(field.options || []).map(opt => (
+                                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                            ))}
+                                          </select>
+                                        ) : (
+                                          <input
+                                            type={inputType}
+                                            inputMode={field.type === 'phone' ? 'tel' : undefined}
+                                            required={!!field.required}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40 text-sm`}
+                                            placeholder={field.placeholder || ''}
+                                            value={value}
+                                            onChange={e => {
+                                              const newDetails = [...visitorPassDetails];
+                                              newDetails[index] = { ...newDetails[index], [field.name]: e.target.value };
+                                              setVisitorPassDetails(newDetails);
+                                            }}
+                                          />
+                                        )}
+                                        {error && <span className="text-xs text-pink-400 mt-1">{error}</span>}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Flagship Solo Visitor Pass Details Section */}
+                      {flagshipSoloVisitorPassQuantity > 0 && (
+                        <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_22px_rgba(59,130,246,0.18)]">
+                          <div className="mb-4">
+                            <h3 className="font-semibold text-blue-200">Flagship Solo Visitor Pass Details ({flagshipSoloVisitorPassQuantity} passes)</h3>
+                            <p className="text-xs text-gray-400">Fill details for each complimentary visitor pass. These are included with your flagship solo registration.</p>
+                          </div>
+                          <div className="space-y-6">
+                            {flagshipSoloVisitorPassDetails.map((visitor, index) => (
+                              <div key={index} className="glass rounded-xl p-4 border border-white/10">
+                                <div className="flex justify-between items-center mb-4">
+                                  <h4 className="text-sm font-medium text-white/90">Visitor {index + 1}</h4>
+                                  <span className="text-xs text-blue-400 font-medium">Complimentary</span>
+                                </div>
+                                <div className="grid md:grid-cols-2 gap-4">
+                                  {VISITOR_PASS_FIELDS.map(field => {
+                                    const error = (formErrors['flagshipSoloVisitorPasses'] || {})[`flagship_solo_visitor_${index}_${field.name}`];
+                                    const value = visitor[field.name] || '';
+                                    const inputType = field.type === 'phone' ? 'tel' : (field.type === 'number' ? 'number' : (field.type === 'email' ? 'email' : 'text'));
+                                    return (
+                                      <div key={field.name} className="flex flex-col">
+                                        <label className="text-xs text-white/70 mb-1">
+                                          {field.label}{field.required && <span className="text-pink-400">*</span>}
+                                        </label>
+                                        {field.type === 'select' ? (
+                                          <select
+                                            required={!!field.required}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm`}
+                                            value={value}
+                                            onChange={e => {
+                                              const newDetails = [...flagshipSoloVisitorPassDetails];
+                                              newDetails[index] = { ...newDetails[index], [field.name]: e.target.value };
+                                              setFlagshipSoloVisitorPassDetails(newDetails);
+                                            }}
+                                          >
+                                            <option value="">Select</option>
+                                            {(field.options || []).map(opt => (
+                                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                            ))}
+                                          </select>
+                                        ) : (
+                                          <input
+                                            type={inputType}
+                                            inputMode={field.type === 'phone' ? 'tel' : undefined}
+                                            required={!!field.required}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-white/40 text-sm`}
+                                            placeholder={field.placeholder || ''}
+                                            value={value}
+                                            onChange={e => {
+                                              const newDetails = [...flagshipSoloVisitorPassDetails];
+                                              newDetails[index] = { ...newDetails[index], [field.name]: e.target.value };
+                                              setFlagshipSoloVisitorPassDetails(newDetails);
+                                            }}
+                                          />
+                                        )}
+                                        {error && <span className="text-xs text-pink-400 mt-1">{error}</span>}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                       {fieldGroups.map(group => (
                         <div key={group.signature} className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_22px_rgba(236,72,153,0.18)]">
                           <div className="mb-4">
@@ -1290,6 +1809,137 @@ function CheckoutPageContent() {
                       })()}
                         </div>
                       ))}
+
+                      {/* Support Artists Details Section */}
+                      {supportArtistQuantity > 0 && (
+                        <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_22px_rgba(168,85,247,0.18)]">
+                          <div className="mb-4">
+                            <h3 className="font-semibold text-purple-200">Support Artist Details ({supportArtistQuantity} artists)</h3>
+                            <p className="text-xs text-gray-400">Fill details for each support artist. They will receive wristbands/badges for venue access.</p>
+                          </div>
+                          <div className="space-y-6">
+                            {supportArtistDetails.map((artist, index) => (
+                              <div key={index} className="glass rounded-xl p-4 border border-white/10">
+                                <div className="flex justify-between items-center mb-4">
+                                  <h4 className="text-sm font-medium text-white/90">Support Artist {index + 1}</h4>
+                                </div>
+                                <div className="grid md:grid-cols-2 gap-4">
+                                  {SUPPORT_ARTIST_FIELDS.map(field => {
+                                    const error = (formErrors['supportArtists'] || {})[`artist_${index}_${field.name}`];
+                                    const value = artist[field.name] || '';
+                                    const inputType = field.type === 'phone' ? 'tel' : (field.type === 'number' ? 'number' : (field.type === 'email' ? 'email' : 'text'));
+                                    return (
+                                      <div key={field.name} className="flex flex-col">
+                                        <label className="text-xs text-white/70 mb-1">
+                                          {field.label}{field.required && <span className="text-pink-400">*</span>}
+                                        </label>
+                                        {field.type === 'select' ? (
+                                          <select
+                                            required={!!field.required}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm`}
+                                            value={value}
+                                            onChange={e => {
+                                              const newDetails = [...supportArtistDetails];
+                                              newDetails[index] = { ...newDetails[index], [field.name]: e.target.value };
+                                              setSupportArtistDetails(newDetails);
+                                            }}
+                                          >
+                                            <option value="">Select</option>
+                                            {(field.options || []).map(opt => (
+                                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                            ))}
+                                          </select>
+                                        ) : (
+                                          <input
+                                            type={inputType}
+                                            inputMode={field.type === 'phone' ? 'tel' : undefined}
+                                            required={!!field.required}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder:text-white/40 text-sm`}
+                                            placeholder={field.placeholder || ''}
+                                            value={value}
+                                            onChange={e => {
+                                              const newDetails = [...supportArtistDetails];
+                                              newDetails[index] = { ...newDetails[index], [field.name]: e.target.value };
+                                              setSupportArtistDetails(newDetails);
+                                            }}
+                                          />
+                                        )}
+                                        {error && <span className="text-xs text-pink-400 mt-1">{error}</span>}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Flagship Visitor Pass Details Section */}
+                      {flagshipVisitorPassQuantity > 0 && (
+                        <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_22px_rgba(34,197,94,0.18)]">
+                          <div className="mb-4">
+                            <h3 className="font-semibold text-green-200">Flagship Visitor Pass Details ({flagshipVisitorPassQuantity} passes)</h3>
+                            <p className="text-xs text-gray-400">Fill details for each complimentary visitor pass. These are included with your flagship group registration.</p>
+                          </div>
+                          <div className="space-y-6">
+                            {flagshipVisitorPassDetails.map((visitor, index) => (
+                              <div key={index} className="glass rounded-xl p-4 border border-white/10">
+                                <div className="flex justify-between items-center mb-4">
+                                  <h4 className="text-sm font-medium text-white/90">Visitor {index + 1}</h4>
+                                  <span className="text-xs text-green-400 font-medium">Complimentary</span>
+                                </div>
+                                <div className="grid md:grid-cols-2 gap-4">
+                                  {VISITOR_PASS_FIELDS.map(field => {
+                                    const error = (formErrors['flagshipVisitorPasses'] || {})[`flagship_visitor_${index}_${field.name}`];
+                                    const value = visitor[field.name] || '';
+                                    const inputType = field.type === 'phone' ? 'tel' : (field.type === 'number' ? 'number' : (field.type === 'email' ? 'email' : 'text'));
+                                    return (
+                                      <div key={field.name} className="flex flex-col">
+                                        <label className="text-xs text-white/70 mb-1">
+                                          {field.label}{field.required && <span className="text-pink-400">*</span>}
+                                        </label>
+                                        {field.type === 'select' ? (
+                                          <select
+                                            required={!!field.required}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 text-sm`}
+                                            value={value}
+                                            onChange={e => {
+                                              const newDetails = [...flagshipVisitorPassDetails];
+                                              newDetails[index] = { ...newDetails[index], [field.name]: e.target.value };
+                                              setFlagshipVisitorPassDetails(newDetails);
+                                            }}
+                                          >
+                                            <option value="">Select</option>
+                                            {(field.options || []).map(opt => (
+                                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                            ))}
+                                          </select>
+                                        ) : (
+                                          <input
+                                            type={inputType}
+                                            inputMode={field.type === 'phone' ? 'tel' : undefined}
+                                            required={!!field.required}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 placeholder:text-white/40 text-sm`}
+                                            placeholder={field.placeholder || ''}
+                                            value={value}
+                                            onChange={e => {
+                                              const newDetails = [...flagshipVisitorPassDetails];
+                                              newDetails[index] = { ...newDetails[index], [field.name]: e.target.value };
+                                              setFlagshipVisitorPassDetails(newDetails);
+                                            }}
+                                          />
+                                        )}
+                                        {error && <span className="text-xs text-pink-400 mt-1">{error}</span>}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                     <div className="flex items-center gap-3 mt-8">
                       <button onClick={goBack} className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer">Back</button>
@@ -1299,8 +1949,17 @@ function CheckoutPageContent() {
                   <div>
                     <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] static overflow-hidden">
                       <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
-                      <h3 className="font-semibold text-cyan-200">Selected Events</h3>
+                      <h3 className="font-semibold text-cyan-200">Selected Items</h3>
                       <ul className="mt-4 space-y-2 text-sm">
+                        {visitorPassQuantity > 0 && (
+                          <li className="flex justify-between">
+                            <div>
+                              <div className="font-medium">Visitor Passes ({visitorPassQuantity})</div>
+                              <div className="text-xs text-white/70">Non-participant entry</div>
+                            </div>
+                            <span className="text-yellow-400 font-medium">₹{visitorPassQuantity * 69}</span>
+                          </li>
+                        )}
                         {selectedEvents.map(ev => (
                           <li key={ev.id} className="flex justify-between">
                             <div>
@@ -1382,8 +2041,14 @@ function CheckoutPageContent() {
                     <h2 className="text-xl font-semibold mb-6 title-chroma">Review</h2>
                     <div className="space-y-8">
                       <div className="glass rounded-2xl p-6 border border-white/10">
-                        <h3 className="font-semibold text-cyan-200 mb-3">Events</h3>
+                        <h3 className="font-semibold text-cyan-200 mb-3">Selected Items</h3>
                         <ul className="space-y-2 text-sm">
+                          {visitorPassQuantity > 0 && (
+                            <li className="flex justify-between">
+                              <span>Visitor Passes ({visitorPassQuantity})</span>
+                              <span>₹{visitorPassQuantity * 69}</span>
+                            </li>
+                          )}
                           {selectedEvents.map(ev => (
                             <li key={ev.id} className="flex justify-between">
                               <span>{ev.title}</span>
@@ -1392,6 +2057,28 @@ function CheckoutPageContent() {
                           ))}
                         </ul>
                       </div>
+
+                      {/* Visitor Pass Details Review */}
+                      {visitorPassQuantity > 0 && (
+                        <div className="glass rounded-2xl p-6 border border-white/10">
+                          <h3 className="font-semibold text-yellow-200 mb-3">Visitor Pass Details</h3>
+                          <div className="space-y-4">
+                            {visitorPassDetails.map((visitor, index) => (
+                              <div key={index} className="glass rounded-xl p-4 border border-white/10">
+                                <h4 className="text-sm font-medium text-white/90 mb-2">Visitor {index + 1}</h4>
+                                <div className="grid md:grid-cols-2 gap-3 text-sm">
+                                  {VISITOR_PASS_FIELDS.map(field => (
+                                    <div key={field.name} className="flex justify-between gap-4">
+                                      <span className="text-white/70">{field.label}</span>
+                                      <span className="text-white/90 break-words">{visitor[field.name] || '-'}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                       {fieldGroups.map(group => (
                         <div key={group.signature} className="glass rounded-2xl p-6 border border-white/10">
                           <h3 className="font-semibold text-fuchsia-200">Details for: {group.events.map(e => e.title).join(', ')}</h3>
