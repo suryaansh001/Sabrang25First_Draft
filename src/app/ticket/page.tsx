@@ -49,6 +49,7 @@ function TicketPage() {
   const [teamData, setTeamData] = useState<TeamData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [downloadingIds, setDownloadingIds] = useState<Set<string>>(new Set());
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,28 +87,45 @@ function TicketPage() {
     }
   };
 
-  const downloadQRCode = (memberId: string, memberName: string) => {
-    const link = document.createElement('a');
-    link.href = createApiUrl(`/api/qrcode/${memberId}`);
-    link.download = `${memberName}-qr-code.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const downloadQRCode = async (memberId: string, memberName: string) => {
+    // Add to downloading set
+    setDownloadingIds(prev => new Set(prev).add(memberId));
+    
+    try {
+      const response = await fetch(createApiUrl(`/api/qrcode/${memberId}`), {
+        method: 'GET',
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch QR code');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${memberName.replace(/[^a-zA-Z0-9]/g, '_')}-qr-code.png`;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading QR code:', error);
+      alert('Failed to download QR code. Please try again.');
+    } finally {
+      // Remove from downloading set
+      setDownloadingIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(memberId);
+        return newSet;
+      });
+    }
   };
 
-  const downloadAllQRCodes = () => {
-    if (!teamData) return;
-
-    // Download team leader QR
-    downloadQRCode(teamData.mainPerson.id, teamData.mainPerson.name);
-
-    // Download team members QR codes with a small delay
-    teamData.teamMembers.forEach((member, index) => {
-      setTimeout(() => {
-        downloadQRCode(member.id, member.name);
-      }, (index + 1) * 500); // 500ms delay between downloads
-    });
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white py-8 px-4">
@@ -189,20 +207,11 @@ function TicketPage() {
           >
             {/* Team Overview */}
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-6">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-                <div>
-                  <h2 className="text-2xl font-bold mb-2">Team Overview</h2>
-                  <p className="text-gray-400">
-                    Team Size: {teamData.teamSize} members
-                  </p>
-                </div>
-                <button
-                  onClick={downloadAllQRCodes}
-                  className="mt-4 sm:mt-0 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-                >
-                  <FaDownload />
-                  <span>Download All QR Codes</span>
-                </button>
+              <div className="mb-4">
+                <h2 className="text-2xl font-bold mb-2">Team Overview</h2>
+                <p className="text-gray-400">
+                  Team Size: {teamData.teamSize} members
+                </p>
               </div>
 
               {/* Registered Events */}
@@ -255,10 +264,15 @@ function TicketPage() {
                   </div>
                   <button
                     onClick={() => downloadQRCode(teamData.mainPerson.id, teamData.mainPerson.name)}
-                    className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                    disabled={downloadingIds.has(teamData.mainPerson.id)}
+                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
                   >
-                    <FaDownload />
-                    <span>Download QR</span>
+                    {downloadingIds.has(teamData.mainPerson.id) ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    ) : (
+                      <FaDownload />
+                    )}
+                    <span>{downloadingIds.has(teamData.mainPerson.id) ? 'Downloading...' : 'Download QR'}</span>
                   </button>
                 </div>
               </div>
@@ -310,10 +324,15 @@ function TicketPage() {
                         </div>
                         <button
                           onClick={() => downloadQRCode(member.id, member.name)}
-                          className="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-lg flex items-center space-x-2 transition-colors text-sm"
+                          disabled={downloadingIds.has(member.id)}
+                          className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-3 py-2 rounded-lg flex items-center space-x-2 transition-colors text-sm"
                         >
-                          <FaDownload />
-                          <span>Download</span>
+                          {downloadingIds.has(member.id) ? (
+                            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+                          ) : (
+                            <FaDownload />
+                          )}
+                          <span>{downloadingIds.has(member.id) ? 'Downloading...' : 'Download'}</span>
                         </button>
                       </div>
                     </motion.div>
