@@ -466,6 +466,13 @@ function CheckoutPageContent() {
                 errors['visitorPasses'][`visitor_${index}_${field.name}`] = 'Mobile number must be exactly 10 digits.';
                 isValid = false;
               }
+            } else if (field.name === 'collegeMailId') {
+              // Validate email format
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              if (!emailRegex.test(value.trim())) {
+                errors['visitorPasses'][`visitor_${index}_${field.name}`] = 'Please enter a valid email address.';
+                isValid = false;
+              }
             }
           }
         });
@@ -519,6 +526,13 @@ function CheckoutPageContent() {
                 errors['flagshipVisitorPasses'][`flagship_visitor_${index}_${field.name}`] = 'Mobile number must be exactly 10 digits.';
                 isValid = false;
               }
+            } else if (field.name === 'collegeMailId') {
+              // Validate email format
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              if (!emailRegex.test(value.trim())) {
+                errors['flagshipVisitorPasses'][`flagship_visitor_${index}_${field.name}`] = 'Please enter a valid email address.';
+                isValid = false;
+              }
             }
           }
         });
@@ -540,6 +554,13 @@ function CheckoutPageContent() {
               const phoneRegex = /^\d{10}$/;
               if (!phoneRegex.test(value.trim())) {
                 errors['flagshipSoloVisitorPasses'][`flagship_solo_visitor_${index}_${field.name}`] = 'Mobile number must be exactly 10 digits.';
+                isValid = false;
+              }
+            } else if (field.name === 'collegeMailId') {
+              // Validate email format
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              if (!emailRegex.test(value.trim())) {
+                errors['flagshipSoloVisitorPasses'][`flagship_solo_visitor_${index}_${field.name}`] = 'Please enter a valid email address.';
                 isValid = false;
               }
             }
@@ -805,6 +826,7 @@ function CheckoutPageContent() {
       let derivedEmail: string | undefined;
       let attachedImage: File | undefined;
 
+      // First try to get from event registration forms
       for (const group of fieldGroups) {
         const data = formDataBySignature[group.signature] || {};
         if (!derivedName && data['name']) derivedName = data['name'];
@@ -818,6 +840,25 @@ function CheckoutPageContent() {
             if (firstFile) attachedImage = firstFile;
           }
         }
+      }
+
+      // If no email found from event forms, try to get from visitor pass details
+      if (!derivedEmail && visitorPassDetails.length > 0) {
+        // Use the first visitor's email as the primary contact
+        derivedEmail = visitorPassDetails[0]['collegeMailId'];
+        if (!derivedName) derivedName = visitorPassDetails[0]['name'];
+      }
+
+      // If still no email found, try flagship visitor pass details
+      if (!derivedEmail && flagshipVisitorPassDetails.length > 0) {
+        derivedEmail = flagshipVisitorPassDetails[0]['collegeMailId'];
+        if (!derivedName) derivedName = flagshipVisitorPassDetails[0]['name'];
+      }
+
+      // If still no email found, try flagship solo visitor pass details
+      if (!derivedEmail && flagshipSoloVisitorPassDetails.length > 0) {
+        derivedEmail = flagshipSoloVisitorPassDetails[0]['collegeMailId'];
+        if (!derivedName) derivedName = flagshipSoloVisitorPassDetails[0]['name'];
       }
 
       // Fallbacks to avoid empty fields
@@ -1391,6 +1432,26 @@ function CheckoutPageContent() {
               >
                 <div className="grid lg:grid-cols-4 gap-8">
                   <div className="lg:col-span-3">
+                    {/* Important Email Notice */}
+                    <div className="bg-red-500/15 border border-red-400/40 rounded-lg p-4 mb-6 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0">
+                          <div className="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center">
+                            <span className="text-red-400 text-sm font-bold">!</span>
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-red-200 font-semibold mb-2">⚠️ Important: Email Verification Required</h3>
+                          <p className="text-sm text-red-100 leading-relaxed">
+                            <strong>Make sure you enter the correct email address!</strong> You will receive all OTPs, tokens, and important updates on the email you provide. 
+                            <span className="block mt-1 text-red-200 font-medium">
+                              If you enter a wrong email, your registration will Not be refundable.
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
                     <h2 className="text-xl font-semibold mb-6 title-chroma">Your Details</h2>
                     {fieldGroups.length === 0 && (
                       <p className="text-sm text-gray-400">No events selected. Go back and pick at least one event.</p>
