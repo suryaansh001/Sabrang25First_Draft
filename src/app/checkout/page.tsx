@@ -50,9 +50,9 @@ const SOLO_FIELDS: FieldSet = [
     { value: 'other', label: 'Other' },
   ]},
   { name: 'age', label: 'Age', type: 'number', required: true, placeholder: 'e.g., 20' },
-  { name: 'universityName', label: 'College Name', type: 'text', required: true, placeholder: 'Your college/university' },
+  { name: 'universityName', label: 'Institution Name', type: 'text', required: true, placeholder: 'Your school/college/university' },
   { name: 'referralCode', label: 'Referral Code', type: 'text', required: false, placeholder: 'Optional' },
-  { name: 'universityCardImage', label: 'University Identity Card', type: 'file', required: true, accept: 'image/*' },
+  { name: 'universityCardImage', label: 'Institution Identity Card', type: 'file', required: true, accept: 'image/*' },
   { name: 'address', label: 'Address', type: 'text', required: true, placeholder: 'Enter your full address' },
 ];
 
@@ -88,6 +88,32 @@ function getDefaultFieldsForEvent(ev: EventCatalogItem): FieldSet {
 
 function getEventFields(ev: EventCatalogItem): FieldSet {
   return EVENT_CUSTOM_FIELDS[ev.id] || getDefaultFieldsForEvent(ev);
+}
+
+// Team size configuration for events
+interface TeamSizeConfig {
+  min: number;
+  max: number;
+}
+
+const TEAM_SIZE_CONFIG: Record<string, TeamSizeConfig> = {
+  'RAMPWALK - PANACHE': { min: 7, max: 18 },
+  'DANCE BATTLE': { min: 6, max: 12 },
+  'ECHOES OF NOOR': { min: 1, max: 2 },
+  'VERSEVAAD': { min: 1, max: 2 },
+  'BANDJAM': { min: 4, max: 8 },
+  'VALORANT TOURNAMENT': { min: 5, max: 5 }, // Fixed size: exactly 5 members
+  'FREE FIRE TOURNAMENT': { min: 4, max: 4 }, // Fixed size: exactly 4 members
+  'BGMI TOURNAMENT': { min: 4, max: 5 } // Variable: 4-5 members
+};
+
+function getTeamSizeConfig(eventTitle: string): TeamSizeConfig | null {
+  return TEAM_SIZE_CONFIG[eventTitle] || null;
+}
+
+function isTeamEvent(eventTitle: string): boolean {
+  const config = getTeamSizeConfig(eventTitle);
+  return config ? config.max > 1 : false;
 }
 
 type Step = 'select' | 'forms' | 'review' | 'payment';
@@ -192,7 +218,7 @@ function CheckoutPageContent() {
     return groups;
   }, [selectedEvents]);
 
-  // For fixed-size teams, pre-populate the member fields when moving to the forms step
+  // Auto-create minimum required team member forms when moving to forms step
   useEffect(() => {
     if (step === 'forms') {
       setTeamMembersBySignature(prev => {
@@ -200,24 +226,33 @@ function CheckoutPageContent() {
         let hasChanged = false;
 
         fieldGroups.forEach(group => {
-          if (updated[group.signature]) return; // Already initialized, skip
-
           const isTeamGroup = group.fields.some(f => f.name === 'teamName');
-          const hasNumMembersField = group.fields.some(f => f.name === 'numMembers');
 
-          if (isTeamGroup && !hasNumMembersField) {
+          if (isTeamGroup) {
             const event = group.events[0];
-            if (event && event.teamSize) {
-              const match = event.teamSize.match(/\d+/);
-              if (match) {
-                const totalSize = parseInt(match[0], 10);
-                const additionalMembers = Math.max(0, totalSize - 1);
-                updated[group.signature] = Array.from({ length: additionalMembers }, () => SOLO_FIELDS.reduce((acc, f) => ({ ...acc, [f.name]: '' }), {}));
-                hasChanged = true;
+            if (event) {
+              const teamConfig = getTeamSizeConfig(event.title);
+              if (teamConfig) {
+                const minMembers = teamConfig.min;
+                // Calculate how many additional member forms we need (-1 because leader is in main form)
+                const requiredAdditionalMembers = Math.max(0, minMembers - 1);
+                
+                // Only auto-create if we don't already have the minimum members
+                if (!updated[group.signature] || updated[group.signature].length < requiredAdditionalMembers) {
+                  updated[group.signature] = Array.from({ length: requiredAdditionalMembers }, (_, index) => 
+                    SOLO_FIELDS.reduce((acc, f) => ({ 
+                      ...acc, 
+                      [f.name]: '', 
+                      _memberIndex: index + 2 // +2 because leader is #1, so members start from #2
+                    }), {})
+                  );
+                  hasChanged = true;
+                }
               }
             }
           }
         });
+        
         return hasChanged ? updated : prev;
       });
     }
@@ -546,7 +581,7 @@ function CheckoutPageContent() {
         if (!derivedName && data['name']) derivedName = data['name'];
         if (!derivedEmail && data['collegeMailId']) derivedEmail = data['collegeMailId'];
         const files = filesBySignature[group.signature] || {};
-        // Prefer a university card image if present, else take the first file in the group
+        // Prefer an institution card image if present, else take the first file in the group
         if (!attachedImage) {
           if (files['universityCardImage']) attachedImage = files['universityCardImage'];
           else {
@@ -1020,18 +1055,37 @@ function CheckoutPageContent() {
                             <div className="flex items-center justify-between mb-3">
                               <h4 className="font-semibold text-cyan-200">Team Members</h4>
                               <div className="flex gap-2">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setTeamMembersBySignature(prev => ({
-                                      ...prev,
-                                      [group.signature]: [...(prev[group.signature] || []), SOLO_FIELDS.reduce((acc, f) => ({ ...acc, [f.name]: '' }), {})]
-                                    }));
-                                  }}
-                                  className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 cursor-pointer text-sm"
-                                >
-                                  Add team member
-                                </button>
+                                {(() => {
+                                  const event = group.events[0];
+                                  const teamConfig = event ? getTeamSizeConfig(event.title) : null;
+                                  const currentMemberCount = members.length;
+                                  const currentTotalSize = currentMemberCount + 1; // +1 for leader
+                                  const maxAllowed = teamConfig ? teamConfig.max : Infinity;
+                                  const canAdd = currentTotalSize < maxAllowed;
+                                  
+                                  return (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        if (canAdd) {
+                                          setTeamMembersBySignature(prev => ({
+                                            ...prev,
+                                            [group.signature]: [...(prev[group.signature] || []), SOLO_FIELDS.reduce((acc, f) => ({ ...acc, [f.name]: '' }), {})]
+                                          }));
+                                        }
+                                      }}
+                                      disabled={!canAdd}
+                                      className={`px-3 py-1.5 rounded-lg text-sm ${
+                                        canAdd 
+                                          ? 'bg-white/10 hover:bg-white/15 cursor-pointer' 
+                                          : 'bg-gray-500/20 text-gray-500 cursor-not-allowed'
+                                      }`}
+                                      title={canAdd ? 'Add team member' : `Cannot add - maximum ${maxAllowed} members allowed`}
+                                    >
+                                      Add team member
+                                    </button>
+                                  );
+                                })()}
                                 {members.length > 0 && (
                                   <button
                                     type="button"
@@ -1048,9 +1102,28 @@ function CheckoutPageContent() {
                                 )}
                               </div>
                             </div>
-                            {members.length === 0 && (
-                              <p className="text-xs text-white/60">Click "Add team member" to enter details for each member.</p>
-                            )}
+                            {(() => {
+                              const event = group.events[0];
+                              const teamConfig = event ? getTeamSizeConfig(event.title) : null;
+                              
+                              if (teamConfig) {
+                                return (
+                                  <div className="text-xs text-white/60 space-y-1">
+                                    <p>Team size: {teamConfig.min}{teamConfig.min !== teamConfig.max ? ` - ${teamConfig.max}` : ''} members</p>
+                                    <p>Current: {members.length + 1} members (including team leader)</p>
+                                    {members.length === 0 && teamConfig.min > 1 && (
+                                      <p>⚠️ You need to add {teamConfig.min - 1} more team member(s) to meet minimum requirements.</p>
+                                    )}
+                                  </div>
+                                );
+                              }
+                              
+                              if (members.length === 0) {
+                                return <p className="text-xs text-white/60">Click "Add team member" to enter details for each member.</p>;
+                              }
+                              
+                              return null;
+                            })()}
                             {groupErrors['teamMembers'] && (
                               <div className="text-xs text-pink-400 mb-2">{groupErrors['teamMembers']}</div>
                             )}
@@ -1059,19 +1132,37 @@ function CheckoutPageContent() {
                                 <div key={idx} className="glass rounded-xl p-4 border border-white/10">
                                   <div className="flex justify-between items-center mb-3">
                                     <h5 className="text-sm font-medium text-white/90">Member {idx + 1}</h5>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        setTeamMembersBySignature(prev => {
-                                          const arr = [...(prev[group.signature] || [])];
-                                          arr.splice(idx, 1);
-                                          return { ...prev, [group.signature]: arr };
-                                        });
-                                      }}
-                                      className="px-2 py-1 rounded-md bg-red-500/20 hover:bg-red-500/30 text-red-300 text-xs"
-                                    >
-                                      Remove
-                                    </button>
+                                    {(() => {
+                                      const event = group.events[0];
+                                      const teamConfig = event ? getTeamSizeConfig(event.title) : null;
+                                      const currentMemberCount = members.length;
+                                      const minRequired = teamConfig ? teamConfig.min - 1 : 0; // -1 because leader is in main form
+                                      const canRemove = currentMemberCount > minRequired;
+                                      
+                                      return (
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            if (canRemove) {
+                                              setTeamMembersBySignature(prev => {
+                                                const arr = [...(prev[group.signature] || [])];
+                                                arr.splice(idx, 1);
+                                                return { ...prev, [group.signature]: arr };
+                                              });
+                                            }
+                                          }}
+                                          disabled={!canRemove}
+                                          className={`px-2 py-1 rounded-md text-xs ${
+                                            canRemove 
+                                              ? 'bg-red-500/20 hover:bg-red-500/30 text-red-300 cursor-pointer' 
+                                              : 'bg-gray-500/20 text-gray-500 cursor-not-allowed'
+                                          }`}
+                                          title={canRemove ? 'Remove member' : `Cannot remove - minimum ${teamConfig?.min || 1} members required`}
+                                        >
+                                          Remove
+                                        </button>
+                                      );
+                                    })()}
                                   </div>
                                   <div className="grid md:grid-cols-2 gap-3">
                                     {SOLO_FIELDS.map(field => {

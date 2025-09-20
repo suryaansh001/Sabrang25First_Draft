@@ -355,7 +355,7 @@ export const events: Event[] = [
 		category: 'Fun & Games',
 		description: "Drop into Sabrang's official BGMI tournament, where strategy and skill collide. Squads of four will battle it out in a multi-day event with a unique scoring system that rewards both aggressive play and survival. With bonus points for kill streaks and chicken dinners, only the most versatile team will claim victory. Register your squad, gear up, and get ready for the ultimate battle royale showdown.",
 		rules: [
-			'Team Size: 4 members + 1 support (optional). If all 4 main players are not available and there is no support player, the team will be disqualified.',
+			'Team Size: 4 members (required) + 1 substitute (optional). Maximum 5 players per team.',
 			'Tournament will be played over two days during scheduled slots.',
 			'Emulators and triggers are restricted.',
 			'Participants are responsible for their own devices (phone/tablet), headphones, and registration of IDs.',
@@ -391,6 +391,7 @@ export const events: Event[] = [
 		category: 'Fun & Games',
 		description: "Gear up for Sabrang's official 5v5 Valorant tournament! This high-stakes competition tests your team's strategy, aim, and coordination across a multi-stage format, from group stages to a best-of-five grand final. With strict fair play rules and a professional map veto process, only the most skilled team will emerge as champions.",
 		rules: [
+			'Team Size: 5 members (required) + 1-2 substitutes (optional). Maximum 7 players per team.',
 			'Eligibility: Open to all current students of [College Name]. Participants must have a valid college ID. Teams must register before the deadline (no on-spot entries).',
 			'Team Composition: 5v5 (Main players) + 1-2 substitutes (optional). Team names must be appropriate (offensive names will be rejected).',
 			'Game Settings: Mode: Tournament Mode (Standard Plant/Defuse). Maps: Pre-decided by organizers or picked via veto system. Server: Mumbai (or closest available server).',
@@ -431,6 +432,7 @@ export const events: Event[] = [
 		category: 'Fun & Games',
 		description: "Dive into the ultimate mobile battle royale with Sabrang's official Free Fire Tournament. This is a high-stakes competition where only the sharpest squads will survive. With strict rules against teaming and hacking, and a point system that rewards both placement and kills, your path to victory depends on pure skill and strategy. Join the lobby, prove your worth, and fight for the Booyah!",
 		rules: [
+			'Team Size: 4 members (required) + 1 substitute (optional). Maximum 5 players per team.',
 			'Lobby Joining: Room ID & Password will be shared 10 minutes before the match. Late entry beyond 5 minutes = disqualified for that match. Participants are responsible for their own devices, headphones, and IDs.',
 			'Teaming with opponents is strictly prohibited.',
 			'Hacking/Modding: Any use of third-party tools (APKs, GFX, altered files) or exploitation of bugs will result in an immediate team ban. Suspicious activity can be reported to moderators.',
