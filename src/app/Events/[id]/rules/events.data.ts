@@ -8,6 +8,7 @@ export interface Event {
 	description?: string;
 	rules?: string[];
 	criteria?: Criterion[];
+	prizePool?: string;
 }
 
 export const events: Event[] = [
@@ -16,6 +17,7 @@ export const events: Event[] = [
 		title: 'RAMPWALK - PANACHE',
 		image: '/images/about-section/Panache.png',
 		category: 'Flagship',
+		prizePool: '₹40,000',
 		description: 'The grandest runway event of Sabrang, Panache is where elegance, charisma, and confidence collide. Teams will display original collections or concepts with full choreography, soundtrack, and fashion narratives. Expectations - Glamour, high-stakes competition, and crowd pulling visuals.',
 		rules: [
 			'Team size: 10-20 members.',
@@ -42,6 +44,7 @@ export const events: Event[] = [
 		title: 'BANDJAM',
 		image: '/images/about-section/Bandjam.png',
 		category: 'Flagship',
+		prizePool: '₹25,000',
 		description: "Get ready to experience the electrifying talent of the Band Jam Competition, where instruments roar to life with powerful melodies. This musical face-off will fill the air with rhythm and energy, leaving the audience moved by the magic of sound.",
 		rules: [
 			'Participants must arrive 1 hour before the competition begins.',
@@ -72,6 +75,7 @@ export const events: Event[] = [
 		title: 'DANCE BATTLE',
 		image: '/images/about-section/Dance.png',
 		category: 'Flagship',
+		prizePool: '₹35,000',
 		description: "Get ready for an electrifying crew vs. crew dance showdown! In this high-stakes elimination battle, teams of 6-12 members will face off, showcasing their best choreography and freestyle moves. With strict rules on music, props, and conduct, only the most disciplined and creative crew will be crowned champions. It's a test of skill, synchronization, and raw energy.",
 		rules: [
 			'Team Size: Each team must consist of 6 to 12 members (including performers and backstage help).',
@@ -106,6 +110,7 @@ export const events: Event[] = [
 		title: 'STEP UP',
 		image: '/images/home2.png',
 		category: 'Flagship',
+		prizePool: '₹17,000',
 		description: "Step Up is the ultimate solo dance challenge where individual performers take center stage. This is a test of pure skill, creativity, and stage command. With strict rules and a two-round elimination format, only the most versatile and captivating dancer will rise to the top. Are you ready to own the spotlight?",
 		rules: [
 			'Team Size: Solo (only 1 participant per entry).',
@@ -148,12 +153,13 @@ export const events: Event[] = [
 			}
 		]
 	},
-	{ id: 5, title: 'ECHOES OF NOOR', image: '/images/Logo@2x.png', category: 'Flagship' },
+	{ id: 5, title: 'ECHOES OF NOOR', image: '/images/Logo@2x.png', category: 'Flagship', prizePool: '₹17,000' },
 	{
 		id: 7,
 		title: 'BIDDING BEFORE WICKET',
 		image: '/images/Logo@2x.png',
 		category: 'Fun & Games',
+		prizePool: '₹13,000',
 		description: "Welcome to Bidding Before Wicket, the ultimate cricket strategy showdown! This isn't just an auction; it's a high-stakes battle of wits where you build your dream team with a 100 Cr budget. Navigate the auction with special powers like 'Jump Bidding' and the risky 'Budget Boost'. Qualify through a quiz round, then dominate the auction table to assemble a squad with the highest rating. Do you have what it takes to be a champion owner?",
 		rules: [
 			'SOME POWERS TO MAKE GAME MORE INTRESTING:',
@@ -190,6 +196,7 @@ export const events: Event[] = [
 		title: 'SEAL THE DEAL',
 		image: '/images/Logo@2x.png',
 		category: 'Fun & Games',
+		prizePool: '₹5,000',
 		description: "Welcome to Seal the Deal, a premier trading event designed to challenge and sharpen your financial acumen. This competition offers a unique opportunity to experience the intensity and decision-making rigour of trading in a simulated environment. With a substantial dummy capital and a range of trading strategies, participants will need skill, precision, and strategy to emerge victorious.",
 		rules: [
 			'Team Size: 1 member.',
@@ -229,6 +236,7 @@ export const events: Event[] = [
 		title: 'VERSEVAAD',
 		image: '/images/Logo@2x.png',
 		category: 'Flagship',
+		prizePool: '₹20,000',
 		description: '"Versevaad" is a two-round rap battle event designed to showcase originality, creativity, and improvisational skills. The competition emphasizes clean content, prohibiting any form of vulgarity.',
 		rules: [
 			'Eligibility: Open to all individuals; no age restrictions. Participants must register prior to the event.',
@@ -266,6 +274,7 @@ export const events: Event[] = [
 		title: 'IN CONVERSATION WITH',
 		image: '/images/Logo@2x.png',
 		category: 'Workshops & Talks',
+		prizePool: '₹9,000',
 		description: "Join us for 'In Conversation With,' a curated talk series featuring distinguished guests from the worlds of art, activism, and creation. Listen as they share their personal journeys and behind-the-scenes stories in an intimate setting, followed by an interactive live Q&A session designed to spark ideas and inspire the next generation.",
 		rules: [
 			'Entry is on a first-come, first-served basis due to limited seating.',
@@ -291,6 +300,7 @@ export const events: Event[] = [
 		title: 'CLAY MODELLING',
 		image: '/images/Logo@2x.png',
 		category: 'Creative Arts',
+		prizePool: '₹5,000',
 		description: "Unleash your creativity and bring your imagination to life in our hands-on clay modelling event! This is a solo artist's playground, where you'll have the time, space, and materials to translate a concept from your mind into a tangible piece of art.",
 		rules: [
 			'Team size: 1 member',
@@ -310,6 +320,7 @@ export const events: Event[] = [
 		title: 'FOCUS',
 		image: '/images/Logo@2x.png',
 		category: 'Creative Arts',
+		prizePool: '₹7,000',
 		description: "Bring your vision to life through the lens! FOCUS is a creative photography challenge that pushes you to capture stories, colours, and reflections in their purest form — without heavy edits or digital tricks.",
 		rules: [
 			'Team Size: Solo participation only (1 member per team).',
@@ -353,6 +364,7 @@ export const events: Event[] = [
 		title: 'BGMI TOURNAMENT',
 		image: '/images/Logo@2x.png',
 		category: 'Fun & Games',
+		prizePool: '₹15,000',
 		description: "Drop into Sabrang's official BGMI tournament, where strategy and skill collide. Squads of four will battle it out in a multi-day event with a unique scoring system that rewards both aggressive play and survival. With bonus points for kill streaks and chicken dinners, only the most versatile team will claim victory. Register your squad, gear up, and get ready for the ultimate battle royale showdown.",
 		rules: [
 			'Team Size: 4 members (required) + 1 substitute (optional). Maximum 5 players per team.',
@@ -389,6 +401,7 @@ export const events: Event[] = [
 		title: 'VALORANT TOURNAMENT',
 		image: '/images/Logo@2x.png',
 		category: 'Fun & Games',
+		prizePool: '₹15,000',
 		description: "Gear up for Sabrang's official 5v5 Valorant tournament! This high-stakes competition tests your team's strategy, aim, and coordination across a multi-stage format, from group stages to a best-of-five grand final. With strict fair play rules and a professional map veto process, only the most skilled team will emerge as champions.",
 		rules: [
 			'Team Size: 5 members (required) + 1-2 substitutes (optional). Maximum 7 players per team.',
@@ -430,6 +443,7 @@ export const events: Event[] = [
 		title: 'FREE FIRE TOURNAMENT',
 		image: '/images/Logo@2x.png',
 		category: 'Fun & Games',
+		prizePool: '₹10,000',
 		description: "Dive into the ultimate mobile battle royale with Sabrang's official Free Fire Tournament. This is a high-stakes competition where only the sharpest squads will survive. With strict rules against teaming and hacking, and a point system that rewards both placement and kills, your path to victory depends on pure skill and strategy. Join the lobby, prove your worth, and fight for the Booyah!",
 		rules: [
 			'Team Size: 4 members (required) + 1 substitute (optional). Maximum 5 players per team.',
@@ -468,6 +482,7 @@ export const events: Event[] = [
 		title: 'DUMB SHOW',
 		image: '/images/Schedule.jpg',
 		category: 'Fun & Games',
+		prizePool: '₹9,000',
 		description: "Get ready for a fun and challenging game of silent acting! Dumb Show brings teams together to act out movie names, phrases, or themes without speaking, relying on gestures and body language to communicate. Test your creativity and teamwork as participants race against the clock to guess the correct answer, making for an exciting and laughter-filled experience for everyone involved.",
 		rules: [
 			'Team Size: 3 members. Before starting, each team must introduce themselves with a funny name.',
@@ -507,6 +522,7 @@ export const events: Event[] = [
 		title: 'COURTROOM',
 		image: '/images/Logo@2x.png',
 		category: 'Special Events',
+		prizePool: '₹13,000',
 		description: "Step into the shoes of detectives and unravel a thrilling murder mystery! With twists, turns, and surprising revelations, this event promises to test your problem-solving skills, creativity, and intuition.",
 		rules: [
 			'Team Size: 2 – 4 members',
@@ -548,6 +564,7 @@ export const events: Event[] = [
 		title: 'ART RELAY',
 		image: '/images/Logo@2x.png',
 		category: 'Creative Arts',
+		prizePool: '₹5,000',
 		description: "The Art Relay is a unique event that tests an artist's flexibility and innovative thinking. Participants are tasked with creating a single artwork that evolves through multiple phases based on a series of revealed prompts.",
 		rules: [
 			'Open to all students with a valid ID card',

@@ -572,6 +572,12 @@ export default function EventsPage() {
     return EVENT_CATALOG.find(e => e.id === eventId);
   };
 
+  const getEventPrizePool = (eventId: number) => {
+    // Get prize pool from EVENTS_DATA
+    const eventData = EVENTS_DATA.find(e => e.id === eventId);
+    return eventData?.prizePool;
+  };
+
 
   // If any event is selected, immediately show the overlay and hide everything else
   if (selectedEvent) {
@@ -955,8 +961,26 @@ export default function EventsPage() {
                             </div>
                           </div>
 
-                          {/* Bottom section - Price + Add to cart bar */}
+                          {/* Bottom section - Prize Pool, Price + Add to cart bar */}
                           <div className="relative z-10 flex flex-col justify-end h-full">
+                            {/* Prize Pool Display */}
+                            {getEventPrizePool(event.id) && (
+                              <div className="flex justify-center mb-3">
+                                <div className="relative">
+                                  <div className="text-white text-xs md:text-sm font-bold bg-gradient-to-r from-yellow-500/90 to-amber-600/90 px-3 py-1.5 rounded-full border-2 border-yellow-400/50 shadow-lg backdrop-blur-sm">
+                                    <div className="flex items-center gap-1.5">
+                                      <Crown className="w-3 h-3 md:w-4 md:h-4" />
+                                      <span className="font-extrabold tracking-wide">
+                                        Prize Pool: {getEventPrizePool(event.id)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  {/* Glow effect */}
+                                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/30 to-amber-600/30 rounded-full blur-md animate-pulse" />
+                                </div>
+                              </div>
+                            )}
+                            
                             {/* Price badge (from EVENT_CATALOG if available) */}
                             <div className="flex justify-center mb-2">
                               <div className="text-white text-[10px] md:text-xs font-medium bg-black/40 px-2 py-1 rounded-full border border-white/20">
