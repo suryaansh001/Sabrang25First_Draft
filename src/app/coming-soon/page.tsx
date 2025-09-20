@@ -13,7 +13,7 @@ export default function ComingSoon() {
 
   // Generate consistent random values for floating orbs
   const floatingOrbs = useMemo(() => {
-    return Array.from({ length: 8 }, (_, i) => ({
+    return Array.from({ length: 9 }, (_, i) => ({
       id: i,
       width: 100 + (i * 23.5) % 200,
       height: 100 + (i * 31.2) % 200,
@@ -56,14 +56,14 @@ export default function ComingSoon() {
     return () => clearInterval(interval);
   }, []);
 
-  // Countdown timer to 8pm today
+  // Countdown timer to 9pm today
   useEffect(() => {
     const calculateTimeLeft = () => {
       const now = new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const targetTime = new Date(today.getTime() + 20 * 60 * 60 * 1000); // 8pm (20:00)
+      const targetTime = new Date(today.getTime() + 21 * 60 * 60 * 1000); // 9pm (21:00)
       
-      // If it's already past 8pm today, set target to 8pm tomorrow
+      // If it's already past 9pm today, set target to 9pm tomorrow
       if (now >= targetTime) {
         targetTime.setDate(targetTime.getDate() + 1);
       }
@@ -194,7 +194,7 @@ export default function ComingSoon() {
 
         {/* Countdown Timer */}
         <div className="mb-8">
-          <div className="text-white/80 text-lg mb-4 font-medium">Registration starts at 8:00 PM</div>
+          <div className="text-white/80 text-lg mb-4 font-medium">Registration starts at 9:00 PM</div>
           <div className="flex justify-center items-center space-x-4">
             {/* Hours */}
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
