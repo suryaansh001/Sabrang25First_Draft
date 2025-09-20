@@ -4,7 +4,7 @@ import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Check, Download, Mail, Calendar, MapPin, Home } from 'lucide-react';
-
+import Galaxy from '../../../../components/galaxybg';
 import createApiUrl from '../../../lib/api';
 
 interface PaymentStatusData {
@@ -41,38 +41,79 @@ function PaymentSuccessContent() {
       return;
     }
 
-    // Check payment status
+    // Check payment status and process payment completion
     const checkPaymentStatus = async () => {
       try {
-        // First, trigger verification to persist payment status in DB
-        try {
-          await fetch(createApiUrl(`/api/payments/verify/${orderId}`), {
-            method: 'GET',
-            credentials: 'include'
-          });
-        } catch (e) {
-          // Non-fatal: proceed to fetch status regardless
-        }
-
-        const response = await fetch(createApiUrl(`/api/payments/status/${orderId}`), {
+        // Call the success endpoint to process payment completion and send emails
+        console.log('🔄 Calling success endpoint for orderId:', orderId);
+        const successResponse = await fetch(createApiUrl(`/api/payments/success/${orderId}`), {
           method: 'GET',
           credentials: 'include'
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to check payment status');
+        if (!successResponse.ok) {
+          throw new Error('Failed to process payment completion');
         }
 
-        const data = await response.json();
+        const successData = await successResponse.json();
+        console.log('✅ Success endpoint response:', successData);
         
-        if (!data.success) {
-          throw new Error(data.message || 'Failed to get payment status');
+        if (!successData.success) {
+          throw new Error(successData.message || 'Failed to process payment completion');
         }
 
-        setPaymentData(data.data);
+        // If payment is completed, get the full status
+        if (successData.purchase?.status === 'completed') {
+          const statusResponse = await fetch(createApiUrl(`/api/payments/status/${orderId}`), {
+            method: 'GET',
+            credentials: 'include'
+          });
+
+          if (statusResponse.ok) {
+            const statusData = await statusResponse.json();
+            if (statusData.success) {
+              setPaymentData(statusData.data);
+            } else {
+              // Fallback to success data
+              setPaymentData({
+                orderId: orderId,
+                paymentStatus: 'completed',
+                totalAmount: 0,
+                items: [{ itemName: 'Payment', price: 0 }],
+                userRegistered: true,
+                qrGenerated: true,
+                emailSent: true,
+                user: successData.user
+              });
+            }
+          } else {
+            // Fallback to success data
+            setPaymentData({
+              orderId: orderId,
+              paymentStatus: 'completed',
+              totalAmount: 0,
+              items: [{ itemName: 'Payment', price: 0 }],
+              userRegistered: true,
+              qrGenerated: true,
+              emailSent: true,
+              user: successData.user
+            });
+          }
+        } else {
+          // Payment still pending
+          setPaymentData({
+            orderId: orderId,
+            paymentStatus: 'pending',
+            totalAmount: 0,
+            items: [{ itemName: 'Payment', price: 0 }],
+            userRegistered: false,
+            qrGenerated: false,
+            emailSent: false
+          });
+        }
       } catch (err) {
-        console.error('Payment status check error:', err);
-        setError(err instanceof Error ? err.message : 'Failed to check payment status');
+        console.error('Payment processing error:', err);
+        setError(err instanceof Error ? err.message : 'Failed to process payment');
       } finally {
         setLoading(false);
       }
@@ -112,6 +153,7 @@ function PaymentSuccessContent() {
     return (
       <div className="min-h-screen text-white flex items-center justify-center">
         <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-neutral-950 to-black">
+          <Galaxy transparent={true} mouseInteraction={false} density={1} glowIntensity={0.35} saturation={0.15} rotationSpeed={0.05} twinkleIntensity={0.4} autoCenterRepulsion={0.1} />
           <div className="absolute inset-0 bg-black/40"></div>
         </div>
         <div className="text-center">
@@ -126,6 +168,7 @@ function PaymentSuccessContent() {
     return (
       <div className="min-h-screen text-white flex items-center justify-center">
         <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-neutral-950 to-black">
+          <Galaxy transparent={true} mouseInteraction={false} density={1} glowIntensity={0.35} saturation={0.15} rotationSpeed={0.05} twinkleIntensity={0.4} autoCenterRepulsion={0.1} />
           <div className="absolute inset-0 bg-black/40"></div>
         </div>
         <div className="text-center max-w-md mx-auto px-6">
@@ -147,6 +190,7 @@ function PaymentSuccessContent() {
     return (
       <div className="min-h-screen text-white flex items-center justify-center">
         <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-neutral-950 to-black">
+          <Galaxy transparent={true} mouseInteraction={false} density={1} glowIntensity={0.35} saturation={0.15} rotationSpeed={0.05} twinkleIntensity={0.4} autoCenterRepulsion={0.1} />
           <div className="absolute inset-0 bg-black/40"></div>
         </div>
         <div className="text-center">
@@ -160,6 +204,7 @@ function PaymentSuccessContent() {
     <div className="min-h-screen text-white">
       {/* Background */}
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-neutral-950 to-black">
+        <Galaxy transparent={true} mouseInteraction={false} density={1} glowIntensity={0.35} saturation={0.15} rotationSpeed={0.05} twinkleIntensity={0.4} autoCenterRepulsion={0.1} />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(147,51,234,0.08),transparent_70%)]"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(59,130,246,0.06),transparent_70%)]"></div>
         <div className="absolute inset-0 bg-black/40"></div>
