@@ -9,6 +9,7 @@ export default function ComingSoon() {
   
   const text = "Registration Start Soon";
   const [progress, setProgress] = useState(0);
+  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
 
   // Generate consistent random values for floating orbs
   const floatingOrbs = useMemo(() => {
@@ -53,6 +54,37 @@ export default function ComingSoon() {
       });
     }, 50);
     return () => clearInterval(interval);
+  }, []);
+
+  // Countdown timer to 8pm today
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const targetTime = new Date(today.getTime() + 20 * 60 * 60 * 1000); // 8pm (20:00)
+      
+      // If it's already past 8pm today, set target to 8pm tomorrow
+      if (now >= targetTime) {
+        targetTime.setDate(targetTime.getDate() + 1);
+      }
+      
+      const difference = targetTime.getTime() - now.getTime();
+      
+      if (difference > 0) {
+        const hours = Math.floor(difference / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+        
+        setTimeLeft({ hours, minutes, seconds });
+      } else {
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
+    
+    return () => clearInterval(timer);
   }, []);
 
   return (
@@ -157,6 +189,42 @@ export default function ComingSoon() {
                 background: "linear-gradient(to bottom, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4)"
               }}
             />
+          </div>
+        </div>
+
+        {/* Countdown Timer */}
+        <div className="mb-8">
+          <div className="text-white/80 text-lg mb-4 font-medium">Registration starts at 8:00 PM</div>
+          <div className="flex justify-center items-center space-x-4">
+            {/* Hours */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+              <div className="text-3xl md:text-4xl font-bold text-white">
+                {timeLeft.hours.toString().padStart(2, '0')}
+              </div>
+              <div className="text-xs text-white/60 uppercase tracking-wider">Hours</div>
+            </div>
+            
+            {/* Separator */}
+            <div className="text-2xl md:text-3xl font-bold text-white/60">:</div>
+            
+            {/* Minutes */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+              <div className="text-3xl md:text-4xl font-bold text-white">
+                {timeLeft.minutes.toString().padStart(2, '0')}
+              </div>
+              <div className="text-xs text-white/60 uppercase tracking-wider">Minutes</div>
+            </div>
+            
+            {/* Separator */}
+            <div className="text-2xl md:text-3xl font-bold text-white/60">:</div>
+            
+            {/* Seconds */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+              <div className="text-3xl md:text-4xl font-bold text-white">
+                {timeLeft.seconds.toString().padStart(2, '0')}
+              </div>
+              <div className="text-xs text-white/60 uppercase tracking-wider">Seconds</div>
+            </div>
           </div>
         </div>
       </div>

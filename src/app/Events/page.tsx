@@ -775,7 +775,7 @@ export default function EventsPage() {
             className="hidden lg:fixed lg:top-6 lg:right-[360px] lg:z-50 lg:block"
           >
             <button
-              onClick={() => router.push(`/checkout?selected=${cartIds.join(',')}`)}
+              onClick={() => router.push('/coming-soon')}
               className="relative px-4 py-2 rounded-2xl bg-black/60 backdrop-blur-md border border-white/20 text-white hover:bg-white/10 transition cursor-pointer"
             >
               <span className="mr-2">Cart</span>
@@ -1010,7 +1010,7 @@ export default function EventsPage() {
           {/* Mobile cart button at top-right with 100px right padding */}
           <button
             aria-label="Open cart"
-            onClick={() => router.push(`/checkout?selected=${cartIds.join(',')}`)}
+            onClick={() => router.push('/coming-soon')}
             className={`lg:hidden fixed top-4 right-[100px] z-50 w-12 h-12 rounded-full flex items-center justify-center text-white active:scale-95 transition shadow-xl ${cartIds.length ? 'bg-gradient-to-r from-purple-600 to-pink-600 ring-2 ring-white/20' : 'bg-black/60 backdrop-blur-md border border-white/20 hover:bg-white/10'}`}
           >
             <div className="relative">
