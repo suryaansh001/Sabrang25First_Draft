@@ -928,13 +928,13 @@ export default function EventsPage() {
                             )}
                           </div>
 
-                          {/* Center - Mysterious title with glitch effect */}
-                          <div className="flex-grow flex items-center justify-center text-center relative z-10">
-                            <div className="relative">
+                          {/* Center - Event name positioned in middle only */}
+                          <div className="absolute inset-0 flex items-center justify-center z-10">
+                            <div className="relative text-center">
                               {/* Glitch overlay effect */}
                               <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 via-transparent to-red-400/20 animate-pulse opacity-50" />
                               
-                              {/* Main title with neon effect */}
+                              {/* Main title with neon effect - middle position only */}
                               <h3 className="relative font-bold text-sm md:text-lg lg:text-xl text-white px-1 md:px-2 uppercase tracking-widest leading-tight" 
                                   style={{ 
                                     textShadow: '0 0 10px rgba(0, 255, 136, 0.8), 0 0 20px rgba(0, 255, 136, 0.4)',
@@ -950,24 +950,23 @@ export default function EventsPage() {
                           </div>
 
                           {/* Bottom section - Price + Add to cart bar */}
-                          <div className="relative z-10 text-center space-y-2 md:space-y-3">
-                            <div className="flex items-center justify-center space-x-2">
-                              <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-green-400 rounded-full animate-ping" />
-                            </div>
+                          <div className="relative z-10 flex flex-col justify-end h-full">
                             {/* Price badge (from EVENT_CATALOG if available) */}
-                            <div className="flex justify-center mb-8">
-                              <div className="text-white text-[10px] md:text-xs">
+                            <div className="flex justify-center mb-2">
+                              <div className="text-white text-[10px] md:text-xs font-medium bg-black/40 px-2 py-1 rounded-full border border-white/20">
                                 {catalogById.get(event.id)?.price || event.price}
                               </div>
                             </div>
-                            <div className="absolute inset-x-0 bottom-0 px-2 md:px-3 py-2 bg-gradient-to-t from-black/85 via-black/60 to-transparent">
+                            
+                            {/* Add to cart button */}
+                            <div className="px-2 md:px-3 py-2 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
                               <button
                                 type="button"
                                 onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }}
-                                className={`mx-auto flex items-center justify-center gap-2 rounded-full px-3 py-1.5 md:px-4 md:py-2 border text-[10px] md:text-xs transition-all duration-200 cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/30 border-purple-400/60 text-white shadow-[0_0_12px_rgba(168,85,247,0.45)]' : 'bg-white/10 border-white/30 text-white/90 hover:bg-white/15'}`}
+                                className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs transition-all duration-200 cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/30 border-purple-400/60 text-white shadow-[0_0_12px_rgba(168,85,247,0.45)]' : 'bg-white/10 border-white/30 text-white/90 hover:bg-white/15'}`}
                                 aria-pressed={cartIds.includes(event.id)}
                               >
-                                <span className={`inline-block w-3.5 h-3.5 md:w-4 md:h-4 rounded-full ring-1 ${cartIds.includes(event.id) ? 'bg-purple-500 ring-purple-300' : 'bg-transparent ring-white/40'}`}></span>
+                                <span className={`inline-block w-3 h-3 md:w-4 md:h-4 rounded-full ring-1 ${cartIds.includes(event.id) ? 'bg-purple-500 ring-purple-300' : 'bg-transparent ring-white/40'}`}></span>
                                 <span className="uppercase tracking-wider" style={{ fontFamily: 'monospace' }}>
                                   {cartIds.includes(event.id) ? 'Added' : 'Add to cart'}
                                 </span>
