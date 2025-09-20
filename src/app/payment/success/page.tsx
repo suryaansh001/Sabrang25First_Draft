@@ -44,6 +44,16 @@ function PaymentSuccessContent() {
     // Check payment status
     const checkPaymentStatus = async () => {
       try {
+        // First, trigger verification to persist payment status in DB
+        try {
+          await fetch(createApiUrl(`/api/payments/verify/${orderId}`), {
+            method: 'GET',
+            credentials: 'include'
+          });
+        } catch (e) {
+          // Non-fatal: proceed to fetch status regardless
+        }
+
         const response = await fetch(createApiUrl(`/api/payments/status/${orderId}`), {
           method: 'GET',
           credentials: 'include'
