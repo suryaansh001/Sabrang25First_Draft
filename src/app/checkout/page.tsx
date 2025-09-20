@@ -82,7 +82,7 @@ function getDefaultFieldsForEvent(ev: EventCatalogItem): FieldSet {
   // Restore team-specific forms for relevant events
   if (ev.title.includes('VALORANT')) return TEAM_ESPORTS_FIELDS;
   if (ev.title.includes('BGMI') || ev.title.includes('FREE FIRE')) return SQUAD_ESPORTS_FIELDS;
-  if (ev.title.includes('RAMPWALK') || ev.title.includes('DANCE') || ev.title.includes('DUMB SHOW') || ev.title.includes('COURTROOM')) return TEAM_FIELDS;
+  if (ev.title.includes('RAMPWALK') || ev.title.includes('DANCE') || ev.title.includes('BANDJAM') || ev.title.includes('DUMB SHOW') || ev.title.includes('COURTROOM')) return TEAM_FIELDS;
   return SOLO_FIELDS;
 }
 
