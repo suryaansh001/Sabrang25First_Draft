@@ -188,7 +188,7 @@ function CheckoutPageContent() {
     setReducedMotion(true);
   }, []);
 
-  // Preselect events passed via query param selected=1,2,3
+  // Preselect events passed via query param selected=1,2,3 or from localStorage cart
   useEffect(() => {
     const selectedParam = searchParams.get('selected');
     if (selectedParam) {
@@ -197,8 +197,27 @@ function CheckoutPageContent() {
         .map(s => parseInt(s.trim(), 10))
         .filter(n => !Number.isNaN(n));
       if (ids.length) setSelectedEventIds(ids);
+    } else {
+      // Fallback to localStorage cart if no URL parameters
+      try {
+        const raw = localStorage.getItem('sabrang_cart');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            const ids = parsed.map(n => parseInt(String(n), 10)).filter(n => !Number.isNaN(n));
+            if (ids.length) setSelectedEventIds(ids);
+          }
+        }
+      } catch {}
     }
   }, [searchParams]);
+
+  // Sync selected events to localStorage cart
+  useEffect(() => {
+    try {
+      localStorage.setItem('sabrang_cart', JSON.stringify(selectedEventIds));
+    } catch {}
+  }, [selectedEventIds]);
 
   const selectedEvents = useMemo(() => EVENT_CATALOG.filter(e => selectedEventIds.includes(e.id)), [selectedEventIds]);
 
@@ -847,7 +866,14 @@ function CheckoutPageContent() {
                       <p className="text-sm text-yellow-200">
                         <strong>Notice:</strong> Event registration is currently disabled. You can browse events but checkout is not available yet.
                       </p>
-                            </div>
+                    </div>
+                    {selectedEventIds.length > 0 && (
+                      <div className="bg-green-500/15 border border-green-400/40 rounded-lg p-4 mb-6 shadow-[0_0_20px_rgba(34,197,94,0.2)]">
+                        <p className="text-sm text-green-200">
+                          <strong>✓ Cart Loaded:</strong> {selectedEventIds.length} event{selectedEventIds.length !== 1 ? 's' : ''} from your cart {selectedEventIds.length === 1 ? 'has' : 'have'} been automatically selected.
+                        </p>
+                      </div>
+                    )}
                     <h2 className="text-xl font-semibold mb-6 title-chroma">Choose Your Events</h2>
                     {Array.from(eventsByCategory.entries()).map(([category, events]) => (
                       <div key={category} className="mb-8">
