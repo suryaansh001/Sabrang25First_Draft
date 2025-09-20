@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaDownload, FaQrcode, FaUser, FaEnvelope, FaUsers, FaSearch } from 'react-icons/fa';
+import { FaDownload, FaQrcode, FaUser, FaEnvelope, FaUsers, FaSearch, FaShieldAlt, FaClock } from 'react-icons/fa';
 import createApiUrl from '../../lib/api';
 
 interface TeamMember {
@@ -46,22 +46,91 @@ interface TeamData {
 
 function TicketPage() {
   const [email, setEmail] = useState('');
+  const [otp, setOtp] = useState('');
   const [teamData, setTeamData] = useState<TeamData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [accessToken, setAccessToken] = useState('');
   const [error, setError] = useState('');
   const [downloadingIds, setDownloadingIds] = useState<Set<string>>(new Set());
+  const [otpLoading, setOtpLoading] = useState(false);
 
-  const handleSearch = async (e: React.FormEvent) => {
+  const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) {
       setError('Please enter an email address');
       return;
     }
 
+    setOtpLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(createApiUrl('/api/send-ticket-otp'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ email: email.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to send OTP');
+      }
+
+      setOtpSent(true);
+      setError('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to send OTP');
+      console.error('Error sending OTP:', err);
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const handleVerifyOTP = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!otp.trim()) {
+      setError('Please enter the OTP');
+      return;
+    }
+
     setLoading(true);
     setError('');
-    setTeamData(null);
 
+    try {
+      const response = await fetch(createApiUrl('/api/verify-ticket-otp'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ email: email.trim(), otp: otp.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to verify OTP');
+      }
+
+      setAccessToken(data.accessToken);
+      setOtpVerified(true);
+      await fetchTeamData(data.accessToken);
+
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to verify OTP');
+      console.error('Error verifying OTP:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchTeamData = async (token: string) => {
     try {
       const response = await fetch(createApiUrl('/api/team-by-email'), {
         method: 'POST',
@@ -69,7 +138,7 @@ function TicketPage() {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({ accessToken: token }),
       });
 
       if (!response.ok) {
@@ -82,9 +151,14 @@ function TicketPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch team data');
       console.error('Error fetching team data:', err);
-    } finally {
-      setLoading(false);
     }
+  };
+
+  const handleResendOTP = async () => {
+    setOtp('');
+    setOtpSent(false);
+    setError('');
+    await handleSendOTP({ preventDefault: () => {} } as React.FormEvent);
   };
 
   const downloadQRCode = async (memberId: string, memberName: string) => {
@@ -126,6 +200,16 @@ function TicketPage() {
     }
   };
 
+  const resetForm = () => {
+    setEmail('');
+    setOtp('');
+    setOtpSent(false);
+    setOtpVerified(false);
+    setAccessToken('');
+    setTeamData(null);
+    setError('');
+  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white py-8 px-4">
@@ -138,53 +222,143 @@ function TicketPage() {
           className="text-center mb-8"
         >
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-            Team Tickets
+            Secure Ticket Access
           </h1>
           <p className="text-gray-400 text-lg">
-            Enter team leader email to view and download QR codes for all team members
+            Enter your email to receive an OTP and securely access your Sabrang'25 tickets
           </p>
         </motion.div>
 
-        {/* Search Form */}
+        {/* Search/OTP Form */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
           className="bg-white/10 backdrop-blur-md rounded-xl p-6 mb-8"
         >
-          <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <label htmlFor="email" className="block text-sm font-medium mb-2">
-                Team Leader Email
-              </label>
-              <div className="relative">
-                <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="email"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter team leader email address"
-                  className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
+          {!otpSent ? (
+            /* Email Input Form */
+            <form onSubmit={handleSendOTP} className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <label htmlFor="email" className="block text-sm font-medium mb-2">
+                  Team Leader Email
+                </label>
+                <div className="relative">
+                  <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter team leader email address"
+                    className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                    disabled={otpLoading}
+                  />
+                </div>
+              </div>
+              <div className="flex items-end">
+                <button
+                  type="submit"
+                  disabled={otpLoading}
+                  className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-6 py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors"
+                >
+                  {otpLoading ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  ) : (
+                    <FaShieldAlt />
+                  )}
+                  <span>{otpLoading ? 'Sending OTP...' : 'Send OTP'}</span>
+                </button>
+              </div>
+            </form>
+          ) : !otpVerified ? (
+            /* OTP Verification Form */
+            <div>
+              <div className="mb-4 p-4 bg-green-500/20 border border-green-500/50 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <FaShieldAlt className="text-green-400" />
+                  <p className="text-green-300">
+                    OTP sent to {email}. Please check your email and enter the 6-digit code below.
+                  </p>
+                </div>
+              </div>
+              
+              <form onSubmit={handleVerifyOTP} className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                  <label htmlFor="otp" className="block text-sm font-medium mb-2">
+                    Enter OTP
+                  </label>
+                  <div className="relative">
+                    <FaShieldAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="text"
+                      id="otp"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                      placeholder="Enter 6-digit OTP"
+                      className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-xl tracking-widest"
+                      required
+                      maxLength={6}
+                      disabled={loading}
+                    />
+                  </div>
+                </div>
+                <div className="flex items-end space-x-2">
+                  <button
+                    type="submit"
+                    disabled={loading || otp.length !== 6}
+                    className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 px-6 py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors"
+                  >
+                    {loading ? (
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    ) : (
+                      <FaSearch />
+                    )}
+                    <span>{loading ? 'Verifying...' : 'Verify & View'}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleResendOTP}
+                    disabled={otpLoading}
+                    className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 px-4 py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors"
+                  >
+                    {otpLoading ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    ) : (
+                      <FaClock />
+                    )}
+                    <span>{otpLoading ? 'Sending...' : 'Resend'}</span>
+                  </button>
+                </div>
+              </form>
+              
+              <div className="mt-4 text-sm text-gray-400">
+                <p>• OTP is valid for 10 minutes</p>
+                <p>• Maximum 3 attempts allowed</p>
+                <p>• Check your spam folder if you don't see the email</p>
               </div>
             </div>
-            <div className="flex items-end">
+          ) : (
+            /* Verified State */
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                  <FaShieldAlt className="text-white text-sm" />
+                </div>
+                <div>
+                  <p className="text-green-400 font-medium">Email Verified</p>
+                  <p className="text-sm text-gray-400">{email}</p>
+                </div>
+              </div>
               <button
-                type="submit"
-                disabled={loading}
-                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-6 py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors"
+                onClick={resetForm}
+                className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg text-sm transition-colors"
               >
-                {loading ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                ) : (
-                  <FaSearch />
-                )}
-                <span>{loading ? 'Searching...' : 'Search Team'}</span>
+                Search Different Email
               </button>
             </div>
-          </form>
+          )}
 
           {error && (
             <motion.div
@@ -198,7 +372,7 @@ function TicketPage() {
         </motion.div>
 
         {/* Team Data Display */}
-        {teamData && (
+        {otpVerified && teamData && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
