@@ -118,7 +118,6 @@ export default function RootLayout({
             <div className="min-h-screen flex flex-col">
               <AppShell>{children}</AppShell>
               <FooterStrip />
-              <ChatbotContent />
               
             </div>
           

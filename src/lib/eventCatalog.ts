@@ -40,7 +40,7 @@ const rawEventCatalog: Omit<EventCatalogItem, 'time12hr' | 'endTime12hr' | 'team
   { id: 15, title: 'FREE FIRE TOURNAMENT', price: 'Per Participant ₹199', category: 'Fun & Games', date: '30.12.2024', time: '10:00', endTime: '18:00' },
   { id: 17, title: 'DUMB SHOW', price: 'Per Participant ₹199', category: 'Fun & Games', date: '31.12.2024', time: '19:00', endTime: '21:00' },
   { id: 18, title: 'COURTROOM', price: 'Per Participant ₹199', category: 'Special Events', date: '01.01.2025', time: '14:00', endTime: '16:00' },
-  { id: 19, title: 'DEMO ART RELAY', price: 'Per Participant ₹1', category: 'Creative Arts', date: '02.01.2025', time: '10:00', endTime: '12:00' }
+  { id: 19, title: 'ART RELAY', price: 'Per Participant ₹199', category: 'Creative Arts', date: '02.01.2025', time: '10:00', endTime: '12:00' }
 ];
 
 const findTeamSizeRule = (rules: string[] | undefined): string | undefined => {
