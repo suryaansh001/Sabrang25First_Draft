@@ -4,7 +4,7 @@ import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Check, Download, Mail, Calendar, MapPin, Home } from 'lucide-react';
-import Galaxy from '../../../../components/galaxybg';
+
 import createApiUrl from '../../../lib/api';
 
 interface PaymentStatusData {
@@ -112,7 +112,6 @@ function PaymentSuccessContent() {
     return (
       <div className="min-h-screen text-white flex items-center justify-center">
         <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-neutral-950 to-black">
-          <Galaxy transparent={true} mouseInteraction={false} density={1} glowIntensity={0.35} saturation={0.15} rotationSpeed={0.05} twinkleIntensity={0.4} autoCenterRepulsion={0.1} />
           <div className="absolute inset-0 bg-black/40"></div>
         </div>
         <div className="text-center">
@@ -127,7 +126,6 @@ function PaymentSuccessContent() {
     return (
       <div className="min-h-screen text-white flex items-center justify-center">
         <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-neutral-950 to-black">
-          <Galaxy transparent={true} mouseInteraction={false} density={1} glowIntensity={0.35} saturation={0.15} rotationSpeed={0.05} twinkleIntensity={0.4} autoCenterRepulsion={0.1} />
           <div className="absolute inset-0 bg-black/40"></div>
         </div>
         <div className="text-center max-w-md mx-auto px-6">
@@ -149,7 +147,6 @@ function PaymentSuccessContent() {
     return (
       <div className="min-h-screen text-white flex items-center justify-center">
         <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-neutral-950 to-black">
-          <Galaxy transparent={true} mouseInteraction={false} density={1} glowIntensity={0.35} saturation={0.15} rotationSpeed={0.05} twinkleIntensity={0.4} autoCenterRepulsion={0.1} />
           <div className="absolute inset-0 bg-black/40"></div>
         </div>
         <div className="text-center">
@@ -163,7 +160,6 @@ function PaymentSuccessContent() {
     <div className="min-h-screen text-white">
       {/* Background */}
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-neutral-950 to-black">
-        <Galaxy transparent={true} mouseInteraction={false} density={1} glowIntensity={0.35} saturation={0.15} rotationSpeed={0.05} twinkleIntensity={0.4} autoCenterRepulsion={0.1} />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(147,51,234,0.08),transparent_70%)]"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(59,130,246,0.06),transparent_70%)]"></div>
         <div className="absolute inset-0 bg-black/40"></div>
