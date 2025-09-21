@@ -21,33 +21,57 @@ interface TeamMember {
   events: string[];
 }
 
-interface TeamData {
-  teamId: string;
-  mainPerson: {
+interface Registration {
+  id: string;
+  type: 'individual' | 'team-leader' | 'team-member';
+  registrationId?: string;
+  registrationDate?: string;
+  registrationCount?: number;
+  name: string;
+  email: string;
+  contactNo: string;
+  gender: string;
+  age: number;
+  universityName: string;
+  address: string;
+  profileImage: string;
+  qrPath: string;
+  qrCodeBase64: string;
+  hasEntered: boolean;
+  entryTime: string | null;
+  events: string[];
+  registeredEvents: any[];
+  finalPrice?: number;
+  
+  // For team leader registrations
+  teamMembers?: TeamMember[];
+  teamSize?: number;
+  
+  // For team member registrations
+  teamLeader?: {
     id: string;
     name: string;
     email: string;
-    contactNo: string;
-    gender: string;
-    age: number;
-    universityName: string;
-    address: string;
-    profileImage: string;
-    qrPath: string;
-    qrCodeBase64: string;
-    hasEntered: boolean;
-    entryTime: string | null;
-    events: string[];
+    registrationId: string;
   };
-  teamMembers: TeamMember[];
-  teamSize: number;
-  registeredEvents: any[];
+  allTeamMembers?: TeamMember[];
+}
+
+interface RegistrationsData {
+  registrations: Registration[];
+  summary: {
+    totalRegistrations: number;
+    individualRegistrations: number;
+    teamLeaderRegistrations: number;
+    teamMemberRegistrations: number;
+    accessedBy: string;
+  };
 }
 
 function TicketPage() {
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
-  const [teamData, setTeamData] = useState<TeamData | null>(null);
+  const [registrationsData, setRegistrationsData] = useState<RegistrationsData | null>(null);
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
@@ -143,14 +167,14 @@ function TicketPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch team data');
+        throw new Error(errorData.message || 'Failed to fetch registration data');
       }
 
       const data = await response.json();
-      setTeamData(data.team);
+      setRegistrationsData(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch team data');
-      console.error('Error fetching team data:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch registration data');
+      console.error('Error fetching registration data:', err);
     }
   };
 
@@ -206,7 +230,7 @@ function TicketPage() {
     setOtpSent(false);
     setOtpVerified(false);
     setAccessToken('');
-    setTeamData(null);
+    setRegistrationsData(null);
     setError('');
   };
 
@@ -371,149 +395,345 @@ function TicketPage() {
           )}
         </motion.div>
 
-        {/* Team Data Display */}
-        {otpVerified && teamData && (
+        {/* Registration Data Display */}
+        {otpVerified && registrationsData && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
             className="space-y-6"
           >
-            {/* Team Overview */}
+            {/* Summary Overview */}
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-6">
               <div className="mb-4">
-                <h2 className="text-2xl font-bold mb-2">Team Overview</h2>
+                <h2 className="text-2xl font-bold mb-2">Your Registrations</h2>
                 <p className="text-gray-400">
-                  Team Size: {teamData.teamSize} members
+                  Found {registrationsData.summary.totalRegistrations} registration(s) for {registrationsData.summary.accessedBy}
                 </p>
               </div>
 
-              {/* Registered Events */}
-              {teamData.registeredEvents.length > 0 && (
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold mb-2">Registered Events:</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {teamData.registeredEvents.map((event, index) => (
-                      <span
-                        key={index}
-                        className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm"
-                      >
-                        {event.name}
-                      </span>
-                    ))}
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-blue-500/20 text-blue-300 p-4 rounded-lg text-center">
+                  <div className="text-2xl font-bold">{registrationsData.summary.individualRegistrations}</div>
+                  <div className="text-sm">Individual</div>
                 </div>
-              )}
-            </div>
-
-            {/* Team Leader */}
-            <div className="bg-white/10 backdrop-blur-md rounded-xl p-6">
-              <h3 className="text-xl font-bold mb-4 flex items-center space-x-2">
-                <FaUser className="text-yellow-400" />
-                <span>Team Leader</span>
-              </h3>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <p><span className="font-semibold">Name:</span> {teamData.mainPerson.name}</p>
-                  <p><span className="font-semibold">Email:</span> {teamData.mainPerson.email}</p>
-                  <p><span className="font-semibold">Contact:</span> {teamData.mainPerson.contactNo || 'N/A'}</p>
-                  <p><span className="font-semibold">University:</span> {teamData.mainPerson.universityName || 'N/A'}</p>
-                  <p><span className="font-semibold">Status:</span> 
-                    <span className={`ml-2 px-2 py-1 rounded text-xs ${
-                      teamData.mainPerson.hasEntered 
-                        ? 'bg-green-500/20 text-green-300' 
-                        : 'bg-yellow-500/20 text-yellow-300'
-                    }`}>
-                      {teamData.mainPerson.hasEntered ? 'Entered' : 'Not Entered'}
-                    </span>
-                  </p>
+                <div className="bg-green-500/20 text-green-300 p-4 rounded-lg text-center">
+                  <div className="text-2xl font-bold">{registrationsData.summary.teamLeaderRegistrations}</div>
+                  <div className="text-sm">Team Leader</div>
                 </div>
-                <div className="flex flex-col items-center">
-                  <div className="w-32 h-32 bg-white rounded-lg p-2 mb-4">
-                    <img
-                      src={createApiUrl(`/api/qrcode/${teamData.mainPerson.id}`)}
-                      alt="Team Leader QR Code"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <button
-                    onClick={() => downloadQRCode(teamData.mainPerson.id, teamData.mainPerson.name)}
-                    disabled={downloadingIds.has(teamData.mainPerson.id)}
-                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-                  >
-                    {downloadingIds.has(teamData.mainPerson.id) ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    ) : (
-                      <FaDownload />
-                    )}
-                    <span>{downloadingIds.has(teamData.mainPerson.id) ? 'Downloading...' : 'Download QR'}</span>
-                  </button>
+                <div className="bg-purple-500/20 text-purple-300 p-4 rounded-lg text-center">
+                  <div className="text-2xl font-bold">{registrationsData.summary.teamMemberRegistrations}</div>
+                  <div className="text-sm">Team Member</div>
                 </div>
               </div>
             </div>
 
-            {/* Team Members */}
-            {teamData.teamMembers.length > 0 && (
-              <div className="bg-white/10 backdrop-blur-md rounded-xl p-6">
+            {/* Individual Registrations */}
+            {registrationsData.registrations.filter(reg => reg.type === 'individual').map((registration, index) => (
+              <div key={registration.id} className="bg-white/10 backdrop-blur-md rounded-xl p-6">
+                <h3 className="text-xl font-bold mb-4 flex items-center space-x-2">
+                  <FaUser className="text-blue-400" />
+                  <span>Individual Registration #{registration.registrationCount}</span>
+                  {registration.registrationDate && (
+                    <span className="text-sm text-gray-400 ml-2">
+                      ({new Date(registration.registrationDate).toLocaleDateString()})
+                    </span>
+                  )}
+                </h3>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <p><span className="font-semibold">Name:</span> {registration.name}</p>
+                    <p><span className="font-semibold">Email:</span> {registration.email}</p>
+                    <p><span className="font-semibold">Contact:</span> {registration.contactNo || 'N/A'}</p>
+                    <p><span className="font-semibold">University:</span> {registration.universityName || 'N/A'}</p>
+                    {registration.finalPrice && (
+                      <p><span className="font-semibold">Amount Paid:</span> ₹{registration.finalPrice}</p>
+                    )}
+                    <p><span className="font-semibold">Status:</span> 
+                      <span className={`ml-2 px-2 py-1 rounded text-xs ${
+                        registration.hasEntered 
+                          ? 'bg-green-500/20 text-green-300' 
+                          : 'bg-yellow-500/20 text-yellow-300'
+                      }`}>
+                        {registration.hasEntered ? 'Entered' : 'Not Entered'}
+                      </span>
+                    </p>
+                    {registration.events.length > 0 && (
+                      <div>
+                        <span className="font-semibold">Events:</span>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {registration.events.map((event, idx) => (
+                            <span key={idx} className="bg-blue-500/20 text-blue-300 px-2 py-1 rounded text-xs">
+                              {event}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="w-32 h-32 bg-white rounded-lg p-2 mb-4">
+                      <img
+                        src={createApiUrl(`/api/qrcode/${registration.id}`)}
+                        alt="QR Code"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <button
+                      onClick={() => downloadQRCode(registration.id, registration.name)}
+                      disabled={downloadingIds.has(registration.id)}
+                      className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                    >
+                      {downloadingIds.has(registration.id) ? (
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      ) : (
+                        <FaDownload />
+                      )}
+                      <span>{downloadingIds.has(registration.id) ? 'Downloading...' : 'Download QR'}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* Team Leader Registrations */}
+            {registrationsData.registrations.filter(reg => reg.type === 'team-leader').map((registration, index) => (
+              <div key={registration.id} className="bg-white/10 backdrop-blur-md rounded-xl p-6">
                 <h3 className="text-xl font-bold mb-4 flex items-center space-x-2">
                   <FaUsers className="text-green-400" />
-                  <span>Team Members ({teamData.teamMembers.length})</span>
+                  <span>Team Leader Registration #{registration.registrationCount}</span>
+                  {registration.registrationDate && (
+                    <span className="text-sm text-gray-400 ml-2">
+                      ({new Date(registration.registrationDate).toLocaleDateString()})
+                    </span>
+                  )}
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {teamData.teamMembers.map((member) => (
-                    <motion.div
-                      key={member.id}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.3 }}
-                      className="bg-white/5 rounded-lg p-4 border border-white/10"
-                    >
-                      <div className="space-y-2 mb-4">
-                        <p className="font-semibold text-lg">{member.name}</p>
-                        <p className="text-sm text-gray-400">{member.email}</p>
-                        <p className="text-sm">
-                          <span className="font-medium">Contact:</span> {member.contactNo || 'N/A'}
-                        </p>
-                        <p className="text-sm">
-                          <span className="font-medium">University:</span> {member.universityName || 'N/A'}
-                        </p>
-                        <p className="text-sm">
-                          <span className="font-medium">Status:</span>
-                          <span className={`ml-2 px-2 py-1 rounded text-xs ${
-                            member.hasEntered 
-                              ? 'bg-green-500/20 text-green-300' 
-                              : 'bg-yellow-500/20 text-yellow-300'
-                          }`}>
-                            {member.hasEntered ? 'Entered' : 'Not Entered'}
-                          </span>
-                        </p>
-                      </div>
-                      <div className="flex flex-col items-center">
-                        <div className="w-24 h-24 bg-white rounded p-1 mb-3">
-                          <img
-                            src={createApiUrl(`/api/qrcode/${member.id}`)}
-                            alt={`${member.name} QR Code`}
-                            className="w-full h-full object-contain"
-                          />
+                
+                {/* Team Leader Info */}
+                <div className="mb-6">
+                  <h4 className="text-lg font-semibold mb-3 text-yellow-400">Team Leader</h4>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <p><span className="font-semibold">Name:</span> {registration.name}</p>
+                      <p><span className="font-semibold">Email:</span> {registration.email}</p>
+                      <p><span className="font-semibold">Contact:</span> {registration.contactNo || 'N/A'}</p>
+                      <p><span className="font-semibold">University:</span> {registration.universityName || 'N/A'}</p>
+                      <p><span className="font-semibold">Team Size:</span> {registration.teamSize}</p>
+                      {registration.finalPrice && (
+                        <p><span className="font-semibold">Amount Paid:</span> ₹{registration.finalPrice}</p>
+                      )}
+                      <p><span className="font-semibold">Status:</span> 
+                        <span className={`ml-2 px-2 py-1 rounded text-xs ${
+                          registration.hasEntered 
+                            ? 'bg-green-500/20 text-green-300' 
+                            : 'bg-yellow-500/20 text-yellow-300'
+                        }`}>
+                          {registration.hasEntered ? 'Entered' : 'Not Entered'}
+                        </span>
+                      </p>
+                      {registration.events.length > 0 && (
+                        <div>
+                          <span className="font-semibold">Events:</span>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {registration.events.map((event, idx) => (
+                              <span key={idx} className="bg-green-500/20 text-green-300 px-2 py-1 rounded text-xs">
+                                {event}
+                              </span>
+                            ))}
+                          </div>
                         </div>
-                        <button
-                          onClick={() => downloadQRCode(member.id, member.name)}
-                          disabled={downloadingIds.has(member.id)}
-                          className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-3 py-2 rounded-lg flex items-center space-x-2 transition-colors text-sm"
-                        >
-                          {downloadingIds.has(member.id) ? (
-                            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
-                          ) : (
-                            <FaDownload />
-                          )}
-                          <span>{downloadingIds.has(member.id) ? 'Downloading...' : 'Download'}</span>
-                        </button>
+                      )}
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <div className="w-32 h-32 bg-white rounded-lg p-2 mb-4">
+                        <img
+                          src={createApiUrl(`/api/qrcode/${registration.id}`)}
+                          alt="Team Leader QR Code"
+                          className="w-full h-full object-contain"
+                        />
                       </div>
-                    </motion.div>
-                  ))}
+                      <button
+                        onClick={() => downloadQRCode(registration.id, registration.name)}
+                        disabled={downloadingIds.has(registration.id)}
+                        className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                      >
+                        {downloadingIds.has(registration.id) ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        ) : (
+                          <FaDownload />
+                        )}
+                        <span>{downloadingIds.has(registration.id) ? 'Downloading...' : 'Download QR'}</span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
+
+                {/* Team Members */}
+                {registration.teamMembers && registration.teamMembers.length > 0 && (
+                  <div>
+                    <h4 className="text-lg font-semibold mb-3 text-blue-400">Team Members ({registration.teamMembers.length})</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {registration.teamMembers.map((member) => (
+                        <motion.div
+                          key={member.id}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.3 }}
+                          className="bg-white/5 rounded-lg p-4 border border-white/10"
+                        >
+                          <div className="space-y-2 mb-4">
+                            <p className="font-semibold text-lg">{member.name}</p>
+                            <p className="text-sm text-gray-400">{member.email}</p>
+                            <p className="text-sm">
+                              <span className="font-medium">Contact:</span> {member.contactNo || 'N/A'}
+                            </p>
+                            <p className="text-sm">
+                              <span className="font-medium">University:</span> {member.universityName || 'N/A'}
+                            </p>
+                            <p className="text-sm">
+                              <span className="font-medium">Status:</span>
+                              <span className={`ml-2 px-2 py-1 rounded text-xs ${
+                                member.hasEntered 
+                                  ? 'bg-green-500/20 text-green-300' 
+                                  : 'bg-yellow-500/20 text-yellow-300'
+                              }`}>
+                                {member.hasEntered ? 'Entered' : 'Not Entered'}
+                              </span>
+                            </p>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <div className="w-24 h-24 bg-white rounded p-1 mb-3">
+                              <img
+                                src={createApiUrl(`/api/qrcode/${member.id}`)}
+                                alt={`${member.name} QR Code`}
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
+                            <button
+                              onClick={() => downloadQRCode(member.id, member.name)}
+                              disabled={downloadingIds.has(member.id)}
+                              className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-3 py-2 rounded-lg flex items-center space-x-2 transition-colors text-sm"
+                            >
+                              {downloadingIds.has(member.id) ? (
+                                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+                              ) : (
+                                <FaDownload />
+                              )}
+                              <span>{downloadingIds.has(member.id) ? 'Downloading...' : 'Download'}</span>
+                            </button>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            ))}
+
+            {/* Team Member Registrations */}
+            {registrationsData.registrations.filter(reg => reg.type === 'team-member').map((registration, index) => (
+              <div key={registration.id} className="bg-white/10 backdrop-blur-md rounded-xl p-6">
+                <h3 className="text-xl font-bold mb-4 flex items-center space-x-2">
+                  <FaUser className="text-purple-400" />
+                  <span>Team Member Registration</span>
+                  {registration.teamLeader && (
+                    <span className="text-sm text-gray-400 ml-2">
+                      (Team Leader: {registration.teamLeader.name})
+                    </span>
+                  )}
+                </h3>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <p><span className="font-semibold">Name:</span> {registration.name}</p>
+                    <p><span className="font-semibold">Email:</span> {registration.email}</p>
+                    <p><span className="font-semibold">Contact:</span> {registration.contactNo || 'N/A'}</p>
+                    <p><span className="font-semibold">University:</span> {registration.universityName || 'N/A'}</p>
+                    {registration.teamLeader && (
+                      <p><span className="font-semibold">Team Leader:</span> {registration.teamLeader.name} ({registration.teamLeader.email})</p>
+                    )}
+                    <p><span className="font-semibold">Status:</span> 
+                      <span className={`ml-2 px-2 py-1 rounded text-xs ${
+                        registration.hasEntered 
+                          ? 'bg-green-500/20 text-green-300' 
+                          : 'bg-yellow-500/20 text-yellow-300'
+                      }`}>
+                        {registration.hasEntered ? 'Entered' : 'Not Entered'}
+                      </span>
+                    </p>
+                    {registration.events.length > 0 && (
+                      <div>
+                        <span className="font-semibold">Events:</span>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {registration.events.map((event, idx) => (
+                            <span key={idx} className="bg-purple-500/20 text-purple-300 px-2 py-1 rounded text-xs">
+                              {event}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="w-32 h-32 bg-white rounded-lg p-2 mb-4">
+                      <img
+                        src={createApiUrl(`/api/qrcode/${registration.id}`)}
+                        alt="Team Member QR Code"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <button
+                      onClick={() => downloadQRCode(registration.id, registration.name)}
+                      disabled={downloadingIds.has(registration.id)}
+                      className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                    >
+                      {downloadingIds.has(registration.id) ? (
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      ) : (
+                        <FaDownload />
+                      )}
+                      <span>{downloadingIds.has(registration.id) ? 'Downloading...' : 'Download QR'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Show all team members if available */}
+                {registration.allTeamMembers && registration.allTeamMembers.length > 0 && (
+                  <div className="mt-6">
+                    <h4 className="text-lg font-semibold mb-3 text-blue-400">All Team Members</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                      {registration.allTeamMembers.map((member) => (
+                        <div key={member.id} className="bg-white/5 rounded-lg p-3 border border-white/10">
+                          <p className="font-semibold text-sm">{member.name}</p>
+                          <p className="text-xs text-gray-400">{member.email}</p>
+                          <div className="flex justify-center mt-2">
+                            <div className="w-16 h-16 bg-white rounded p-1">
+                              <img
+                                src={createApiUrl(`/api/qrcode/${member.id}`)}
+                                alt={`${member.name} QR Code`}
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => downloadQRCode(member.id, member.name)}
+                            disabled={downloadingIds.has(member.id)}
+                            className="w-full mt-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-2 py-1 rounded text-xs flex items-center justify-center space-x-1"
+                          >
+                            {downloadingIds.has(member.id) ? (
+                              <div className="animate-spin rounded-full h-2 w-2 border-b-2 border-white"></div>
+                            ) : (
+                              <FaDownload className="text-xs" />
+                            )}
+                            <span>{downloadingIds.has(member.id) ? 'Loading...' : 'Download'}</span>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
           </motion.div>
         )}
       </div>
