@@ -226,7 +226,7 @@ const Contact = () => {
                   
                   <div className="bg-black/30 p-6 rounded-lg border-l-4 border-blue-400">
                     <h3 className="text-lg font-semibold mb-1">Ayushi Kabra</h3>
-                    <p className="text-blue-300 text-sm mb-4">RegistrationS Core</p>
+                    <p className="text-blue-300 text-sm mb-4">Registration Core</p>
                     <div className="space-y-2">
                       <div className="flex items-center gap-3 text-sm">
                         <MailIcon className="w-4 h-4 text-blue-400" />
@@ -244,13 +244,13 @@ const Contact = () => {
                   </div>
 
                   <div className="bg-black/30 p-6 rounded-lg border-l-4 border-purple-400">
-                    <h3 className="text-lg font-semibold mb-1">Jayash Gehlot</h3>
-                    <p className="text-purple-300 text-sm mb-4">Registrations Core</p>
+                    <h3 className="text-lg font-semibold mb-1">Jayash Gahlot</h3>
+                    <p className="text-purple-300 text-sm mb-4">Registration Core</p>
                     <div className="space-y-2">
                       <div className="flex items-center gap-3 text-sm">
                         <MailIcon className="w-4 h-4 text-purple-400" />
                         <a href="mailto:jayashgehlot@jklu.edu.in" className="text-gray-300 hover:text-white">
-                          jayashgehlot@jklu.edu.in
+                          jayashgahlot@jklu.edu.in
                         </a>
                       </div>
                       <div className="flex items-center gap-3 text-sm">
