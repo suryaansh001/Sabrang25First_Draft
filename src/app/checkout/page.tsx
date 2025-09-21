@@ -76,7 +76,7 @@ const SUPPORT_ARTIST_FIELDS: FieldSet = [
   { name: 'role', label: 'Role/Profession', type: 'text', required: true, placeholder: 'e.g., Makeup Artist, Stylist, Manager' },
   { name: 'contactNo', label: 'Mobile Number', type: 'phone', required: true, placeholder: '10-digit number' },
   { name: 'email', label: 'Email', type: 'email', required: true, placeholder: 'artist@example.com' },
-  { name: 'idNumber', label: 'ID Number', type: 'text', required: true, placeholder: 'Government ID or Passport number' },
+  { name: 'idNumber', label: 'Government ID (Upload)', type: 'file', required: true, accept: 'image/*,.pdf' },
   { name: 'idType', label: 'ID Type', type: 'select', required: true, options: [
     { value: 'aadhar', label: 'Aadhar Card' },
     { value: 'passport', label: 'Passport' },
@@ -1774,6 +1774,27 @@ function CheckoutPageContent() {
                                                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                                                   ))}
                                                 </select>
+                                              ) : field.type === 'file' ? (
+                                                <input
+                                                  type="file"
+                                                  accept={field.accept || '*'}
+                                                  required={!!field.required}
+                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100`}
+                                                  onChange={e => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) {
+                                                      setFlagshipBenefitsByEvent(prev => ({
+                                                        ...prev,
+                                                        [eventId]: {
+                                                          ...prev[parseInt(eventId, 10)],
+                                                          supportArtistDetails: prev[parseInt(eventId, 10)].supportArtistDetails.map((detail: Record<string, string>, idx: number) => 
+                                                            idx === index ? { ...detail, [field.name]: file } : detail
+                                                          )
+                                                        }
+                                                      }));
+                                                    }
+                                                  }}
+                                                />
                                               ) : (
                                                 <input
                                                   type={inputType}
