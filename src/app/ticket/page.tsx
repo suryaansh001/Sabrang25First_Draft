@@ -4,23 +4,6 @@ import { motion } from 'framer-motion';
 import { FaDownload, FaQrcode, FaUser, FaEnvelope, FaUsers, FaSearch, FaShieldAlt, FaClock } from 'react-icons/fa';
 import createApiUrl from '../../lib/api';
 
-interface TeamMember {
-  id: string;
-  name: string;
-  email: string;
-  contactNo: string;
-  gender: string;
-  age: number;
-  universityName: string;
-  address: string;
-  profileImage: string;
-  qrPath: string;
-  qrCodeBase64: string;
-  hasEntered: boolean;
-  entryTime: string | null;
-  events: string[];
-}
-
 interface Registration {
   id: string;
   type: 'individual' | 'team-leader' | 'team-member';
@@ -44,7 +27,22 @@ interface Registration {
   finalPrice?: number;
   
   // For team leader registrations
-  teamMembers?: TeamMember[];
+  teamMembers?: {
+    id: string;
+    name: string;
+    email: string;
+    contactNo: string;
+    gender: string;
+    age: number;
+    universityName: string;
+    address: string;
+    profileImage: string;
+    qrPath: string;
+    qrCodeBase64: string;
+    hasEntered: boolean;
+    entryTime: string | null;
+    events: string[];
+  }[];
   teamSize?: number;
   
   // For team member registrations
@@ -54,7 +52,6 @@ interface Registration {
     email: string;
     registrationId: string;
   };
-  allTeamMembers?: TeamMember[];
 }
 
 interface RegistrationsData {
@@ -178,6 +175,12 @@ function TicketPage() {
     }
   };
 
+  // Function to categorize registrations by events
+  const categorizeByEvents = (data: RegistrationsData) => {
+    // This function is not needed anymore since we display registrations directly
+    return data;
+  };
+
   const handleResendOTP = async () => {
     setOtp('');
     setOtpSent(false);
@@ -265,7 +268,7 @@ function TicketPage() {
             <form onSubmit={handleSendOTP} className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1">
                 <label htmlFor="email" className="block text-sm font-medium mb-2">
-                  Team Leader Email
+                  Registered Email Address
                 </label>
                 <div className="relative">
                   <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -274,7 +277,7 @@ function TicketPage() {
                     id="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter team leader email address"
+                    placeholder="Enter your registered email address"
                     className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                     disabled={otpLoading}
@@ -473,11 +476,23 @@ function TicketPage() {
                   </div>
                   <div className="flex flex-col items-center">
                     <div className="w-32 h-32 bg-white rounded-lg p-2 mb-4">
-                      <img
-                        src={createApiUrl(`/api/qrcode/${registration.id}`)}
-                        alt="QR Code"
-                        className="w-full h-full object-contain"
-                      />
+                      {registration.qrCodeBase64 ? (
+                        <img
+                          src={`data:image/png;base64,${registration.qrCodeBase64}`}
+                          alt="QR Code"
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <img
+                          src={createApiUrl(`/api/qrcode/${registration.id}`)}
+                          alt="QR Code"
+                          className="w-full h-full object-contain"
+                          onError={(e) => {
+                            console.log('QR code failed to load for individual:', registration.id);
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      )}
                     </div>
                     <button
                       onClick={() => downloadQRCode(registration.id, registration.name)}
@@ -546,11 +561,23 @@ function TicketPage() {
                     </div>
                     <div className="flex flex-col items-center">
                       <div className="w-32 h-32 bg-white rounded-lg p-2 mb-4">
-                        <img
-                          src={createApiUrl(`/api/qrcode/${registration.id}`)}
-                          alt="Team Leader QR Code"
-                          className="w-full h-full object-contain"
-                        />
+                        {registration.qrCodeBase64 ? (
+                          <img
+                            src={`data:image/png;base64,${registration.qrCodeBase64}`}
+                            alt="Team Leader QR Code"
+                            className="w-full h-full object-contain"
+                          />
+                        ) : (
+                          <img
+                            src={createApiUrl(`/api/qrcode/${registration.id}`)}
+                            alt="Team Leader QR Code"
+                            className="w-full h-full object-contain"
+                            onError={(e) => {
+                              console.log('QR code failed to load for team leader:', registration.id);
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        )}
                       </div>
                       <button
                         onClick={() => downloadQRCode(registration.id, registration.name)}
@@ -603,11 +630,23 @@ function TicketPage() {
                           </div>
                           <div className="flex flex-col items-center">
                             <div className="w-24 h-24 bg-white rounded p-1 mb-3">
-                              <img
-                                src={createApiUrl(`/api/qrcode/${member.id}`)}
-                                alt={`${member.name} QR Code`}
-                                className="w-full h-full object-contain"
-                              />
+                              {member.qrCodeBase64 ? (
+                                <img
+                                  src={`data:image/png;base64,${member.qrCodeBase64}`}
+                                  alt={`${member.name} QR Code`}
+                                  className="w-full h-full object-contain"
+                                />
+                              ) : (
+                                <img
+                                  src={createApiUrl(`/api/qrcode/${member.id}`)}
+                                  alt={`${member.name} QR Code`}
+                                  className="w-full h-full object-contain"
+                                  onError={(e) => {
+                                    console.log('QR code failed to load for member:', member.id);
+                                    e.currentTarget.style.display = 'none';
+                                  }}
+                                />
+                              )}
                             </div>
                             <button
                               onClick={() => downloadQRCode(member.id, member.name)}
@@ -676,11 +715,23 @@ function TicketPage() {
                   </div>
                   <div className="flex flex-col items-center">
                     <div className="w-32 h-32 bg-white rounded-lg p-2 mb-4">
-                      <img
-                        src={createApiUrl(`/api/qrcode/${registration.id}`)}
-                        alt="Team Member QR Code"
-                        className="w-full h-full object-contain"
-                      />
+                      {registration.qrCodeBase64 ? (
+                        <img
+                          src={`data:image/png;base64,${registration.qrCodeBase64}`}
+                          alt="Team Member QR Code"
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <img
+                          src={createApiUrl(`/api/qrcode/${registration.id}`)}
+                          alt="Team Member QR Code"
+                          className="w-full h-full object-contain"
+                          onError={(e) => {
+                            console.log('QR code failed to load for team member:', registration.id);
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      )}
                     </div>
                     <button
                       onClick={() => downloadQRCode(registration.id, registration.name)}
@@ -696,42 +747,6 @@ function TicketPage() {
                     </button>
                   </div>
                 </div>
-
-                {/* Show all team members if available */}
-                {registration.allTeamMembers && registration.allTeamMembers.length > 0 && (
-                  <div className="mt-6">
-                    <h4 className="text-lg font-semibold mb-3 text-blue-400">All Team Members</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                      {registration.allTeamMembers.map((member) => (
-                        <div key={member.id} className="bg-white/5 rounded-lg p-3 border border-white/10">
-                          <p className="font-semibold text-sm">{member.name}</p>
-                          <p className="text-xs text-gray-400">{member.email}</p>
-                          <div className="flex justify-center mt-2">
-                            <div className="w-16 h-16 bg-white rounded p-1">
-                              <img
-                                src={createApiUrl(`/api/qrcode/${member.id}`)}
-                                alt={`${member.name} QR Code`}
-                                className="w-full h-full object-contain"
-                              />
-                            </div>
-                          </div>
-                          <button
-                            onClick={() => downloadQRCode(member.id, member.name)}
-                            disabled={downloadingIds.has(member.id)}
-                            className="w-full mt-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-2 py-1 rounded text-xs flex items-center justify-center space-x-1"
-                          >
-                            {downloadingIds.has(member.id) ? (
-                              <div className="animate-spin rounded-full h-2 w-2 border-b-2 border-white"></div>
-                            ) : (
-                              <FaDownload className="text-xs" />
-                            )}
-                            <span>{downloadingIds.has(member.id) ? 'Loading...' : 'Download'}</span>
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             ))}
           </motion.div>
