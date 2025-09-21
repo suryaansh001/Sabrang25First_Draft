@@ -99,12 +99,12 @@ const FAQ = () => {
     },
     {
       question: "Will accommodation be provided for outstation participants?",
-      answer: "Accommodation for outstation participants will be provided on a chargeable basis. Transport will also be available for participants with prior information.",
+      answer: "Accommodation for outstation participants will be provided on a chargeable basis. Transport will also be available for participants upon prior notice and it will be provided free of charge.",
       category: "Accommodation",
       icon: "🏨"
     },
     {
-      question: "What are the payment options available for passes?",
+      question: "What payment options are available for passes?",
       answer: "For registrations, payment can be made online through Sabrang's website.",
       category: "Payment",
       icon: "💳"
