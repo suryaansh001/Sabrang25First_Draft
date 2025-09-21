@@ -1292,7 +1292,7 @@ function CheckoutPageContent() {
                 </div>
                 <button
                   onClick={() => {
-                    navigator.clipboard.writeText('SABRANG25');
+                    navigator.clipboard.writeText('EARLYBIRD');
                     setShowToast(true);
                     setTimeout(() => setShowToast(false), 3000);
                   }}
