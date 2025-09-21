@@ -351,11 +351,26 @@ function CheckoutPageContent() {
 
   const fieldGroups = useMemo(() => {
     const groups: { signature: string; fields: FieldSet; events: EventCatalogItem[] }[] = [];
+    const fieldSignatureMap = new Map<string, { fields: FieldSet; events: EventCatalogItem[] }>();
+    
     for (const ev of selectedEvents) {
       const fields = getEventFields(ev);
-      const signature = `event_${ev.id}_${JSON.stringify(fields.map(f => ({ name: f.name, type: f.type, label: f.label, required: !!f.required, options: f.options })))}`;
-      groups.push({ signature, fields, events: [ev] });
+      const fieldSignature = JSON.stringify(fields.map(f => ({ name: f.name, type: f.type, label: f.label, required: !!f.required, options: f.options })));
+      
+      if (fieldSignatureMap.has(fieldSignature)) {
+        // Group events with the same field requirements together
+        fieldSignatureMap.get(fieldSignature)!.events.push(ev);
+      } else {
+        fieldSignatureMap.set(fieldSignature, { fields, events: [ev] });
+      }
     }
+    
+    // Convert map to groups array
+    for (const [fieldSignature, { fields, events }] of fieldSignatureMap) {
+      const signature = `events_${events.map(e => e.id).join('_')}_${fieldSignature}`;
+      groups.push({ signature, fields, events });
+    }
+    
     return groups;
   }, [selectedEvents]);
 
@@ -652,13 +667,31 @@ function CheckoutPageContent() {
             requiredAdditionalMembers = Math.max(0, totalSize - 1);
           }
         } else {
-          // For fixed-size teams, get size from first event in group
-          const event = group.events[0];
-          if (event && event.teamSize) {
-            const match = event.teamSize.match(/\d+/);
-            if (match) {
-              totalSize = parseInt(match[0], 10);
-              requiredAdditionalMembers = Math.max(0, totalSize - 1);
+          // For fixed-size teams, get size from team config
+          // When multiple events are grouped together, use the event with the highest team size requirement
+          let maxTeamSize = 0;
+          let maxTeamConfig: TeamSizeConfig | null = null;
+          
+          for (const event of group.events) {
+            const teamConfig = getTeamSizeConfig(event.title);
+            if (teamConfig && teamConfig.min > maxTeamSize) {
+              maxTeamSize = teamConfig.min;
+              maxTeamConfig = teamConfig;
+            }
+          }
+          
+          if (maxTeamConfig) {
+            totalSize = maxTeamConfig.min;
+            requiredAdditionalMembers = Math.max(0, maxTeamConfig.min - 1);
+          } else {
+            // Fallback to first event's teamSize if no team config found
+            const event = group.events[0];
+            if (event && event.teamSize) {
+              const match = event.teamSize.match(/\d+/);
+              if (match) {
+                totalSize = parseInt(match[0], 10);
+                requiredAdditionalMembers = Math.max(0, totalSize - 1);
+              }
             }
           }
         }
@@ -1878,8 +1911,18 @@ function CheckoutPageContent() {
                       {fieldGroups.map(group => (
                         <div key={group.signature} className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_22px_rgba(236,72,153,0.18)]">
                           <div className="mb-4">
-                            <h3 className="font-semibold text-fuchsia-200">For: {group.events[0].title}</h3>
-                            <p className="text-xs text-gray-400">Fill these details for this specific event.</p>
+                            <h3 className="font-semibold text-fuchsia-200">
+                              {group.events.length > 1 
+                                ? `For: ${group.events.map(e => e.title).join(', ')}` 
+                                : `For: ${group.events[0].title}`
+                              }
+                            </h3>
+                            <p className="text-xs text-gray-400">
+                              {group.events.length > 1 
+                                ? `Fill these details for these events (shared team details).` 
+                                : `Fill these details for this specific event.`
+                              }
+                            </p>
                           </div>
                           <div className="grid md:grid-cols-2 gap-4">
                             {group.fields.map((field, idx) => {
@@ -2019,16 +2062,30 @@ function CheckoutPageContent() {
                               </div>
                             </div>
                             {(() => {
-                              const event = group.events[0];
-                              const teamConfig = event ? getTeamSizeConfig(event.title) : null;
+                              // When multiple events are grouped together, show the highest team size requirement
+                              let maxTeamSize = 0;
+                              let maxTeamConfig: TeamSizeConfig | null = null;
+                              let eventNames: string[] = [];
                               
-                              if (teamConfig) {
+                              for (const event of group.events) {
+                                const teamConfig = getTeamSizeConfig(event.title);
+                                if (teamConfig && teamConfig.min > maxTeamSize) {
+                                  maxTeamSize = teamConfig.min;
+                                  maxTeamConfig = teamConfig;
+                                }
+                                eventNames.push(event.title);
+                              }
+                              
+                              if (maxTeamConfig) {
                                 return (
                                   <div className="text-xs text-white/60 space-y-1">
-                                    <p>Team size: {teamConfig.min}{teamConfig.min !== teamConfig.max ? ` - ${teamConfig.max}` : ''} members</p>
+                                    <p>Team size: {maxTeamConfig.min}{maxTeamConfig.min !== maxTeamConfig.max ? ` - ${maxTeamConfig.max}` : ''} members</p>
                                     <p>Current: {members.length + 1} members (including team leader)</p>
-                                    {members.length === 0 && teamConfig.min > 1 && (
-                                      <p>⚠️ You need to add {teamConfig.min - 1} more team member(s) to meet minimum requirements.</p>
+                                    {group.events.length > 1 && (
+                                      <p>For events: {eventNames.join(', ')}</p>
+                                    )}
+                                    {members.length === 0 && maxTeamConfig.min > 1 && (
+                                      <p>⚠️ You need to add {maxTeamConfig.min - 1} more team member(s) to meet minimum requirements.</p>
                                     )}
                                   </div>
                                 );

@@ -679,7 +679,7 @@ export default function EventsPage() {
                   <button onClick={() => router.push(`/Events/${selectedEvent.id}/rules`)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border bg-white/10 text-white hover:bg-white/15 border-white/20 transition">
                     <Info className="w-4 h-4" /> Rules
                   </button>
-                  <button onClick={() => router.push(`/checkout`)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition shadow-lg">
+                  <button onClick={() => router.push(`/coming-soon`)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition shadow-lg">
                     Checkout
                   </button>
                   <button onClick={handleShare} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 transition">
@@ -782,11 +782,7 @@ export default function EventsPage() {
           >
             <button
               onClick={() => {
-                if (cartIds.length > 0) {
-                  router.push(`/checkout?selected=${cartIds.join(',')}`);
-                } else {
-                  router.push('/checkout');
-                }
+                router.push('/coming-soon');
               }}
               className="relative px-4 py-2 rounded-2xl bg-black/60 backdrop-blur-md border border-white/20 text-white hover:bg-white/10 transition cursor-pointer"
             >
@@ -965,25 +961,25 @@ export default function EventsPage() {
                           <div className="relative z-10 flex flex-col justify-end h-full">
                             {/* Prize Pool Display */}
                             {getEventPrizePool(event.id) && (
-                              <div className="flex justify-center mb-3">
+                              <div className="flex justify-center mb-2">
                                 <div className="relative">
-                                  <div className="text-white text-xs md:text-sm font-bold bg-gradient-to-r from-yellow-500/90 to-amber-600/90 px-3 py-1.5 rounded-full border-2 border-yellow-400/50 shadow-lg backdrop-blur-sm">
-                                    <div className="flex items-center gap-1.5">
-                                      <Crown className="w-3 h-3 md:w-4 md:h-4" />
+                                  <div className="text-white text-[10px] md:text-xs font-bold bg-gradient-to-r from-yellow-500/90 to-amber-600/90 px-2 py-1 rounded-full border border-yellow-400/50 shadow-lg backdrop-blur-sm">
+                                    <div className="flex items-center gap-1">
+                                      <Crown className="w-2.5 h-2.5 md:w-3 md:h-3" />
                                       <span className="font-extrabold tracking-wide">
                                         Prize Pool: {getEventPrizePool(event.id)}
                                       </span>
                                     </div>
                                   </div>
                                   {/* Glow effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/30 to-amber-600/30 rounded-full blur-md animate-pulse" />
+                                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-amber-600/20 rounded-full blur-sm animate-pulse" />
                                 </div>
                               </div>
                             )}
                             
                             {/* Price badge (from EVENT_CATALOG if available) */}
-                            <div className="flex justify-center mb-2">
-                              <div className="text-white text-[10px] md:text-xs font-medium bg-black/40 px-2 py-1 rounded-full border border-white/20">
+                            <div className="flex justify-center mb-1.5">
+                              <div className="text-white text-[9px] md:text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded-full border border-white/20">
                                 {catalogById.get(event.id)?.price || event.price}
                               </div>
                             </div>
@@ -1041,11 +1037,7 @@ export default function EventsPage() {
           <button
             aria-label="Open cart"
             onClick={() => {
-              if (cartIds.length > 0) {
-                router.push(`/checkout?selected=${cartIds.join(',')}`);
-              } else {
-                router.push('/checkout');
-              }
+              router.push('/coming-soon');
             }}
             className={`lg:hidden fixed top-4 right-[100px] z-50 w-12 h-12 rounded-full flex items-center justify-center text-white active:scale-95 transition shadow-xl ${cartIds.length ? 'bg-gradient-to-r from-purple-600 to-pink-600 ring-2 ring-white/20' : 'bg-black/60 backdrop-blur-md border border-white/20 hover:bg-white/10'}`}
           >
