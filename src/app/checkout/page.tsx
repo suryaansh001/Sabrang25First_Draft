@@ -445,27 +445,65 @@ function CheckoutPageContent() {
   }, [totalPrice, appliedPromo]);
 
   const getDerivedEmail = () => {
-    // Search across all groups for collegeMailId
+    // Search across all groups for collegeMailId or email
     for (const group of fieldGroups) {
       const data = formDataBySignature[group.signature] || {};
       if (data['collegeMailId']) return String(data['collegeMailId']);
       if (data['email']) return String(data['email']);
     }
+    
+    // Check visitor pass details
+    if (visitorPassDetails['collegeMailId']) {
+      return String(visitorPassDetails['collegeMailId']);
+    }
+    
+    // Check flagship benefits for any event
+    for (const benefits of Object.values(flagshipBenefitsByEvent)) {
+      // Check flagship visitor pass details
+      if (benefits.flagshipVisitorPassDetails && benefits.flagshipVisitorPassDetails.length > 0) {
+        const email = benefits.flagshipVisitorPassDetails[0]['collegeMailId'];
+        if (email) return String(email);
+      }
+      
+      // Check flagship solo visitor pass details
+      if (benefits.flagshipSoloVisitorPassDetails && benefits.flagshipSoloVisitorPassDetails.length > 0) {
+        const email = benefits.flagshipSoloVisitorPassDetails[0]['collegeMailId'];
+        if (email) return String(email);
+      }
+      
+      // Check support artist details
+      if (benefits.supportArtistDetails && benefits.supportArtistDetails.length > 0) {
+        const email = benefits.supportArtistDetails[0]['email'];
+        if (email) return String(email);
+      }
+    }
+    
     return '';
   };
 
   const tryApplyPromo = async () => {
     const code = promoInput.trim().toUpperCase();
     if (!code) return;
+    
     setPromoStatus({ loading: true, error: null });
     try {
       const userEmail = getDerivedEmail();
+      
+      // If no email is available, use a placeholder for validation
+      // Most promo codes don't require specific email domains anyway
+      const emailForValidation = userEmail || 'temp@example.com';
+      
       const response = await fetch(createApiUrl('/admin/promo-codes/validate'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ code, userEmail, orderAmount: totalPrice })
+        body: JSON.stringify({ 
+          code, 
+          userEmail: emailForValidation, 
+          orderAmount: totalPrice 
+        })
       });
+      
       const data = await response.json();
       if (!response.ok || !data.success) {
         const msg = data.message || 'Invalid promo code';
@@ -473,6 +511,7 @@ function CheckoutPageContent() {
         setAppliedPromo(null);
         return;
       }
+      
       setAppliedPromo({ code, discountAmount: data.discountAmount });
       setPromoStatus({ loading: false, error: null });
     } catch (e) {
