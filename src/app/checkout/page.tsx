@@ -110,7 +110,7 @@ function getDefaultFieldsForEvent(ev: EventCatalogItem): FieldSet {
   // Restore team-specific forms for relevant events
   if (ev.title.includes('VALORANT')) return TEAM_ESPORTS_FIELDS;
   if (ev.title.includes('BGMI') || ev.title.includes('FREE FIRE')) return SQUAD_ESPORTS_FIELDS;
-  if (ev.title.includes('RAMPWALK') || ev.title.includes('DANCE') || ev.title.includes('BANDJAM') || ev.title.includes('BAND JAM') || ev.title.includes('DUMB SHOW') || ev.title.includes('COURTROOM')) return TEAM_FIELDS;
+  if (ev.title.includes('RAMPWALK') || ev.title.includes('DANCE') || ev.title.includes('BANDJAM') || ev.title.includes('BAND JAM') ) return TEAM_FIELDS;
   return SOLO_FIELDS;
 }
 
@@ -351,11 +351,35 @@ function CheckoutPageContent() {
 
   const fieldGroups = useMemo(() => {
     const groups: { signature: string; fields: FieldSet; events: EventCatalogItem[] }[] = [];
+    const soloEvents: EventCatalogItem[] = [];
+    const teamEvents: EventCatalogItem[] = [];
+    
+    // Separate solo and team events
     for (const ev of selectedEvents) {
+      const fields = getEventFields(ev);
+      const isSoloEvent = fields === SOLO_FIELDS;
+      
+      if (isSoloEvent) {
+        soloEvents.push(ev);
+      } else {
+        teamEvents.push(ev);
+      }
+    }
+    
+    // Group all solo events together
+    if (soloEvents.length > 0) {
+      const soloFields = SOLO_FIELDS;
+      const soloSignature = `solo_events_${soloEvents.map(e => e.id).join('_')}_${JSON.stringify(soloFields.map(f => ({ name: f.name, type: f.type, label: f.label, required: !!f.required, options: f.options })))}`;
+      groups.push({ signature: soloSignature, fields: soloFields, events: soloEvents });
+    }
+    
+    // Keep team events separate (one form per team event)
+    for (const ev of teamEvents) {
       const fields = getEventFields(ev);
       const signature = `event_${ev.id}_${JSON.stringify(fields.map(f => ({ name: f.name, type: f.type, label: f.label, required: !!f.required, options: f.options })))}`;
       groups.push({ signature, fields, events: [ev] });
     }
+    
     return groups;
   }, [selectedEvents]);
 
@@ -1885,8 +1909,18 @@ function CheckoutPageContent() {
                       {fieldGroups.map(group => (
                         <div key={group.signature} className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_22px_rgba(236,72,153,0.18)]">
                           <div className="mb-4">
-                            <h3 className="font-semibold text-fuchsia-200">For: {group.events[0].title}</h3>
-                            <p className="text-xs text-gray-400">Fill these details for this specific event.</p>
+                            <h3 className="font-semibold text-fuchsia-200">
+                              {group.events.length > 1 
+                                ? `For: ${group.events.map(e => e.title).join(', ')}` 
+                                : `For: ${group.events[0].title}`
+                              }
+                            </h3>
+                            <p className="text-xs text-gray-400">
+                              {group.events.length > 1 
+                                ? `Fill these details once for all selected solo events.` 
+                                : `Fill these details for this specific event.`
+                              }
+                            </p>
                           </div>
                           <div className="grid md:grid-cols-2 gap-4">
                             {group.fields.map((field, idx) => {
@@ -2324,7 +2358,12 @@ function CheckoutPageContent() {
                       )}
                       {fieldGroups.map(group => (
                         <div key={group.signature} className="glass rounded-2xl p-6 border border-white/10">
-                          <h3 className="font-semibold text-fuchsia-200">Details for: {group.events[0].title}</h3>
+                          <h3 className="font-semibold text-fuchsia-200">
+                            Details for: {group.events.length > 1 
+                              ? group.events.map(e => e.title).join(', ') 
+                              : group.events[0].title
+                            }
+                          </h3>
                           <div className="mt-3 grid md:grid-cols-2 gap-3 text-sm">
                             {group.fields.map(f => (
                               <div key={f.name} className="flex justify-between gap-4">

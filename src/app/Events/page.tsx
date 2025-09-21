@@ -962,9 +962,9 @@ export default function EventsPage() {
                             {/* Prize Pool Display */}
                             {getEventPrizePool(event.id) && (
                               <div className="flex justify-center mb-2">
-                                <div className="text-white text-[10px] md:text-xs font-bold">
+                                <div className="text-white text-[8px] md:text-xs font-bold">
                                   <div className="flex items-center gap-1">
-                                    <Crown className="w-2.5 h-2.5 md:w-3 md:h-3" />
+                                    <Crown className="w-2 h-2 md:w-3 md:h-3" />
                                     <span className="font-extrabold tracking-wide">
                                       Prize Pool: {getEventPrizePool(event.id)}
                                     </span>
