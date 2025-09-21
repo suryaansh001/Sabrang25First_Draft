@@ -721,8 +721,30 @@ function CheckoutPageContent() {
           if (event) {
             const teamConfig = getTeamSizeConfig(event.title);
             if (teamConfig) {
-              totalSize = teamConfig.min;
-              requiredAdditionalMembers = Math.max(0, teamConfig.min - 1);
+              // Check if this event has flagship benefits that can reduce team size requirement
+              const eventBenefits = flagshipBenefitsByEvent[event.id];
+              let flagshipMembersCount = 0;
+              
+              if (eventBenefits) {
+                // Count support artists and flagship visitors as potential team members
+                flagshipMembersCount += eventBenefits.supportArtistQuantity || 0;
+                flagshipMembersCount += eventBenefits.flagshipVisitorPassQuantity || 0;
+                flagshipMembersCount += eventBenefits.flagshipSoloVisitorPassQuantity || 0;
+              }
+              
+              // Adjust minimum required members by subtracting flagship benefits
+              // but ensure we still need at least 1 actual team member (besides leader)
+              const adjustedMinSize = Math.max(2, teamConfig.min - flagshipMembersCount); // 2 = leader + 1 member minimum
+              totalSize = adjustedMinSize;
+              requiredAdditionalMembers = Math.max(0, adjustedMinSize - 1);
+              
+              console.log(`🎯 Team validation for ${event.title}:`, {
+                originalMin: teamConfig.min,
+                flagshipMembersCount,
+                adjustedMinSize,
+                requiredAdditionalMembers,
+                actualMembers: members.length
+              });
             } else if (event.teamSize) {
               // Fallback to event.teamSize if team config not found
               const match = event.teamSize.match(/\d+/);
