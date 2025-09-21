@@ -1415,75 +1415,15 @@ function CheckoutPageContent() {
                           <div className="mb-6">
                             <h4 className="font-semibold text-purple-200 mb-2">Support Artists</h4>
                             <p className="text-sm text-white/70 mb-3">
-                              Bring up to 3 support artists (makeup, stylist, manager) for your team performance.
+                              You will get a form 5 days before the event where you can claim up to 3 support artists (makeup, stylist, manager) for your team performance.
                             </p>
-                            <div className="flex items-center gap-3">
-                              <button
-                                       onClick={() => setFlagshipBenefitsByEvent(prev => ({
-                                         ...prev,
-                                         [event.id]: {
-                                           ...prev[event.id],
-                                           supportArtistQuantity: Math.max(0, benefits.supportArtistQuantity - 1)
-                                         }
-                                       }))}
-                                       disabled={benefits.supportArtistQuantity === 0}
-                                className="w-8 h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                              >
-                                -
-                              </button>
-                                     <span className="text-lg font-semibold min-w-[2rem] text-center">{benefits.supportArtistQuantity}</span>
-                              <button
-                                       onClick={() => setFlagshipBenefitsByEvent(prev => ({
-                                         ...prev,
-                                         [event.id]: {
-                                           ...prev[event.id],
-                                           supportArtistQuantity: Math.min(3, benefits.supportArtistQuantity + 1)
-                                         }
-                                       }))}
-                                       disabled={benefits.supportArtistQuantity >= 3}
-                                className="w-8 h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                              >
-                                +
-                              </button>
-                              <span className="text-xs text-white/60">(Max 3)</span>
-                            </div>
                           </div>
                           
                           <div className="mb-6">
                             <h4 className="font-semibold text-purple-200 mb-2">Free Visitor Passes</h4>
                             <p className="text-sm text-white/70 mb-3">
-                              3 complimentary visitor passes (worth ₹69 each) included with your flagship group registration.
+                              You will get a form 5 days before the event where you can claim up to 3 free visitor passes for your day event.
                             </p>
-                            <div className="flex items-center gap-3">
-                              <button
-                                       onClick={() => setFlagshipBenefitsByEvent(prev => ({
-                                         ...prev,
-                                         [event.id]: {
-                                           ...prev[event.id],
-                                           flagshipVisitorPassQuantity: Math.max(0, benefits.flagshipVisitorPassQuantity - 1)
-                                         }
-                                       }))}
-                                       disabled={benefits.flagshipVisitorPassQuantity === 0}
-                                className="w-8 h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                              >
-                                -
-                              </button>
-                                     <span className="text-lg font-semibold min-w-[2rem] text-center">{benefits.flagshipVisitorPassQuantity}</span>
-                              <button
-                                       onClick={() => setFlagshipBenefitsByEvent(prev => ({
-                                         ...prev,
-                                         [event.id]: {
-                                           ...prev[event.id],
-                                           flagshipVisitorPassQuantity: Math.min(3, benefits.flagshipVisitorPassQuantity + 1)
-                                         }
-                                       }))}
-                                       disabled={benefits.flagshipVisitorPassQuantity >= 3}
-                                className="w-8 h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                              >
-                                +
-                              </button>
-                              <span className="text-xs text-white/60">(Max 3)</span>
-                            </div>
                           </div>
 
                           <div className="text-xs text-white/60 space-y-1">
@@ -1499,38 +1439,8 @@ function CheckoutPageContent() {
                           <div className="mb-6">
                             <h4 className="font-semibold text-blue-200 mb-2">Free Visitor Passes</h4>
                             <p className="text-sm text-white/70 mb-3">
-                              2 complimentary visitor passes (worth ₹69 each) included with your flagship solo registration.
+                              You will get a form 5 days before the event where you can claim up to 2 free visitor passes for your day event.
                             </p>
-                            <div className="flex items-center gap-3">
-                              <button
-                                       onClick={() => setFlagshipBenefitsByEvent(prev => ({
-                                         ...prev,
-                                         [event.id]: {
-                                           ...prev[event.id],
-                                           flagshipSoloVisitorPassQuantity: Math.max(0, benefits.flagshipSoloVisitorPassQuantity - 1)
-                                         }
-                                       }))}
-                                       disabled={benefits.flagshipSoloVisitorPassQuantity === 0}
-                                className="w-8 h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                              >
-                                -
-                              </button>
-                                     <span className="text-lg font-semibold min-w-[2rem] text-center">{benefits.flagshipSoloVisitorPassQuantity}</span>
-                              <button
-                                       onClick={() => setFlagshipBenefitsByEvent(prev => ({
-                                         ...prev,
-                                         [event.id]: {
-                                           ...prev[event.id],
-                                           flagshipSoloVisitorPassQuantity: Math.min(2, benefits.flagshipSoloVisitorPassQuantity + 1)
-                                         }
-                                       }))}
-                                       disabled={benefits.flagshipSoloVisitorPassQuantity >= 2}
-                                className="w-8 h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                              >
-                                +
-                              </button>
-                              <span className="text-xs text-white/60">(Max 2)</span>
-                            </div>
                           </div>
 
                           <div className="text-xs text-white/60 space-y-1">
