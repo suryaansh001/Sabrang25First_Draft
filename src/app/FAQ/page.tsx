@@ -75,37 +75,37 @@ const FAQ = () => {
   const faqs = [
     {
       question: "What kind of events will there be in Sabrang?",
-      answer: "There will be a mix of cultural, creative and competitive, and gaming events. The event list is available on Sabrang's website. There will be flagship events like verse vaad, rampwalk, echoes of noor, dance battle along with non-flagship events including courtroom, seal the deal, bgmi and freefire gaming tournaments.",
+      answer: "There will be a mix of cultural, creative, competitive, and gaming events. The event list is available on Sabrang's website. There will be flagship events like Verse Vaad, Rampwalk, Echoes of Noor, and Dance Battle, along with non-flagship events including Courtroom, Seal the Deal, BGMI, and Free Fire gaming tournaments.",
       category: "Events",
       icon: "🎭"
     },
     {
       question: "Is there a registration fee for the fest or specific events?",
-      answer: "There will be a one-time registration fee which will be applicable for all three days of Sabrang. The fees will be for the fest, and you can participate in any 3 events.",
+      answer: "There will be a one-time registration fee that will be applicable for all three days of Sabrang. The fee will be for the fest, and you can participate in any 3 events.",
       category: "Registration",
       icon: "💰"
     },
     {
       question: "Will there be on-the-spot registrations for some events?",
-      answer: "Registration will be open for all three days of Sabrang. You can register either online on Sabrang's website or on the spot on the campus.",
+      answer: "Registration will be open for all three days of Sabrang. You can register either online on Sabrang's website or on the spot at the campus.",
       category: "Registration",
       icon: "📝"
     },
     {
       question: "Can I be part of Sabrang without competing in any competition?",
-      answer: "Yes, you can still be part of Sabrang and enjoy the events without participating. You still have to register even if you are not participating in any event.",
+      answer: "Yes, you can still be part of Sabrang and enjoy the events without participating in competitions. However, you still need to register even if you are not participating in any event.",
       category: "Participation",
       icon: "👥"
     },
     {
       question: "Will accommodation be provided for outstation participants?",
-      answer: "Accommodation for outstation participants will be provided on a chargeable basis. Transport will also be available for participants on prior information.",
+      answer: "Accommodation for outstation participants will be provided on a chargeable basis. Transport will also be available for participants with prior information.",
       category: "Accommodation",
       icon: "🏨"
     },
     {
       question: "What are the payment options available for passes?",
-      answer: "For registrations, the payment method will be online through Sabrang's website.",
+      answer: "For registrations, payment can be made online through Sabrang's website.",
       category: "Payment",
       icon: "💳"
     }
@@ -383,7 +383,7 @@ const FAQ = () => {
                   Still have questions?
                 </h3>
                 <p className="text-base sm:text-lg text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-2">
-                  Our team is here to help! Reach out to us and we'll get back to you as soon as possible.
+                  Our team is here to help! Reach out to us, and we'll get back to you as soon as possible.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                   <button 
