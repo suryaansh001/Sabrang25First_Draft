@@ -388,7 +388,7 @@ export default function EventsPage() {
   const mobileNavItems: { title: string; href: string; icon: React.ReactNode }[] = [
     { title: 'Home', href: '/?skipLoading=true', icon: <Home className="w-5 h-5" /> },
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
-    { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
+    { title: 'Events', href: '/events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
     { title: 'Schedule', href: '/schedule/progress', icon: <Clock className="w-5 h-5" /> },
     { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
@@ -467,7 +467,7 @@ export default function EventsPage() {
     
     try {
       // Create a shareable URL for the event
-      const eventUrl = `${window.location.origin}/Events?event=${selectedEvent.id}`;
+      const eventUrl = `${window.location.origin}/events?event=${selectedEvent.id}`;
       
       // Copy to clipboard
       await navigator.clipboard.writeText(eventUrl);
@@ -483,7 +483,7 @@ export default function EventsPage() {
       console.error('Failed to copy: ', err);
       // Fallback for older browsers
       const textArea = document.createElement('textarea');
-      textArea.value = `${window.location.origin}/Events?event=${selectedEvent.id}`;
+      textArea.value = `${window.location.origin}/events?event=${selectedEvent.id}`;
       document.body.appendChild(textArea);
       textArea.select();
       document.execCommand('copy');
@@ -676,7 +676,7 @@ export default function EventsPage() {
                   )}
                 </div>
                 <div className="flex flex-wrap gap-3 pt-2">
-                  <button onClick={() => router.push(`/Events/${selectedEvent.id}/rules`)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border bg-white/10 text-white hover:bg-white/15 border-white/20 transition">
+                  <button onClick={() => router.push(`/events/${selectedEvent.id}/rules`)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border bg-white/10 text-white hover:bg-white/15 border-white/20 transition">
                     <Info className="w-4 h-4" /> Rules
                   </button>
                   <button onClick={() => router.push(`/coming-soon`)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition shadow-lg">
