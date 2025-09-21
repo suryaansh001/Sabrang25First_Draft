@@ -962,17 +962,13 @@ export default function EventsPage() {
                             {/* Prize Pool Display */}
                             {getEventPrizePool(event.id) && (
                               <div className="flex justify-center mb-2">
-                                <div className="relative">
-                                  <div className="text-white text-[10px] md:text-xs font-bold bg-gradient-to-r from-yellow-500/90 to-amber-600/90 px-2 py-1 rounded-full border border-yellow-400/50 shadow-lg backdrop-blur-sm">
-                                    <div className="flex items-center gap-1">
-                                      <Crown className="w-2.5 h-2.5 md:w-3 md:h-3" />
-                                      <span className="font-extrabold tracking-wide">
-                                        Prize Pool: {getEventPrizePool(event.id)}
-                                      </span>
-                                    </div>
+                                <div className="text-white text-[10px] md:text-xs font-bold">
+                                  <div className="flex items-center gap-1">
+                                    <Crown className="w-2.5 h-2.5 md:w-3 md:h-3" />
+                                    <span className="font-extrabold tracking-wide">
+                                      Prize Pool: {getEventPrizePool(event.id)}
+                                    </span>
                                   </div>
-                                  {/* Glow effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-amber-600/20 rounded-full blur-sm animate-pulse" />
                                 </div>
                               </div>
                             )}
