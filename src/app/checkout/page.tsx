@@ -67,6 +67,7 @@ const VISITOR_PASS_FIELDS: FieldSet = [
   ]},
   { name: 'age', label: 'Age', type: 'number', required: true, placeholder: 'e.g., 20' },
   { name: 'universityName', label: 'Institution Name', type: 'text', required: true, placeholder: 'Visitor school/college/university' },
+  { name: 'universityCardImage', label: 'Institution Identity Card', type: 'file', required: true, accept: 'image/*' },
   { name: 'address', label: 'Address', type: 'text', required: true, placeholder: 'Enter visitor full address' },
 ];
 
