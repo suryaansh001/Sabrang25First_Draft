@@ -961,11 +961,11 @@ export default function EventsPage() {
                           <div className="relative z-10 flex flex-col justify-end h-full">
                             {/* Prize Pool Display */}
                             {getEventPrizePool(event.id) && (
-                              <div className="flex justify-center mb-2">
+                              <div className="flex justify-center mb-18 md:mb-2">
                                 <div className="relative">
-                                  <div className="text-white text-[10px] md:text-xs font-bold bg-gradient-to-r from-yellow-500/90 to-amber-600/90 px-2 py-1 rounded-full border border-yellow-400/50 shadow-lg backdrop-blur-sm">
+                                  <div className="text-white text-[8px] md:text-xs font-bold bg-gradient-to-r from-yellow-500/90 to-amber-600/90 px-2 py-1 rounded-full border border-yellow-400/50 shadow-lg backdrop-blur-sm">
                                     <div className="flex items-center gap-1">
-                                      <Crown className="w-2.5 h-2.5 md:w-3 md:h-3" />
+                                      <Crown className="w-2 h-2 md:w-3 md:h-3" />
                                       <span className="font-extrabold tracking-wide">
                                         Prize Pool: {getEventPrizePool(event.id)}
                                       </span>
@@ -985,7 +985,7 @@ export default function EventsPage() {
                             </div>
                             
                             {/* Add to cart button */}
-                            <div className="px-2 md:px-3 py-2 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
+                            <div className="px-1 md:px-2 py-1.5 md:py-2 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
                               <button
                                 type="button"
                                 onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }}
