@@ -353,7 +353,8 @@ const AboutPage = () => {
                  </div>
                  <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
                    <h3 className="text-lg md:text-4xl font-bold text-white mb-2 md:mb-4 drop-shadow-lg">Panache</h3>
-                   <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg">Glamorous fashion show</p>
+                   <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg mb-4">Glamorous fashion show</p>
+                   <div className="text-sm md:text-lg font-bold text-white drop-shadow-lg">Prize Pool: ₹40,000</div>
                  </div>
                </div>
                
@@ -389,7 +390,8 @@ const AboutPage = () => {
                  </div>
                  <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
                    <h3 className="text-lg md:text-4xl font-bold text-white mb-2 md:mb-4 drop-shadow-lg">Band Jam</h3>
-                   <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg">Electrifying music</p>
+                   <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg mb-4">Electrifying music</p>
+                   <div className="text-sm md:text-lg font-bold text-white drop-shadow-lg">Prize Pool: ₹25,000</div>
                  </div>
                </div>
                
@@ -425,15 +427,16 @@ const AboutPage = () => {
                  </div>
                  <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
                    <h3 className="text-lg md:text-4xl font-bold text-white mb-2 md:mb-4 drop-shadow-lg">Dance Battle</h3>
-                   <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg">Ultimate dance glory</p>
+                   <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg mb-4">Ultimate dance glory</p>
+                   <div className="text-sm md:text-lg font-bold text-white drop-shadow-lg">Prize Pool: ₹35,000</div>
                  </div>
                </div>
             </div>
 
             {/* Additional Flagship Cards */}
-            <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">
+            <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-8">
               {/* Step Up */}
-              <div className="relative group h-[180px] md:h-[280px] rounded-xl md:rounded-2xl overflow-hidden">
+              <div className="relative group h-[240px] md:h-[600px] rounded-xl md:rounded-2xl overflow-hidden">
                 <div className="absolute inset-0">
                   <img 
                     src="/images/stepup.JPG" 
@@ -443,14 +446,14 @@ const AboutPage = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                 </div>
                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
-                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
-                  <h3 className="text-base md:text-2xl font-bold text-white mb-2">Step Up</h3>
-                  <p className="text-xs md:text-sm text-gray-200">Solo dance energy</p>
+                  <h3 className="text-lg md:text-4xl font-bold text-white mb-2 md:mb-4 drop-shadow-lg">Step Up</h3>
+                  <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg mb-4">Solo dance energy</p>
+                  <div className="text-sm md:text-lg font-bold text-white drop-shadow-lg">Prize Pool: ₹17,000</div>
                 </div>
               </div>
 
               {/* Echoes of Noor */}
-               <div className="relative group h-[180px] md:h-[280px] rounded-xl md:rounded-2xl overflow-hidden">
+               <div className="relative group h-[240px] md:h-[600px] rounded-xl md:rounded-2xl overflow-hidden">
                  <div className="absolute inset-0">
                    <img 
                      src="/images/about-section/Echoes_of_Noor.webp" 
@@ -460,14 +463,14 @@ const AboutPage = () => {
                    <div className="absolute inset-0 bg-gradient-to-br from-black-600/80 to-pink-600/80"></div>
                  </div>
                  <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
-                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
-                  <h3 className="text-base md:text-2xl font-bold text-white mb-2">Echoes of Noor</h3>
-                  <p className="text-xs md:text-sm text-gray-200">Spoken word & poetry</p>
+                  <h3 className="text-lg md:text-4xl font-bold text-white mb-2 md:mb-4 drop-shadow-lg">Echoes of Noor</h3>
+                  <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg mb-4">Spoken word & poetry</p>
+                  <div className="text-sm md:text-lg font-bold text-white drop-shadow-lg">Prize Pool: ₹17,000</div>
                 </div>
               </div>
 
               {/* VerseVaad */}
-              <div className="relative group h-[180px] md:h-[280px] rounded-xl md:rounded-2xl overflow-hidden">
+              <div className="relative group h-[240px] md:h-[600px] rounded-xl md:rounded-2xl overflow-hidden">
                 <div className="absolute inset-0">
                   <img 
                     src="/images/about-section/Versevaad.webp" 
@@ -477,9 +480,9 @@ const AboutPage = () => {
                   <div className="absolute inset-0 bg-gradient-to-br from-black-700/90 to-cyan-600/80"></div>
                 </div>
                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
-                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
-                  <h3 className="text-base md:text-2xl font-bold text-white mb-2">VerseVaad</h3>
-                  <p className="text-xs md:text-sm text-gray-200">Poetic debate battle</p>
+                  <h3 className="text-lg md:text-4xl font-bold text-white mb-2 md:mb-4 drop-shadow-lg">VerseVaad</h3>
+                  <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg mb-4">Poetic debate battle</p>
+                  <div className="text-sm md:text-lg font-bold text-white drop-shadow-lg">Prize Pool: ₹20,000</div>
                 </div>
               </div>
             </div>
