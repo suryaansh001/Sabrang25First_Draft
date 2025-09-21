@@ -111,7 +111,7 @@ const HolographicCard = ({
         )}
 
         {/* Flip Card Container */}
-        <div className="relative h-80 w-full sm:h-96 sm:w-72 perspective-1000">
+        <div className="relative h-64 w-full sm:h-96 sm:w-72 perspective-1000">
           <div
             className="relative w-full h-full transition-transform duration-700 ease-out transform-style-preserve-3d"
             style={{ 
@@ -693,7 +693,7 @@ export default function PeopleStrip() {
   const renderCommitteeLayout = (committeeName: string) => {
     const committeeMembers = people.filter(p => p.committee === committeeName);
     if (committeeMembers.length === 0) return null;
-    
+
     const isSingleMember = committeeMembers.length === 1;
 
     // Enhanced layouts with better visual elements
@@ -702,10 +702,10 @@ export default function PeopleStrip() {
         {/* Enhanced background effects with animations */}
         <div className={`absolute inset-0 bg-neutral-700 opacity-20 rounded-lg blur-3xl transition-all duration-1000 group-hover:opacity-30`}></div>
         <div className={`absolute inset-0 bg-neutral-700 opacity-10 rounded-lg blur-2xl scale-150 transition-all duration-1000 group-hover:scale-175`}></div>
-        
+
         {/* Enhanced committee header */}
         <div 
-          className="relative z-10 text-center mb-8 sm:mb-12"
+          className="relative z-10 text-center mb-6 sm:mb-12"
         >
           <h3 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-white uppercase tracking-widest px-4`}>
             {committeeName}
@@ -716,7 +716,7 @@ export default function PeopleStrip() {
             {/* Dedicated team members working together to deliver excellence */}
           </p>
         </div>
-        
+
         {/* Enhanced cards layout with connecting elements */}
         <div className={`relative ${isSingleMember ? 'flex justify-center' : 'grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center'} gap-4 sm:gap-8 w-full max-w-7xl mx-auto px-2 sm:px-4`}>
           {committeeMembers.filter(Boolean).map((person: Person, idx: number) => (
@@ -758,7 +758,7 @@ export default function PeopleStrip() {
       </div>
 
       {/* Student Affairs cards - styled like OH and placed above OH */}
-      <div className="relative mt-6 mb-12">
+      <div className="relative mt-4 sm:mt-6 mb-12">
         <div className="flex flex-wrap justify-center lg:justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 w-full max-w-7xl mx-auto px-2 sm:px-4 relative z-10">
           {studentAffairsPeople.map((person, index) => (
             <div
@@ -801,7 +801,7 @@ export default function PeopleStrip() {
          </div>
         
                  {/* Cards container with enhanced spacing */}
-         <div className="flex flex-wrap justify-center lg:justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 mt-8 sm:mt-12 lg:mt-20 w-full max-w-7xl mx-auto px-2 sm:px-4 relative z-10">
+         <div className="flex flex-wrap justify-center lg:justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 mt-6 sm:mt-12 lg:mt-20 w-full max-w-7xl mx-auto px-2 sm:px-4 relative z-10">
         {cards.map((person, index) => (
             <div
             key={index}
