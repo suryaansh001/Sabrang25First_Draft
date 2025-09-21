@@ -1641,6 +1641,25 @@ function CheckoutPageContent() {
                                               <option key={opt.value} value={opt.value}>{opt.label}</option>
                                             ))}
                                           </select>
+                                        ) : field.type === 'file' ? (
+                                          <div className="relative">
+                                            <div className="text-xs text-white/60 mb-1">Max file size 500 KB</div>
+                                            <input
+                                              type="file"
+                                              accept={field.accept || '*'}
+                                              required={!!field.required}
+                                              className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
+                                              onChange={e => {
+                                                const file = e.target.files?.[0] || null;
+                                                if (file && file.size > 500 * 1024) {
+                                                  alert('File too large. Maximum 500 KB allowed.');
+                                                  e.currentTarget.value = '';
+                                                  return;
+                                                }
+                                                setVisitorPassDetails(prev => ({ ...prev, [field.name]: file?.name || '' }));
+                                              }}
+                                            />
+                                          </div>
                                         ) : (
                                           <input
                                             type={inputType}
@@ -1794,6 +1813,33 @@ function CheckoutPageContent() {
                                                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                                                   ))}
                                                 </select>
+                                              ) : field.type === 'file' ? (
+                                                <div className="relative">
+                                                  <div className="text-xs text-white/60 mb-1">Max file size 500 KB</div>
+                                                  <input
+                                                    type="file"
+                                                    accept={field.accept || '*'}
+                                                    required={!!field.required}
+                                                    className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
+                                                    onChange={e => {
+                                                      const file = e.target.files?.[0] || null;
+                                                      if (file && file.size > 500 * 1024) {
+                                                        alert('File too large. Maximum 500 KB allowed.');
+                                                        e.currentTarget.value = '';
+                                                        return;
+                                                      }
+                                                      setFlagshipBenefitsByEvent(prev => ({
+                                                        ...prev,
+                                                        [eventId]: {
+                                                          ...prev[parseInt(eventId, 10)],
+                                                          flagshipVisitorPassDetails: prev[parseInt(eventId, 10)].flagshipVisitorPassDetails.map((detail: Record<string, string>, idx: number) => 
+                                                            idx === index ? { ...detail, [field.name]: file?.name || '' } : detail
+                                                          )
+                                                        }
+                                                      }));
+                                                    }}
+                                                  />
+                                                </div>
                                               ) : (
                                                 <input
                                                   type={inputType}
@@ -1872,6 +1918,33 @@ function CheckoutPageContent() {
                                                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                                                   ))}
                                                 </select>
+                                              ) : field.type === 'file' ? (
+                                                <div className="relative">
+                                                  <div className="text-xs text-white/60 mb-1">Max file size 500 KB</div>
+                                                  <input
+                                                    type="file"
+                                                    accept={field.accept || '*'}
+                                                    required={!!field.required}
+                                                    className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
+                                                    onChange={e => {
+                                                      const file = e.target.files?.[0] || null;
+                                                      if (file && file.size > 500 * 1024) {
+                                                        alert('File too large. Maximum 500 KB allowed.');
+                                                        e.currentTarget.value = '';
+                                                        return;
+                                                      }
+                                                      setFlagshipBenefitsByEvent(prev => ({
+                                                        ...prev,
+                                                        [eventId]: {
+                                                          ...prev[parseInt(eventId, 10)],
+                                                          flagshipSoloVisitorPassDetails: prev[parseInt(eventId, 10)].flagshipSoloVisitorPassDetails.map((detail: Record<string, string>, idx: number) => 
+                                                            idx === index ? { ...detail, [field.name]: file?.name || '' } : detail
+                                                          )
+                                                        }
+                                                      }));
+                                                    }}
+                                                  />
+                                                </div>
                                               ) : (
                                                 <input
                                                   type={inputType}
@@ -1951,7 +2024,7 @@ function CheckoutPageContent() {
                                     </select>
                                   ) : field.type === 'file' ? (
                                     <div className="relative">
-                                      <div className="text-xs text-white/60 mb-1">Max file size 10 MB</div>
+                                      <div className="text-xs text-white/60 mb-1">Max file size 500 KB</div>
                                       <input
                                         id={inputId}
                                         type="file"
@@ -1961,8 +2034,8 @@ function CheckoutPageContent() {
                                         className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
                                         onChange={e => {
                                           const file = e.target.files?.[0] || null;
-                                          if (file && file.size > 10 * 1024 * 1024) {
-                                            alert('File too large. Maximum 10 MB allowed.');
+                                          if (file && file.size > 500 * 1024) {
+                                            alert('File too large. Maximum 500 KB allowed.');
                                             e.currentTarget.value = '';
                                             handleFileChange(group.signature, field.name, null);
                                             return;

@@ -305,12 +305,12 @@ export default function PeopleStrip() {
          linkedin: "https://www.linkedin.com/in/prabal-agrawal23?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
        }
      },
-    //  { 
-    //    img: "/images/Team/final/ShouryaPrajapat.webp", 
-    //    bg: "bg-teal-500",
-    //    name: "Shourya Prajapat",
-    //    committee: "Photography"
-    //  },
+     { 
+       img: "/images/Team/final/Shorya Prajapat.jpg", 
+       bg: "bg-teal-500",
+       name: "Shorya Prajapat",
+       committee: "Photography"
+     },
      { 
        img: "/images/Team/final/Ekansh Saraswat.webp", 
        bg: "bg-yellow-500",
@@ -379,16 +379,6 @@ export default function PeopleStrip() {
        socials: {
          linkedin: "https://www.linkedin.com/in/suryansh-khandelwal-bb495b322",
          instagram: "https://www.instagram.com/_.hrshhh?igsh=MTRnNHRwMjNqc3RmdQ=="
-       }
-     },
-     { 
-       img: "/images/Team/final/akashSaraswatCropped.webp", 
-       bg: "bg-neutral-500",
-       name: "Akshat Saraswat",
-       committee: "Internal Arrangements",
-       socials: {
-         linkedin: "https://www.linkedin.com/in/",
-         instagram: "https://www.instagram.com/"
        }
      },
      { 
