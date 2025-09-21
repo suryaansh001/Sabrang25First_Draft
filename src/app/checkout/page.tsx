@@ -310,7 +310,12 @@ function CheckoutPageContent() {
         if (benefits.supportArtistQuantity > benefits.supportArtistDetails.length) {
           const newDetails = [...benefits.supportArtistDetails];
           while (newDetails.length < benefits.supportArtistQuantity) {
-            newDetails.push({});
+            // Initialize with empty but properly structured object
+            const emptyArtist: Record<string, any> = {};
+            SUPPORT_ARTIST_FIELDS.forEach(field => {
+              emptyArtist[field.name] = '';
+            });
+            newDetails.push(emptyArtist);
           }
           updated[eventIdNum].supportArtistDetails = newDetails;
           hasChanged = true;
@@ -323,7 +328,12 @@ function CheckoutPageContent() {
         if (benefits.flagshipVisitorPassQuantity > benefits.flagshipVisitorPassDetails.length) {
           const newDetails = [...benefits.flagshipVisitorPassDetails];
           while (newDetails.length < benefits.flagshipVisitorPassQuantity) {
-            newDetails.push({});
+            // Initialize with empty but properly structured object
+            const emptyVisitor: Record<string, any> = {};
+            VISITOR_PASS_FIELDS.forEach(field => {
+              emptyVisitor[field.name] = '';
+            });
+            newDetails.push(emptyVisitor);
           }
           updated[eventIdNum].flagshipVisitorPassDetails = newDetails;
           hasChanged = true;
@@ -336,7 +346,12 @@ function CheckoutPageContent() {
         if (benefits.flagshipSoloVisitorPassQuantity > benefits.flagshipSoloVisitorPassDetails.length) {
           const newDetails = [...benefits.flagshipSoloVisitorPassDetails];
           while (newDetails.length < benefits.flagshipSoloVisitorPassQuantity) {
-            newDetails.push({});
+            // Initialize with empty but properly structured object
+            const emptySoloVisitor: Record<string, any> = {};
+            VISITOR_PASS_FIELDS.forEach(field => {
+              emptySoloVisitor[field.name] = '';
+            });
+            newDetails.push(emptySoloVisitor);
           }
           updated[eventIdNum].flagshipSoloVisitorPassDetails = newDetails;
           hasChanged = true;
