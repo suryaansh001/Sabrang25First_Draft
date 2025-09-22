@@ -961,7 +961,7 @@ export default function EventsPage() {
                           <div className="relative z-10 flex flex-col justify-end h-full">
                             {/* Prize Pool Display */}
                             {getEventPrizePool(event.id) && (
-                              <div className="flex justify-center mb-2">
+                              <div className="flex justify-center mb-20">
                                 <div className="text-white text-[8px] md:text-xs font-bold">
                                   <div className="flex items-center gap-1">
                                     <Crown className="w-2 h-2 md:w-3 md:h-3" />

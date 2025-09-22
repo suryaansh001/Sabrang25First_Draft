@@ -370,7 +370,7 @@ export default function WhySponsorUsPage() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="h-1 bg-gradient-to-r from-pink-400 to-purple-400 mb-6 lg:mb-8 mx-auto"
             />
-            <p className="text-xl md:text-2xl text-blue-300/80 mb-4 tracking-widest">Why Sponsor Us</p>
+            <p className="text-xl md:text-2xl text-blue-300/80 mb-4 tracking-widest">Why Sponsor Us?</p>
           </motion.div>
           <motion.p
             className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-12"
@@ -389,8 +389,8 @@ export default function WhySponsorUsPage() {
               Become a Partner <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </button>
             <a
-              href="/Sponsorship_Deck_Sabrang_2025.pdf"
-              download
+              href="/decks/SponsorshipDeck.pdf"
+              download="SponsorshipDeck.pdf"
               className="group w-full sm:w-auto relative inline-flex items-center justify-center gap-3 px-8 py-4 text-lg font-semibold bg-white/10 border border-white/20 rounded-full text-white transition-all duration-300 hover:bg-white/20 transform hover:scale-105"
             >
               Download Deck <Download className="w-5 h-5" /> 

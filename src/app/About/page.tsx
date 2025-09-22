@@ -291,7 +291,7 @@ const AboutPage = () => {
                   <div className="space-y-4 text-left">
                     {[
                       '₹3,00,000+ in prizes for winners and top performers',
-                      'Flagship competitions that push creativity and skill',
+                      'Flagship competitions that push creativity and skills',
                       'National-level participation',
                       'Immersive themes every year',
                       'Epic nights with DJs, live bands, and celebrities'
@@ -567,7 +567,7 @@ const AboutPage = () => {
                 </h2>
                 <p className="text-xl text-gray-300 leading-relaxed">
                   Imagine vibrant lights, roaring crowds, breathtaking performances, and an energy 
-                  that doesn't fade until the last beat drops. That's Sabrang more than a fest, 
+                  that doesn't fade until the last beat drops. That is Sabrang more than a fest, 
                   it's an experience you'll remember for years.
                 </p>
                 <div className="flex items-center space-x-4 pt-4">

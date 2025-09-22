@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import LayeredLandingPage from "../Home/HOME";
+import LayeredLandingPage from "./Home/HOME";
 import LoadingPage from "../../components/LoadingPage";
 
 // Separate component that uses useSearchParams
