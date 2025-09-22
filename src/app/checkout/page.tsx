@@ -1217,77 +1217,73 @@ function CheckoutPageContent() {
         <div className="absolute inset-0 bg-black/40"></div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-[150px] pb-4 sm:pb-8">
         {/* Mobile hamburger */}
         <button
           aria-label="Open menu"
           onClick={() => setMobileMenuOpen(true)}
-          className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
+          className="lg:hidden fixed top-3 right-3 z-50 p-2.5 rounded-xl bg-black/20 backdrop-blur-sm border border-white/20 active:scale-95 transition"
         >
-          <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
-          <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
-          <span className="block h-0.5 bg-white/80 rounded-full w-4" />
+          <span className="block h-0.5 bg-white rounded-full w-6 mb-1" />
+          <span className="block h-0.5 bg-white/90 rounded-full w-5 mb-1" />
+          <span className="block h-0.5 bg-white/80 rounded-full w-3" />
         </button>
 
         {/* Back button beneath hamburger */}
         <button
           onClick={() => router.back()}
-          className="lg:hidden fixed top-16 right-4 z-50 px-2 py-1 text-white text-base active:scale-95 transition"
+          className="lg:hidden fixed top-12 right-3 z-50 px-3 py-1.5 text-white text-sm bg-black/20 backdrop-blur-sm border border-white/20 rounded-lg active:scale-95 transition"
           aria-label="Go back"
         >
           <span className="mr-1">&lt;</span> Back
         </button>
-      {/* Header */}
-        <div className="grid grid-cols-3 items-center mb-8">
-          <div className="justify-self-start"></div>
+        
+        {/* Header - Mobile Optimized */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 items-center mb-6 sm:mb-8">
+          <div className="sm:justify-self-start"></div>
           <div className="justify-self-center text-center">
-            <h1 className="text-2xl font-bold title-chroma title-glow-animation">
+            <h1 className="text-xl sm:text-2xl font-bold title-chroma title-glow-animation">
               Event Registration
             </h1>
           </div>
-          <div className="justify-self-end opacity-0 pointer-events-none">
-            <button className="flex items-center gap-2">
-              <ChevronLeft className="w-5 h-5" />
-              Back
-            </button>
-          </div>
+          <div className="sm:justify-self-end opacity-0 pointer-events-none"></div>
         </div>
 
-        {/* Early Bird Promo Code Banner */}
+        {/* Early Bird Promo Code Banner - Mobile Optimized */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="relative mb-8 overflow-hidden"
+          className="relative mb-6 sm:mb-8 overflow-hidden"
         >
-          <div className="relative bg-gradient-to-r from-purple-900/30 via-pink-900/30 to-rose-900/30 backdrop-blur-sm border border-purple-400/30 rounded-2xl p-6 shadow-[0_0_30px_rgba(168,85,247,0.3)]">
+          <div className="relative bg-gradient-to-r from-purple-900/30 via-pink-900/30 to-rose-900/30 backdrop-blur-sm border border-purple-400/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-[0_0_30px_rgba(168,85,247,0.3)]">
             {/* Animated background pattern */}
             <div className="absolute inset-0 opacity-20">
               <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-rose-500/10 animate-pulse"></div>
-              <div className="absolute top-2 left-2 w-4 h-4 bg-purple-400/30 rounded-full animate-bounce"></div>
+              <div className="absolute top-2 left-2 w-3 h-3 sm:w-4 sm:h-4 bg-purple-400/30 rounded-full animate-bounce"></div>
               <div className="absolute top-4 right-4 w-2 h-2 bg-pink-400/40 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }}></div>
-              <div className="absolute bottom-4 left-8 w-3 h-3 bg-rose-400/30 rounded-full animate-bounce" style={{ animationDelay: '1s' }}></div>
+              <div className="absolute bottom-4 left-6 sm:left-8 w-2 h-2 sm:w-3 sm:h-3 bg-rose-400/30 rounded-full animate-bounce" style={{ animationDelay: '1s' }}></div>
             </div>
             
-            <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="relative z-10 flex flex-col gap-4">
               <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full">
-                  <Star className="w-6 h-6 text-white" />
+                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full">
+                  <Star className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <div>
-                  <h3 className="text-lg font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent">
+                <div className="flex-1">
+                  <h3 className="text-base sm:text-lg font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent">
                     🎉 Early Bird
                   </h3>
-                  <p className="text-sm text-white/80">
-                    Get 25% off on all events 
+                  <p className="text-xs sm:text-sm text-white/80">
+                    Get 25% off on all events
                   </p>
                 </div>
               </div>
               
-              <div className="flex items-center gap-3">
-                <div className="bg-black/40 border border-purple-400/50 rounded-xl px-4 py-2 backdrop-blur-sm">
-                  <span className="text-purple-300 font-mono text-lg font-bold tracking-wider">
-                  EARLYBIRD
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div className="bg-black/40 border border-purple-400/50 rounded-lg px-3 py-2 backdrop-blur-sm text-center">
+                  <span className="text-purple-300 font-mono text-base sm:text-lg font-bold tracking-wider">
+                    EARLYBIRD
                   </span>
                 </div>
                 <button
@@ -1296,7 +1292,7 @@ function CheckoutPageContent() {
                     setShowToast(true);
                     setTimeout(() => setShowToast(false), 3000);
                   }}
-                  className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-xl text-white font-medium transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/25"
+                  className="px-4 py-3 sm:py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg sm:rounded-xl text-white font-medium transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/25 text-sm sm:text-base"
                 >
                   Copy Code
                 </button>
@@ -1304,7 +1300,7 @@ function CheckoutPageContent() {
             </div>
             
             {/* Subtle glow effect */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-rose-500/20 rounded-2xl blur-sm -z-10"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-rose-500/20 rounded-xl sm:rounded-2xl blur-sm -z-10"></div>
           </div>
         </motion.div>
 
@@ -1322,7 +1318,7 @@ function CheckoutPageContent() {
                 exit={reducedMotion ? { opacity: 0 } : { opacity: 0, x: -30 }}
                 transition={{ duration: reducedMotion ? 0.15 : 0.25 }}
               >
-                <div className="grid lg:grid-cols-4 gap-8">
+                <div className="grid lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                   <div className="lg:col-span-3">
                     <div className="bg-yellow-500/15 border border-yellow-400/40 rounded-lg p-4 mb-6 shadow-[0_0_20px_rgba(250,204,21,0.2)] hidden">
                       <p className="text-sm text-yellow-200">
@@ -1338,19 +1334,19 @@ function CheckoutPageContent() {
                     )}
                     <h2 className="text-xl font-semibold mb-6 title-chroma">Choose Your Events</h2>
                     
-                    {/* Visitor Pass Section */}
-                    <div className="mb-8">
-                      <h3 className="text-lg font-medium text-white mb-4">
+                    {/* Visitor Pass Section - Mobile Optimized */}
+                    <div className="mb-6 sm:mb-8">
+                      <h3 className="text-base sm:text-lg font-medium text-white mb-3 sm:mb-4">
                         <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent">Visitor Passes</span>
                       </h3>
-                      <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
-                        <div className="flex items-center justify-between">
+                      <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                           <div className="flex-1">
                             <h4 className="font-semibold text-yellow-200 mb-2">Visitor Pass</h4>
-                            <p className="text-sm text-white/70 mb-3">
+                            <p className="text-xs sm:text-sm text-white/70 mb-3">
                               Required for non-participant entry to Sabrang venues. Select number of days for your visitor pass.
                             </p>
-                            <div className="flex items-center gap-2 text-sm text-white/60">
+                            <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-xs sm:text-sm text-white/60">
                               <span>Price: ₹69 per day</span>
                               <span>•</span>
                               <span>Non-transferable</span>
@@ -1358,19 +1354,19 @@ function CheckoutPageContent() {
                               <span>Non-refundable</span>
                             </div>
                           </div>
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center justify-center sm:justify-end gap-3">
                             <button
                               onClick={() => setVisitorPassDays(Math.max(0, visitorPassDays - 1))}
                               disabled={visitorPassDays === 0}
-                              className="w-8 h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                              className="w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center touch-manipulation"
                             >
                               -
                             </button>
-                            <span className="text-lg font-semibold min-w-[2rem] text-center">{visitorPassDays}</span>
+                            <span className="text-lg sm:text-lg font-semibold min-w-[2.5rem] sm:min-w-[2rem] text-center">{visitorPassDays}</span>
                             <button
                               onClick={() => setVisitorPassDays(Math.min(3, visitorPassDays + 1))}
                               disabled={visitorPassDays >= 3}
-                              className="w-8 h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                              className="w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center touch-manipulation"
                             >
                               +
                             </button>
@@ -1404,24 +1400,24 @@ function CheckoutPageContent() {
 
                        return (
                          <div key={event.id} className="mb-8">
-                        <h3 className="text-lg font-medium text-white mb-4">
+                        <h3 className="text-base sm:text-lg font-medium text-white mb-3 sm:mb-4">
                              <span className={`bg-gradient-to-r ${isGroupEvent ? 'from-purple-300 via-pink-400 to-rose-400' : 'from-blue-300 via-indigo-400 to-purple-400'} bg-clip-text text-transparent`}>
                                Flagship Benefits - {event.title}
                              </span>
                         </h3>
-                           <div className={`glass rounded-2xl p-6 border border-white/10 shadow-[0_0_22px_rgba(${isGroupEvent ? '168,85,247' : '59,130,246'},0.18)]`}>
+                           <div className={`glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(${isGroupEvent ? '168,85,247' : '59,130,246'},0.18)]`}>
                              {isGroupEvent && (
                                <>
-                          <div className="mb-6">
-                            <h4 className="font-semibold text-purple-200 mb-2">Support Artists</h4>
-                            <p className="text-sm text-white/70 mb-3">
+                          <div className="mb-4 sm:mb-6">
+                            <h4 className="font-semibold text-purple-200 mb-2 text-sm sm:text-base">Support Artists</h4>
+                            <p className="text-xs sm:text-sm text-white/70 mb-3">
                               You will get a form 5 days before the event where you can claim up to 3 support artists (makeup, stylist, manager) for your team performance.
                             </p>
                           </div>
                           
-                          <div className="mb-6">
-                            <h4 className="font-semibold text-purple-200 mb-2">Free Visitor Passes</h4>
-                            <p className="text-sm text-white/70 mb-3">
+                          <div className="mb-4 sm:mb-6">
+                            <h4 className="font-semibold text-purple-200 mb-2 text-sm sm:text-base">Free Visitor Passes</h4>
+                            <p className="text-xs sm:text-sm text-white/70 mb-3">
                               You will get a form 5 days before the event where you can claim up to 3 free visitor passes for your day event.
                             </p>
                           </div>
@@ -1436,9 +1432,9 @@ function CheckoutPageContent() {
 
                              {isSoloEvent && (
                                <>
-                          <div className="mb-6">
-                            <h4 className="font-semibold text-blue-200 mb-2">Free Visitor Passes</h4>
-                            <p className="text-sm text-white/70 mb-3">
+                          <div className="mb-4 sm:mb-6">
+                            <h4 className="font-semibold text-blue-200 mb-2 text-sm sm:text-base">Free Visitor Passes</h4>
+                            <p className="text-xs sm:text-sm text-white/70 mb-3">
                               You will get a form 5 days before the event where you can claim up to 2 free visitor passes for your day event.
                             </p>
                           </div>
@@ -1455,9 +1451,9 @@ function CheckoutPageContent() {
                      })}
 
                     {Array.from(eventsByCategory.entries()).map(([category, events]) => (
-                      <div key={category} className="mb-8">
-                        <h3 className="text-lg font-medium text-white mb-4"><span className="bg-gradient-to-r from-cyan-300 via-fuchsia-400 to-emerald-300 bg-clip-text text-transparent">{category}</span></h3>
-                        <div className="space-y-3">
+                      <div key={category} className="mb-6 sm:mb-8">
+                        <h3 className="text-base sm:text-lg font-medium text-white mb-3 sm:mb-4"><span className="bg-gradient-to-r from-cyan-300 via-fuchsia-400 to-emerald-300 bg-clip-text text-transparent">{category}</span></h3>
+                        <div className="space-y-2 sm:space-y-3">
                           {events.map(event => {
                             const isSelected = selectedEventIds.includes(event.id);
                         const hasConflict = hasTimeConflict(event.id);
@@ -1469,7 +1465,7 @@ function CheckoutPageContent() {
                             key={event.id}
                                 onMouseDown={() => !isDisabled && handleToggleEvent(event.id)}
                                 whileHover={!isDisabled && reducedMotion ? undefined : { scale: 1.01 }}
-                                className={`relative p-4 rounded-xl transition-colors duration-150 border overflow-hidden ${
+                                className={`relative p-3 sm:p-4 rounded-lg sm:rounded-xl transition-colors duration-150 border overflow-hidden touch-manipulation ${
                               isSelected
                                     ? 'glass border-fuchsia-400/40 shadow-[0_0_18px_rgba(217,70,239,0.35)] cursor-pointer'
                                 : isDisabled
@@ -1483,19 +1479,21 @@ function CheckoutPageContent() {
                                     <div className="absolute -top-8 -left-10 h-20 w-36 rotate-12 bg-gradient-to-r from-white/10 to-transparent blur-xl"></div>
                             </div>
                                 )}
-                                <div className="flex justify-between items-center">
-                            <div className="flex-1">
-                                    <h4 className="font-semibold">{event.title}</h4>
-                                    <div className="flex items-center gap-2 mb-1">
-                                      <p className="text-sm text-cyan-300">{event.price}</p>
-                                      <button
-                                        onClick={(e) => { e.stopPropagation(); e.preventDefault(); const ed = eventDataById.get(event.id); if (ed) setInfoEvent(ed); }} // prettier-ignore
-                                        className="text-[11px] px-2 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 cursor-pointer"
-                                        aria-label={`View info for ${event.title}`}
-                                      >
-                                        Info
-                                      </button>
-                                      {event.teamSize && <span className="text-[11px] text-white/60">👥 {event.teamSize}</span>}
+                                <div className="flex justify-between items-start sm:items-center gap-2">
+                            <div className="flex-1 min-w-0">
+                                    <h4 className="font-semibold text-sm sm:text-base truncate">{event.title}</h4>
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+                                      <p className="text-xs sm:text-sm text-cyan-300">{event.price}</p>
+                                      <div className="flex items-center gap-1 sm:gap-2">
+                                        <button
+                                          onClick={(e) => { e.stopPropagation(); e.preventDefault(); const ed = eventDataById.get(event.id); if (ed) setInfoEvent(ed); }} // prettier-ignore
+                                          className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 cursor-pointer touch-manipulation"
+                                          aria-label={`View info for ${event.title}`}
+                                        >
+                                          Info
+                                        </button>
+                                        {event.teamSize && <span className="text-[10px] sm:text-[11px] text-white/60">👥 {event.teamSize}</span>}
+                                      </div>
                                 </div>
                                     {/* Date/time intentionally hidden on checkout page */}
                                     <div className="flex items-center gap-2 text-xs text-white/70"></div>
@@ -1520,18 +1518,18 @@ function CheckoutPageContent() {
                       </div>
                     ))}
                   </div>
-                  <div>
-                    <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] static">
+                  <div className="lg:sticky lg:top-8">
+                    <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)]">
                       <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
-                      <h3 className="font-semibold text-cyan-200 mb-6">Selected Items</h3>
-                      <ul className="space-y-3 text-sm">
+                      <h3 className="font-semibold text-cyan-200 mb-4 sm:mb-6 text-sm sm:text-base">Selected Items</h3>
+                      <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
                         {visitorPassDays > 0 && (
                           <li className="flex justify-between items-start">
-                            <div className="flex-1 pr-4">
-                              <div className="font-medium text-white">Visitor Pass ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</div>
-                              <div className="text-xs text-white/70 mt-1">Non-participant entry</div>
+                            <div className="flex-1 pr-2 sm:pr-4">
+                              <div className="font-medium text-white text-xs sm:text-sm">Visitor Pass ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</div>
+                              <div className="text-[10px] sm:text-xs text-white/70 mt-1">Non-participant entry</div>
                             </div>
-                            <span className="text-yellow-400 font-semibold text-right">₹{visitorPassDays * 69}</span>
+                            <span className="text-yellow-400 font-semibold text-right text-xs sm:text-sm">₹{visitorPassDays * 69}</span>
                           </li>
                         )}
                         {Object.entries(flagshipBenefitsByEvent).map(([eventId, benefits]) => {
@@ -1620,21 +1618,21 @@ function CheckoutPageContent() {
                 exit={reducedMotion ? { opacity: 0 } : { opacity: 0, x: -30 }}
                 transition={{ duration: reducedMotion ? 0.15 : 0.25 }}
               >
-                <div className="grid lg:grid-cols-4 gap-8">
+                <div className="grid lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                   <div className="lg:col-span-3">
-                    {/* Important Email Notice */}
-                    <div className="bg-red-500/15 border border-red-400/40 rounded-lg p-4 mb-6 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
-                      <div className="flex items-start gap-3">
+                    {/* Important Email Notice - Mobile Optimized */}
+                    <div className="bg-red-500/15 border border-red-400/40 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+                      <div className="flex items-start gap-2 sm:gap-3">
                         <div className="flex-shrink-0">
-                          <div className="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center">
-                            <span className="text-red-400 text-sm font-bold">!</span>
+                          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-red-500/20 flex items-center justify-center">
+                            <span className="text-red-400 text-xs sm:text-sm font-bold">!</span>
                           </div>
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-red-200 font-semibold mb-2">⚠️ Important: Email Verification Required</h3>
-                          <p className="text-sm text-red-100 leading-relaxed">
+                          <h3 className="text-red-200 font-semibold mb-2 text-sm sm:text-base">⚠️ Important: Email Verification Required</h3>
+                          <p className="text-xs sm:text-sm text-red-100 leading-relaxed">
                             <strong>Make sure you enter the correct email address!</strong> You will receive all OTPs, tokens, and important updates on the email you provide. 
-                            <span className="block mt-1 text-red-200 font-medium">
+                            <span className="block mt-1 text-red-200 font-medium text-xs sm:text-sm">
                               If you enter a wrong email, your registration will Not be refundable.
                             </span>
                           </p>
@@ -1642,37 +1640,37 @@ function CheckoutPageContent() {
                       </div>
                     </div>
                     
-                    <h2 className="text-xl font-semibold mb-6 title-chroma">Your Details</h2>
+                    <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 title-chroma">Your Details</h2>
                     {fieldGroups.length === 0 && (
-                      <p className="text-sm text-gray-400">No events selected. Go back and pick at least one event.</p>
+                      <p className="text-xs sm:text-sm text-gray-400">No events selected. Go back and pick at least one event.</p>
                     )}
-                    <div className="space-y-8">
-                      {/* Visitor Pass Details Section */}
+                    <div className="space-y-6 sm:space-y-8">
+                      {/* Visitor Pass Details Section - Mobile Optimized */}
                       {visitorPassDays > 0 && (
-                        <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
-                          <div className="mb-4">
-                            <h3 className="font-semibold text-yellow-200">Visitor Pass Details ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</h3>
-                            <p className="text-xs text-gray-400">Fill details for your visitor pass. This pass will be valid for {visitorPassDays} day{visitorPassDays > 1 ? 's' : ''}.</p>
+                        <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
+                          <div className="mb-3 sm:mb-4">
+                            <h3 className="font-semibold text-yellow-200 text-sm sm:text-base">Visitor Pass Details ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</h3>
+                            <p className="text-[10px] sm:text-xs text-gray-400">Fill details for your visitor pass. This pass will be valid for {visitorPassDays} day{visitorPassDays > 1 ? 's' : ''}.</p>
                           </div>
-                          <div className="glass rounded-xl p-4 border border-white/10">
-                                <div className="flex justify-between items-center mb-4">
-                              <h4 className="text-sm font-medium text-white/90">Visitor Pass</h4>
-                              <div className="text-xs text-yellow-400 font-medium">₹{visitorPassDays * 69}</div>
+                          <div className="glass rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/10">
+                                <div className="flex justify-between items-center mb-3 sm:mb-4">
+                              <h4 className="text-xs sm:text-sm font-medium text-white/90">Visitor Pass</h4>
+                              <div className="text-[10px] sm:text-xs text-yellow-400 font-medium">₹{visitorPassDays * 69}</div>
                                 </div>
-                                <div className="grid md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                   {VISITOR_PASS_FIELDS.map(field => {
                                 const error = (formErrors['visitorPasses'] || {})[`visitor_${field.name}`];
                                 const value = visitorPassDetails[field.name] || '';
                                     const inputType = field.type === 'phone' ? 'tel' : (field.type === 'number' ? 'number' : (field.type === 'email' ? 'email' : 'text'));
                                     return (
                                       <div key={field.name} className="flex flex-col">
-                                        <label className="text-xs text-white/70 mb-1">
+                                        <label className="text-[10px] sm:text-xs text-white/70 mb-1">
                                           {field.label}{field.required && <span className="text-pink-400">*</span>}
                                         </label>
                                         {field.type === 'select' ? (
                                           <select
                                             required={!!field.required}
-                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm`}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg sm:rounded-xl px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-xs sm:text-sm touch-manipulation`}
                                             value={value}
                                             onChange={e => {
                                           setVisitorPassDetails(prev => ({ ...prev, [field.name]: e.target.value }));
@@ -1685,12 +1683,12 @@ function CheckoutPageContent() {
                                           </select>
                                         ) : field.type === 'file' ? (
                                           <div className="relative">
-                                            <div className="text-xs text-white/60 mb-1">Max file size 500 KB</div>
+                                            <div className="text-[10px] sm:text-xs text-white/60 mb-1">Max file size 500 KB</div>
                                             <input
                                               type="file"
                                               accept={field.accept || '*'}
                                               required={!!field.required}
-                                              className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
+                                              className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg sm:rounded-xl px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 file:mr-2 sm:file:mr-4 file:py-1 file:px-2 sm:file:px-3 file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer touch-manipulation`}
                                               onChange={e => {
                                                 const file = e.target.files?.[0] || null;
                                                 if (file && file.size > 500 * 1024) {
@@ -1707,7 +1705,7 @@ function CheckoutPageContent() {
                                             type={inputType}
                                             inputMode={field.type === 'phone' ? 'tel' : undefined}
                                             required={!!field.required}
-                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40 text-sm`}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg sm:rounded-xl px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40 text-xs sm:text-sm touch-manipulation`}
                                             placeholder={field.placeholder || ''}
                                             value={value}
                                             onChange={e => {
@@ -1715,7 +1713,7 @@ function CheckoutPageContent() {
                                             }}
                                           />
                                         )}
-                                        {error && <span className="text-xs text-pink-400 mt-1">{error}</span>}
+                                        {error && <span className="text-[10px] sm:text-xs text-pink-400 mt-1">{error}</span>}
                                       </div>
                                     );
                                   })}
