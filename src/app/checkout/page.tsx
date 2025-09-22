@@ -177,17 +177,17 @@ const Stepper = React.memo(({ currentStep }: { currentStep: Step }) => {
   return (
     <div className="flex items-center justify-center mb-6 sm:mb-8 overflow-x-auto px-2">
       <div className="flex items-center min-w-max">
-        {STEPS.map((step, i) => (
-          <React.Fragment key={step.id}>
-            <div className={`flex items-center ${i <= currentStepIndex ? 'text-purple-300' : 'text-gray-400'}`}>
+      {STEPS.map((step, i) => (
+        <React.Fragment key={step.id}>
+          <div className={`flex items-center ${i <= currentStepIndex ? 'text-purple-300' : 'text-gray-400'}`}>
               <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold ${i <= currentStepIndex ? 'bg-purple-500 text-white' : 'bg-gray-700 text-gray-400'}`}>
-                {i + 1}
-              </div>
-              <span className="ml-1 sm:ml-2 text-xs sm:text-sm hidden xs:inline">{step.name}</span>
+              {i + 1}
             </div>
+              <span className="ml-1 sm:ml-2 text-xs sm:text-sm hidden xs:inline">{step.name}</span>
+          </div>
             {i < STEPS.length - 1 && <div className={`w-6 sm:w-12 h-px mx-2 sm:mx-4 ${i < currentStepIndex ? 'bg-purple-400' : 'bg-gray-700'}`} />}
-          </React.Fragment>
-        ))}
+        </React.Fragment>
+      ))}
       </div>
     </div>
   );
@@ -1256,9 +1256,9 @@ function CheckoutPageContent() {
         {/* Header - Mobile Optimized */}
         <div className="mb-4 sm:mb-6 text-center">
           <h1 className="text-lg sm:text-xl md:text-2xl font-bold title-chroma title-glow-animation">
-            Event Registration
-          </h1>
-        </div>
+              Event Registration
+            </h1>
+          </div>
 
         {/* Early Bird Promo Code Banner - Mobile Optimized */}
         <motion.div
@@ -1306,9 +1306,9 @@ function CheckoutPageContent() {
                   className="px-4 py-2.5 sm:py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg sm:rounded-xl text-white font-medium transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/25 text-sm sm:text-base touch-manipulation w-full sm:w-auto"
                 >
                   Copy Code
-                </button>
-              </div>
-            </div>
+            </button>
+          </div>
+        </div>
             
             {/* Subtle glow effect */}
             <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-rose-500/20 rounded-lg sm:rounded-2xl blur-sm -z-10"></div>
@@ -1496,13 +1496,13 @@ function CheckoutPageContent() {
                                     <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
                                       <p className="text-xs sm:text-sm text-cyan-300">{event.price}</p>
                                       <div className="flex items-center gap-1 sm:gap-2">
-                                        <button
-                                          onClick={(e) => { e.stopPropagation(); e.preventDefault(); const ed = eventDataById.get(event.id); if (ed) setInfoEvent(ed); }} // prettier-ignore
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); e.preventDefault(); const ed = eventDataById.get(event.id); if (ed) setInfoEvent(ed); }} // prettier-ignore
                                           className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 cursor-pointer touch-manipulation"
-                                          aria-label={`View info for ${event.title}`}
-                                        >
-                                          Info
-                                        </button>
+                                        aria-label={`View info for ${event.title}`}
+                                      >
+                                        Info
+                                      </button>
                                         {event.teamSize && <span className="text-[10px] sm:text-[11px] text-white/60">👥 {event.teamSize}</span>}
                                       </div>
                                 </div>
@@ -1681,7 +1681,7 @@ function CheckoutPageContent() {
                                         {field.type === 'select' ? (
                                           <select
                                             required={!!field.required}
-                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm touch-manipulation`}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-3 h-12 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-base sm:text-sm touch-manipulation`}
                                             value={value}
                                             onChange={e => {
                                           setVisitorPassDetails(prev => ({ ...prev, [field.name]: e.target.value }));
@@ -1699,7 +1699,7 @@ function CheckoutPageContent() {
                                               type="file"
                                               accept={field.accept || '*'}
                                               required={!!field.required}
-                                              className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg sm:rounded-xl px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 file:mr-2 sm:file:mr-4 file:py-1 file:px-2 sm:file:px-3 file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer touch-manipulation`}
+                                              className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg sm:rounded-xl px-3 py-2.5 sm:py-2 w-full text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 sm:file:px-3 file:rounded-lg file:border-0 file:text-base sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer touch-manipulation`}
                                               onChange={e => {
                                                 const file = e.target.files?.[0] || null;
                                                 if (file && file.size > 500 * 1024) {
@@ -1716,7 +1716,7 @@ function CheckoutPageContent() {
                                             type={inputType}
                                             inputMode={field.type === 'phone' ? 'tel' : undefined}
                                             required={!!field.required}
-                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40 text-sm touch-manipulation`}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-3 h-12 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40 text-base sm:text-sm touch-manipulation`}
                                             placeholder={field.placeholder || ''}
                                             value={value}
                                             onChange={e => {
@@ -1791,7 +1791,7 @@ function CheckoutPageContent() {
                                                   type="file"
                                                   accept={field.accept || '*'}
                                                   required={!!field.required}
-                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100`}
+                                              className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 w-full text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-base sm:file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100`}
                                                   onChange={e => {
                                                     const file = e.target.files?.[0];
                                                     if (file) {
@@ -1892,7 +1892,7 @@ function CheckoutPageContent() {
                                                     type="file"
                                                     accept={field.accept || '*'}
                                                     required={!!field.required}
-                                                    className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
+                                                  className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 w-full text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-base sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
                                                     onChange={e => {
                                                       const file = e.target.files?.[0] || null;
                                                       if (file && file.size > 500 * 1024) {
@@ -1997,7 +1997,7 @@ function CheckoutPageContent() {
                                                     type="file"
                                                     accept={field.accept || '*'}
                                                     required={!!field.required}
-                                                    className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
+                                                    className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 w-full text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-green-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-base sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
                                                     onChange={e => {
                                                       const file = e.target.files?.[0] || null;
                                                       if (file && file.size > 500 * 1024) {
@@ -2085,7 +2085,7 @@ function CheckoutPageContent() {
                                       id={inputId}
                                       required={!!field.required}
                                       aria-describedby={error ? errorId : undefined}
-                                      className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm touch-manipulation`}
+                                      className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-3 h-12 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-base sm:text-sm touch-manipulation`}
                                       value={value}
                                       onChange={e => handleFieldChange(group.signature, field.name, e.target.value)}
                                     >
@@ -2298,7 +2298,7 @@ function CheckoutPageContent() {
                                                 type="file"
                                                 accept={field.accept || 'image/*'}
                                                 required={!!field.required}
-                                                className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
+                                                className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 w-full text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-base sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
                                                 onChange={e => {
                                                   const file = e.target.files?.[0] || null;
                                                   handleMemberFileChange(group.signature, idx, file);
