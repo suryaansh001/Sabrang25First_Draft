@@ -89,7 +89,7 @@ export const events: Event[] = [
 		description: "Get ready to experience the electrifying talent of the Band Jam Competition, where instruments roar to life with powerful melodies. This musical face-off will fill the air with rhythm and energy, leaving the audience moved by the magic of sound.",
 		rules: [
 			'Participants must arrive 1 hour before the competition begins.',
-			'Team Size: 4 - 8 members.',
+			'Team Size: 3 - 8 members.',
 			'Use of pre-recorded tracks is strictly prohibited, and doing so will lead to immediate disqualification.',
 			'Participants must bring their own instruments. A basic drum kit will be provided, but teams should bring their own cymbals if needed.',
 			'Any rule violations or inappropriate behaviour may result in disqualification.'
@@ -185,7 +185,7 @@ export const events: Event[] = [
 	{
 		id: 4,
 		title: 'STEP UP',
-		image: '/images/home2.png',
+		image: '/images/stepup.JPG',
 		category: 'Flagship',
 		prizePool: '₹17,000',
 		description: "Step Up is the ultimate solo dance challenge where individual performers take center stage. This is a test of pure skill, creativity, and stage command. With strict rules and a two-round elimination format, only the most versatile and captivating dancer will rise to the top. Are you ready to own the spotlight?",
@@ -241,9 +241,16 @@ export const events: Event[] = [
 	{ 
 		id: 5, 
 		title: 'ECHOES OF NOOR', 
-		image: '/images/Logo@2x.png', 
+		image: '/images/about-section/Echoes_of_Noor.webp', 
 		category: 'Flagship', 
 		prizePool: '₹17,000',
+		criteria: [
+			'Vocal Quality – Clarity, tone, and overall sound of the voice.',
+			'Vocal Range – Ability to hit high and low notes effectively.',
+			"Song Selection – Appropriateness of the song, connection with theme/competition, and suitability to the singer's voice.",
+			'Stage Presence & Confidence – Engagement with the audience, posture, and performance energy.',
+			'Technical Precision – Pitch accuracy, rhythm, and timing.'
+		],
 		flagshipSoloBenefits: {
 			hospitality: 'Snacks (tea/coffee) during reporting/performance window',
 			visitorPasses: {
@@ -333,7 +340,7 @@ export const events: Event[] = [
 	{
 		id: 9,
 		title: 'VERSEVAAD',
-		image: '/images/Logo@2x.png',
+		image: '/images/about-section/Versevaad.webp',
 		category: 'Flagship',
 		prizePool: '₹20,000',
 		description: '"Versevaad" is a two-round rap battle event designed to showcase originality, creativity, and improvisational skills. The competition emphasizes clean content, prohibiting any form of vulgarity.',
@@ -356,14 +363,14 @@ export const events: Event[] = [
 				]
 			},
 			{
-				heading: 'Round 2: Freestyle with Given Words (FACE OFF)',
+				heading: 'Round 2: Storytelling Rap (FACE OFF)',
 				items: [
-					'Preparation: Participants will be provided with a set of specific words. A 5-minute preparation period will be allotted to compose a rap incorporating these words.',
-					'Performance: Raps must be performed live immediately after the preparation time. All provided words must be used meaningfully within the rap.',
-					'Prohibited Aids: No mobile phones, notebooks, paper, or any external writing tools allowed during this round. You can\'t read off of your phone/Canibus\' notebook if you forget your bars.',
+					'Theme: Perform an original storytelling rap centered around a coherent narrative.',
+					'Performance: Deliver a live rap with a clear beginning, development, and conclusion.',
+					'Prohibited Aids: No mobile phones, notebooks, paper, or any external prompts allowed during the performance.',
 					'Time Limit: Maximum of 2 minutes per performance.',
 					'Content Guidelines: Maintain clean content; avoid vulgarity and offensive language.',
-					'Judging Criteria: Effective incorporation of given words, Creativity and improvisation, Flow and coherence, Audience response.'
+					'Judging Criteria: Narrative creativity and coherence, Lyricism and delivery, Flow and rhythm, Audience engagement.'
 				]
 			}
 		],
@@ -436,7 +443,7 @@ export const events: Event[] = [
 			'Originality: Every photo must be your own work. Plagiarised or AI-generated entries will be disqualified.',
 			'Deadline: Submissions must be made within the given time limit. Late entries will not be accepted.',
 			'File Format: Only JPEG or PNG formats are accepted.',
-			'Device Neutrality: Photos taken on any device (camera or mobile) will be judged equally.',
+			'use of camera is not allowed, photographs should be taken by mobile phones only',
 			'Ethics: No harm to people, animals, or the environment while taking photographs.',
 			'Disqualification: Any rule violation will result in immediate disqualification.',
 			'Open to all students with a valid ID card.'
@@ -448,7 +455,7 @@ export const events: Event[] = [
 				items: [
 					'Dual Challenge: Participants must complete both sub-themes:',
 					'1. Complementary Colour Challenge: Capture a photo using complementary colors (e.g., blue & orange, red & green, purple & yellow). Objective: Explore colour theory and create strong visual contrast.',
-					'1. Reflection Hunt: Capture a photo that prominently features reflections. Objective: Use angles, symmetry, and reflections to create depth and balance.',
+					'2. Reflection Hunt: Capture a photo that prominently features reflections. Objective: Use angles, symmetry, and reflections to create depth and balance.',
 					'Location Restriction: All photographs must be clicked within the university campus during Sabrang.',
 					'Editing Note: Only basic corrections (crop, brightness, contrast, sharpness, natural colour correction) are allowed. Any filters, presets, or AI edits will lead to penalties or disqualification.'
 				]

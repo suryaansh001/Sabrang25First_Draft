@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { quivertFont, tanNimbusFont } from "./fonts";
 import AppShell from "../../components/AppShell";
@@ -9,12 +9,6 @@ import ChatbotContent from "../../components/ChatbotContent";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://sabrang.jklu.edu.in'),
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false
-  },
   title: {
     default: "SABRANG 2025 | Sabrang JKLU | JK Lakshmipat University Fest",
     template: "%s | SABRANG 2025"
@@ -50,6 +44,13 @@ export const metadata: Metadata = {
   other: {
     'google-site-verification': 'your-verification-code-here',
   }
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

@@ -24,23 +24,29 @@ const formatTime12hr = (time24: string) => {
 };
 
 const rawEventCatalog: Omit<EventCatalogItem, 'time12hr' | 'endTime12hr' | 'teamSize'>[] = [
-  { id: 1, title: 'RAMPWALK - PANACHE', price: 'Team (Group) ₹2,999', category: 'Flagship', date: '25.12.2024', time: '19:00', endTime: '22:00' },
-  { id: 2, title: 'BANDJAM', price: 'Team (Group) ₹1,499', category: 'Flagship', date: '27.12.2024', time: '19:30', endTime: '23:00' },
-  { id: 3, title: 'DANCE BATTLE', price: 'Team (Group) ₹2,499', category: 'Flagship', date: '28.12.2024', time: '18:00', endTime: '21:00' },
-  { id: 4, title: 'STEP UP', price: 'Solo ₹499', category: 'Flagship', date: '01.01.2025', time: '18:00', endTime: '21:30' },
-  { id: 5, title: 'ECHOES OF NOOR', price: 'Solo/Duo ₹499', category: 'Flagship', date: '02.01.2025', time: '16:00', endTime: '18:00' },
-  { id: 7, title: 'BIDDING BEFORE WICKET', price: '₹199', category: 'Fun & Games', date: '25.12.2024', time: '14:00', endTime: '16:00' },
-  { id: 8, title: 'SEAL THE DEAL', price: '₹199', category: 'Fun & Games', date: '26.12.2024', time: '15:00', endTime: '17:00' },
-  { id: 9, title: 'VERSEVAAD', price: 'Solo/Duo ₹499', category: 'Flagship', date: '29.12.2024', time: '17:00', endTime: '19:00' },
-  { id: 10, title: 'IN CONVERSATION WITH', price: '₹99', category: 'Workshops & Talks', date: '30.12.2024', time: '16:00', endTime: '18:00' },
-  { id: 11, title: 'CLAY MODELLING', price: '₹199', category: 'Creative Arts', date: '26.12.2024', time: '10:00', endTime: '12:00' },
-  { id: 12, title: 'FOCUS', price: '₹199', category: 'Creative Arts', date: '27.12.2024', time: '14:00', endTime: '16:00' },
-  { id: 13, title: 'BGMI TOURNAMENT', price: '₹750', category: 'Fun & Games', date: '28.12.2024', time: '10:00', endTime: '18:00' },
-  { id: 14, title: 'VALORANT TOURNAMENT', price: '₹750', category: 'Fun & Games', date: '29.12.2024', time: '10:00', endTime: '18:00' },
-  { id: 15, title: 'FREE FIRE TOURNAMENT', price: '₹600', category: 'Fun & Games', date: '30.12.2024', time: '10:00', endTime: '18:00' },
-  { id: 17, title: 'DUMB SHOW', price: '₹199', category: 'Fun & Games', date: '31.12.2024', time: '19:00', endTime: '21:00' },
-  { id: 18, title: 'COURTROOM', price: '₹199', category: 'Special Events', date: '01.01.2025', time: '14:00', endTime: '16:00' },
-  { id: 19, title: 'ART RELAY', price: '₹199', category: 'Creative Arts', date: '02.01.2025', time: '10:00', endTime: '12:00' }
+  // 10 Oct 2025
+  { id: 1, title: 'RAMPWALK - PANACHE', price: 'Team (Group) ₹2,999', category: 'Flagship', date: '10.10.2025', time: '18:00', endTime: '20:30' },
+  { id: 14, title: 'VALORANT TOURNAMENT', price: '₹750', category: 'Fun & Games', date: '10.10.2025', time: '11:00', endTime: '15:00' },
+  { id: 12, title: 'FOCUS', price: '₹199', category: 'Creative Arts', date: '10.10.2025', time: '10:00', endTime: '11:00' },
+  { id: 8, title: 'SEAL THE DEAL', price: '₹199', category: 'Fun & Games', date: '10.10.2025', time: '11:00', endTime: '13:00' },
+  { id: 5, title: 'ECHOES OF NOOR', price: 'Solo/Duo ₹499', category: 'Flagship', date: '10.10.2025', time: '11:30', endTime: '13:30' },
+  { id: 10, title: 'IN CONVERSATION WITH', price: '₹99', category: 'Workshops & Talks', date: '10.10.2025', time: '14:00', endTime: '15:30' },
+  { id: 9, title: 'VERSEVAAD', price: 'Solo/Duo ₹499', category: 'Flagship', date: '10.10.2025', time: '16:00', endTime: '18:00' },
+  
+  // 11 Oct 2025
+  { id: 7, title: 'BIDDING BEFORE WICKET', price: '₹199', category: 'Fun & Games', date: '11.10.2025', time: '09:00', endTime: '14:00' },
+  { id: 15, title: 'FREE FIRE TOURNAMENT', price: '₹600', category: 'Fun & Games', date: '11.10.2025', time: '11:00', endTime: '14:00' },
+  { id: 10, title: 'IN CONVERSATION WITH', price: '₹99', category: 'Workshops & Talks', date: '11.10.2025', time: '11:30', endTime: '13:30' },
+  { id: 18, title: 'COURTROOM', price: '₹199', category: 'Special Events', date: '11.10.2025', time: '13:00', endTime: '16:00' },
+  { id: 2, title: 'BANDJAM', price: 'Team (Group) ₹1,499', category: 'Flagship', date: '11.10.2025', time: '17:00', endTime: '19:30' },
+  { id: 3, title: 'DANCE BATTLE', price: 'Team (Group) ₹2,499', category: 'Flagship', date: '11.10.2025', time: '19:30', endTime: '21:30' },
+
+  // 12 Oct 2025
+  { id: 11, title: 'CLAY MODELLING', price: '₹199', category: 'Creative Arts', date: '12.10.2025', time: '10:00', endTime: '11:00' },
+  { id: 13, title: 'BGMI TOURNAMENT', price: '₹750', category: 'Fun & Games', date: '12.10.2025', time: '11:00', endTime: '15:00' },
+  { id: 17, title: 'DUMB SHOW', price: '₹199', category: 'Fun & Games', date: '12.10.2025', time: '11:00', endTime: '13:00' },
+  { id: 4, title: 'STEP UP', price: 'Solo ₹499', category: 'Flagship', date: '12.10.2025', time: '11:30', endTime: '13:30' },
+  { id: 19, title: 'ART RELAY', price: '₹199', category: 'Creative Arts', date: '12.10.2025', time: '14:00', endTime: '16:00' }
 ];
 
 const findTeamSizeRule = (rules: string[] | undefined): string | undefined => {

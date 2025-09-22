@@ -32,12 +32,12 @@ const events: Event[] = [
   {
     id: 1,
     title: "RAMPWALK - PANACHE",
-    date: "25.12.2024",
-    time: "19:00",
+    date: "10.10.2025",
+    time: "18:00",
     shares: "567 Shares",
     image: "/images/about-section/Panache.png",
     description: "The grandest runway event of Sabrang, Panache is where elegance, charisma, and confidence collide. Teams will display original collections or concepts with full choreography, soundtrack, and fashion narratives. Expectations - Glamour, high-stakes competition, and crowd pulling visuals.",
-    venue: "Main Auditorium",
+    venue: "Main Stage",
     price: "₹85-120",
     capacity: "3,000 people",
     genre: "Fashion Show",
@@ -49,12 +49,12 @@ const events: Event[] = [
   {
     id: 2,
     title: "BANDJAM",
-    date: "27.12.2024",
-    time: "19:30",
+    date: "11.10.2025",
+    time: "17:00",
     shares: "189 Shares",
     image: "/images/about-section/Bandjam.png",
     description: "Get ready to experience the electrifying talent of the Band Jam Competition, where instruments roar to life with powerful melodies. This musical face-off will fill the air with rhythm and energy, leaving the audience moved by the magic of sound.",
-    venue: "Open Air Amphitheater",
+    venue: "Main Stage",
     price: "₹60",
     capacity: "5,000 people",
     genre: "Music Festival",
@@ -66,12 +66,12 @@ const events: Event[] = [
   {
     id: 3,
     title: "DANCE BATTLE",
-    date: "28.12.2024",
-    time: "18:00",
+    date: "11.10.2025",
+    time: "19:30",
     shares: "156 Shares",
     image: "/images/about-section/Dance.png",
     description: "Get ready for an electrifying crew vs. crew dance showdown! In this high-stakes elimination battle, teams of 6-12 members will face off, showcasing their best choreography and freestyle moves. With strict rules on music, props, and conduct, only the most disciplined and creative crew will be crowned champions. It's a test of skill, synchronization, and raw energy.",
-    venue: "Dance Studio",
+    venue: "Main Stage",
     price: "₹45",
     capacity: "1,500 people",
     genre: "Dance Competition",
@@ -83,12 +83,12 @@ const events: Event[] = [
   {
     id: 4,
     title: "STEP UP",
-    date: "01.01.2025",
-    time: "18:00",
+    date: "12.10.2025",
+    time: "11:30",
     shares: "145 Shares",
-    image: "/images/home2.png",
+    image: "/images/stepup.JPG",
     description: "Step Up is the ultimate solo dance challenge where individual performers take center stage. This is a test of pure skill, creativity, and stage command. With strict rules and a two-round elimination format, only the most versatile and captivating dancer will rise to the top. Are you ready to own the spotlight?",
-    venue: "Dance Studio",
+    venue: "Main Stage",
     price: "₹40",
     capacity: "1,200 people",
     genre: "Solo Dance",
@@ -100,12 +100,12 @@ const events: Event[] = [
   {
     id: 5,
     title: "ECHOES OF NOOR",
-    date: "02.01.2025",
-    time: "16:00",
+    date: "10.10.2025",
+    time: "11:30",
     shares: "95 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
+    image: "/images/about-section/Echoes_of_Noor.webp", // Placeholder image
     description: "A spoken word and poetry event celebrating the festival's theme, 'Noorwana'. Artists perform original pieces reflecting on light, cosmos, and inner luminescence.",
-    venue: "Literature Hall",
+    venue: "Main Stage",
     price: "Free",
     capacity: "150 people",
     genre: "Spoken Word",
@@ -117,8 +117,8 @@ const events: Event[] = [
   {
     id: 7,
     title: "BIDDING BEFORE WICKET",
-    date: "03.01.2025",
-    time: "20:00",
+    date: "11.10.2025",
+    time: "09:00",
     shares: "234 Shares",
     image: "/images/Logo@2x.png", // Placeholder image
     description: "Welcome to Bidding Before Wicket, the ultimate cricket strategy showdown! This isn't just an auction; it's a high-stakes battle of wits where you build your dream team with a 100 Cr budget. Navigate the auction with special powers like 'Jump Bidding' and the risky 'Budget Boost'. Qualify through a quiz round, then dominate the auction table to assemble a squad with the highest rating. Do you have what it takes to be a champion owner?",
@@ -134,12 +134,12 @@ const events: Event[] = [
   {
     id: 8,
     title: "SEAL THE DEAL",
-    date: "04.01.2025",
-    time: "18:00",
+    date: "10.10.2025",
+    time: "11:00",
     shares: "189 Shares",
     image: "/images/Logo@2x.png", // Placeholder image
     description: "Welcome to Seal the Deal, a premier trading event designed to challenge and sharpen your financial acumen. This competition offers a unique opportunity to experience the intensity and decision-making rigour of trading in a simulated environment. With a substantial dummy capital and a range of trading strategies, participants will need skill, precision, and strategy to emerge victorious.",
-    venue: "Conference Room",
+    venue: "-",
     price: "₹15",
     capacity: "150 people",
     genre: "Simulated Trading",
@@ -151,12 +151,12 @@ const events: Event[] = [
   {
     id: 9,
     title: "VERSEVAAD",
-    date: "05.01.2025",
-    time: "15:00",
+    date: "10.10.2025",
+    time: "16:00",
     shares: "110 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
+    image: "/images/about-section/Versevaad.webp", // Placeholder image
     description: '"Versevaad" is a two-round rap battle event designed to showcase originality, creativity, and improvisational skills. The competition emphasizes clean content, prohibiting any form of vulgarity.',
-    venue: "Literature Hall",
+    venue: "Main Stage",
     price: "Free",
     capacity: "100 people",
     genre: "Poetic Debate",
@@ -168,12 +168,12 @@ const events: Event[] = [
   {
     id: 10,
     title: "IN CONVERSATION WITH",
-    date: "12.01.2025",
-    time: "16:00",
+    date: "10.10.2025",
+    time: "14:00",
     shares: "234 Shares",
     image: "/images/Logo@2x.png", // Placeholder image
     description: "Join us for 'In Conversation With,' a curated talk series featuring distinguished guests from the worlds of art, activism, and creation. Listen as they share their personal journeys and behind-the-scenes stories in an intimate setting, followed by an interactive live Q&A session designed to spark ideas and inspire the next generation.",
-    venue: "Main Auditorium",
+    venue: "Tech Lawn",
     price: "Free",
     capacity: "1,000 people",
     genre: "Talk Series",
@@ -185,12 +185,12 @@ const events: Event[] = [
   {
     id: 11,
     title: "CLAY MODELLING",
-    date: "06.01.2025",
-    time: "14:00",
+    date: "12.10.2025",
+    time: "10:00",
     shares: "70 Shares",
     image: "/images/Logo@2x.png", // Placeholder image
     description: "Unleash your creativity and bring your imagination to life in our hands-on clay modelling event! This is a solo artist's playground, where you'll have the time, space, and materials to translate a concept from your mind into a tangible piece of art.",
-    venue: "Art Studio",
+    venue: "Tech Lawn",
     price: "₹40",
     capacity: "80 people",
     genre: "Sculpture",
@@ -202,12 +202,12 @@ const events: Event[] = [
   {
     id: 12,
     title: "FOCUS",
-    date: "09.01.2025",
+    date: "10.10.2025",
     time: "10:00",
     shares: "115 Shares",
     image: "/images/Logo@2x.png", // Placeholder image
     description: "Bring your vision to life through the lens! FOCUS is a creative photography challenge that pushes you to capture stories, colours, and reflections in their purest form — without heavy edits or digital tricks.",
-    venue: "Campus Wide",
+    venue: "Amphitheatre",
     price: "₹50",
     capacity: "150 people",
     genre: "Photography",
@@ -219,8 +219,8 @@ const events: Event[] = [
   {
     id: 13,
     title: "BGMI TOURNAMENT",
-    date: "07.01.2025",
-    time: "12:00",
+    date: "12.10.2025",
+    time: "11:00",
     shares: "350 Shares",
     image: "/images/Logo@2x.png", // Placeholder image
     description: "Drop into Sabrang's official BGMI tournament, where strategy and skill collide. Squads of four will battle it out in a multi-day event with a unique scoring system that rewards both aggressive play and survival. With bonus points for kill streaks and chicken dinners, only the most versatile team will claim victory. Register your squad, gear up, and get ready for the ultimate battle royale showdown.",
@@ -236,8 +236,8 @@ const events: Event[] = [
   {
     id: 14,
     title: "VALORANT TOURNAMENT",
-    date: "08.01.2025",
-    time: "12:00",
+    date: "10.10.2025",
+    time: "11:00",
     shares: "410 Shares",
     image: "/images/Logo@2x.png", // Placeholder image
     description: "Gear up for Sabrang's official 5v5 Valorant tournament! This high-stakes competition tests your team's strategy, aim, and coordination across a multi-stage format, from group stages to a best-of-five grand final. With strict fair play rules and a professional map veto process, only the most skilled team will emerge as champions.",
@@ -253,8 +253,8 @@ const events: Event[] = [
   {
     id: 15,
     title: "FREE FIRE TOURNAMENT",
-    date: "09.01.2025",
-    time: "12:00",
+    date: "11.10.2025",
+    time: "11:00",
     shares: "290 Shares",
     image: "/images/Logo@2x.png", // Placeholder image
     description: "Dive into the ultimate mobile battle royale with Sabrang's official Free Fire Tournament. This is a high-stakes competition where only the sharpest squads will survive. With strict rules against teaming and hacking, and a point system that rewards both placement and kills, your path to victory depends on pure skill and strategy. Join the lobby, prove your worth, and fight for the Booyah!",
@@ -270,12 +270,12 @@ const events: Event[] = [
   {
     id: 17,
     title: "DUMB SHOW",
-    date: "02.01.2025",
-    time: "19:00",
+    date: "12.10.2025",
+    time: "11:00",
     shares: "67 Shares",
     image: "/images/Schedule.jpg",
     description: "Get ready for a fun and challenging game of silent acting! Dumb Show brings teams together to act out movie names, phrases, or themes without speaking, relying on gestures and body language to communicate. Test your creativity and teamwork as participants race against the clock to guess the correct answer, making for an exciting and laughter-filled experience for everyone involved.",
-    venue: "Theater Hall",
+    venue: "Amphitheatre",
     price: "Free",
     capacity: "300 people",
     genre: "Mime Acting",
@@ -287,12 +287,12 @@ const events: Event[] = [
   {
     id: 18,
     title: "COURTROOM",
-    date: "11.01.2025",
-    time: "14:00",
+    date: "11.10.2025",
+    time: "13:00",
     shares: "50 Shares",
     image: "/images/Logo@2x.png",
     description: "Step into the shoes of detectives and unravel a thrilling murder mystery! With twists, turns, and surprising revelations, this event promises to test your problem-solving skills, creativity, and intuition.",
-    venue: "Moot Court Hall",
+    venue: "Amphitheatre",
     price: "₹30",
     capacity: "100 people",
     genre: "Mock Trial",
@@ -304,12 +304,12 @@ const events: Event[] = [
   {
     id: 19,
     title: "ART RELAY",
-    date: "11.01.2025",
-    time: "11:00",
+    date: "12.10.2025",
+    time: "14:00",
     shares: "60 Shares",
     image: "/images/Logo@2x.png",
     description: "The Art Relay is a unique event that tests an artist's flexibility and innovative thinking. Participants are tasked with creating a single artwork that evolves through multiple phases based on a series of revealed prompts.",
-    venue: "Art Studio",
+    venue: "Tech Lawn",
     price: "₹20",
     capacity: "40 people",
     genre: "Solo Art",
@@ -373,6 +373,15 @@ export default function EventsPage() {
     };
   }, [selectedEvent, mobileMenuOpen, scrollPosition]);
 
+  // Prefetch rules page for the selected event to speed up navigation
+  useEffect(() => {
+    if (selectedEvent) {
+      try {
+        router.prefetch(`/Events/${selectedEvent.id}/rules`);
+      } catch {}
+    }
+  }, [selectedEvent, router]);
+
   const [showScrollTop, setShowScrollTop] = useState(false);
   // ComingSoonOverlay removed – show main content directly
   const [isPageLoaded, setIsPageLoaded] = useState(true);
@@ -401,6 +410,9 @@ export default function EventsPage() {
     // Save current scroll position and event ID before opening modal
     setScrollPosition(window.scrollY);
     setClickedEventId(event.id);
+    try {
+      router.prefetch(`/Events/${event.id}/rules`);
+    } catch {}
     setSelectedEvent(event);
   };
 
@@ -880,6 +892,7 @@ export default function EventsPage() {
                         transition={{ duration: 0.35, delay: index * 0.04 }}
                         className="relative rounded-lg overflow-hidden border border-white/10 group cursor-pointer shadow-lg"
                         onClick={() => handleCardClick(event)}
+                        onMouseEnter={() => { try { router.prefetch(`/Events/${event.id}/rules`); } catch {} }}
                         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(event); } }}
                         tabIndex={0}
                       >

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { AlertCircle, ArrowLeft, Gavel, ListChecks, Shield, Star } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Gavel, ListChecks, Shield, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { events, Event, Criterion } from './events.data';
 import EventCard from '../../EventCard';
 
@@ -31,6 +31,21 @@ export default function EventRulesPage() {
 
 	const event = useMemo<Event | undefined>(() => events.find(e => e.id === eventId), [eventId]);
 
+  // Index and navigation helpers
+  const currentIndex = useMemo(() => events.findIndex(e => e.id === eventId), [eventId]);
+  const hasPrevious = currentIndex > 0;
+  const hasNext = currentIndex >= 0 && currentIndex < events.length - 1;
+  const previousEvent = hasPrevious ? events[currentIndex - 1] : undefined;
+  const nextEvent = hasNext ? events[currentIndex + 1] : undefined;
+
+  const navigateToEvent = (targetId: number) => {
+    try { router.prefetch(`/Events/${targetId}/rules`); } catch {}
+    router.push(`/Events/${targetId}/rules`);
+  };
+
+  const handlePrev = () => { if (previousEvent) navigateToEvent(previousEvent.id); };
+  const handleNext = () => { if (nextEvent) navigateToEvent(nextEvent.id); };
+
 	const { scrollY } = useScroll();
 	const heroBgY = useTransform(scrollY, [0, 500], ["0%", "30%"]);
 	const heroBgScale = useTransform(scrollY, [0, 500], [1, 1.2]);
@@ -42,6 +57,31 @@ export default function EventRulesPage() {
 	const criteria = useMemo<Criterion[]>(() => {
 		return event?.criteria && event.criteria.length > 0 ? event.criteria : defaultCriteria;
 	}, [event]);
+
+  // Prefetch neighbours for snappier navigation
+  useEffect(() => {
+    if (previousEvent) {
+      try { router.prefetch(`/Events/${previousEvent.id}/rules`); } catch {}
+    }
+    if (nextEvent) {
+      try { router.prefetch(`/Events/${nextEvent.id}/rules`); } catch {}
+    }
+  }, [previousEvent, nextEvent, router]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft' && hasPrevious) {
+        e.preventDefault();
+        handlePrev();
+      } else if (e.key === 'ArrowRight' && hasNext) {
+        e.preventDefault();
+        handleNext();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [hasPrevious, hasNext, previousEvent, nextEvent]);
 
 	const accents = (() => {
 		switch (event?.category) {
@@ -116,6 +156,25 @@ export default function EventRulesPage() {
 
 	return (
 		<div className="min-h-screen bg-neutral-900 text-white relative isolate">
+			{/* Navigation Arrows */}
+			{hasPrevious && (
+				<button
+					aria-label="Previous event"
+					onClick={handlePrev}
+					className="fixed left-[150px] top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center"
+				>
+					<ChevronLeft className="w-6 h-6" />
+				</button>
+			)}
+			{hasNext && (
+				<button
+					aria-label="Next event"
+					onClick={handleNext}
+					className="fixed right-4 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center"
+				>
+					<ChevronRight className="w-6 h-6" />
+				</button>
+			)}
 			{/* Aurora Glow Background */}
 			<div className="absolute inset-x-0 top-1/2 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
 				<div 
