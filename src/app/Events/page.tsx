@@ -1033,7 +1033,7 @@ export default function EventsPage() {
           <button
             aria-label="Open cart"
             onClick={() => {
-              router.push('/coming-soon');
+              router.push('/checkout');
             }}
             className={`lg:hidden fixed top-4 right-[100px] z-50 w-12 h-12 rounded-full flex items-center justify-center text-white active:scale-95 transition shadow-xl ${cartIds.length ? 'bg-gradient-to-r from-purple-600 to-pink-600 ring-2 ring-white/20' : 'bg-black/60 backdrop-blur-md border border-white/20 hover:bg-white/10'}`}
           >
