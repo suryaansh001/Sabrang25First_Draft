@@ -175,18 +175,20 @@ function parsePrice(priceStr: string): number {
 const Stepper = React.memo(({ currentStep }: { currentStep: Step }) => {
   const currentStepIndex = STEPS.findIndex(s => s.id === currentStep);
   return (
-    <div className="flex items-center justify-center mb-12">
-      {STEPS.map((step, i) => (
-        <React.Fragment key={step.id}>
-          <div className={`flex items-center ${i <= currentStepIndex ? 'text-purple-300' : 'text-gray-400'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${i <= currentStepIndex ? 'bg-purple-500 text-white' : 'bg-gray-700 text-gray-400'}`}>
-              {i + 1}
+    <div className="flex items-center justify-center mb-6 sm:mb-8 overflow-x-auto px-2">
+      <div className="flex items-center min-w-max">
+        {STEPS.map((step, i) => (
+          <React.Fragment key={step.id}>
+            <div className={`flex items-center ${i <= currentStepIndex ? 'text-purple-300' : 'text-gray-400'}`}>
+              <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold ${i <= currentStepIndex ? 'bg-purple-500 text-white' : 'bg-gray-700 text-gray-400'}`}>
+                {i + 1}
+              </div>
+              <span className="ml-1 sm:ml-2 text-xs sm:text-sm hidden xs:inline">{step.name}</span>
             </div>
-            <span className="ml-2 text-sm hidden sm:inline">{step.name}</span>
-          </div>
-          {i < STEPS.length - 1 && <div className={`w-12 h-px mx-4 ${i < currentStepIndex ? 'bg-purple-400' : 'bg-gray-700'}`} />}
-        </React.Fragment>
-      ))}
+            {i < STEPS.length - 1 && <div className={`w-6 sm:w-12 h-px mx-2 sm:mx-4 ${i < currentStepIndex ? 'bg-purple-400' : 'bg-gray-700'}`} />}
+          </React.Fragment>
+        ))}
+      </div>
     </div>
   );
 });
@@ -201,6 +203,16 @@ function CheckoutPageContent() {
 
   const [step, setStep] = useState<Step>('select');
   const [reducedMotion, setReducedMotion] = useState<boolean>(true);
+
+  // Function to scroll to top when changing steps
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Scroll to top when step changes
+  useEffect(() => {
+    scrollToTop();
+  }, [step]);
   const [selectedEventIds, setSelectedEventIds] = useState<number[]>([]);
   const [visitorPassDays, setVisitorPassDays] = useState<number>(0);
   const [visitorPassDetails, setVisitorPassDetails] = useState<Record<string, string>>({});
@@ -813,16 +825,19 @@ function CheckoutPageContent() {
     if (step === 'select') {
       if (selectedEventIds.length === 0 && visitorPassDays === 0) return;
       setStep('forms');
+      scrollToTop();
       return;
     }
     if (step === 'forms') {
       const isValid = validateForms();
       if (!isValid) return;
       setStep('review');
+      scrollToTop();
       return;
     }
     if (step === 'review') {
       setStep('payment');
+      scrollToTop();
       return;
     }
   };
@@ -832,9 +847,9 @@ function CheckoutPageContent() {
       router.back();
       return;
     }
-    if (step === 'forms') { setStep('select'); return; }
-    if (step === 'review') { setStep('forms'); return; }
-    if (step === 'payment') { setStep('review'); return; }
+    if (step === 'forms') { setStep('select'); scrollToTop(); return; }
+    if (step === 'review') { setStep('forms'); scrollToTop(); return; }
+    if (step === 'payment') { setStep('review'); scrollToTop(); return; }
   };
 
   // Helper function to load Cashfree SDK
@@ -1239,14 +1254,10 @@ function CheckoutPageContent() {
         </button>
         
         {/* Header - Mobile Optimized */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 items-center mb-6 sm:mb-8">
-          <div className="sm:justify-self-start"></div>
-          <div className="justify-self-center text-center">
-            <h1 className="text-xl sm:text-2xl font-bold title-chroma title-glow-animation">
-              Event Registration
-            </h1>
-          </div>
-          <div className="sm:justify-self-end opacity-0 pointer-events-none"></div>
+        <div className="mb-4 sm:mb-6 text-center">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold title-chroma title-glow-animation">
+            Event Registration
+          </h1>
         </div>
 
         {/* Early Bird Promo Code Banner - Mobile Optimized */}
@@ -1254,24 +1265,24 @@ function CheckoutPageContent() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="relative mb-6 sm:mb-8 overflow-hidden"
+          className="relative mb-4 sm:mb-6 overflow-hidden"
         >
-          <div className="relative bg-gradient-to-r from-purple-900/30 via-pink-900/30 to-rose-900/30 backdrop-blur-sm border border-purple-400/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-[0_0_30px_rgba(168,85,247,0.3)]">
+          <div className="relative bg-gradient-to-r from-purple-900/30 via-pink-900/30 to-rose-900/30 backdrop-blur-sm border border-purple-400/30 rounded-lg sm:rounded-2xl p-3 sm:p-6 shadow-[0_0_30px_rgba(168,85,247,0.3)]">
             {/* Animated background pattern */}
             <div className="absolute inset-0 opacity-20">
               <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-rose-500/10 animate-pulse"></div>
-              <div className="absolute top-2 left-2 w-3 h-3 sm:w-4 sm:h-4 bg-purple-400/30 rounded-full animate-bounce"></div>
-              <div className="absolute top-4 right-4 w-2 h-2 bg-pink-400/40 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }}></div>
-              <div className="absolute bottom-4 left-6 sm:left-8 w-2 h-2 sm:w-3 sm:h-3 bg-rose-400/30 rounded-full animate-bounce" style={{ animationDelay: '1s' }}></div>
+              <div className="absolute top-2 left-2 w-2 h-2 sm:w-4 sm:h-4 bg-purple-400/30 rounded-full animate-bounce"></div>
+              <div className="absolute top-4 right-4 w-1 h-1 sm:w-2 sm:h-2 bg-pink-400/40 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }}></div>
+              <div className="absolute bottom-4 left-4 sm:left-8 w-1 h-1 sm:w-3 sm:h-3 bg-rose-400/30 rounded-full animate-bounce" style={{ animationDelay: '1s' }}></div>
             </div>
             
-            <div className="relative z-10 flex flex-col gap-4">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full">
-                  <Star className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <div className="relative z-10 space-y-3">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex-shrink-0">
+                  <Star className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-base sm:text-lg font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm sm:text-lg font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent">
                     🎉 Early Bird
                   </h3>
                   <p className="text-xs sm:text-sm text-white/80">
@@ -1280,9 +1291,9 @@ function CheckoutPageContent() {
                 </div>
               </div>
               
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                <div className="bg-black/40 border border-purple-400/50 rounded-lg px-3 py-2 backdrop-blur-sm text-center">
-                  <span className="text-purple-300 font-mono text-base sm:text-lg font-bold tracking-wider">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+                <div className="bg-black/40 border border-purple-400/50 rounded-lg px-3 py-2 backdrop-blur-sm text-center flex-1 sm:flex-none">
+                  <span className="text-purple-300 font-mono text-sm sm:text-lg font-bold tracking-wider">
                     EARLYBIRD
                   </span>
                 </div>
@@ -1292,7 +1303,7 @@ function CheckoutPageContent() {
                     setShowToast(true);
                     setTimeout(() => setShowToast(false), 3000);
                   }}
-                  className="px-4 py-3 sm:py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg sm:rounded-xl text-white font-medium transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/25 text-sm sm:text-base"
+                  className="px-4 py-2.5 sm:py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg sm:rounded-xl text-white font-medium transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/25 text-sm sm:text-base touch-manipulation w-full sm:w-auto"
                 >
                   Copy Code
                 </button>
@@ -1300,7 +1311,7 @@ function CheckoutPageContent() {
             </div>
             
             {/* Subtle glow effect */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-rose-500/20 rounded-xl sm:rounded-2xl blur-sm -z-10"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-rose-500/20 rounded-lg sm:rounded-2xl blur-sm -z-10"></div>
           </div>
         </motion.div>
 
@@ -1621,18 +1632,18 @@ function CheckoutPageContent() {
                 <div className="grid lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                   <div className="lg:col-span-3">
                     {/* Important Email Notice - Mobile Optimized */}
-                    <div className="bg-red-500/15 border border-red-400/40 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
-                      <div className="flex items-start gap-2 sm:gap-3">
+                    <div className="bg-red-500/15 border border-red-400/40 rounded-lg p-3 mb-4 sm:mb-6 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+                      <div className="flex items-start gap-2">
                         <div className="flex-shrink-0">
-                          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-red-500/20 flex items-center justify-center">
-                            <span className="text-red-400 text-xs sm:text-sm font-bold">!</span>
+                          <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center">
+                            <span className="text-red-400 text-xs font-bold">!</span>
                           </div>
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-red-200 font-semibold mb-2 text-sm sm:text-base">⚠️ Important: Email Verification Required</h3>
-                          <p className="text-xs sm:text-sm text-red-100 leading-relaxed">
+                          <h3 className="text-red-200 font-semibold mb-2 text-sm">⚠️ Important: Email Verification Required</h3>
+                          <p className="text-xs text-red-100 leading-relaxed">
                             <strong>Make sure you enter the correct email address!</strong> You will receive all OTPs, tokens, and important updates on the email you provide. 
-                            <span className="block mt-1 text-red-200 font-medium text-xs sm:text-sm">
+                            <span className="block mt-1 text-red-200 font-medium text-xs">
                               If you enter a wrong email, your registration will Not be refundable.
                             </span>
                           </p>
@@ -1640,7 +1651,7 @@ function CheckoutPageContent() {
                       </div>
                     </div>
                     
-                    <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 title-chroma">Your Details</h2>
+                    <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 title-chroma text-center sm:text-left">Your Details</h2>
                     {fieldGroups.length === 0 && (
                       <p className="text-xs sm:text-sm text-gray-400">No events selected. Go back and pick at least one event.</p>
                     )}
@@ -1648,7 +1659,7 @@ function CheckoutPageContent() {
                       {/* Visitor Pass Details Section - Mobile Optimized */}
                       {visitorPassDays > 0 && (
                         <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
-                          <div className="mb-3 sm:mb-4">
+                          <div className="mb-3 sm:mb-4 text-center sm:text-left">
                             <h3 className="font-semibold text-yellow-200 text-sm sm:text-base">Visitor Pass Details ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</h3>
                             <p className="text-[10px] sm:text-xs text-gray-400">Fill details for your visitor pass. This pass will be valid for {visitorPassDays} day{visitorPassDays > 1 ? 's' : ''}.</p>
                           </div>
@@ -1657,20 +1668,20 @@ function CheckoutPageContent() {
                               <h4 className="text-xs sm:text-sm font-medium text-white/90">Visitor Pass</h4>
                               <div className="text-[10px] sm:text-xs text-yellow-400 font-medium">₹{visitorPassDays * 69}</div>
                                 </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                <div className="grid grid-cols-1 gap-3">
                                   {VISITOR_PASS_FIELDS.map(field => {
                                 const error = (formErrors['visitorPasses'] || {})[`visitor_${field.name}`];
                                 const value = visitorPassDetails[field.name] || '';
                                     const inputType = field.type === 'phone' ? 'tel' : (field.type === 'number' ? 'number' : (field.type === 'email' ? 'email' : 'text'));
                                     return (
                                       <div key={field.name} className="flex flex-col">
-                                        <label className="text-[10px] sm:text-xs text-white/70 mb-1">
+                                        <label className="text-[10px] sm:text-xs text-white/70 mb-1 text-left">
                                           {field.label}{field.required && <span className="text-pink-400">*</span>}
                                         </label>
                                         {field.type === 'select' ? (
                                           <select
                                             required={!!field.required}
-                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg sm:rounded-xl px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-xs sm:text-sm touch-manipulation`}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm touch-manipulation`}
                                             value={value}
                                             onChange={e => {
                                           setVisitorPassDetails(prev => ({ ...prev, [field.name]: e.target.value }));
@@ -1705,7 +1716,7 @@ function CheckoutPageContent() {
                                             type={inputType}
                                             inputMode={field.type === 'phone' ? 'tel' : undefined}
                                             required={!!field.required}
-                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg sm:rounded-xl px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40 text-xs sm:text-sm touch-manipulation`}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40 text-sm touch-manipulation`}
                                             placeholder={field.placeholder || ''}
                                             value={value}
                                             onChange={e => {
@@ -2042,9 +2053,9 @@ function CheckoutPageContent() {
                       })}
 
                       {fieldGroups.map(group => (
-                        <div key={group.signature} className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_22px_rgba(236,72,153,0.18)]">
-                          <div className="mb-4">
-                            <h3 className="font-semibold text-fuchsia-200">
+                        <div key={group.signature} className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(236,72,153,0.18)]">
+                          <div className="mb-4 text-center sm:text-left">
+                            <h3 className="font-semibold text-fuchsia-200 text-sm sm:text-base">
                               {group.events.length > 1 
                                 ? `For: ${group.events.map(e => e.title).join(', ')}` 
                                 : `For: ${group.events[0].title}`
@@ -2057,7 +2068,7 @@ function CheckoutPageContent() {
                               }
                             </p>
                           </div>
-                          <div className="grid md:grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             {group.fields.map((field, idx) => {
                               const value = (formDataBySignature[group.signature] || {})[field.name] || '';
                               const error = (formErrors[group.signature] || {})[field.name];
@@ -2066,7 +2077,7 @@ function CheckoutPageContent() {
                               const errorId = `${inputId}-error`;
                           return (
                                 <div key={field.name} className="flex flex-col">
-                                  <label htmlFor={inputId} className="text-sm text-white/80 mb-1">
+                                  <label htmlFor={inputId} className="text-xs sm:text-sm text-white/80 mb-1 text-left">
                                     {field.label}{field.required ? <span className="text-pink-400"> *</span> : null}
                                   </label>
                                   {field.type === 'select' ? (
@@ -2074,7 +2085,7 @@ function CheckoutPageContent() {
                                       id={inputId}
                                       required={!!field.required}
                                       aria-describedby={error ? errorId : undefined}
-                                      className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400`}
+                                      className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm touch-manipulation`}
                                       value={value}
                                       onChange={e => handleFieldChange(group.signature, field.name, e.target.value)}
                                     >
@@ -2118,7 +2129,7 @@ function CheckoutPageContent() {
                                       inputMode={field.type === 'phone' ? 'tel' : undefined}
                                       required={!!field.required}
                                       aria-describedby={error ? errorId : undefined}
-                                      className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40`}
+                                      className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40 text-sm touch-manipulation`}
                                       placeholder={field.placeholder || ''}
                                       value={value}
                                       onChange={e => handleFieldChange(group.signature, field.name, e.target.value)}

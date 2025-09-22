@@ -9,6 +9,12 @@ import ChatbotContent from "../../components/ChatbotContent";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://sabrang.jklu.edu.in'),
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false
+  },
   title: {
     default: "SABRANG 2025 | Sabrang JKLU | JK Lakshmipat University Fest",
     template: "%s | SABRANG 2025"
