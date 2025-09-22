@@ -81,6 +81,13 @@ function AdminDashboard() {
       hoverGradient: "from-purple-600 to-pink-700"
     },
     {
+      title: "Recent Registrations",
+      href: "/admin/recent-registrations",
+      icon: <Calendar className="w-6 h-6" />,
+      gradient: "from-teal-500 to-emerald-600",
+      hoverGradient: "from-teal-600 to-emerald-700"
+    },
+    {
       title: "Email Management",
       href: "/admin/email-management",
       icon: <Mail className="w-6 h-6" />,
