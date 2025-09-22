@@ -25,6 +25,22 @@ interface AnalyticsData {
   activePurchases: number;
   usedPromoCodes: number;
   totalRevenue: number;
+  // Enhanced analytics for paid users
+  overview?: {
+    totalUsers: number;
+    paidUsers: number;
+    pendingPayments: number;
+    totalPurchases: number;
+    totalRevenue: number;
+    totalTeams: number;
+    conversionRate: string;
+    pendingIdVerifications: number;
+  };
+  recent?: {
+    registrationsThisWeek: number;
+  };
+  eventPopularity?: Array<{ _id: string; count: number }>;
+  universityDistribution?: Array<{ _id: string; count: number }>;
 }
 
 function AdminDashboard() {
@@ -79,6 +95,13 @@ function AdminDashboard() {
       icon: <Users className="w-6 h-6" />,
       gradient: "from-purple-500 to-pink-600",
       hoverGradient: "from-purple-600 to-pink-700"
+    },
+    {
+      title: "Paid Users",
+      href: "/admin/paid-users",
+      icon: <Users className="w-6 h-6" />,
+      gradient: "from-emerald-500 to-green-600",
+      hoverGradient: "from-emerald-600 to-green-700"
     },
     {
       title: "Recent Registrations",
