@@ -640,8 +640,8 @@ export default function EventsPage() {
             <div className="absolute top-4 left-4 z-[10001] px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-sm">
               {currentEventIndex + 1} / {filteredEvents.length}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 max-h-[80vh]">
-              <div className="relative aspect-[4/3] md:aspect-auto md:h-full bg-neutral-900 overflow-hidden">
+            <div className="flex flex-col md:grid md:grid-cols-2 max-h-[85vh] md:max-h-[80vh]">
+              <div className="relative aspect-video md:aspect-auto md:h-full bg-neutral-900 overflow-hidden flex-shrink-0">
                 <img
                   src={selectedEvent.modalImage || '/images/backgrounds/eventpage.webp'}
                   alt={`A unique visual for ${selectedEvent.title}`}
@@ -656,7 +656,7 @@ export default function EventsPage() {
                 <div className="absolute inset-0 bg-black/40" />
                 <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #FFF 1px, transparent 0)', backgroundSize: '25px 25px' }} />
               </div>
-              <div className="p-6 md:p-8 text-white space-y-5 md:space-y-6 overflow-y-auto md:border-l md:border-white/10">
+              <div className="p-6 text-white space-y-4 overflow-y-auto md:p-8 md:space-y-6 md:border-l md:border-white/10">
                 <div>
                   <h2 className="text-2xl md:text-3xl font-bold mb-2 tracking-tight">{selectedEvent.title}</h2>
                   <div className="flex flex-wrap items-center gap-3 text-sm text-gray-300">
