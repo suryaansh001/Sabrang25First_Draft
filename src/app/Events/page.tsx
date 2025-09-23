@@ -86,7 +86,7 @@ const events: Event[] = [
     date: "12.10.2025",
     time: "11:30",
     shares: "145 Shares",
-    image: "/posters/STEP UP.webp",
+    image: "/posters/STEPUP.webp",
     description: "Step Up is the ultimate solo dance challenge where individual performers take center stage. This is a test of pure skill, creativity, and stage command. With strict rules and a two-round elimination format, only the most versatile and captivating dancer will rise to the top. Are you ready to own the spotlight?",
     venue: "Main Stage",
     price: "₹40",
@@ -638,7 +638,7 @@ export default function EventsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2">
               <div className="relative aspect-[4/3] md:aspect-auto md:h-full bg-black/40">
                 <img
-                  src={selectedEvent.image}
+                  src={(EVENTS_DATA.find(e => e.id === selectedEvent.id)?.image) || selectedEvent.image}
                   alt={selectedEvent.title}
                   className="absolute inset-0 w-full h-full object-cover"
                   draggable={false}
@@ -885,7 +885,7 @@ export default function EventsPage() {
                   </motion.div>
 
                   {/* Events Grid - card with image and bottom info */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
                     {filteredEvents.map((event, index) => {
                       const showPosterStyle = posterEventIds.includes(event.id);
                       return showPosterStyle ? (
@@ -902,7 +902,7 @@ export default function EventsPage() {
                           tabIndex={0}
                         >
                           {/* Image container */}
-                          <div className="relative w-full aspect-[2/3] overflow-hidden">
+                          <div className="relative w-full aspect-[3/4] sm:aspect-[2/3] overflow-hidden">
                             <img
                               loading="lazy"
                               decoding="async"
@@ -962,7 +962,7 @@ export default function EventsPage() {
                           tabIndex={0}
                         >
                           {/* Image container (hidden) */}
-                          <div className="relative w-full aspect-[2/3] bg-black/20">
+                          <div className="relative w-full aspect-[3/4] sm:aspect-[2/3] bg-black/20">
                             <img
                               loading="lazy"
                               decoding="async"
