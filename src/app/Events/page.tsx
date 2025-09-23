@@ -35,7 +35,7 @@ const events: Event[] = [
     date: "10.10.2025",
     time: "18:00",
     shares: "567 Shares",
-    image: "/images/about-section/Panache.png",
+    image: "/posters/PANACHE.webp",
     description: "The grandest runway event of Sabrang, Panache is where elegance, charisma, and confidence collide. Teams will display original collections or concepts with full choreography, soundtrack, and fashion narratives. Expectations - Glamour, high-stakes competition, and crowd pulling visuals.",
     venue: "Main Stage",
     price: "₹85-120",
@@ -52,7 +52,7 @@ const events: Event[] = [
     date: "11.10.2025",
     time: "17:00",
     shares: "189 Shares",
-    image: "/images/about-section/Bandjam.png",
+    image: "/posters/BANDJAM.webp",
     description: "Get ready to experience the electrifying talent of the Band Jam Competition, where instruments roar to life with powerful melodies. This musical face-off will fill the air with rhythm and energy, leaving the audience moved by the magic of sound.",
     venue: "Main Stage",
     price: "₹60",
@@ -69,7 +69,7 @@ const events: Event[] = [
     date: "11.10.2025",
     time: "19:30",
     shares: "156 Shares",
-    image: "/images/about-section/Dance.png",
+    image: "/posters/DANCE_BATTLE.webp",
     description: "Get ready for an electrifying crew vs. crew dance showdown! In this high-stakes elimination battle, teams of 6-12 members will face off, showcasing their best choreography and freestyle moves. With strict rules on music, props, and conduct, only the most disciplined and creative crew will be crowned champions. It's a test of skill, synchronization, and raw energy.",
     venue: "Main Stage",
     price: "₹45",
@@ -86,7 +86,7 @@ const events: Event[] = [
     date: "12.10.2025",
     time: "11:30",
     shares: "145 Shares",
-    image: "/images/stepup.JPG",
+    image: "/posters/STEP UP.webp",
     description: "Step Up is the ultimate solo dance challenge where individual performers take center stage. This is a test of pure skill, creativity, and stage command. With strict rules and a two-round elimination format, only the most versatile and captivating dancer will rise to the top. Are you ready to own the spotlight?",
     venue: "Main Stage",
     price: "₹40",
@@ -103,7 +103,7 @@ const events: Event[] = [
     date: "10.10.2025",
     time: "11:30",
     shares: "95 Shares",
-    image: "/images/about-section/Echoes_of_Noor.webp", // Placeholder image
+    image: "/posters/Echoes of noor Draft-05.4.webp", // Placeholder image
     description: "A spoken word and poetry event celebrating the festival's theme, 'Noorwana'. Artists perform original pieces reflecting on light, cosmos, and inner luminescence.",
     venue: "Main Stage",
     price: "Free",
@@ -154,7 +154,7 @@ const events: Event[] = [
     date: "10.10.2025",
     time: "16:00",
     shares: "110 Shares",
-    image: "/images/about-section/Versevaad.webp", // Placeholder image
+    image: "/posters/VERSEVAAD_page-0001.webp", // Placeholder image
     description: '"Versevaad" is a two-round rap battle event designed to showcase originality, creativity, and improvisational skills. The competition emphasizes clean content, prohibiting any form of vulgarity.',
     venue: "Main Stage",
     price: "Free",
@@ -530,6 +530,9 @@ export default function EventsPage() {
     return categoryMatch && flagshipMatch;
   });
 
+  // IDs of events to show with the poster style (no overlay)
+  const posterEventIds = [1, 2, 3, 4, 5, 9];
+
   // Calculate navigation state
   const currentEventIndex = selectedEvent ? filteredEvents.findIndex(event => event.id === selectedEvent.id) : -1;
   const hasPrevious = currentEventIndex > 0;
@@ -883,148 +886,149 @@ export default function EventsPage() {
 
                   {/* Events Grid - card with image and bottom info */}
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
-                    {filteredEvents.map((event, index) => (
-                      <motion.div
-                        key={event.id}
-                        data-event-id={event.id}
-                        initial={{ opacity: 0, y: 24 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.35, delay: index * 0.04 }}
-                        className="relative rounded-lg overflow-hidden border border-white/10 group cursor-pointer shadow-lg"
-                        onClick={() => handleCardClick(event)}
-                        onMouseEnter={() => { try { router.prefetch(`/Events/${event.id}/rules`); } catch {} }}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(event); } }}
-                        tabIndex={0}
-                      >
-                        {/* Image container */}
-                        <div className="relative w-full aspect-[2/3] bg-black/20">
-                          <img
-                            loading="lazy"
-                            decoding="async"
-                            sizes="(min-width:1024px) 25vw, (min-width:768px) 33vw, 50vw"
-                            fetchPriority="low"
-                            draggable={false}
-                            src={event.image}
-                            alt={event.title}
-                            className="absolute inset-0 w-full h-full object-cover opacity-0"
-                            onError={(e) => {
-                              console.error(`Failed to load image: ${event.image}`);
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                              const fallback = document.getElementById(`fallback-${event.id}`);
-                              if (fallback) fallback.style.display = 'block';
-                            }}
-                          />
-                          <div
-                            className={`absolute inset-0 ${event.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`}
-                            style={{ display: 'none' }}
-                            id={`fallback-${event.id}`}
-                          />
-                        </div>
-
-                        {/* --- MYSTERIOUS & SUSPENSEFUL OVERLAY --- */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-slate-800 overflow-hidden p-2 md:p-4 flex flex-col justify-between">
-                          
-                          {/* Mysterious grid pattern */}
-                          <div className="absolute inset-0 opacity-5" style={{
-                            backgroundImage: 'radial-gradient(circle at 1px 1px, #00ff88 1px, transparent 0)',
-                            backgroundSize: '20px 20px',
-                          }} />
-
-                          {/* Glitch effect lines */}
-                          <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-pulse opacity-30" />
-                          <div className="absolute bottom-0 right-0 w-full h-0.5 bg-gradient-to-l from-transparent via-red-400 to-transparent animate-pulse opacity-30 delay-1000" />
-
-                          {/* Top section - Mysterious badge */}
-                          <div className="relative z-10 flex justify-between items-start">
-                            <div className="px-2 md:px-3 py-0.5 md:py-1 bg-black/50 border border-green-400/50 rounded-sm backdrop-blur-sm">
-                              <span className="text-[10px] md:text-xs font-bold text-green-400 uppercase tracking-widest" style={{ fontFamily: 'monospace' }}>
-                                {event.isFlagship ? '⚡ FLAGSHIP' : event.category}
-                              </span>
-                            </div>
-                            {event.isFlagship && (
-                              <div className="w-4 h-4 md:w-6 md:h-6 bg-gradient-to-r from-green-400 to-blue-400 rounded-sm border border-green-400/50 flex items-center justify-center animate-pulse">
-                                <span className="text-[8px] md:text-xs">🔒</span>
-                              </div>
-                            )}
+                    {filteredEvents.map((event, index) => {
+                      const showPosterStyle = posterEventIds.includes(event.id);
+                      return showPosterStyle ? (
+                        <motion.div
+                          key={event.id}
+                          data-event-id={event.id}
+                          initial={{ opacity: 0, y: 24 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.35, delay: index * 0.04 }}
+                          className="rounded-lg overflow-hidden border border-white/10 group cursor-pointer shadow-lg bg-neutral-900/60 flex flex-col"
+                          onClick={() => handleCardClick(event)}
+                          onMouseEnter={() => { try { router.prefetch(`/Events/${event.id}/rules`); } catch {} }}
+                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(event); } }}
+                          tabIndex={0}
+                        >
+                          {/* Image container */}
+                          <div className="relative w-full aspect-[2/3] overflow-hidden">
+                            <img
+                              loading="lazy"
+                              decoding="async"
+                              sizes="(min-width:1024px) 25vw, (min-width:768px) 33vw, 50vw"
+                              fetchPriority="low"
+                              draggable={false}
+                              src={event.image}
+                              alt={event.title}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              onError={(e) => {
+                                console.error(`Failed to load image: ${event.image}`);
+                                const target = e.target as HTMLImageElement;
+                                target.src = '/images/Logo@2x.png'; // Fallback image
+                              }}
+                            />
                           </div>
 
-                          {/* Center - Event name positioned in middle only */}
-                          <div className="absolute inset-0 flex items-center justify-center z-10">
-                            <div className="relative text-center">
-                              {/* Glitch overlay effect */}
-                              <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 via-transparent to-red-400/20 animate-pulse opacity-50" />
-                              
-                              {/* Main title with neon effect - middle position only */}
-                              <h3 className="relative font-bold text-sm md:text-lg lg:text-xl text-white px-1 md:px-2 uppercase tracking-widest leading-tight" 
-                                  style={{ 
-                                    textShadow: '0 0 10px rgba(0, 255, 136, 0.8), 0 0 20px rgba(0, 255, 136, 0.4)',
-                                    fontFamily: 'monospace',
-                                    letterSpacing: '0.2em'
-                                  }}>
-                                {event.title}
-                              </h3>
-                              
-                              {/* Scanning line effect */}
-                              <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-pulse" />
-                            </div>
-                          </div>
-
-                          {/* Bottom section - Prize Pool, Price + Add to cart bar */}
-                          <div className="relative z-10 flex flex-col justify-end h-full">
-                            {/* Prize Pool Display */}
-                            {getEventPrizePool(event.id) && (
-                              <div className="flex justify-center mb-20">
-                                <div className="text-white text-[8px] md:text-xs font-bold">
-                                  <div className="flex items-center gap-1">
-                                    <Crown className="w-2 h-2 md:w-3 md:h-3" />
-                                    <span className="font-extrabold tracking-wide">
-                                      Prize Pool: {getEventPrizePool(event.id)}
-                                    </span>
-                                  </div>
-                                </div>
+                          {/* Content container */}
+                          <div className="p-3 md:p-4 flex flex-col flex-grow">
+                            <div className="flex justify-between items-start mb-2">
+                              <div className={`px-2 py-0.5 rounded-sm text-white text-[10px] font-bold uppercase tracking-widest ${event.isFlagship ? 'bg-yellow-500/20 border border-yellow-400/30 text-yellow-300' : 'bg-black/50 border border-white/20'}`}>
+                                {event.isFlagship ? '⚡ Flagship' : event.category}
                               </div>
-                            )}
-                            
-                            {/* Price badge (from EVENT_CATALOG if available) */}
-                            <div className="flex justify-center mb-1.5">
-                              <div className="text-white text-[9px] md:text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded-full border border-white/20">
+                              <div className="text-white text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded-full border border-white/20">
                                 {catalogById.get(event.id)?.price || event.price}
                               </div>
                             </div>
-                            
-                            {/* Add to cart button */}
-                            <div className="px-2 md:px-3 py-2 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
-                              <button
-                                type="button"
-                                onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }}
-                                className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs transition-all duration-200 cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/30 border-purple-400/60 text-white shadow-[0_0_12px_rgba(168,85,247,0.45)]' : 'bg-white/10 border-white/30 text-white/90 hover:bg-white/15'}`}
-                                aria-pressed={cartIds.includes(event.id)}
-                              >
-                                <span className={`inline-block w-3 h-3 md:w-4 md:h-4 rounded-full ring-1 ${cartIds.includes(event.id) ? 'bg-purple-500 ring-purple-300' : 'bg-transparent ring-white/40'}`}></span>
-                                <span className="uppercase tracking-wider" style={{ fontFamily: 'monospace' }}>
-                                  {cartIds.includes(event.id) ? 'Added' : 'Add to cart'}
-                                </span>
-                              </button>
-                            </div>
+
+                            <h3 className="font-bold text-sm md:text-base text-white uppercase tracking-wider flex-grow mb-3">
+                              {event.title}
+                            </h3>
+
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }}
+                              className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs transition-all duration-200 cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/80 border-purple-400/60 text-white shadow-[0_0_12px_rgba(168,85,247,0.45)]' : 'bg-white/10 border-white/30 text-white/90 hover:bg-white/15 backdrop-blur-sm'}`}
+                              aria-pressed={cartIds.includes(event.id)}
+                            >
+                              <ShoppingCart className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                              <span className="uppercase tracking-wider">
+                                {cartIds.includes(event.id) ? 'Added' : 'Add to cart'}
+                              </span>
+                            </button>
+                          </div>
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key={event.id}
+                          data-event-id={event.id}
+                          initial={{ opacity: 0, y: 24 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.35, delay: index * 0.04 }}
+                          className="relative rounded-lg overflow-hidden border border-white/10 group cursor-pointer shadow-lg"
+                          onClick={() => handleCardClick(event)}
+                          onMouseEnter={() => { try { router.prefetch(`/Events/${event.id}/rules`); } catch {} }}
+                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(event); } }}
+                          tabIndex={0}
+                        >
+                          {/* Image container (hidden) */}
+                          <div className="relative w-full aspect-[2/3] bg-black/20">
+                            <img
+                              loading="lazy"
+                              decoding="async"
+                              sizes="(min-width:1024px) 25vw, (min-width:768px) 33vw, 50vw"
+                              fetchPriority="low"
+                              draggable={false}
+                              src={event.image}
+                              alt={event.title}
+                              className="absolute inset-0 w-full h-full object-cover opacity-0"
+                              onError={(e) => {
+                                console.error(`Failed to load image: ${event.image}`);
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                const fallback = document.getElementById(`fallback-${event.id}`);
+                                if (fallback) fallback.style.display = 'block';
+                              }}
+                            />
+                            <div
+                              className={`absolute inset-0 ${event.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`}
+                              style={{ display: 'none' }}
+                              id={`fallback-${event.id}`}
+                            />
                           </div>
 
-                          {/* Mysterious border with glitch */}
-                          <div className="absolute inset-0 border border-green-400/30 rounded-lg" />
-                          <div className="absolute inset-0 border border-red-400/20 rounded-lg animate-pulse opacity-50" />
-                          
-                          {/* Mysterious corner elements */}
-                          <div className="absolute top-1 md:top-2 left-1 md:left-2 w-1.5 md:w-2 h-1.5 md:h-2 border-l border-t border-green-400" />
-                          <div className="absolute top-1 md:top-2 right-1 md:right-2 w-1.5 md:w-2 h-1.5 md:h-2 border-r border-t border-red-400" />
-                          <div className="absolute bottom-1 md:bottom-2 left-1 md:left-2 w-1.5 md:w-2 h-1.5 md:h-2 border-l border-b border-red-400" />
-                          <div className="absolute bottom-1 md:bottom-2 right-1 md:right-2 w-1.5 md:w-2 h-1.5 md:h-2 border-r border-b border-green-400" />
-                          
-                          {/* Floating particles */}
-                          <div className="absolute top-1/3 left-1/4 w-0.5 md:w-1 h-0.5 md:h-1 bg-green-400 rounded-full animate-ping delay-500" />
-                          <div className="absolute bottom-1/3 right-1/4 w-0.5 md:w-1 h-0.5 md:h-1 bg-red-400 rounded-full animate-ping delay-1000" />
-                        </div>
-                      </motion.div>
-                    ))}
+                          {/* --- MYSTERIOUS & SUSPENSEFUL OVERLAY --- */}
+                          <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-slate-800 overflow-hidden p-2 md:p-4 flex flex-col justify-between">
+                            <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #00ff88 1px, transparent 0)', backgroundSize: '20px 20px' }} />
+                            <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-pulse opacity-30" />
+                            <div className="absolute bottom-0 right-0 w-full h-0.5 bg-gradient-to-l from-transparent via-red-400 to-transparent animate-pulse opacity-30 delay-1000" />
+                            <div className="relative z-10 flex justify-between items-start">
+                              <div className="px-2 md:px-3 py-0.5 md:py-1 bg-black/50 border border-green-400/50 rounded-sm backdrop-blur-sm">
+                                <span className="text-[10px] md:text-xs font-bold text-green-400 uppercase tracking-widest" style={{ fontFamily: 'monospace' }}>
+                                  {event.isFlagship ? '⚡ FLAGSHIP' : event.category}
+                                </span>
+                              </div>
+                              {event.isFlagship && (<div className="w-4 h-4 md:w-6 md:h-6 bg-gradient-to-r from-green-400 to-blue-400 rounded-sm border border-green-400/50 flex items-center justify-center animate-pulse"><span className="text-[8px] md:text-xs">🔒</span></div>)}
+                            </div>
+                            <div className="absolute inset-0 flex items-center justify-center z-10">
+                              <div className="relative text-center">
+                                <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 via-transparent to-red-400/20 animate-pulse opacity-50" />
+                                <h3 className="relative font-bold text-sm md:text-lg lg:text-xl text-white px-1 md:px-2 uppercase tracking-widest leading-tight" style={{ textShadow: '0 0 10px rgba(0, 255, 136, 0.8), 0 0 20px rgba(0, 255, 136, 0.4)', fontFamily: 'monospace', letterSpacing: '0.2em' }}>{event.title}</h3>
+                                <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-pulse" />
+                              </div>
+                            </div>
+                            <div className="relative z-10 flex flex-col justify-end h-full">
+                              {getEventPrizePool(event.id) && (<div className="flex justify-center mb-20"><div className="text-white text-[8px] md:text-xs font-bold"><div className="flex items-center gap-1"><Crown className="w-2 h-2 md:w-3 md:h-3" /><span className="font-extrabold tracking-wide">Prize Pool: {getEventPrizePool(event.id)}</span></div></div></div>)}
+                              <div className="flex justify-center mb-1.5"><div className="text-white text-[9px] md:text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded-full border border-white/20">{catalogById.get(event.id)?.price || event.price}</div></div>
+                              <div className="px-2 md:px-3 py-2 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
+                                <button type="button" onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }} className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs transition-all duration-200 cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/30 border-purple-400/60 text-white shadow-[0_0_12px_rgba(168,85,247,0.45)]' : 'bg-white/10 border-white/30 text-white/90 hover:bg-white/15'}`} aria-pressed={cartIds.includes(event.id)}>
+                                  <span className={`inline-block w-3 h-3 md:w-4 md:h-4 rounded-full ring-1 ${cartIds.includes(event.id) ? 'bg-purple-500 ring-purple-300' : 'bg-transparent ring-white/40'}`}></span>
+                                  <span className="uppercase tracking-wider" style={{ fontFamily: 'monospace' }}>{cartIds.includes(event.id) ? 'Added' : 'Add to cart'}</span>
+                                </button>
+                              </div>
+                            </div>
+                            <div className="absolute inset-0 border border-green-400/30 rounded-lg" />
+                            <div className="absolute inset-0 border border-red-400/20 rounded-lg animate-pulse opacity-50" />
+                            <div className="absolute top-1 md:top-2 left-1 md:left-2 w-1.5 md:w-2 h-1.5 md:h-2 border-l border-t border-green-400" />
+                            <div className="absolute top-1 md:top-2 right-1 md:right-2 w-1.5 md:w-2 h-1.5 md:h-2 border-r border-t border-red-400" />
+                            <div className="absolute bottom-1 md:bottom-2 left-1 md:left-2 w-1.5 md:w-2 h-1.5 md:h-2 border-l border-b border-red-400" />
+                            <div className="absolute bottom-1 md:bottom-2 right-1 md:right-2 w-1.5 md:w-2 h-1.5 md:h-2 border-r border-b border-green-400" />
+                            <div className="absolute top-1/3 left-1/4 w-0.5 md:w-1 h-0.5 md:h-1 bg-green-400 rounded-full animate-ping delay-500" />
+                            <div className="absolute bottom-1/3-right-1/4 w-0.5 md:w-1 h-0.5 md:h-1 bg-red-400 rounded-full animate-ping delay-1000" />
+                          </div>
+                        </motion.div>
+                      );
+                    })}
                   </div>
                 </div>
               </motion.main>
