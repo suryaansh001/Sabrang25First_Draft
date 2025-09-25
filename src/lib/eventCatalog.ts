@@ -63,7 +63,9 @@ export const EVENT_CATALOG: EventCatalogItem[] = rawEventCatalog.map(event => {
   if (teamSizeRule) {
     const match = teamSizeRule.match(/team\s*size:\s*(.*)/i);
     if (match && match[1]) {
-      extractedTeamSize = match[1].trim().replace(/[.]+$/,'');
+      // Take only the first sentence/segment to avoid extra instructions after team size
+      const firstSentence = match[1].split(/[.;]/)[0].trim();
+      extractedTeamSize = firstSentence.replace(/[.]+$/,'');
     }
   }
 

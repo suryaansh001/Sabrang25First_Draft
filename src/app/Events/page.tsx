@@ -279,7 +279,7 @@ const events: Event[] = [
     date: "12.10.2025",
     time: "11:00",
     shares: "67 Shares",
-    image: "/posters/DUMBSHOW.webp",
+    image: "/posters/DUMBSHOW_page-0001.webp",
     description: "Get ready for a fun and challenging game of silent acting! Dumb Show brings teams together to act out movie names, phrases, or themes without speaking, relying on gestures and body language to communicate. Test your creativity and teamwork as participants race against the clock to guess the correct answer, making for an exciting and laughter-filled experience for everyone involved.",
     venue: "Amphitheatre",
     price: "Free",
@@ -643,14 +643,14 @@ export default function EventsPage() {
             <div className="flex flex-col md:grid md:grid-cols-2 max-h-[85vh] md:max-h-[80vh]">
               <div className="relative aspect-video md:aspect-auto md:h-full bg-neutral-900 overflow-hidden flex-shrink-0">
                 <img
-                  src={selectedEvent.modalImage || '/images/backgrounds/eventpage.webp'}
+                  src={selectedEvent.modalImage || selectedEvent.image || '/images/backgrounds/eventpage.webp'}
                   alt={`A unique visual for ${selectedEvent.title}`}
                   className="absolute inset-0 w-full h-full object-cover"
                   draggable={false}
                   onError={(e) => {
                     // Fallback to a default image if the specified one fails to load
                     const target = e.target as HTMLImageElement;
-                    target.src = '/images/backgrounds/eventpage.webp';
+                    target.src = selectedEvent.image || '/images/backgrounds/eventpage.webp';
                   }}
                 />
                 <div className="absolute inset-0 bg-black/40" />
@@ -924,7 +924,6 @@ export default function EventsPage() {
                               alt={event.title}
                               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                               onError={(e) => {
-                                console.error(`Failed to load image: ${event.image}`);
                                 const target = e.target as HTMLImageElement;
                                 target.src = '/images/Logo@2x.png'; // Fallback image
                               }}
@@ -984,7 +983,6 @@ export default function EventsPage() {
                               alt={event.title}
                               className="absolute inset-0 w-full h-full object-cover opacity-0"
                               onError={(e) => {
-                                console.error(`Failed to load image: ${event.image}`);
                                 const target = e.target as HTMLImageElement;
                                 target.style.display = 'none';
                                 const fallback = document.getElementById(`fallback-${event.id}`);

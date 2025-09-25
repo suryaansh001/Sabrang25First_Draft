@@ -1226,12 +1226,18 @@ function CheckoutPageContent() {
 
   // Group events by category
   const eventsByCategory = useMemo(() => {
-    const categories = new Map<string, EventCatalogItem[]>();
+    const flagship: EventCatalogItem[] = [];
+    const nonFlagship: EventCatalogItem[] = [];
     EVENT_CATALOG.forEach(event => {
-      const cat = event.category;
-      if (!categories.has(cat)) categories.set(cat, []);
-      categories.get(cat)!.push(event);
+      if (event.category === 'Flagship') {
+        flagship.push(event);
+      } else {
+        nonFlagship.push(event);
+      }
     });
+    const categories = new Map<string, EventCatalogItem[]>();
+    categories.set('Flagship', flagship);
+    categories.set('Non-flagship', nonFlagship);
     return categories;
   }, []);
 
@@ -1481,7 +1487,7 @@ function CheckoutPageContent() {
                      })}
 
                     {Array.from(eventsByCategory.entries()).map(([category, events]) => {
-                      const displayCategory = category === 'Special Events' ? 'Other Events' : category;
+                      const displayCategory = category;
                       const isFlagship = category === 'Flagship';
                       return (
                       <div key={category} className="mb-6 sm:mb-8">
