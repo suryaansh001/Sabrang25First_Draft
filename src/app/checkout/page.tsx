@@ -57,13 +57,7 @@ const SOLO_FIELDS: FieldSet = [
   ]},
   { name: 'age', label: 'Age', type: 'number', required: true, placeholder: 'e.g., 20' },
   { name: 'universityName', label: 'Institution Name', type: 'text', required: true, placeholder: 'Your school/college/university' },
-  { name: 'referralCode', label: 'Referral Code', type: 'text', required: false, placeholder: 'Optional', // Add input validation for uppercase only
-    inputProps: {
-      pattern: '[A-Z]*',
-      title: 'Referral code must be uppercase letters only',
-      maxLength: 20
-    }
-  },
+  { name: 'referralCode', label: 'Referral Code', type: 'text', required: false, placeholder: 'Optional' },
   { name: 'universityCardImage', label: 'Institution Identity Card', type: 'file', required: true, accept: 'image/*' },
   { name: 'address', label: 'Address', type: 'text', required: true, placeholder: 'Enter your full address' },
 ];
@@ -904,9 +898,9 @@ function CheckoutPageContent() {
       });
     }
 
-    // For referralCode field, enforce uppercase and strip non-uppercase letters
+    // For referralCode field, enforce uppercase letters and numbers only
     if (fieldName === 'referralCode' && typeof value === 'string') {
-      value = value.toUpperCase().replace(/[^A-Z]/g, '');
+      value = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
       setFormDataBySignature(prev => ({
         ...prev,
         [signature]: {
