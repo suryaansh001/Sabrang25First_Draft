@@ -77,8 +77,8 @@ export const EVENT_CATALOG: EventCatalogItem[] = rawEventCatalog.map(event => {
     if (event.title === 'CLAY MODELLING') extractedTeamSize = 'Solo';
     if (event.title === 'FOCUS') extractedTeamSize = 'Solo';
     if (event.title === 'ART RELAY') extractedTeamSize = 'Solo';
-    if (event.title === 'BIDDING BEFORE WICKET') extractedTeamSize = undefined; // team event with custom composition rules
-    if (event.title === 'IN CONVERSATION WITH') extractedTeamSize = undefined; // talk, not a team/solo competition
+    if (event.title === 'BIDDING BEFORE WICKET') extractedTeamSize = 'On-spot team';
+    if (event.title === 'IN CONVERSATION WITH') extractedTeamSize = 'Solo';
   }
 
   // Normalize common phrasings into concise badges

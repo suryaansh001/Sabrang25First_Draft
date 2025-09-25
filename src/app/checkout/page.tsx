@@ -1226,6 +1226,10 @@ function CheckoutPageContent() {
 
   // Group events by category
   const eventsByCategory = useMemo(() => {
+    // Preserve original order reference
+    const originalIndex = new Map<number, number>();
+    EVENT_CATALOG.forEach((e, i) => originalIndex.set(e.id, i));
+
     const flagship: EventCatalogItem[] = [];
     const nonFlagship: EventCatalogItem[] = [];
     EVENT_CATALOG.forEach(event => {
@@ -1234,6 +1238,47 @@ function CheckoutPageContent() {
       } else {
         nonFlagship.push(event);
       }
+    });
+    // Custom flagship ordering: group events first, then solo events
+    const flagshipOrderTitles = [
+      'RAMPWALK - PANACHE',
+      'DANCE BATTLE',
+      'BANDJAM',
+      'STEP UP',
+      'ECHOES OF NOOR',
+      'VERSEVAAD'
+    ];
+    const flagshipOrderIndex = new Map<string, number>(
+      flagshipOrderTitles.map((t, i) => [t, i])
+    );
+    flagship.sort((a, b) => {
+      const ia = flagshipOrderIndex.has(a.title) ? flagshipOrderIndex.get(a.title)! : Number.MAX_SAFE_INTEGER;
+      const ib = flagshipOrderIndex.has(b.title) ? flagshipOrderIndex.get(b.title)! : Number.MAX_SAFE_INTEGER;
+      if (ia !== ib) return ia - ib;
+      return a.id - b.id;
+    });
+
+    // Group non-flagship: Esports together, Arts together, others keep relative order
+    const esportsTitles = new Set<string>([
+      'VALORANT TOURNAMENT',
+      'FREE FIRE TOURNAMENT',
+      'BGMI TOURNAMENT'
+    ]);
+    const artsTitles = new Set<string>([
+      'ART RELAY',
+      'CLAY MODELLING'
+    ]);
+    const groupRank = (title: string): number => {
+      if (esportsTitles.has(title)) return 0; // esports block first
+      if (artsTitles.has(title)) return 1;    // arts block next
+      return 2;                               // others after
+    };
+    nonFlagship.sort((a, b) => {
+      const ga = groupRank(a.title);
+      const gb = groupRank(b.title);
+      if (ga !== gb) return ga - gb;
+      // keep original relative order within group
+      return (originalIndex.get(a.id) ?? 0) - (originalIndex.get(b.id) ?? 0);
     });
     const categories = new Map<string, EventCatalogItem[]>();
     categories.set('Flagship', flagship);
@@ -1370,54 +1415,7 @@ function CheckoutPageContent() {
                     )}
                     <h2 className="text-xl font-semibold mb-6 title-chroma">Choose Your Events</h2>
                     
-                    {/* Visitor Pass Section - Mobile Optimized */}
-                    <div className="mb-6 sm:mb-8">
-                      <h3 className="text-base sm:text-lg font-medium text-white mb-3 sm:mb-4">
-                        <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent">Visitor Passes</span>
-                      </h3>
-                      <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-yellow-200 mb-2">Visitor Pass</h4>
-                            <p className="text-xs sm:text-sm text-white/70 mb-3">
-                              Required for non-participant entry to Sabrang venues. Select number of days for your visitor pass.
-                            </p>
-                            <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-xs sm:text-sm text-white/60">
-                              <span>Price: ₹69 per day</span>
-                              <span>•</span>
-                              <span>Non-transferable</span>
-                              <span>•</span>
-                              <span>Non-refundable</span>
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-center sm:justify-end gap-3">
-                            <button
-                              onClick={() => setVisitorPassDays(Math.max(0, visitorPassDays - 1))}
-                              disabled={visitorPassDays === 0}
-                              className="w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center touch-manipulation"
-                            >
-                              -
-                            </button>
-                            <span className="text-lg sm:text-lg font-semibold min-w-[2.5rem] sm:min-w-[2rem] text-center">{visitorPassDays}</span>
-                            <button
-                              onClick={() => setVisitorPassDays(Math.min(3, visitorPassDays + 1))}
-                              disabled={visitorPassDays >= 3}
-                              className="w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center touch-manipulation"
-                            >
-                              +
-                            </button>
-                          </div>
-                        </div>
-                        {visitorPassDays > 0 && (
-                          <div className="mt-4 pt-4 border-t border-white/10">
-                            <div className="flex justify-between text-sm">
-                              <span className="text-white/70">Visitor Pass ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</span>
-                              <span className="text-yellow-400 font-medium">₹{visitorPassDays * 69}</span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                    
 
                      {/* Flagship Event Benefits - Separate for each event */}
                      {selectedEvents.map(event => {
@@ -1491,8 +1489,8 @@ function CheckoutPageContent() {
                       const isFlagship = category === 'Flagship';
                       return (
                       <div key={category} className="mb-6 sm:mb-8">
-                        <h3 className={`${isFlagship ? 'text-xl sm:text-2xl font-extrabold' : 'text-lg sm:text-xl font-semibold'} text-white mb-3 sm:mb-4`}>
-                          <span className={`bg-gradient-to-r ${isFlagship ? 'from-yellow-300 via-orange-400 to-red-400' : 'from-cyan-300 via-fuchsia-400 to-emerald-300'} bg-clip-text text-transparent`}>
+                        <h3 className={`text-xl sm:text-2xl font-extrabold text-white mb-3 sm:mb-4`}>
+                          <span className={`bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent`}>
                             {displayCategory}
                           </span>
                         </h3>
@@ -1557,6 +1555,55 @@ function CheckoutPageContent() {
                         </motion.div>
                         );
                       })}
+                    </div>
+
+                    {/* Visitor Pass Section - Mobile Optimized (Moved to end) */}
+                    <div className="mb-6 sm:mb-8">
+                      <h3 className="text-base sm:text-lg font-medium text-white mb-3 sm:mb-4">
+                        <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent">Visitor Passes</span>
+                      </h3>
+                      <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-yellow-200 mb-2">Visitor Pass</h4>
+                            <p className="text-xs sm:text-sm text-white/70 mb-3">
+                              Required for non-participant entry to Sabrang venues. Select number of days for your visitor pass.
+                            </p>
+                            <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-xs sm:text-sm text-white/60">
+                              <span>Price: ₹69 per day</span>
+                              <span>•</span>
+                              <span>Non-transferable</span>
+                              <span>•</span>
+                              <span>Non-refundable</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-center sm:justify-end gap-3">
+                            <button
+                              onClick={() => setVisitorPassDays(Math.max(0, visitorPassDays - 1))}
+                              disabled={visitorPassDays === 0}
+                              className="w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center touch-manipulation"
+                            >
+                              -
+                            </button>
+                            <span className="text-lg sm:text-lg font-semibold min-w-[2.5rem] sm:min-w-[2rem] text-center">{visitorPassDays}</span>
+                            <button
+                              onClick={() => setVisitorPassDays(Math.min(3, visitorPassDays + 1))}
+                              disabled={visitorPassDays >= 3}
+                              className="w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center touch-manipulation"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                        {visitorPassDays > 0 && (
+                          <div className="mt-4 pt-4 border-t border-white/10">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-white/70">Visitor Pass ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</span>
+                              <span className="text-yellow-400 font-medium">₹{visitorPassDays * 69}</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                       </div>
                     );
