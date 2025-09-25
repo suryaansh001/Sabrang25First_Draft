@@ -1557,10 +1557,10 @@ function CheckoutPageContent() {
                       })}
                     </div>
 
-                    {/* Visitor Pass Section - Mobile Optimized (Moved to end) */}
+                    {/* Visitor Pass Selection Section - Mobile Optimized (Moved to end) */}
                     <div className="mb-6 sm:mb-8">
-                      <h3 className="text-base sm:text-lg font-medium text-white mb-3 sm:mb-4">
-                        <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent">Visitor Passes</span>
+                      <h3 className="text-lg sm:text-xl font-medium text-white mb-3 sm:mb-4">
+                        <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent">Visitor Pass Selection</span>
                       </h3>
                       <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -1736,11 +1736,11 @@ function CheckoutPageContent() {
                       <p className="text-xs sm:text-sm text-gray-400">No events selected. Go back and pick at least one event.</p>
                     )}
                     <div className="space-y-6 sm:space-y-8">
-                      {/* Visitor Pass Details Section - Mobile Optimized */}
+                      {/* Visitor Pass Details Form Section - Mobile Optimized */}
                       {visitorPassDays > 0 && (
                         <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
                           <div className="mb-3 sm:mb-4 text-center sm:text-left">
-                            <h3 className="font-semibold text-yellow-200 text-sm sm:text-base">Visitor Pass Details ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</h3>
+                            <h3 className="font-semibold text-yellow-200 text-base sm:text-lg">Visitor Pass Details Form ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</h3>
                             <p className="text-[10px] sm:text-xs text-gray-400">Fill details for your visitor pass. This pass will be valid for {visitorPassDays} day{visitorPassDays > 1 ? 's' : ''}.</p>
                           </div>
                           <div className="glass rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/10">

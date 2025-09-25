@@ -1,6 +1,6 @@
 'use client';
 import React, { memo, useEffect, useState, useCallback, useMemo } from 'react';
-import { Play, Github, Linkedin, LayoutDashboard, Calendar, Users, Handshake, Info, Clock, Star, Mail, Home, HelpCircle, X } from 'lucide-react';
+import { Play, Github, Linkedin, LayoutDashboard, Calendar, Users, Handshake, Info, Clock, Star, Mail, Home, HelpCircle, X, Trophy } from 'lucide-react';
 import SidebarDock from '../../../components/SidebarDock';
 import MobileScrollMenu from '../../../components/MobileScrollMenu';
 import { useVideo } from '../../../components/VideoContext';
@@ -445,6 +445,21 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                   className="text-white/90 text-lg font-bold tracking-widest"
                 />
               </div>
+              {/* Prize Pool Banner */}
+              <div className="mb-6 flex items-center justify-center">
+                <div className="relative prize-pill pointer-events-auto">
+                  <div className="prize-glow" />
+                  <div className="prize-shimmer" />
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/20 border border-white/30">
+                      <Trophy className="w-4 h-4 text-yellow-300" />
+                    </span>
+                    <span className="font-extrabold tracking-wide">
+                      Prize Pool ₹2.5 Lakh+
+                    </span>
+                  </div>
+                </div>
+              </div>
               
               {/* Tagline */}
               <p className="text-gray-300 text-base mb-8 leading-relaxed">
@@ -720,7 +735,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                 <div className="text-xs text-purple-300">Events</div>
               </div>
               <div className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-500/30 rounded-2xl p-4">
-                <div className="text-2xl font-bold text-blue-400 mb-1">₹3L+</div>
+                <div className="text-2xl font-bold text-blue-400 mb-1">₹2.5L+</div>
                 <div className="text-xs text-blue-300">Prizes</div>
               </div>
               <div className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-2xl p-4">
@@ -831,6 +846,21 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                     className="text-white/90 text-xl font-bold tracking-widest"
                   />
                 </div>
+                {/* Prize Pool Banner */}
+                <div className="mt-6 flex items-center justify-center">
+                  <div className="relative prize-pill prize-pill-lg">
+                    <div className="prize-glow" />
+                    <div className="prize-shimmer" />
+                    <div className="flex items-center gap-3">
+                      <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white/20 border border-white/30">
+                        <Trophy className="w-5 h-5 text-yellow-300" />
+                      </span>
+                      <span className="font-extrabold tracking-widest">
+                        Prize Pool ₹2.5 Lakh+
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -841,6 +871,55 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
 
       {/* Enhanced Mobile Styles */}
       <style jsx>{`
+        /* Prize banner styles */
+        .prize-pill {
+          color: #fff;
+          padding: 0.5rem 1rem;
+          border-radius: 9999px;
+          background: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          backdrop-filter: blur(8px);
+          position: relative;
+          overflow: hidden;
+          box-shadow: 0 6px 30px rgba(250, 204, 21, 0.2), inset 0 0 0 1px rgba(255,255,255,0.06);
+          animation: prizeFloat 6s ease-in-out infinite;
+        }
+
+        .prize-pill-lg {
+          padding: 0.75rem 1.25rem;
+        }
+
+        .prize-glow {
+          position: absolute;
+          inset: -20%;
+          background: radial-gradient(120px 60px at 10% 50%, rgba(250, 204, 21, 0.25), transparent 60%),
+                      radial-gradient(120px 60px at 90% 50%, rgba(34, 211, 238, 0.22), transparent 60%),
+                      radial-gradient(200px 120px at 50% -10%, rgba(168, 85, 247, 0.25), transparent 60%);
+          filter: blur(18px);
+          pointer-events: none;
+        }
+
+        .prize-shimmer {
+          position: absolute;
+          top: 0;
+          left: -120%;
+          height: 100%;
+          width: 120%;
+          background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%);
+          animation: shimmer 2.2s ease-in-out infinite;
+          pointer-events: none;
+        }
+
+        @keyframes shimmer {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(100%); }
+        }
+
+        @keyframes prizeFloat {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-6px); }
+        }
+
         /* Mobile-specific animations */
         @keyframes slideUpFade {
           from {
