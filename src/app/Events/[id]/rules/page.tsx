@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { AlertCircle, ArrowLeft, Gavel, ListChecks, Shield, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { events, Event, Criterion } from './events.data';
-import EventCard from '../../EventCard';
+
 
 const defaultRules: string[] = [
 	'Carry a valid college ID and entry pass.',
@@ -219,16 +219,27 @@ export default function EventRulesPage() {
 				/>
 				<div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-neutral-900" />
 
-				<div className="relative z-10 max-w-6xl mx-auto px-6">
-					<div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
-						{/* Left: Event Card */}
+				<div className="relative z-10 max-w-6xl mx-auto px-10 mr-120	">
+					<div className="grid md:grid-cols-2 gap-6 md:gap-16 items-center">
+						{/* Left: Event Poster */}
 						<motion.div
-							className="flex justify-center md:justify-end"
+							className="flex justify-start md:justify-end"
 							initial={{ opacity: 0, x: -50 }}
 							animate={{ opacity: 1, x: 0 }}
 							transition={{ duration: 0.7, ease: 'easeOut' }}
 						>
-							<EventCard event={event} />
+							<div className="relative w-[300px] aspect-[3/4] rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+								<img
+									src={event.image}
+									alt={`${event.title} Poster`}
+									className="w-full h-full object-cover"
+									draggable={false}
+									onError={(e) => {
+										const target = e.target as HTMLImageElement;
+										target.src = '/images/Logo@2x.png'; // Fallback image
+									}}
+								/>
+							</div>
 						</motion.div>
 
 						{/* Right: Event Details */}

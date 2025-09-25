@@ -16,6 +16,7 @@ interface Event {
   time: string;
   shares: string;
   image: string;
+  modalImage?: string; // This new property will hold the unique image for the detail modal
   description: string;
   venue: string;
   price: string;
@@ -36,6 +37,7 @@ const events: Event[] = [
     time: "18:00",
     shares: "567 Shares",
     image: "/posters/PANACHE.webp",
+    modalImage: "/images/gallery/image1.webp", // Example: Assign a unique image
     description: "The grandest runway event of Sabrang, Panache is where elegance, charisma, and confidence collide. Teams will display original collections or concepts with full choreography, soundtrack, and fashion narratives. Expectations - Glamour, high-stakes competition, and crowd pulling visuals.",
     venue: "Main Stage",
     price: "₹85-120",
@@ -53,6 +55,7 @@ const events: Event[] = [
     time: "17:00",
     shares: "189 Shares",
     image: "/posters/BANDJAM.webp",
+    modalImage: "/images/gallery/image2.webp", // Example: Assign a unique image
     description: "Get ready to experience the electrifying talent of the Band Jam Competition, where instruments roar to life with powerful melodies. This musical face-off will fill the air with rhythm and energy, leaving the audience moved by the magic of sound.",
     venue: "Main Stage",
     price: "₹60",
@@ -70,6 +73,7 @@ const events: Event[] = [
     time: "19:30",
     shares: "156 Shares",
     image: "/posters/DANCE_BATTLE.webp",
+    modalImage: "/images/gallery/image3.webp", // Example: Assign a unique image
     description: "Get ready for an electrifying crew vs. crew dance showdown! In this high-stakes elimination battle, teams of 6-12 members will face off, showcasing their best choreography and freestyle moves. With strict rules on music, props, and conduct, only the most disciplined and creative crew will be crowned champions. It's a test of skill, synchronization, and raw energy.",
     venue: "Main Stage",
     price: "₹45",
@@ -87,6 +91,7 @@ const events: Event[] = [
     time: "11:30",
     shares: "145 Shares",
     image: "/posters/STEPUP.webp",
+    modalImage: "/images/gallery/image4.webp", // Example: Assign a unique image
     description: "Step Up is the ultimate solo dance challenge where individual performers take center stage. This is a test of pure skill, creativity, and stage command. With strict rules and a two-round elimination format, only the most versatile and captivating dancer will rise to the top. Are you ready to own the spotlight?",
     venue: "Main Stage",
     price: "₹40",
@@ -104,6 +109,7 @@ const events: Event[] = [
     time: "11:30",
     shares: "95 Shares",
     image: "/posters/Echoes of noor Draft-05.4.webp", // Placeholder image
+    modalImage: "/images/gallery/image5.webp", // Example: Assign a unique image
     description: "A spoken word and poetry event celebrating the festival's theme, 'Noorwana'. Artists perform original pieces reflecting on light, cosmos, and inner luminescence.",
     venue: "Main Stage",
     price: "Free",
@@ -273,7 +279,7 @@ const events: Event[] = [
     date: "12.10.2025",
     time: "11:00",
     shares: "67 Shares",
-    image: "/images/Schedule.jpg",
+    image: "/posters/DUMBSHOW.webp",
     description: "Get ready for a fun and challenging game of silent acting! Dumb Show brings teams together to act out movie names, phrases, or themes without speaking, relying on gestures and body language to communicate. Test your creativity and teamwork as participants race against the clock to guess the correct answer, making for an exciting and laughter-filled experience for everyone involved.",
     venue: "Amphitheatre",
     price: "Free",
@@ -531,7 +537,7 @@ export default function EventsPage() {
   });
 
   // IDs of events to show with the poster style (no overlay)
-  const posterEventIds = [1, 2, 3, 4, 5, 9];
+  const posterEventIds = [1, 2, 3, 4, 5, 9, 17];
 
   // Calculate navigation state
   const currentEventIndex = selectedEvent ? filteredEvents.findIndex(event => event.id === selectedEvent.id) : -1;
@@ -593,7 +599,6 @@ export default function EventsPage() {
     return eventData?.prizePool;
   };
 
-
   // If any event is selected, immediately show the overlay and hide everything else
   if (selectedEvent) {
     return (
@@ -635,17 +640,23 @@ export default function EventsPage() {
             <div className="absolute top-4 left-4 z-[10001] px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-sm">
               {currentEventIndex + 1} / {filteredEvents.length}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2">
-              <div className="relative aspect-[4/3] md:aspect-auto md:h-full bg-black/40">
+            <div className="flex flex-col md:grid md:grid-cols-2 max-h-[85vh] md:max-h-[80vh]">
+              <div className="relative aspect-video md:aspect-auto md:h-full bg-neutral-900 overflow-hidden flex-shrink-0">
                 <img
-                  src={selectedEvent.image}
-                  alt={selectedEvent.title}
+                  src={selectedEvent.modalImage || '/images/backgrounds/eventpage.webp'}
+                  alt={`A unique visual for ${selectedEvent.title}`}
                   className="absolute inset-0 w-full h-full object-cover"
                   draggable={false}
+                  onError={(e) => {
+                    // Fallback to a default image if the specified one fails to load
+                    const target = e.target as HTMLImageElement;
+                    target.src = '/images/backgrounds/eventpage.webp';
+                  }}
                 />
-                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/70 to-transparent" />
+                <div className="absolute inset-0 bg-black/40" />
+                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #FFF 1px, transparent 0)', backgroundSize: '25px 25px' }} />
               </div>
-              <div className="p-6 md:p-8 text-white space-y-5 md:space-y-6 overflow-y-auto max-h-[70vh] md:max-h-[75vh] md:border-l md:border-white/10">
+              <div className="p-6 text-white space-y-4 overflow-y-auto md:p-8 md:space-y-6 md:border-l md:border-white/10">
                 <div>
                   <h2 className="text-2xl md:text-3xl font-bold mb-2 tracking-tight">{selectedEvent.title}</h2>
                   <div className="flex flex-wrap items-center gap-3 text-sm text-gray-300">
@@ -885,7 +896,7 @@ export default function EventsPage() {
                   </motion.div>
 
                   {/* Events Grid - card with image and bottom info */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
                     {filteredEvents.map((event, index) => {
                       const showPosterStyle = posterEventIds.includes(event.id);
                       return showPosterStyle ? (
@@ -922,7 +933,7 @@ export default function EventsPage() {
 
                           {/* Content container */}
                           <div className="p-3 md:p-4 flex flex-col flex-grow">
-                            <div className="flex justify-between items-start mb-2">
+                            <div className="flex flex-col items-start gap-y-1.5 sm:flex-row sm:justify-between sm:items-center mb-2">
                               <div className={`px-2 py-0.5 rounded-sm text-white text-[10px] font-bold uppercase tracking-widest ${event.isFlagship ? 'bg-yellow-500/20 border border-yellow-400/30 text-yellow-300' : 'bg-black/50 border border-white/20'}`}>
                                 {event.isFlagship ? '⚡ Flagship' : event.category}
                               </div>

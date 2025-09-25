@@ -38,7 +38,7 @@ export const events: Event[] = [
 	{
 		id: 1,
 		title: 'RAMPWALK - PANACHE',
-		image: '/images/about-section/Panache.png',
+		image: '/posters/PANACHE.webp',
 		category: 'Flagship',
 		prizePool: '₹40,000',
 		description: 'The grandest runway event of Sabrang, Panache is where elegance, charisma, and confidence collide. Teams will display original collections or concepts with full choreography, soundtrack, and fashion narratives. Expectations - Glamour, high-stakes competition, and crowd pulling visuals.',
@@ -83,7 +83,7 @@ export const events: Event[] = [
 	{
 		id: 2,
 		title: 'BANDJAM',
-		image: '/images/about-section/Bandjam.png',
+		image: '/posters/BANDJAM.webp',
 		category: 'Flagship',
 		prizePool: '₹25,000',
 		description: "Get ready to experience the electrifying talent of the Band Jam Competition, where instruments roar to life with powerful melodies. This musical face-off will fill the air with rhythm and energy, leaving the audience moved by the magic of sound.",
@@ -132,7 +132,7 @@ export const events: Event[] = [
 	{
 		id: 3,
 		title: 'DANCE BATTLE',
-		image: '/images/about-section/Dance.png',
+		image: '/posters/DANCE_BATTLE.webp',
 		category: 'Flagship',
 		prizePool: '₹35,000',
 		description: "Get ready for an electrifying crew vs. crew dance showdown! In this high-stakes elimination battle, teams of 6-12 members will face off, showcasing their best choreography and freestyle moves. With strict rules on music, props, and conduct, only the most disciplined and creative crew will be crowned champions. It's a test of skill, synchronization, and raw energy.",
@@ -185,7 +185,7 @@ export const events: Event[] = [
 	{
 		id: 4,
 		title: 'STEP UP',
-		image: '/images/stepup.JPG',
+		image: '/posters/STEPUP.webp',
 		category: 'Flagship',
 		prizePool: '₹17,000',
 		description: "Step Up is the ultimate solo dance challenge where individual performers take center stage. This is a test of pure skill, creativity, and stage command. With strict rules and a two-round elimination format, only the most versatile and captivating dancer will rise to the top. Are you ready to own the spotlight?",
@@ -241,7 +241,7 @@ export const events: Event[] = [
 	{ 
 		id: 5, 
 		title: 'ECHOES OF NOOR', 
-		image: '/images/about-section/Echoes_of_Noor.webp', 
+		image: '/posters/Echoes of noor Draft-05.4.webp', 
 		category: 'Flagship', 
 		prizePool: '₹17,000',
 		criteria: [
@@ -340,7 +340,7 @@ export const events: Event[] = [
 	{
 		id: 9,
 		title: 'VERSEVAAD',
-		image: '/images/about-section/Versevaad.webp',
+		image: '/posters/VERSEVAAD_page-0001.webp',
 		category: 'Flagship',
 		prizePool: '₹20,000',
 		description: '"Versevaad" is a two-round rap battle event designed to showcase originality, creativity, and improvisational skills. The competition emphasizes clean content, prohibiting any form of vulgarity.',
@@ -594,7 +594,7 @@ export const events: Event[] = [
 	{
 		id: 17,
 		title: 'DUMB SHOW',
-		image: '/images/Schedule.jpg',
+		image: '/posters/DUMBSHOW.webp',
 		category: 'Fun & Games',
 		prizePool: '₹9,000',
 		description: "Get ready for a fun and challenging game of silent acting! Dumb Show brings teams together to act out movie names, phrases, or themes without speaking, relying on gestures and body language to communicate. Test your creativity and teamwork as participants race against the clock to guess the correct answer, making for an exciting and laughter-filled experience for everyone involved.",

@@ -36,6 +36,12 @@ interface FormField {
   placeholder?: string;
   options?: { value: string; label: string }[];
   accept?: string;
+  // New property for input validation
+  inputProps?: {
+    pattern?: string; // Regex pattern for validation
+    title?: string; // Tooltip message for invalid input
+    maxLength?: number; // Maximum length of input
+  };
 }
 
 type FieldSet = FormField[];
@@ -891,6 +897,18 @@ function CheckoutPageContent() {
         return { ...prev, [signature]: next };
       });
     }
+
+    // For referralCode field, enforce uppercase letters and numbers only
+    if (fieldName === 'referralCode' && typeof value === 'string') {
+      value = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      setFormDataBySignature(prev => ({
+        ...prev,
+        [signature]: {
+          ...prev[signature],
+          [fieldName]: value
+        }
+      }));
+    }
   };
 
   // Handle file uploads
@@ -1047,6 +1065,7 @@ function CheckoutPageContent() {
       if (flat['age']) registrationForm.append('age', flat['age']);
       if (flat['universityName']) registrationForm.append('universityName', flat['universityName']);
       if (flat['address']) registrationForm.append('address', flat['address']);
+      if (flat['referralCode']) registrationForm.append('referralCode', flat['referralCode']);
       // Send complex payloads for backend to persist
       registrationForm.append('formsBySignature', JSON.stringify(formDataBySignature));
       registrationForm.append('teamMembersBySignature', JSON.stringify(teamMembersBySignature));
@@ -1799,7 +1818,7 @@ function CheckoutPageContent() {
                                                   type="file"
                                                   accept={field.accept || '*'}
                                                   required={!!field.required}
-                                              className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 w-full text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-base sm:file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100`}
+                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
                                                   onChange={e => {
                                                     const file = e.target.files?.[0];
                                                     if (file) {
@@ -1900,7 +1919,7 @@ function CheckoutPageContent() {
                                                     type="file"
                                                     accept={field.accept || '*'}
                                                     required={!!field.required}
-                                                  className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 w-full text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-base sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
+                                                    className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-base sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
                                                     onChange={e => {
                                                       const file = e.target.files?.[0] || null;
                                                       if (file && file.size > 500 * 1024) {
@@ -2005,7 +2024,7 @@ function CheckoutPageContent() {
                                                     type="file"
                                                     accept={field.accept || '*'}
                                                     required={!!field.required}
-                                                    className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 w-full text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-green-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-base sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
+                                                    className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-base sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
                                                     onChange={e => {
                                                       const file = e.target.files?.[0] || null;
                                                       if (file && file.size > 500 * 1024) {
@@ -2123,12 +2142,6 @@ function CheckoutPageContent() {
                                           handleFileChange(group.signature, field.name, file);
                                         }}
                                       />
-                                      {value && (
-                                        <div className="mt-2 text-xs text-green-400 flex items-center gap-1">
-                                          <span>✓</span>
-                                          <span>Selected: {value}</span>
-                                        </div>
-                                      )}
                                     </div>
                                   ) : (
                                     <input
@@ -2361,19 +2374,55 @@ function CheckoutPageContent() {
                     </div>
                   </div>
                   <div>
-                    <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] static overflow-hidden">
+                    <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)]">
                       <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
-                      <h3 className="font-semibold text-cyan-200 mb-6">Selected Items</h3>
-                      <ul className="space-y-3 text-sm">
+                      <h3 className="font-semibold text-cyan-200 mb-4 sm:mb-6 text-sm sm:text-base">Selected Items</h3>
+                      <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
                         {visitorPassDays > 0 && (
                           <li className="flex justify-between items-start">
-                            <div className="flex-1 pr-4">
-                              <div className="font-medium text-white">Visitor Pass ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</div>
-                              <div className="text-xs text-white/70 mt-1">Non-participant entry</div>
+                            <div className="flex-1 pr-2 sm:pr-4">
+                              <div className="font-medium text-white text-xs sm:text-sm">Visitor Pass ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</div>
+                              <div className="text-[10px] sm:text-xs text-white/70 mt-1">Non-participant entry</div>
                             </div>
-                            <span className="text-yellow-400 font-semibold text-right">₹{visitorPassDays * 69}</span>
+                            <span className="text-yellow-400 font-semibold text-right text-xs sm:text-sm">₹{visitorPassDays * 69}</span>
                           </li>
                         )}
+                        {Object.entries(flagshipBenefitsByEvent).map(([eventId, benefits]) => {
+                          const event = selectedEvents.find(e => e.id === parseInt(eventId, 10));
+                          if (!event) return null;
+                          
+                          return (
+                            <React.Fragment key={eventId}>
+                              {benefits.supportArtistQuantity > 0 && (
+                                <li className="flex justify-between items-start">
+                                  <div className="flex-1 pr-4">
+                                    <div className="font-medium text-white">Support Artists for {event.title} ({benefits.supportArtistQuantity})</div>
+                                    <div className="text-xs text-white/70 mt-1">Flagship group benefit</div>
+                                  </div>
+                                  <span className="text-green-400 font-semibold text-right">Free</span>
+                                </li>
+                              )}
+                              {benefits.flagshipVisitorPassQuantity > 0 && (
+                                <li className="flex justify-between items-start">
+                                  <div className="flex-1 pr-4">
+                                    <div className="font-medium text-white">Flagship Visitor Passes for {event.title} ({benefits.flagshipVisitorPassQuantity})</div>
+                                    <div className="text-xs text-white/70 mt-1">Complimentary with flagship registration</div>
+                                  </div>
+                                  <span className="text-green-400 font-semibold text-right">Free</span>
+                                </li>
+                              )}
+                              {benefits.flagshipSoloVisitorPassQuantity > 0 && (
+                                <li className="flex justify-between items-start">
+                                  <div className="flex-1 pr-4">
+                                    <div className="font-medium text-white">Flagship Solo Visitor Passes for {event.title} ({benefits.flagshipSoloVisitorPassQuantity})</div>
+                                    <div className="text-xs text-white/70 mt-1">Complimentary with flagship solo registration</div>
+                                  </div>
+                                  <span className="text-green-400 font-semibold text-right">Free</span>
+                                </li>
+                              )}
+                            </React.Fragment>
+                          );
+                        })}
                         {selectedEvents.map(ev => (
                           <li key={ev.id} className="flex justify-between items-start">
                             <div className="flex-1 pr-4">
