@@ -130,7 +130,7 @@ const TEAM_SIZE_CONFIG: Record<string, TeamSizeConfig> = {
   'DANCE BATTLE': { min: 6, max: 12 },
   'ECHOES OF NOOR': { min: 1, max: 2 },
   'VERSEVAAD': { min: 1, max: 2 },
-  'BANDJAM': { min: 4, max: 8 },
+  'BANDJAM': { min: 3, max: 8 },
   'VALORANT TOURNAMENT': { min: 5, max: 5 }, // Fixed size: exactly 5 members
   'FREE FIRE TOURNAMENT': { min: 4, max: 4 }, // Fixed size: exactly 4 members
   'BGMI TOURNAMENT': { min: 4, max: 5 } // Variable: 4-5 members
@@ -1461,9 +1461,16 @@ function CheckoutPageContent() {
                        );
                      })}
 
-                    {Array.from(eventsByCategory.entries()).map(([category, events]) => (
+                    {Array.from(eventsByCategory.entries()).map(([category, events]) => {
+                      const displayCategory = category === 'Special Events' ? 'Other Events' : category;
+                      const isFlagship = category === 'Flagship';
+                      return (
                       <div key={category} className="mb-6 sm:mb-8">
-                        <h3 className="text-base sm:text-lg font-medium text-white mb-3 sm:mb-4"><span className="bg-gradient-to-r from-cyan-300 via-fuchsia-400 to-emerald-300 bg-clip-text text-transparent">{category}</span></h3>
+                        <h3 className={`${isFlagship ? 'text-xl sm:text-2xl font-extrabold' : 'text-lg sm:text-xl font-semibold'} text-white mb-3 sm:mb-4`}>
+                          <span className={`bg-gradient-to-r ${isFlagship ? 'from-yellow-300 via-orange-400 to-red-400' : 'from-cyan-300 via-fuchsia-400 to-emerald-300'} bg-clip-text text-transparent`}>
+                            {displayCategory}
+                          </span>
+                        </h3>
                         <div className="space-y-2 sm:space-y-3">
                           {events.map(event => {
                             const isSelected = selectedEventIds.includes(event.id);
@@ -1476,7 +1483,7 @@ function CheckoutPageContent() {
                             key={event.id}
                                 onMouseDown={() => !isDisabled && handleToggleEvent(event.id)}
                                 whileHover={!isDisabled && reducedMotion ? undefined : { scale: 1.01 }}
-                                className={`relative p-3 sm:p-4 rounded-lg sm:rounded-xl transition-colors duration-150 border overflow-hidden touch-manipulation ${
+                                className={`relative p-4 sm:p-5 rounded-lg sm:rounded-xl transition-colors duration-150 border overflow-hidden touch-manipulation ${
                               isSelected
                                     ? 'glass border-fuchsia-400/40 shadow-[0_0_18px_rgba(217,70,239,0.35)] cursor-pointer'
                                 : isDisabled
@@ -1492,18 +1499,18 @@ function CheckoutPageContent() {
                                 )}
                                 <div className="flex justify-between items-start sm:items-center gap-2">
                             <div className="flex-1 min-w-0">
-                                    <h4 className="font-semibold text-sm sm:text-base truncate">{event.title}</h4>
+                                    <h4 className="font-semibold text-base sm:text-lg truncate">{event.title}</h4>
                                     <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
-                                      <p className="text-xs sm:text-sm text-cyan-300">{event.price}</p>
+                                      <p className="text-sm sm:text-base text-cyan-300">{event.price}</p>
                                       <div className="flex items-center gap-1 sm:gap-2">
                                       <button
                                         onClick={(e) => { e.stopPropagation(); e.preventDefault(); const ed = eventDataById.get(event.id); if (ed) setInfoEvent(ed); }} // prettier-ignore
-                                          className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 cursor-pointer touch-manipulation"
+                                          className="text-[11px] sm:text-xs px-2 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 cursor-pointer touch-manipulation"
                                         aria-label={`View info for ${event.title}`}
                                       >
                                         Info
                                       </button>
-                                        {event.teamSize && <span className="text-[10px] sm:text-[11px] text-white/60">👥 {event.teamSize}</span>}
+                                        {event.teamSize && <span className="text-[11px] sm:text-xs text-white/60">👥 {event.teamSize}</span>}
                                       </div>
                                 </div>
                                     {/* Date/time intentionally hidden on checkout page */}
@@ -1527,7 +1534,8 @@ function CheckoutPageContent() {
                       })}
                     </div>
                       </div>
-                    ))}
+                    );
+                    })}
                   </div>
                   <div className="lg:sticky lg:top-8">
                     <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)]">

@@ -36,7 +36,7 @@ const rawEventCatalog: Omit<EventCatalogItem, 'time12hr' | 'endTime12hr' | 'team
   // 11 Oct 2025
   { id: 7, title: 'BIDDING BEFORE WICKET', price: '₹199', category: 'Fun & Games', date: '11.10.2025', time: '09:00', endTime: '14:00' },
   { id: 15, title: 'FREE FIRE TOURNAMENT', price: '₹600', category: 'Fun & Games', date: '11.10.2025', time: '11:00', endTime: '14:00' },
-  { id: 10, title: 'IN CONVERSATION WITH', price: '₹99', category: 'Workshops & Talks', date: '11.10.2025', time: '11:30', endTime: '13:30' },
+  // Removed duplicate "IN CONVERSATION WITH" entry for 11.10.2025 to avoid showing twice
   { id: 18, title: 'COURTROOM', price: '₹199', category: 'Special Events', date: '11.10.2025', time: '13:00', endTime: '16:00' },
   { id: 2, title: 'BANDJAM', price: 'Team (Group) ₹1,499', category: 'Flagship', date: '11.10.2025', time: '17:00', endTime: '19:30' },
   { id: 3, title: 'DANCE BATTLE', price: 'Team (Group) ₹2,499', category: 'Flagship', date: '11.10.2025', time: '19:30', endTime: '21:30' },
@@ -57,10 +57,72 @@ const findTeamSizeRule = (rules: string[] | undefined): string | undefined => {
 export const EVENT_CATALOG: EventCatalogItem[] = rawEventCatalog.map(event => {
   const eventData = EVENTS_DATA.find(e => e.id === event.id);
   const teamSizeRule = findTeamSizeRule(eventData?.rules);
+
+  // Extract the part after "Team size:" case-insensitively and trim punctuation
+  let extractedTeamSize: string | undefined;
+  if (teamSizeRule) {
+    const match = teamSizeRule.match(/team\s*size:\s*(.*)/i);
+    if (match && match[1]) {
+      extractedTeamSize = match[1].trim().replace(/[.]+$/,'');
+    }
+  }
+
+  // Explicit overrides for events lacking a rule-based team size
+  if (!extractedTeamSize) {
+    if (event.title === 'ECHOES OF NOOR') extractedTeamSize = 'Solo/Duo';
+    if (event.title === 'VERSEVAAD') extractedTeamSize = 'Solo/Duo';
+    if (event.title === 'SEAL THE DEAL') extractedTeamSize = 'Solo';
+    if (event.title === 'CLAY MODELLING') extractedTeamSize = 'Solo';
+    if (event.title === 'FOCUS') extractedTeamSize = 'Solo';
+    if (event.title === 'ART RELAY') extractedTeamSize = 'Solo';
+    if (event.title === 'BIDDING BEFORE WICKET') extractedTeamSize = undefined; // team event with custom composition rules
+    if (event.title === 'IN CONVERSATION WITH') extractedTeamSize = undefined; // talk, not a team/solo competition
+  }
+
+  // Normalize common phrasings into concise badges
+  if (extractedTeamSize) {
+    // Normalize ranges like "6 to 12 members" → "6 - 12 members"
+    const rangeMatch = extractedTeamSize.match(/(\d+)\s*(?:to|–|—|-)\s*(\d+)\s*members/i);
+    if (rangeMatch) {
+      extractedTeamSize = `${rangeMatch[1]} - ${rangeMatch[2]} members`;
+    }
+    // Normalize Solo statements
+    if (/^solo(\b|\s)/i.test(extractedTeamSize) || /\b1\s*member\b/i.test(extractedTeamSize)) {
+      extractedTeamSize = 'Solo';
+    }
+    // Ensure hyphen spacing for formats like 10-20 members
+    extractedTeamSize = extractedTeamSize.replace(/(\d+)-(\d+)\s*members/i, '$1 - $2 members');
+
+    // Esports phrasing like "5 members (required) + 1-2 substitutes (optional). Maximum 7 players per team."
+    if (/members?\s*\(.*\)\s*\+/.test(extractedTeamSize) || /Maximum\s+\d+\s+(?:players|members)/i.test(extractedTeamSize)) {
+      const baseMatch = extractedTeamSize.match(/(\d+)\s*members?/i);
+      const maxPlayersMatch = extractedTeamSize.match(/Maximum\s+(\d+)\s+(?:players|members)/i);
+      let minVal: number | undefined = baseMatch ? parseInt(baseMatch[1], 10) : undefined;
+      let maxVal: number | undefined = maxPlayersMatch ? parseInt(maxPlayersMatch[1], 10) : undefined;
+
+      // If no explicit maximum is provided, infer from substitutes
+      if (minVal && !maxVal) {
+        const plusOneSub = extractedTeamSize.match(/\+\s*(\d+)\s*substitute/i);
+        const plusRangeSubs = extractedTeamSize.match(/\+\s*(\d+)\s*[-–—]\s*(\d+)\s*substitutes/i);
+        if (plusRangeSubs) {
+          maxVal = minVal + parseInt(plusRangeSubs[2], 10);
+        } else if (plusOneSub) {
+          maxVal = minVal + parseInt(plusOneSub[1], 10);
+        }
+      }
+
+      if (minVal && maxVal) {
+        extractedTeamSize = `${minVal} - ${maxVal} members`;
+      } else if (minVal) {
+        extractedTeamSize = `${minVal} members`;
+      }
+    }
+  }
+
   return {
     ...event,
     time12hr: formatTime12hr(event.time),
     endTime12hr: formatTime12hr(event.endTime),
-    teamSize: teamSizeRule ? teamSizeRule.replace('Team Size: ', '') : undefined,
+    teamSize: extractedTeamSize,
   };
 });
