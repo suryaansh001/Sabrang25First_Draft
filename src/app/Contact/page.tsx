@@ -249,7 +249,7 @@ const Contact = () => {
                     <div className="space-y-2">
                       <div className="flex items-center gap-3 text-sm">
                         <MailIcon className="w-4 h-4 text-purple-400" />
-                        <a href="mailto:jayashgehlot@jklu.edu.in" className="text-gray-300 hover:text-white">
+                        <a href="mailto:jayashgahlot@jklu.edu.in" className="text-gray-300 hover:text-white">
                           jayashgahlot@jklu.edu.in
                         </a>
                       </div>
