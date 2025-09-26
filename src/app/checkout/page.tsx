@@ -250,6 +250,17 @@ function CheckoutPageContent() {
   } | null>(null);
   const [paymentMode, setPaymentMode] = useState<'card' | 'upi'>('card');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [paymentInitializationState, setPaymentInitializationState] = useState<{
+    isLoading: boolean;
+    timeLeft: number;
+    error: string | null;
+    retryCount: number;
+  }>({
+    isLoading: false,
+    timeLeft: 0,
+    error: null,
+    retryCount: 0
+  });
 
 
   // Force reduced motion for smooth scrolling experience on this page
@@ -998,6 +1009,47 @@ function CheckoutPageContent() {
     return '';
   };
 
+  // Start payment initialization with loading state and countdown
+  const startPaymentInitialization = async () => {
+    setPaymentInitializationState({
+      isLoading: true,
+      timeLeft: 5,
+      error: null,
+      retryCount: paymentInitializationState.retryCount + 1
+    });
+
+    // Start 5-second countdown
+    const countdownInterval = setInterval(() => {
+      setPaymentInitializationState(prev => {
+        if (prev.timeLeft <= 1) {
+          clearInterval(countdownInterval);
+          return prev;
+        }
+        return { ...prev, timeLeft: prev.timeLeft - 1 };
+      });
+    }, 1000);
+
+    // Wait for 2 seconds before actually starting the payment process
+    // This gives backend time to be ready and handles network delays
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    try {
+      await proceedToPayment();
+      clearInterval(countdownInterval);
+      setPaymentInitializationState(prev => ({ ...prev, isLoading: false }));
+    } catch (error) {
+      clearInterval(countdownInterval);
+      const errorMessage = error instanceof Error ? error.message : 'Payment initialization failed';
+      console.error('❌ Payment initialization error:', errorMessage);
+      
+      setPaymentInitializationState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: errorMessage
+      }));
+    }
+  };
+
   const proceedToPayment = async () => {
     console.log('🚀 proceedToPayment function called');
     try {
@@ -1086,15 +1138,31 @@ function CheckoutPageContent() {
         });
       });
 
+      // Add timeout to registration request to prevent hanging
+      const registrationController = new AbortController();
+      const registrationTimeout = setTimeout(() => {
+        registrationController.abort();
+      }, 30000); // 30 second timeout
+
       const registrationResponse = await fetch(createApiUrl('/register'), {
         method: 'POST',
         credentials: 'include',
-        body: registrationForm
+        body: registrationForm,
+        signal: registrationController.signal
       });
+      
+      clearTimeout(registrationTimeout);
 
       if (!registrationResponse.ok) {
         const errText = await registrationResponse.text().catch(() => '');
-        throw new Error(errText || 'Registration failed');
+        const errorMsg = errText || 'Registration failed';
+        
+        // Provide user-friendly error messages
+        if (errorMsg.includes('network') || errorMsg.includes('fetch') || errorMsg.includes('timeout')) {
+          throw new Error('Network connection issue. Please check your internet and try again.');
+        }
+        
+        throw new Error(errorMsg);
       }
 
       // Create payment order using the new simple backend endpoint
@@ -1106,18 +1174,35 @@ function CheckoutPageContent() {
       };
 
       console.log('🚀 Creating payment order with data:', orderData);
+      
+      // Add timeout to payment order request to prevent hanging
+      const paymentController = new AbortController();
+      const paymentTimeout = setTimeout(() => {
+        paymentController.abort();
+      }, 15000); // 15 second timeout for payment order creation
+
       const response = await fetch(createApiUrl('/api/payments/create-order'), {
         method: 'POST',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(orderData)
+        body: JSON.stringify(orderData),
+        signal: paymentController.signal
       });
+      
+      clearTimeout(paymentTimeout);
 
       if (!response.ok) {
         const errText = await response.text().catch(() => '');
-        throw new Error(errText || 'Failed to create order');
+        const errorMsg = errText || 'Failed to create order';
+        
+        // Provide user-friendly error messages
+        if (errorMsg.includes('network') || errorMsg.includes('fetch') || errorMsg.includes('timeout')) {
+          throw new Error('Network connection issue during payment setup. Please check your internet and try again.');
+        }
+        
+        throw new Error(errorMsg);
       }
 
       const data = await response.json();
@@ -1140,7 +1225,20 @@ function CheckoutPageContent() {
 
     } catch (error) {
       console.error('❌ Payment initialization failed:', error);
-      alert(`Payment initialization failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      
+      let errorMessage = 'Unknown error occurred';
+      
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMessage = 'Request timed out. Please check your internet connection and try again.';
+        } else if (error.message?.toLowerCase().includes('failed to fetch')) {
+          errorMessage = 'Network connection failed. Please check your internet and try clicking "Pay Now" again.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      throw new Error(errorMessage);
     }
   };
 
@@ -1167,11 +1265,18 @@ function CheckoutPageContent() {
   // Clean payment function following user's preferred structure
   const doPayment = async () => {
     if (!paymentSession || !cashfree) {
-      alert('Payment session not ready. Please try again.');
+      setPaymentInitializationState(prev => ({
+        ...prev,
+        error: 'Payment session not ready. Please go back and retry the payment setup.'
+      }));
       return;
     }
 
     setIsProcessingPayment(true);
+    
+    // Clear any previous errors
+    setPaymentInitializationState(prev => ({ ...prev, error: null }));
+    
     try {
       console.log('🚀 Starting payment with session ID:', paymentSession.paymentSessionId);
       
@@ -1185,7 +1290,22 @@ function CheckoutPageContent() {
       
     } catch (error) {
       console.error('❌ Payment failed:', error);
-      alert(`Payment failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      
+      let errorMessage = 'Payment gateway error occurred';
+      
+      if (error instanceof Error) {
+        if (error.message?.toLowerCase().includes('network') || 
+            error.message?.toLowerCase().includes('failed to fetch')) {
+          errorMessage = 'Network connection issue during payment. Please check your internet and try again.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      setPaymentInitializationState(prev => ({
+        ...prev,
+        error: errorMessage
+      }));
     } finally {
       setIsProcessingPayment(false);
     }
@@ -2633,7 +2753,53 @@ function CheckoutPageContent() {
                     </div>
                     <div className="flex items-center gap-3 mt-8">
                       <button onClick={goBack} className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer">Back</button>
-                      <button onClick={proceedToPayment} className="px-5 py-2 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 transition cursor-pointer">Proceed to Payment</button>
+                      <div className="space-y-3">
+                        <button 
+                          onClick={startPaymentInitialization} 
+                          disabled={paymentInitializationState.isLoading}
+                          className={`px-5 py-2 rounded-full transition cursor-pointer ${
+                            paymentInitializationState.isLoading 
+                              ? 'bg-gray-600 cursor-not-allowed' 
+                              : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:shadow-lg'
+                          }`}
+                        >
+                          {paymentInitializationState.isLoading 
+                            ? `Processing... ${paymentInitializationState.timeLeft}s` 
+                            : paymentInitializationState.retryCount > 0 
+                              ? 'Retry Payment Setup' 
+                              : 'Proceed to Payment'
+                          }
+                        </button>
+                        
+                        {/* Error message with retry instructions */}
+                        {paymentInitializationState.error && (
+                          <div className="glass rounded-lg p-4 border border-red-500/30 bg-red-500/10">
+                            <div className="text-red-300 text-sm font-medium mb-2">
+                              ⚠️ Payment Setup Failed
+                            </div>
+                            <div className="text-red-200 text-xs mb-3">
+                              {paymentInitializationState.error}
+                            </div>
+                            <div className="text-orange-200 text-xs bg-orange-500/10 border border-orange-500/20 rounded p-2">
+                              💡 <strong>Having trouble?</strong> This is likely a network connectivity issue, not a problem with our system. 
+                              Please check your internet connection and click the "Retry Payment Setup" button above. 
+                              The issue is usually temporary and resolves after 1-2 retries.
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Loading state message */}
+                        {paymentInitializationState.isLoading && (
+                          <div className="glass rounded-lg p-4 border border-blue-500/30 bg-blue-500/10">
+                            <div className="text-blue-200 text-sm">
+                              🔄 Initializing secure payment session...
+                            </div>
+                            <div className="text-blue-300 text-xs mt-1">
+                              We're setting up your payment securely. This usually takes 3-5 seconds.
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                       </div>
                   <div>
@@ -2697,6 +2863,23 @@ function CheckoutPageContent() {
                                 </>
                               )}
                             </button>
+                            
+                            {/* Payment error message */}
+                            {paymentInitializationState.error && step === 'payment' && (
+                              <div className="mt-4 glass rounded-lg p-4 border border-red-500/30 bg-red-500/10">
+                                <div className="text-red-300 text-sm font-medium mb-2">
+                                  ⚠️ Payment Error
+                                </div>
+                                <div className="text-red-200 text-xs mb-3">
+                                  {paymentInitializationState.error}
+                                </div>
+                                <div className="text-orange-200 text-xs bg-orange-500/10 border border-orange-500/20 rounded p-2">
+                                  💡 <strong>Network Issue?</strong> This is likely a temporary connectivity problem. 
+                                  Please check your internet connection and click the "Pay" button above to retry. 
+                                  If the problem persists, try refreshing the page or switching networks.
+                                </div>
+                              </div>
+                            )}
                           </div>
 
                           <div className="mt-6 grid grid-cols-3 gap-4 text-center">
@@ -2853,6 +3036,30 @@ function CheckoutPageContent() {
           </div>
         </div>
       )}
+
+	      {/* Support: Report issues form */}
+	      <div className="mt-8 w-full flex justify-center">
+	        <div className="rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5 w-full max-w-md">
+	          <div className="flex items-start gap-3">
+	            <div className="mt-0.5">
+	              <HelpCircle className="w-5 h-5 text-purple-300" />
+	            </div>
+	            <div className="text-white">
+	              <div className="font-semibold">Facing issues during checkout?</div>
+	              <p className="text-sm text-white/70 mt-1">If you encounter any error or problem in the process, please let us know using this form.</p>
+	              <a
+	                href="https://forms.gle/eth5B3JoQATdy9aRA"
+	                target="_blank"
+	                rel="noopener noreferrer"
+	                className="inline-flex items-center gap-2 mt-3 px-3 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-sm border border-white/10"
+	              >
+	                Report an issue
+	                <ArrowRight className="w-4 h-4" />
+	              </a>
+	            </div>
+	          </div>
+	        </div>
+	      </div>
 
       {/* Toast Notification */}
       <AnimatePresence>
