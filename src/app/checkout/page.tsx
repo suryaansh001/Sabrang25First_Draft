@@ -178,6 +178,11 @@ function parsePrice(priceStr: string): number {
   return parseInt(numeric, 10) || 0;
 }
 
+// Helper function to format price to 2 decimal places
+function formatPrice(price: number): string {
+  return price.toFixed(2);
+}
+
 const Stepper = React.memo(({ currentStep }: { currentStep: Step }) => {
   const currentStepIndex = STEPS.findIndex(s => s.id === currentStep);
   return (
@@ -481,12 +486,12 @@ function CheckoutPageContent() {
   const totalPrice = useMemo(() => {
     const eventTotal = selectedEvents.reduce((total, event) => total + parsePrice(event.price), 0);
     const visitorPassTotal = visitorPassDays * 69; // ₹69 per day
-    return eventTotal + visitorPassTotal;
+    return parseFloat((eventTotal + visitorPassTotal).toFixed(2));
   }, [selectedEvents, visitorPassDays]);
 
   const finalPrice = useMemo(() => {
     const discount = appliedPromo?.discountAmount || 0;
-    return Math.max(0, totalPrice - discount);
+    return parseFloat(Math.max(0, totalPrice - discount).toFixed(2));
   }, [totalPrice, appliedPromo]);
 
   const getDerivedEmail = () => {
@@ -1800,7 +1805,7 @@ function CheckoutPageContent() {
                       <div className="border-t border-white/20 mt-6 pt-4">
                         <div className="flex justify-between items-center">
                           <span className="text-lg font-bold text-white">Total</span>
-                          <span className="text-lg font-bold text-white">₹{finalPrice}</span>
+                          <span className="text-lg font-bold text-white">₹{formatPrice(finalPrice)}</span>
                         </div>
                       </div>
                       <button
@@ -2646,24 +2651,24 @@ function CheckoutPageContent() {
                         </div>
                         {promoStatus.error && <div className="text-xs text-pink-400 mt-2">{promoStatus.error}</div>}
                         {appliedPromo && (
-                          <div className="text-xs text-green-400 mt-2">Applied {appliedPromo.code}: -₹{appliedPromo.discountAmount}</div>
+                          <div className="text-xs text-green-400 mt-2">Applied {appliedPromo.code}: -₹{formatPrice(appliedPromo.discountAmount)}</div>
                         )}
                       </div>
 
                       <div className="border-t border-white/20 mt-6 pt-4 space-y-2">
                         <div className="flex justify-between items-center">
                           <span className="text-white/80">Subtotal</span>
-                          <span className="text-white/80 font-medium">₹{totalPrice}</span>
+                          <span className="text-white/80 font-medium">₹{formatPrice(totalPrice)}</span>
                         </div>
                         {appliedPromo && (
                           <div className="flex justify-between items-center text-green-400">
                             <span>Discount ({appliedPromo.code})</span>
-                            <span className="font-medium">-₹{appliedPromo.discountAmount}</span>
+                            <span className="font-medium">-₹{formatPrice(appliedPromo.discountAmount)}</span>
                           </div>
                         )}
                         <div className="flex justify-between items-center pt-2 border-t border-white/10">
                           <span className="text-lg font-bold text-white">Total</span>
-                          <span className="text-lg font-bold text-white">₹{finalPrice}</span>
+                          <span className="text-lg font-bold text-white">₹{formatPrice(finalPrice)}</span>
                         </div>
                       </div>
                     </div>
@@ -2806,7 +2811,7 @@ function CheckoutPageContent() {
                     <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] relative overflow-hidden">
                       <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
                       <h3 className="font-semibold text-cyan-200">Total</h3>
-                      <div className="mt-4 text-3xl font-bold">₹{finalPrice}</div>
+                      <div className="mt-4 text-3xl font-bold">₹{formatPrice(finalPrice)}</div>
                   </div>
                     </div>
                   </div>
@@ -2937,7 +2942,7 @@ function CheckoutPageContent() {
                     <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)] relative overflow-hidden">
                       <div className="pointer-events-none absolute -top-10 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-cyan-400/20 blur-2xl"></div>
                       <h3 className="font-semibold text-cyan-200">Total</h3>
-                      <div className="mt-4 text-3xl font-bold">₹{finalPrice}</div>
+                      <div className="mt-4 text-3xl font-bold">₹{formatPrice(finalPrice)}</div>
                       
                       {paymentSession && (
                         <div className="mt-4 pt-4 border-t border-white/10">

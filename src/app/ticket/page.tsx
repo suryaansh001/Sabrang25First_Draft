@@ -4,6 +4,11 @@ import { motion } from 'framer-motion';
 import { FaDownload, FaQrcode, FaUser, FaEnvelope, FaUsers, FaSearch, FaShieldAlt, FaClock } from 'react-icons/fa';
 import createApiUrl from '../../lib/api';
 
+// Helper function to format price to 2 decimal places
+function formatPrice(price: number): string {
+  return price.toFixed(2);
+}
+
 interface Registration {
   id: string;
   type: 'individual' | 'team-leader' | 'team-member';
@@ -450,7 +455,7 @@ function TicketPage() {
                     <p><span className="font-semibold">Contact:</span> {registration.contactNo || 'N/A'}</p>
                     <p><span className="font-semibold">University:</span> {registration.universityName || 'N/A'}</p>
                     {registration.finalPrice && (
-                      <p><span className="font-semibold">Amount Paid:</span> ₹{registration.finalPrice}</p>
+                      <p><span className="font-semibold">Amount Paid:</span> ₹{formatPrice(registration.finalPrice)}</p>
                     )}
                     <p><span className="font-semibold">Status:</span> 
                       <span className={`ml-2 px-2 py-1 rounded text-xs ${
@@ -535,7 +540,7 @@ function TicketPage() {
                       <p><span className="font-semibold">University:</span> {registration.universityName || 'N/A'}</p>
                       <p><span className="font-semibold">Team Size:</span> {registration.teamSize}</p>
                       {registration.finalPrice && (
-                        <p><span className="font-semibold">Amount Paid:</span> ₹{registration.finalPrice}</p>
+                        <p><span className="font-semibold">Amount Paid:</span> ₹{formatPrice(registration.finalPrice)}</p>
                       )}
                       <p><span className="font-semibold">Status:</span> 
                         <span className={`ml-2 px-2 py-1 rounded text-xs ${
