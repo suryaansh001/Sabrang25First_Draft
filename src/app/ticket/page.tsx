@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { FaDownload, FaQrcode, FaUser, FaEnvelope, FaUsers, FaSearch, FaShieldAlt, FaClock } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
 import createApiUrl from '../../lib/api';
+import { Ticket, HelpCircle, X, Mail, Phone, Upload, Send, AlertCircle, Loader, CheckCircle, Search, Shield, Clock, Download, QrCode, User, Users } from 'lucide-react';
 
 // Helper function to format price to 2 decimal places
 function formatPrice(price: number): string {
@@ -81,6 +81,8 @@ function TicketPage() {
   const [error, setError] = useState('');
   const [downloadingIds, setDownloadingIds] = useState<Set<string>>(new Set());
   const [otpLoading, setOtpLoading] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+
 
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -242,7 +244,6 @@ function TicketPage() {
     setError('');
   };
 
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white py-8 px-4">
       <div className="container mx-auto max-w-6xl">
@@ -276,7 +277,7 @@ function TicketPage() {
                   Registered Email Address
                 </label>
                 <div className="relative">
-                  <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                   <input
                     type="email"
                     id="email"
@@ -296,9 +297,9 @@ function TicketPage() {
                   className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-6 py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors"
                 >
                   {otpLoading ? (
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    <Loader className="animate-spin h-5 w-5" />
                   ) : (
-                    <FaShieldAlt />
+                    <Shield />
                   )}
                   <span>{otpLoading ? 'Sending OTP...' : 'Send OTP'}</span>
                 </button>
@@ -309,7 +310,7 @@ function TicketPage() {
             <div>
               <div className="mb-4 p-4 bg-green-500/20 border border-green-500/50 rounded-lg">
                 <div className="flex items-center space-x-2">
-                  <FaShieldAlt className="text-green-400" />
+                  <Shield className="text-green-400" />
                   <p className="text-green-300">
                     OTP sent to {email}. Please check your email and enter the 6-digit code below.
                   </p>
@@ -322,7 +323,7 @@ function TicketPage() {
                     Enter OTP
                   </label>
                   <div className="relative">
-                    <FaShieldAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                     <input
                       type="text"
                       id="otp"
@@ -343,9 +344,9 @@ function TicketPage() {
                     className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 px-6 py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors"
                   >
                     {loading ? (
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      <Loader className="animate-spin h-5 w-5" />
                     ) : (
-                      <FaSearch />
+                      <Search />
                     )}
                     <span>{loading ? 'Verifying...' : 'Verify & View'}</span>
                   </button>
@@ -356,9 +357,9 @@ function TicketPage() {
                     className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 px-4 py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors"
                   >
                     {otpLoading ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <Loader className="animate-spin h-4 w-4" />
                     ) : (
-                      <FaClock />
+                      <Clock />
                     )}
                     <span>{otpLoading ? 'Sending...' : 'Resend'}</span>
                   </button>
@@ -376,7 +377,7 @@ function TicketPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                  <FaShieldAlt className="text-white text-sm" />
+                  <Shield className="text-white text-sm" />
                 </div>
                 <div>
                   <p className="text-green-400 font-medium">Email Verified</p>
@@ -440,7 +441,7 @@ function TicketPage() {
             {registrationsData.registrations.filter(reg => reg.type === 'individual').map((registration, index) => (
               <div key={registration.id} className="bg-white/10 backdrop-blur-md rounded-xl p-6">
                 <h3 className="text-xl font-bold mb-4 flex items-center space-x-2">
-                  <FaUser className="text-blue-400" />
+                  <User className="text-blue-400" />
                   <span>Individual Registration #{registration.registrationCount}</span>
                   {registration.registrationDate && (
                     <span className="text-sm text-gray-400 ml-2">
@@ -505,9 +506,9 @@ function TicketPage() {
                       className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
                     >
                       {downloadingIds.has(registration.id) ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <Loader className="animate-spin h-4 w-4" />
                       ) : (
-                        <FaDownload />
+                        <Download />
                       )}
                       <span>{downloadingIds.has(registration.id) ? 'Downloading...' : 'Download QR'}</span>
                     </button>
@@ -520,7 +521,7 @@ function TicketPage() {
             {registrationsData.registrations.filter(reg => reg.type === 'team-leader').map((registration, index) => (
               <div key={registration.id} className="bg-white/10 backdrop-blur-md rounded-xl p-6">
                 <h3 className="text-xl font-bold mb-4 flex items-center space-x-2">
-                  <FaUsers className="text-green-400" />
+                  <Users className="text-green-400" />
                   <span>Team Leader Registration #{registration.registrationCount}</span>
                   {registration.registrationDate && (
                     <span className="text-sm text-gray-400 ml-2">
@@ -590,9 +591,9 @@ function TicketPage() {
                         className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
                       >
                         {downloadingIds.has(registration.id) ? (
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          <Loader className="animate-spin h-4 w-4" />
                         ) : (
-                          <FaDownload />
+                          <Download />
                         )}
                         <span>{downloadingIds.has(registration.id) ? 'Downloading...' : 'Download QR'}</span>
                       </button>
@@ -659,9 +660,9 @@ function TicketPage() {
                               className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-3 py-2 rounded-lg flex items-center space-x-2 transition-colors text-sm"
                             >
                               {downloadingIds.has(member.id) ? (
-                                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+                                <Loader className="animate-spin h-3 w-3" />
                               ) : (
-                                <FaDownload />
+                                <Download />
                               )}
                               <span>{downloadingIds.has(member.id) ? 'Downloading...' : 'Download'}</span>
                             </button>
@@ -678,7 +679,7 @@ function TicketPage() {
             {registrationsData.registrations.filter(reg => reg.type === 'team-member').map((registration, index) => (
               <div key={registration.id} className="bg-white/10 backdrop-blur-md rounded-xl p-6">
                 <h3 className="text-xl font-bold mb-4 flex items-center space-x-2">
-                  <FaUser className="text-purple-400" />
+                  <User className="text-purple-400" />
                   <span>Team Member Registration</span>
                   {registration.teamLeader && (
                     <span className="text-sm text-gray-400 ml-2">
@@ -744,9 +745,9 @@ function TicketPage() {
                       className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
                     >
                       {downloadingIds.has(registration.id) ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <Loader className="animate-spin h-4 w-4" />
                       ) : (
-                        <FaDownload />
+                        <Download />
                       )}
                       <span>{downloadingIds.has(registration.id) ? 'Downloading...' : 'Download QR'}</span>
                     </button>
@@ -756,6 +757,33 @@ function TicketPage() {
             ))}
           </motion.div>
         )}
+
+        {/* Help Form Section */}
+        <motion.div className="mt-12">
+          <div className="bg-neutral-900/90 text-white rounded-2xl w-full shadow-2xl border border-white/20">
+            <div className="p-6 border-b border-white/10">
+              <h2 className="text-2xl font-bold">Trouble Finding Your Ticket?</h2>
+              <p className="text-gray-400">
+                If you're having trouble accessing your tickets, please fill out our support form.
+              </p>
+            </div>
+            <div className="p-8">
+              <a
+                href="https://forms.gle/EF7WS9E4GZPHBNit8"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none transition-all duration-300 hover:scale-105"
+              >
+                <HelpCircle className="w-5 h-5" />
+                Go to Support Form
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-external-link"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+              </a>
+              <p className="text-gray-400 text-sm mt-4">
+                You will be redirected to a Google Form to submit your details.
+              </p>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
