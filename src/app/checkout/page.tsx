@@ -3,11 +3,12 @@
 import React, { useEffect, useMemo, useRef, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ChevronLeft, CreditCard, ArrowRight, X, Home, Info, Calendar, Star, Clock, Users, HelpCircle, Handshake, Mail } from 'lucide-react';
+import { Check, ChevronLeft, CreditCard, ArrowRight, X, Home, Info, Calendar, Star, Clock, Users, HelpCircle, Handshake, Mail, Camera, Ticket, CheckCircle, XCircle, Loader } from 'lucide-react';
 import createApiUrl from '../../lib/api';
 import { events as EVENTS_DATA } from '../Events/[id]/rules/events.data';
 import { EventCatalogItem, EVENT_CATALOG as ORIGINAL_EVENT_CATALOG } from '../../lib/eventCatalog';
 import {load} from '@cashfreepayments/cashfree-js';
+import { verifyPaymentStatus } from '../../utils/paymentVerification';
 
 
 // Control flag to enable/disable the checkout flow.
@@ -204,6 +205,16 @@ const Stepper = React.memo(({ currentStep }: { currentStep: Step }) => {
   );
 });
 
+interface PaymentStatus {
+  success: boolean;
+  status: string;
+  transactionId?: string;
+  amount?: number;
+  method?: string;
+  reason?: string;
+}
+
+
 function CheckoutPageContent() {
   const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
   const [showComingSoon, setShowComingSoon] = useState(false);
@@ -266,6 +277,8 @@ function CheckoutPageContent() {
     error: null,
     retryCount: 0
   });
+  const [paymentVerificationStatus, setPaymentVerificationStatus] = useState<PaymentStatus | null>(null);
+  const [isVerifying, setIsVerifying] = useState(true);
 
 
   // Force reduced motion for smooth scrolling experience on this page
@@ -294,6 +307,32 @@ function CheckoutPageContent() {
           }
         }
       } catch {}
+    }
+  }, [searchParams]);
+
+  // Payment verification on page load
+  useEffect(() => {
+    const orderId = searchParams.get('order_id');
+    if (orderId) {
+      setIsVerifying(true);
+      verifyPaymentStatus(orderId)
+        .then(result => {
+          setPaymentVerificationStatus(result);
+          // If payment is successful, clear the cart
+          if (result.success) {
+            setSelectedEventIds([]);
+            setVisitorPassDays(0);
+            try {
+              localStorage.removeItem('sabrang_cart');
+            } catch {}
+          }
+        })
+        .catch(error => {
+          setPaymentVerificationStatus({ success: false, status: 'ERROR', reason: error.message || 'Verification failed.' });
+        })
+        .finally(() => setIsVerifying(false));
+    } else {
+      setIsVerifying(false);
     }
   }, [searchParams]);
 
@@ -1681,11 +1720,13 @@ function CheckoutPageContent() {
                         );
                       })}
                     </div>
-
-                    {/* Visitor Pass Section - Mobile Optimized (Moved to end) */}
+                      </div>
+                    );
+                    })}
+                    {/* Visitor Pass Section - Moved outside the loop */}
                     <div className="mb-6 sm:mb-8">
-                      <h3 className="text-base sm:text-lg font-medium text-white mb-3 sm:mb-4">
-                        <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent">Visitor Passes</span>
+                      <h3 className="text-xl sm:text-2xl font-extrabold text-white mb-3 sm:mb-4">
+                        <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent">Visitor Pass</span>
                       </h3>
                       <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -1730,9 +1771,6 @@ function CheckoutPageContent() {
                         )}
                       </div>
                     </div>
-                      </div>
-                    );
-                    })}
                   </div>
                   <div className="lg:sticky lg:top-8">
                     <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)]">
@@ -2851,6 +2889,20 @@ function CheckoutPageContent() {
                             <div className="text-sm text-white/80 mb-4">
                               Click below to proceed to secure payment. You can pay using Credit/Debit Cards or UPI (GPay, PhonePe, Paytm, etc.)
                             </div>
+
+                            {/* Screenshot Warning */}
+                            <div className="rounded-xl border border-orange-400/50 bg-orange-500/10 p-4 flex items-start gap-3">
+                              <div className="mt-1 flex-shrink-0">
+                                <Camera className="w-5 h-5 text-orange-300" />
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-orange-200">Important: Keep a Record</h4>
+                                <p className="text-sm text-orange-100/90 mt-1">
+                                  After your payment is successful, please take a screenshot of the confirmation page for your records.
+                                </p>
+                              </div>
+                            </div>
+
                             <button
                               onClick={doPayment}
                               disabled={isProcessingPayment}
@@ -2959,6 +3011,84 @@ function CheckoutPageContent() {
         </main>
       </div>
       {/* Info Modal */}
+      {/* Payment Status Modal */}
+      <AnimatePresence>
+        {(isVerifying || paymentVerificationStatus) && (
+          <motion.div
+            key="payment-status-modal"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          >
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => {
+              setPaymentVerificationStatus(null);
+              router.replace('/checkout', { scroll: false });
+            }} />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="relative w-full max-w-md text-center"
+            >
+              <div className="glass rounded-2xl p-8 border border-white/10 shadow-[0_0_30px_rgba(147,51,234,0.2)]">
+                {isVerifying ? (
+                  <>
+                    <Loader className="w-16 h-16 text-purple-400 animate-spin mx-auto mb-6" />
+                    <h1 className="text-3xl font-bold mb-3">Verifying Payment</h1>
+                    <p className="text-white/80">Please wait while we confirm your transaction. This may take a few moments.</p>
+                  </>
+                ) : paymentVerificationStatus?.success ? (
+                  <>
+                    <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-6" />
+                    <h1 className="text-3xl font-bold mb-3">Payment Successful!</h1>
+                    <p className="text-white/80 mb-8">
+                      Your registration is complete. Thank you for joining Sabrang'25!
+                      <br />
+                      Your transaction ID is <strong className="font-mono text-green-300">{paymentVerificationStatus.transactionId}</strong>.
+                    </p>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                      <button
+                        onClick={() => router.push('/ticket')}
+                        className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 text-lg shadow-lg hover:scale-105"
+                      >
+                        <Ticket className="w-6 h-6" />
+                        View My Tickets
+                      </button>
+                      <button
+                        onClick={() => router.push('/')}
+                        className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+                      >
+                        <Home className="w-5 h-5" />
+                        Go to Homepage
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="w-16 h-16 text-red-400 mx-auto mb-6" />
+                    <h1 className="text-3xl font-bold mb-3">Payment Failed</h1>
+                    <p className="text-white/80 mb-8">
+                      Unfortunately, we couldn't process your payment.
+                      <br />
+                      <strong>Reason:</strong> {paymentVerificationStatus?.reason || 'Unknown error.'}
+                    </p>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                      <button
+                        onClick={() => { setPaymentVerificationStatus(null); router.replace('/checkout', { scroll: false }); setStep('review'); }}
+                        className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 text-lg shadow-lg hover:scale-105"
+                      >
+                        Try Again
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <AnimatePresence>
         {infoEvent && (
           <motion.div
@@ -3109,4 +3239,3 @@ export default function CheckoutPage() {
     </Suspense>
   );
 }
-
