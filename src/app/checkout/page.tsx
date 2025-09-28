@@ -1720,11 +1720,13 @@ function CheckoutPageContent() {
                         );
                       })}
                     </div>
-
-                    {/* Visitor Pass Section - Mobile Optimized (Moved to end) */}
+                      </div>
+                    );
+                    })}
+                    {/* Visitor Pass Section - Moved outside the loop */}
                     <div className="mb-6 sm:mb-8">
-                      <h3 className="text-base sm:text-lg font-medium text-white mb-3 sm:mb-4">
-                        <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent">Visitor Passes</span>
+                      <h3 className="text-xl sm:text-2xl font-extrabold text-white mb-3 sm:mb-4">
+                        <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent">Visitor Pass</span>
                       </h3>
                       <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -1769,9 +1771,6 @@ function CheckoutPageContent() {
                         )}
                       </div>
                     </div>
-                      </div>
-                    );
-                    })}
                   </div>
                   <div className="lg:sticky lg:top-8">
                     <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)]">

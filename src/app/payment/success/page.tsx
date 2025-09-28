@@ -3,7 +3,7 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Check, Download, Mail, Calendar, MapPin, Home } from 'lucide-react';
+import { Check, Download, Mail, Calendar, MapPin, Home, Ticket } from 'lucide-react';
 
 import createApiUrl from '../../../lib/api';
 
@@ -396,14 +396,21 @@ function PaymentSuccessContent() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.6 }}
-          className="mt-8 text-center"
+          className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <button
             onClick={() => router.push('/')}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-cyan-400 rounded-full font-medium hover:scale-105 transition-transform"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 border border-white/20 rounded-full font-medium hover:bg-white/20 transition-colors"
           >
             <Home className="w-4 h-4" />
             Back to Home
+          </button>
+          <button
+            onClick={() => router.push('/ticket')}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full font-medium hover:scale-105 transition-transform shadow-lg"
+          >
+            <Ticket className="w-4 h-4" />
+            View My Ticket
           </button>
         </motion.div>
       </div>
