@@ -20,7 +20,6 @@ interface Event {
   description: string;
   venue: string;
   price: string;
-  capacity: string;
   genre: string;
   category: string;
   details: string;
@@ -41,7 +40,6 @@ const events: Event[] = [
     description: "The grandest runway event of Sabrang, Panache is where elegance, charisma, and confidence collide. Teams will display original collections or concepts with full choreography, soundtrack, and fashion narratives. Expectations - Glamour, high-stakes competition, and crowd pulling visuals.",
     venue: "Main Stage",
     price: "₹85-120",
-    capacity: "3,000 people",
     genre: "Fashion Show",
     category: "Flagship",
     details: "A single-day fashion spectacle focusing on thematic costume interpretation and runway impact. Judging criteria include costume design, thematic relevance, stage presence, and overall narrative.",
@@ -59,7 +57,6 @@ const events: Event[] = [
     description: "Get ready to experience the electrifying talent of the Band Jam Competition, where instruments roar to life with powerful melodies. This musical face-off will fill the air with rhythm and energy, leaving the audience moved by the magic of sound.",
     venue: "Main Stage",
     price: "₹60",
-    capacity: "5,000 people",
     genre: "Music Festival",
     category: "Flagship",
     details: "Bands are judged on creativity, technical prowess, audience engagement, and stage presence. Bandjam is the sonic pulse of Sabrang.",
@@ -77,7 +74,6 @@ const events: Event[] = [
     description: "Get ready for an electrifying crew vs. crew dance showdown! In this high-stakes elimination battle, teams of 6-12 members will face off, showcasing their best choreography and freestyle moves. With strict rules on music, props, and conduct, only the most disciplined and creative crew will be crowned champions. It's a test of skill, synchronization, and raw energy.",
     venue: "Main Stage",
     price: "₹45",
-    capacity: "1,500 people",
     genre: "Dance Competition",
     category: "Flagship",
     details: "Each round challenges rhythm, originality, and intensity. It's not just about dancing – it's about commanding the floor.",
@@ -95,7 +91,6 @@ const events: Event[] = [
     description: "Step Up is the ultimate solo dance challenge where individual performers take center stage. This is a test of pure skill, creativity, and stage command. With strict rules and a two-round elimination format, only the most versatile and captivating dancer will rise to the top. Are you ready to own the spotlight?",
     venue: "Main Stage",
     price: "₹40",
-    capacity: "1,200 people",
     genre: "Solo Dance",
     category: "Flagship",
     details: "A two-round solo dance elimination where individual performers showcase their skill, creativity, and stage command.",
@@ -113,7 +108,6 @@ const events: Event[] = [
     description: "A spoken word and poetry event celebrating the festival's theme, 'Noorwana'. Artists perform original pieces reflecting on light, cosmos, and inner luminescence.",
     venue: "Main Stage",
     price: "Free",
-    capacity: "150 people",
     genre: "Spoken Word",
     category: "Flagship",
     details: "Performances are judged on lyrical content, emotional delivery, and thematic relevance. A platform for the voices of tomorrow.",
@@ -130,7 +124,6 @@ const events: Event[] = [
     description: "Welcome to Bidding Before Wicket, the ultimate cricket strategy showdown! This isn't just an auction; it's a high-stakes battle of wits where you build your dream team with a 100 Cr budget. Navigate the auction with special powers like 'Jump Bidding' and the risky 'Budget Boost'. Qualify through a quiz round, then dominate the auction table to assemble a squad with the highest rating. Do you have what it takes to be a champion owner?",
     venue: "Business School Auditorium",
     price: "₹25",
-    capacity: "200 people",
     genre: "Cricket Auction",
     category: "Fun & Games",
     details: "Based on IPL stats and records. The goal? Build the most powerful team and outscore opponents in cricket-themed questions.",
@@ -147,7 +140,6 @@ const events: Event[] = [
     description: "Welcome to Seal the Deal, a premier trading event designed to challenge and sharpen your financial acumen. This competition offers a unique opportunity to experience the intensity and decision-making rigour of trading in a simulated environment. With a substantial dummy capital and a range of trading strategies, participants will need skill, precision, and strategy to emerge victorious.",
     venue: "-",
     price: "₹15",
-    capacity: "150 people",
     genre: "Simulated Trading",
     category: "Fun & Games",
     details: "A solo simulated trading competition. Participants start with a dummy capital of ₹10,00,000 and aim for the highest gains within a 1-hour time limit. Judged on profit, with tie-breakers for trade success.",
@@ -164,7 +156,6 @@ const events: Event[] = [
     description: '"Versevaad" is a two-round rap battle event designed to showcase originality, creativity, and improvisational skills. The competition emphasizes clean content, prohibiting any form of vulgarity.',
     venue: "Main Stage",
     price: "Free",
-    capacity: "100 people",
     genre: "Poetic Debate",
     category: "Flagship",
     details: "Teams are given topics and must construct their arguments in rhyming couplets or free verse. Judged on content, poetic quality, and delivery.",
@@ -181,7 +172,6 @@ const events: Event[] = [
     description: "Join us for 'In Conversation With,' a curated talk series featuring distinguished guests from the worlds of art, activism, and creation. Listen as they share their personal journeys and behind-the-scenes stories in an intimate setting, followed by an interactive live Q&A session designed to spark ideas and inspire the next generation.",
     venue: "Tech Lawn",
     price: "Free",
-    capacity: "1,000 people",
     genre: "Talk Series",
     category: "Workshops & Talks",
     details: "Live Q&A sessions. This is where ideas spark and inspire the next generation.",
@@ -198,7 +188,6 @@ const events: Event[] = [
     description: "Unleash your creativity and bring your imagination to life in our hands-on clay modelling event! This is a solo artist's playground, where you'll have the time, space, and materials to translate a concept from your mind into a tangible piece of art.",
     venue: "Tech Lawn",
     price: "₹40",
-    capacity: "80 people",
     genre: "Sculpture",
     category: "Creative Arts",
     details: "A solo competition where participants are given 2-3 hours to interpret a theme using air-dry clay. Judged on creativity, material handling, and relevance to the theme.",
@@ -215,7 +204,6 @@ const events: Event[] = [
     description: "Bring your vision to life through the lens! FOCUS is a creative photography challenge that pushes you to capture stories, colours, and reflections in their purest form — without heavy edits or digital tricks.",
     venue: "Amphitheatre",
     price: "₹50",
-    capacity: "150 people",
     genre: "Photography",
     category: "Creative Arts",
     details: "A two-round photography competition focused on creativity, composition, and minimal editing. Participants will tackle themed challenges within the campus.",
@@ -232,7 +220,6 @@ const events: Event[] = [
     description: "Drop into Sabrang's official BGMI tournament, where strategy and skill collide. Squads of four will battle it out in a multi-day event with a unique scoring system that rewards both aggressive play and survival. With bonus points for kill streaks and chicken dinners, only the most versatile team will claim victory. Register your squad, gear up, and get ready for the ultimate battle royale showdown.",
     venue: "Online / E-Sports Arena",
     price: "₹50/squad",
-    capacity: "256 players",
     genre: "E-Sports",
     category: "Fun & Games",
     details: "A multi-round tournament for squads of four. Points are awarded for placement and kills. The final rounds will be live-streamed.",
@@ -249,7 +236,6 @@ const events: Event[] = [
     description: "Gear up for Sabrang's official 5v5 Valorant tournament! This high-stakes competition tests your team's strategy, aim, and coordination across a multi-stage format, from group stages to a best-of-five grand final. With strict fair play rules and a professional map veto process, only the most skilled team will emerge as champions.",
     venue: "E-Sports Arena",
     price: "₹100/team",
-    capacity: "160 players",
     genre: "E-Sports",
     category: "Fun & Games",
     details: "A 5v5, single-elimination bracket tournament. Matches are played on standard competitive settings. Defy the limits!",
@@ -266,7 +252,6 @@ const events: Event[] = [
     description: "Dive into the ultimate mobile battle royale with Sabrang's official Free Fire Tournament. This is a high-stakes competition where only the sharpest squads will survive. With strict rules against teaming and hacking, and a point system that rewards both placement and kills, your path to victory depends on pure skill and strategy. Join the lobby, prove your worth, and fight for the Booyah!",
     venue: "Online / E-Sports Arena",
     price: "₹40/squad",
-    capacity: "192 players",
     genre: "E-Sports",
     category: "Fun & Games",
     details: "Squad-based battle royale. The tournament will consist of multiple qualifying rounds leading to a grand final.",
@@ -283,7 +268,6 @@ const events: Event[] = [
     description: "Get ready for a fun and challenging game of silent acting! Dumb Show brings teams together to act out movie names, phrases, or themes without speaking, relying on gestures and body language to communicate. Test your creativity and teamwork as participants race against the clock to guess the correct answer, making for an exciting and laughter-filled experience for everyone involved.",
     venue: "Amphitheatre",
     price: "Free",
-    capacity: "300 people",
     genre: "Mime Acting",
     category: "Fun & Games",
     details: "It's fast, funny, and tests how well you know your teammates – and your acting chops.",
@@ -300,7 +284,6 @@ const events: Event[] = [
     description: "Step into the shoes of detectives and unravel a thrilling murder mystery! With twists, turns, and surprising revelations, this event promises to test your problem-solving skills, creativity, and intuition.",
     venue: "Amphitheatre",
     price: "₹30",
-    capacity: "100 people",
     genre: "Mock Trial",
     category: "Special Events",
     details: "Teams will be given a case brief and must prepare arguments for prosecution and defense. Judged on legal reasoning, presentation, and courtroom etiquette.",
@@ -317,7 +300,6 @@ const events: Event[] = [
     description: "The Art Relay is a unique event that tests an artist's flexibility and innovative thinking. Participants are tasked with creating a single artwork that evolves through multiple phases based on a series of revealed prompts.",
     venue: "Tech Lawn",
     price: "₹20",
-    capacity: "40 people",
     genre: "Solo Art",
     category: "Creative Arts",
     details: "A solo art challenge where participants create an evolving artwork on a single canvas based on a series of prompts revealed every 10 minutes. Judged on creativity, cohesiveness, and relevance to prompts.",
@@ -327,11 +309,10 @@ const events: Event[] = [
 
 const categories = [
   { name: "All", value: "all" },
-  { name: "Cultural", value: "Flagship" },
-  { name: "Fun & Games", value: "Fun & Games" },
-  { name: "Creative Arts", value: "Creative Arts" },
-  { name: "Workshops & Talks", value: "Workshops & Talks" },
-  { name: "Special Events", value: "Special Events" }
+  { name: "Flagship", value: "Flagship" },
+  { name: "Non-Flagship", value: "Non-Flagship" },
+  { name: "E-Sports", value: "E-Sports" },
+  { name: "Others", value: "Others" }
 ];
 
 export default function EventsPage() {
@@ -405,11 +386,11 @@ export default function EventsPage() {
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
     { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
-    { title: 'Schedule', href: '/schedule/progress', icon: <Clock className="w-5 h-5" /> },
-    { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
+    { title: 'Schedule', href: '/schedule', icon: <Clock className="w-5 h-5" /> },
+    { title: 'Our Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
     { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
     { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
-    { title: 'Contact', href: '/Contact', icon: <Mail className="w-5 h-5" /> },
+    { title: 'Contact Us', href: '/Contact', icon: <Mail className="w-5 h-5" /> },
   ];
 
   const handleCardClick = (event: Event) => {
@@ -531,7 +512,14 @@ export default function EventsPage() {
 
   // Filter events based on category and flagship toggle
   const filteredEvents = events.filter(event => {
-    const categoryMatch = selectedCategory === "all" || event.category === selectedCategory;
+    if (selectedCategory === "all") return true;
+    if (selectedCategory === "Flagship") return event.isFlagship;
+    if (selectedCategory === "Non-Flagship") return !event.isFlagship;
+    if (selectedCategory === "E-Sports") return event.genre === "E-Sports";
+    if (selectedCategory === "Others") return !event.isFlagship && event.genre !== "E-Sports";
+    
+    // Fallback to original category matching
+    const categoryMatch = event.category === selectedCategory;
     const flagshipMatch = !showFlagshipOnly || event.isFlagship;
     return categoryMatch && flagshipMatch;
   });
@@ -667,7 +655,6 @@ export default function EventsPage() {
                       {getEventCatalogData(selectedEvent.id)?.endTime12hr && ` - ${getEventCatalogData(selectedEvent.id)?.endTime12hr}`}
                     </span>
                     <span className="inline-flex items-center gap-1"><MapPin className="w-4 h-4" />{selectedEvent.venue}</span>
-                    <span className="inline-flex items-center gap-1"><Users className="w-4 h-4" />{selectedEvent.capacity}</span>
                   </div>
                 </div>
                 <p className="text-gray-200 leading-relaxed">{selectedEvent.description}</p>
@@ -836,7 +823,12 @@ export default function EventsPage() {
                       initial={{ opacity: 0, x: -50 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.8, delay: 0.2 }}
-                      className="text-6xl md:text-8xl font-bold text-white mb-4"
+                      className="text-6xl md:text-8xl font-black text-white mb-4 tracking-wider"
+                      style={{ 
+                        fontFamily: 'system-ui, -apple-system, sans-serif',
+                        textShadow: '0 0 20px rgba(255, 255, 255, 0.3), 0 0 40px rgba(255, 255, 255, 0.1)',
+                        letterSpacing: '0.1em'
+                      }}
                     >
                       SABRANG 2025
                     </motion.h1>

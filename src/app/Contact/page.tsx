@@ -110,10 +110,10 @@ const Contact = () => {
     { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
     { title: 'Schedule', href: '/schedule', icon: <Calendar className="w-5 h-5" /> },
-    { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
+    { title: 'Our Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
     { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
     { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
-    { title: 'Contact', href: '/Contact', icon: <MailIcon className="w-5 h-5" /> },
+    { title: 'Contact Us', href: '/Contact', icon: <MailIcon className="w-5 h-5" /> },
   ];
 
   return (

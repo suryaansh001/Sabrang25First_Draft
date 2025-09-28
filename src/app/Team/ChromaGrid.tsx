@@ -28,16 +28,19 @@ const HolographicCard = ({
 }) => {
   const [hoveredCard, setHoveredCard] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isMediumLaptop, setIsMediumLaptop] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
 
-  // Check if device is mobile
+  // Check screen size for responsive design
   React.useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+    const checkScreenSize = () => {
+      const width = window.innerWidth;
+      setIsMobile(width < 1024);
+      setIsMediumLaptop(width >= 1024 && width < 1280);
     };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
   // Add error handling for undefined person
@@ -708,11 +711,11 @@ export default function PeopleStrip() {
         </div>
         
         {/* Enhanced cards layout with connecting elements */}
-        <div className={`relative ${isSingleMember ? 'flex justify-center' : 'grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center'} gap-4 sm:gap-8 w-full max-w-7xl mx-auto px-2 sm:px-4`}>
+        <div className={`relative flex flex-wrap justify-center gap-4 sm:gap-8 w-full max-w-7xl mx-auto px-2 sm:px-4`}>
           {committeeMembers.filter(Boolean).map((person: Person, idx: number) => (
             <div
               key={idx}
-              className={`relative z-10 h-full ${isSingleMember ? 'w-44 sm:w-auto' : 'w-full sm:w-auto'}`}
+              className={`relative z-10 h-full w-auto`}
             >
               <PersonCard
                 person={person}
@@ -729,7 +732,7 @@ export default function PeopleStrip() {
   };
 
    return (
-     <div className="flex flex-col items-center px-2 sm:px-4 py-4 sm:py-8 w-full overflow-x-hidden">
+     <div className="flex flex-col items-center justify-center px-2 sm:px-4 py-4 sm:py-8 w-full overflow-x-hidden">
       {/* Committee Popup */}
       <CommitteePopup
         committee={selectedCommittee}
@@ -749,7 +752,7 @@ export default function PeopleStrip() {
 
       {/* Student Affairs cards - styled like OH and placed above OH */}
       <div className="relative mt-6 mb-12">
-        <div className="flex flex-wrap justify-center lg:justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 w-full max-w-7xl mx-auto px-2 sm:px-4 relative z-10">
+        <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 w-full max-w-7xl mx-auto px-2 sm:px-4 relative z-10">
           {studentAffairsPeople.map((person, index) => (
             <div
               key={`student-affairs-${index}`}
@@ -777,7 +780,7 @@ export default function PeopleStrip() {
       </div>
       
              {/* Organizing Heads cards - enhanced layout and styling */}
-       <div className="relative mt-0 mb-24 sm:mb-28 lg:mb-32">
+       <div className="relative -mt-8 mb-24 sm:mb-28 lg:mb-32">
                  {/* Background decorative elements */}
          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
            <div className="w-full max-w-4xl h-1 bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-30" />
@@ -791,7 +794,7 @@ export default function PeopleStrip() {
          </div>
         
                  {/* Cards container with enhanced spacing */}
-         <div className="flex flex-wrap justify-center lg:justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 mt-8 sm:mt-12 lg:mt-20 w-full max-w-7xl mx-auto px-2 sm:px-4 relative z-10">
+         <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 mt-8 sm:mt-12 lg:mt-20 w-full max-w-7xl mx-auto px-2 sm:px-4 relative z-10">
         {cards.map((person, index) => (
             <div
             key={index}
@@ -804,13 +807,7 @@ export default function PeopleStrip() {
               person={person}
               cardId={`organizing-head-${index}`}
                    className={`w-[200px] sm:w-[180px] md:w-[240px] lg:w-[280px] xl:w-[320px] h-[320px] sm:h-[300px] md:h-[400px] lg:h-[480px] xl:h-[540px] overflow-hidden rounded-lg shadow-2xl flex-shrink-0 relative`}
-              transformClass={
-                index === 1 
-                       ? 'lg:relative lg:top-[-80px] xl:top-[-100px] z-30 lg:scale-110 xl:scale-125' 
-                  : index === 0 
-                         ? 'lg:relative lg:top-[60px] xl:top-[80px] lg:left-[-30px] xl:left-[-40px] z-20 lg:scale-95 xl:scale-100' 
-                         : 'lg:relative lg:top-[60px] xl:top-[80px] lg:right-[-30px] xl:right-[-40px] z-20 lg:scale-95 xl:scale-100'
-              }
+              transformClass=""
               isOH
             />
                  
@@ -836,7 +833,7 @@ export default function PeopleStrip() {
 
       {/* Committee Layouts - Row-based */}
       <div className="w-full max-w-7xl px-2 sm:px-4 space-y-16 relative z-10 perspective-1000 mx-auto">
-        <div className="flex flex-col space-y-24">
+        <div className="flex flex-col items-center space-y-24">
           {committeeNames.map((committeeName) => {
             return renderCommitteeLayout(committeeName);
           })}

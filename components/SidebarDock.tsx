@@ -26,11 +26,11 @@ const navigationItems = [
   { title: 'About', icon: <Info className="w-3 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/About' },
   { title: 'Events', icon: <Calendar className="w-3 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/Events' },
   { title: 'Highlights', icon: <Star className="w-3 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/Gallery' },
-  { title: 'Schedule', icon: <Clock className="w-3 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/schedule/progress' },
-  { title: 'Team', icon: <Users className="w-3 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/Team' },
+  { title: 'Schedule', icon: <Clock className="w-3 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/schedule' },
+  { title: 'Our Team', icon: <Users className="w-3 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/Team' },
   { title: 'FAQ', icon: <HelpCircle className="w-3 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/FAQ' },
   { title: 'Why Sponsor Us?', icon: <Handshake className="w-2 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/why-sponsor-us' },
-  { title: 'Contact', icon: <Mail className="w-3 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/Contact' },
+  { title: 'Contact Us', icon: <Mail className="w-3 h-3 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-4 lg:h-4" />, href: '/Contact' },
 ];
 
 
