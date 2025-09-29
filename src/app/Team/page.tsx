@@ -110,9 +110,7 @@ const TeamPage = () => {
       <div className="fixed inset-0 -z-10 bg-black/50" />
 
       {/* Desktop Logo and Sidebar */}
-      <div className="hidden lg:block">
-        <Logo />
-      </div>
+      <Logo />
 
       {/* Main Content Container - flex-1 makes it take remaining space */}
       <div className="relative z-10 pt-24 lg:pt-24 flex-1">

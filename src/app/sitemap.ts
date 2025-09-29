@@ -7,7 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/About',
     '/Events',
     '/Gallery',
-    '/schedule/progress',
+    '/schedule',
     '/Team',
     '/FAQ',
     '/why-sponsor-us',

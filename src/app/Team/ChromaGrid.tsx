@@ -76,17 +76,29 @@ const HolographicCard = ({
     }
   };
 
+  // Handle touch events for better mobile interaction
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (isMobile) {
+      e.preventDefault();
+      // Add haptic feedback if available
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+    }
+  };
+
   return (
     <div className="group relative">
       {/* Main Card Container */}
       <div
-        className="relative cursor-pointer transition-all duration-700 ease-out transform-gpu"
+        className="relative cursor-pointer transition-all duration-700 ease-out transform-gpu active:scale-95"
         style={{
           transformStyle: 'preserve-3d'
         }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={handleClick}
+        onTouchStart={handleTouchStart}
       >
         {/* Thick Holographic Border with Name */}
         <div className={`
@@ -104,14 +116,6 @@ const HolographicCard = ({
           </div>
         </div>
 
-        {/* Mobile Tap Indicator */}
-        {isMobile && !isClicked && (
-          <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 z-20">
-            <div className="bg-black/60 backdrop-blur-sm px-4 py-1 rounded-full border border-white/20">
-              <span className="text-xs text-white/80 font-medium">Tap</span>
-            </div>
-          </div>
-        )}
 
         {/* Flip Card Container */}
         <div className="relative h-80 w-full sm:h-96 sm:w-72 perspective-1000">
@@ -158,9 +162,8 @@ const HolographicCard = ({
               </div>
             </div>
 
-            {/* BACK */}
-                        {/* BACK - Social Media Links */}
-            <div className={`absolute inset-0 w-full h-full rounded-lg border-4 border-white/40 overflow-hidden shadow-2xl text-white p-4 sm:p-6 backface-hidden rotate-y-180 transition-opacity duration-300 ${(hoveredCard || (isMobile && isClicked)) ? 'opacity-100' : 'opacity-0'}`} style={{ transform: 'rotateY(180deg)' }}>
+            {/* BACK - Mobile Optimized Social Media Links */}
+            <div className={`absolute inset-0 w-full h-full rounded-lg border-4 border-white/40 overflow-hidden shadow-2xl text-white p-2 sm:p-4 md:p-6 backface-hidden rotate-y-180 transition-opacity duration-300 ${(hoveredCard || (isMobile && isClicked)) ? 'opacity-100' : 'opacity-0'}`} style={{ transform: 'rotateY(180deg)' }}>
               {/* Enhanced background with person's image as backdrop */}
               <div className="absolute inset-0">
                 <img
@@ -172,54 +175,59 @@ const HolographicCard = ({
                 <div className="absolute inset-0 bg-black/60" />
               </div>
               
-               <div className="relative z-10 flex flex-col h-full items-center justify-center gap-4 text-center">
-                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-                   <h3 className="text-xl sm:text-2xl font-bold text-white mb-4">{person.name || 'Unknown'}</h3>
+               <div className="relative z-10 flex flex-col h-full items-center justify-center gap-2 sm:gap-4 text-center p-2 sm:p-4">
+                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 sm:p-4 border border-white/20 w-full">
+                   {/* Mobile optimized name */}
+                   <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-white mb-2 sm:mb-4 break-words leading-tight">{person.name || 'Unknown'}</h3>
                    
-                   <div className="w-20 sm:w-28 h-0.5 bg-white/25 my-4 mx-auto" />
+                   <div className="w-16 sm:w-20 md:w-28 h-0.5 bg-white/25 my-2 sm:my-4 mx-auto" />
 
-                  <div className="space-y-4">
-                    <p className="text-sm text-white/80 uppercase tracking-widest">Connect With Me</p>
-                    <div className="flex items-center justify-center gap-6">
-                      <a 
-                        href={person.socials?.linkedin || "#"} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="text-white/80 hover:text-[#0077B5] transition-all duration-300 hover:scale-125 p-2 rounded-full bg-white/10 hover:bg-white/20"
-                      >
-                        <Linkedin size={28} />
-                      </a>
-                      <a 
-                        href={person.socials?.instagram || "#"} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="text-white/80 hover:text-[#E1306C] transition-all duration-300 hover:scale-125 p-2 rounded-full bg-white/10 hover:bg-white/20"
-                      >
-                        <Instagram size={28} />
-                      </a>
-                      {person.socials?.twitter && (
-                        <a 
-                          href={person.socials?.twitter} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
-                          className="text-white/80 hover:text-[#1DA1F2] transition-all duration-300 hover:scale-125 p-2 rounded-full bg-white/10 hover:bg-white/20"
-                        >
-                          <Twitter size={28} />
-                        </a>
-                      )}
-                    </div>
+                  <div className="space-y-2 sm:space-y-4">
+                    {/* Mobile optimized connect text */}
+                    <p className="text-xs sm:text-sm text-white/80 uppercase tracking-widest font-medium">Connect With Me</p>
                     
-                    {/* View Complete Committee Button */}
-                    <div className="mt-6 pt-4 border-t border-white/20">
+                     {/* Mobile optimized social icons - Clean design */}
+                     <div className="flex items-center justify-center gap-6 sm:gap-8">
+                       <a 
+                         href={person.socials?.linkedin || "#"} 
+                         target="_blank" 
+                         rel="noopener noreferrer" 
+                         className="text-white/80 hover:text-[#0077B5] transition-all duration-300 hover:scale-125 active:scale-110"
+                       >
+                         <Linkedin size={isMobile ? 28 : 32} />
+                       </a>
+                       <a 
+                         href={person.socials?.instagram || "#"} 
+                         target="_blank" 
+                         rel="noopener noreferrer" 
+                         className="text-white/80 hover:text-[#E1306C] transition-all duration-300 hover:scale-125 active:scale-110"
+                       >
+                         <Instagram size={isMobile ? 28 : 32} />
+                       </a>
+                       {person.socials?.twitter && (
+                         <a 
+                           href={person.socials.twitter} 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           className="text-white/80 hover:text-[#1DA1F2] transition-all duration-300 hover:scale-125 active:scale-110"
+                         >
+                           <Twitter size={isMobile ? 28 : 32} />
+                         </a>
+                       )}
+                     </div>
+                    
+                    {/* Mobile optimized View Complete Committee Button */}
+                    <div className="mt-3 sm:mt-6 pt-2 sm:pt-4 border-t border-white/20">
                       <button 
-                        className="bg-gradient-to-r from-purple-500/80 via-pink-500/80 to-blue-500/80 hover:from-purple-500 hover:via-pink-500 hover:to-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg border border-white/30 hover:border-white/50"
+                        className="bg-gradient-to-r from-purple-500/80 via-pink-500/80 to-blue-500/80 hover:from-purple-500 hover:via-pink-500 hover:to-blue-500 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-lg border border-white/30 hover:border-white/50 w-full sm:w-auto"
                         onClick={() => {
                           if (onViewCommittee) {
                             onViewCommittee(person.committee);
                           }
                         }}
                       >
-                        View Complete Committee
+                        <span className="block sm:hidden">View Committee</span>
+                        <span className="hidden sm:block">View Complete Committee</span>
                       </button>
                     </div>
                   </div>
@@ -238,6 +246,8 @@ export default function PeopleStrip() {
   // State for popup
   const [selectedCommittee, setSelectedCommittee] = useState<CommitteeData | null>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [activeCommittee, setActiveCommittee] = useState<string | null>(null);
 
   // Function to handle committee popup
   const handleViewCommittee = (committeeName: string) => {
@@ -252,6 +262,29 @@ export default function PeopleStrip() {
   const handleClosePopup = () => {
     setIsPopupOpen(false);
     setSelectedCommittee(null);
+  };
+
+  // Mobile detection
+  React.useEffect(() => {
+    const checkScreenSize = () => {
+      const width = window.innerWidth;
+      setIsMobile(width < 1024);
+    };
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
+  // Mobile committee navigation
+  const handleCommitteeClick = (committeeName: string) => {
+    if (isMobile) {
+      setActiveCommittee(activeCommittee === committeeName ? null : committeeName);
+      // Scroll to committee
+      const element = document.getElementById(`committee-${committeeName}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
   };
 
    // People array with detailed information for each person
@@ -506,21 +539,23 @@ export default function PeopleStrip() {
     // If it's a committee card, use holographic style
     if (isCommitteeCard) {
       return (
-        <HolographicCard
-          key={cardId}
-          person={person}
-          cardId={cardId}
-          animationDelay={animationDelay}
-          description={description}
-          onViewCommittee={handleViewCommittee}
-        />
+        <div className="team-member-card">
+          <HolographicCard
+            key={cardId}
+            person={person}
+            cardId={cardId}
+            animationDelay={animationDelay}
+            description={description}
+            onViewCommittee={handleViewCommittee}
+          />
+        </div>
       );
     }
 
          // Enhanced OH card style for organizing heads
      if (isOH) {
     return (
-      <div className={`relative ${sizeClasses[size]} ${className} ${transformClass} cursor-pointer transition-all duration-700 ease-out group hover:scale-110 hover:z-20`} style={cardStyle}>
+      <div className={`relative ${sizeClasses[size]} ${className} ${transformClass} cursor-pointer transition-all duration-700 ease-out group hover:scale-110 hover:z-20 team-member-card`} style={cardStyle}>
            {/* Enhanced Glow Effect for OH */}
            <div className="absolute -inset-2 bg-gradient-to-r from-purple-500/30 via-pink-500/30 to-blue-500/30 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-all duration-700" />
            
@@ -548,7 +583,7 @@ export default function PeopleStrip() {
                
                  {/* Text content */}
                  <div className="relative z-10 text-center">
-                   <h3 className="text-lg lg:text-xl font-bold mb-1 text-shadow-lg group-hover:text-white transition-all duration-300 truncate">
+                   <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold mb-1 text-shadow-lg group-hover:text-white transition-all duration-300 break-words leading-tight">
                      {person.name}
                    </h3>
                    
@@ -569,7 +604,7 @@ export default function PeopleStrip() {
     // Student Affairs card style with gradient backgrounds
     if (isStudentAffairs) {
       return (
-        <div className={`relative ${sizeClasses[size]} ${className} ${transformClass} cursor-pointer transition-all duration-700 ease-out group hover:scale-110 hover:z-20`} style={cardStyle}>
+        <div className={`relative ${sizeClasses[size]} ${className} ${transformClass} cursor-pointer transition-all duration-700 ease-out group hover:scale-110 hover:z-20 team-member-card`} style={cardStyle}>
           {/* Enhanced Glow Effect for Student Affairs */}
           <div className="absolute -inset-2 bg-gradient-to-r from-purple-500/30 via-pink-500/30 to-blue-500/30 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-all duration-700" />
           
@@ -613,13 +648,13 @@ export default function PeopleStrip() {
             </div>
             
             {/* Enhanced text overlay with better contrast */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 text-white z-30">
+            <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-4 text-white z-30">
               {/* Background for text readability */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent rounded-b-lg" />
               
               {/* Text content */}
               <div className="relative z-10 text-center">
-                <h3 className="text-lg lg:text-xl font-bold mb-1 text-shadow-lg group-hover:text-white transition-all duration-300 truncate">
+                <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold mb-1 text-shadow-lg group-hover:text-white transition-all duration-300 break-words leading-tight">
                   {person.name}
                 </h3>
                 
@@ -639,7 +674,7 @@ export default function PeopleStrip() {
 
     // Default card style for other cases
     return (
-      <div className={`relative ${sizeClasses[size]} ${className} ${transformClass} cursor-pointer transition-all duration-700 ease-out group hover:scale-110 hover:z-20`} style={cardStyle}>
+      <div className={`relative ${sizeClasses[size]} ${className} ${transformClass} cursor-pointer transition-all duration-700 ease-out group hover:scale-110 hover:z-20 team-member-card`} style={cardStyle}>
         <div className={`relative w-full h-full rounded-lg overflow-hidden shadow-2xl border-2 border-white/20 group-hover:border-white/40 transition-all duration-500`}>
           <div className="absolute inset-0">
             <div className={`absolute inset-0 ${person.bg} rounded-lg opacity-90`} />
@@ -667,10 +702,10 @@ export default function PeopleStrip() {
             <div className="absolute inset-0 rounded-lg ring-2 ring-white/30 group-hover:ring-white/50 transition-all duration-500" />
           </div>
           
-          <div className="absolute bottom-0 left-0 right-0 p-4 text-white z-30">
+          <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-4 text-white z-30">
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent rounded-b-lg" />
             <div className="relative z-10 text-center">
-              <h3 className="text-lg lg:text-xl font-bold mb-1 text-shadow-lg group-hover:text-white transition-all duration-300 truncate">
+              <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold mb-1 text-shadow-lg group-hover:text-white transition-all duration-300 break-words leading-tight">
                 {person.name}
               </h3>
             </div>
@@ -688,34 +723,51 @@ export default function PeopleStrip() {
     if (committeeMembers.length === 0) return null;
     
     const isSingleMember = committeeMembers.length === 1;
+    const isActive = activeCommittee === committeeName;
 
     // Enhanced layouts with better visual elements
     return (
-      <div key={committeeName} className="flex flex-col items-center mb-24 relative min-h-[400px] w-full group">
+      <div 
+        key={committeeName} 
+        id={`committee-${committeeName}`}
+        className={`flex flex-col items-center mb-24 relative min-h-[400px] w-full group transition-all duration-500 ${
+          isMobile && activeCommittee && !isActive ? 'opacity-50 scale-95' : 'opacity-100 scale-100'
+        }`}
+      >
         {/* Enhanced background effects with animations */}
         <div className={`absolute inset-0 bg-neutral-700 opacity-20 rounded-lg blur-3xl transition-all duration-1000 group-hover:opacity-30`}></div>
         <div className={`absolute inset-0 bg-neutral-700 opacity-10 rounded-lg blur-2xl scale-150 transition-all duration-1000 group-hover:scale-175`}></div>
         
-        {/* Enhanced committee header */}
+        {/* Enhanced committee header with mobile interactions */}
         <div 
-          className="relative z-10 text-center mb-8 sm:mb-12"
+          className={`relative z-10 text-center mb-8 sm:mb-12 transition-all duration-300 ${
+            isMobile ? 'cursor-pointer active:scale-95' : ''
+          }`}
+          onClick={() => isMobile && handleCommitteeClick(committeeName)}
         >
-          <h3 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-white uppercase tracking-widest px-4`}>
+          <h3 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-white uppercase tracking-widest px-4 transition-all duration-300 ${
+            isMobile && isActive ? 'text-yellow-400 scale-105' : ''
+          }`}>
             {committeeName}
+            {isMobile && (
+              <span className="ml-2 text-lg">
+                {isActive ? '▼' : '▶'}
+              </span>
+            )}
           </h3>
           <p 
             className="text-sm text-gray-400 mt-2 max-w-md mx-auto"
           >
-            {/* Dedicated team members working together to deliver excellence */}
+            {isMobile ? 'Tap to focus • ' : ''}Dedicated team members working together to deliver excellence
           </p>
         </div>
         
-        {/* Enhanced cards layout with connecting elements */}
-        <div className={`relative flex flex-wrap justify-center gap-4 sm:gap-8 w-full max-w-7xl mx-auto px-2 sm:px-4`}>
+        {/* Enhanced cards layout with connecting elements - Mobile optimized */}
+        <div className={`relative flex flex-wrap justify-center gap-3 sm:gap-6 md:gap-8 w-full max-w-7xl mx-auto px-2 sm:px-4`}>
           {committeeMembers.filter(Boolean).map((person: Person, idx: number) => (
             <div
               key={idx}
-              className={`relative z-10 h-full w-auto`}
+              className={`relative z-10 h-full w-auto transform transition-all duration-300 hover:scale-105 active:scale-95`}
             >
               <PersonCard
                 person={person}
@@ -723,6 +775,7 @@ export default function PeopleStrip() {
                 animationDelay={idx * 200}
                 size="normal"
                 isCommitteeCard={true}
+                className="w-[180px] sm:w-[200px] md:w-[240px] lg:w-[280px] xl:w-[320px] h-[280px] sm:h-[320px] md:h-[400px] lg:h-[480px] xl:h-[540px] overflow-hidden rounded-lg shadow-2xl flex-shrink-0 relative touch-manipulation"
               />
             </div>
           ))}
@@ -732,13 +785,14 @@ export default function PeopleStrip() {
   };
 
    return (
-     <div className="flex flex-col items-center justify-center px-2 sm:px-4 py-4 sm:py-8 w-full overflow-x-hidden">
+     <div className="flex flex-col items-center justify-center px-2 sm:px-4 py-4 sm:py-8 w-full overflow-x-hidden mobile-scroll">
       {/* Committee Popup */}
       <CommitteePopup
         committee={selectedCommittee}
         isOpen={isPopupOpen}
         onClose={handleClosePopup}
       />
+
       
  
       {/* Student Affairs heading */}
@@ -944,6 +998,90 @@ export default function PeopleStrip() {
           .mobile-optimized {
             font-size: 0.875rem;
             line-height: 1.25rem;
+          }
+          
+          /* Ensure team member photos are visible on mobile */
+          .team-member-card {
+            min-height: 200px;
+            min-width: 150px;
+          }
+          
+          .team-member-card img {
+            display: block !important;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+          }
+
+          /* Enhanced mobile touch interactions */
+          .touch-manipulation {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+          }
+
+          /* Mobile card hover effects */
+          .team-member-card:active {
+            transform: scale(0.95);
+            transition: transform 0.1s ease;
+          }
+
+          /* Mobile committee navigation */
+          .mobile-nav-button {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+          }
+
+          /* Mobile scroll improvements */
+          .mobile-scroll {
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+          }
+
+          /* Mobile text sizing */
+          .mobile-text {
+            font-size: 0.875rem;
+            line-height: 1.4;
+          }
+
+          /* Mobile spacing */
+          .mobile-spacing {
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+          }
+
+          /* Mobile flipped card optimizations */
+          .mobile-flipped-card {
+            padding: 0.5rem;
+          }
+
+          .mobile-flipped-card .social-icon {
+            padding: 0.75rem;
+            min-width: 3rem;
+            min-height: 3rem;
+          }
+
+          .mobile-flipped-card .social-icon svg {
+            width: 1.5rem;
+            height: 1.5rem;
+          }
+
+          .mobile-flipped-card .btn-mobile {
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            border-radius: 2rem;
+          }
+
+          /* Better mobile text hierarchy */
+          .mobile-flipped-card h3 {
+            font-size: 1rem;
+            line-height: 1.2;
+            margin-bottom: 0.75rem;
+          }
+
+          .mobile-flipped-card p {
+            font-size: 0.75rem;
+            margin-bottom: 0.75rem;
           }
         }
         

@@ -36,7 +36,7 @@ const Footer = () => {
             <h3 className="text-lg font-bold uppercase mb-6 text-white">Quick Links</h3>
             <div className="space-y-3">
               <a href="/About" className="block text-sm hover:text-gray-300 transition-colors">About</a>
-              <a href="/schedule/progress" className="block text-sm hover:text-gray-300 transition-colors">Schedule</a>
+              <a href="/schedule" className="block text-sm hover:text-gray-300 transition-colors">Schedule</a>
               <a href="/Team" className="block text-sm hover:text-gray-300 transition-colors">Team</a>
               <a href="https://jklu.edu.in" target="_blank" rel="noopener noreferrer" className="block text-sm hover:text-gray-300 transition-colors">University Website</a>
               <a href="/privacy-policy" className="block text-sm hover:text-gray-300 transition-colors">Privacy Policy</a>
