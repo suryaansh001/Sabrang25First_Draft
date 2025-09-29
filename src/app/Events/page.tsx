@@ -27,6 +27,8 @@ interface Event {
   rules?: string[];
 }
 
+// ... (rest of the file remains the same)
+
 const events: Event[] = [
   // 1. Rampwalk – Panache – Theme Based
   {
@@ -37,7 +39,7 @@ const events: Event[] = [
     shares: "567 Shares",
     image: "/posters/PANACHE.webp",
     modalImage: "/images/gallery/image1.webp", // Example: Assign a unique image
-    description: "The grandest runway event of Sabrang, Panache is where elegance, charisma, and confidence collide. Teams will display original collections or concepts with full choreography, soundtrack, and fashion narratives. Expectations - Glamour, high-stakes competition, and crowd pulling visuals.",
+    description: "Panache is the ultimate ramp walk competition! It's not just about your outfit, but the confidence, energy, and attitude you bring. This is your dazzling platform to show off your charisma and unique sense of style. With stunning lights and great music, this event celebrates individuality and glamour. Step onto the runway, own your presence, and let the world see your incredible style shine!",
     venue: "Main Stage",
     price: "₹85-120",
     genre: "Fashion Show",
@@ -54,7 +56,7 @@ const events: Event[] = [
     shares: "189 Shares",
     image: "/posters/BANDJAM.webp",
     modalImage: "/images/gallery/image2.webp", // Example: Assign a unique image
-    description: "Get ready to experience the electrifying talent of the Band Jam Competition, where instruments roar to life with powerful melodies. This musical face-off will fill the air with rhythm and energy, leaving the audience moved by the magic of sound.",
+    description: "This is the ultimate music showdown for all bands! It's not just about playing your instruments, but showing your energy, creativity, and unique vibe. Get on stage, play your powerful music loud and proud, and feel the excitement from the crowd. Band Jam is where passion takes over, and your music gets to do all the talking. Come own the sound!",
     venue: "Main Stage",
     price: "₹60",
     genre: "Music Festival",
@@ -71,7 +73,7 @@ const events: Event[] = [
     shares: "156 Shares",
     image: "/posters/DANCE_BATTLE.webp",
     modalImage: "/images/gallery/image3.webp", // Example: Assign a unique image
-    description: "Get ready for an electrifying crew vs. crew dance showdown! In this high-stakes elimination battle, teams of 6-12 members will face off, showcasing their best choreography and freestyle moves. With strict rules on music, props, and conduct, only the most disciplined and creative crew will be crowned champions. It's a test of skill, synchronization, and raw energy.",
+    description: "Get your crew together for an epic dance showdown! This isn't a solo act; it's a team effort that mixes hip-hop, Bollywood, and freestyle. You'll need perfect teamwork, sharp moves, and tons of energy to impress the crowd. With great music and bright lights, only the best team will take the win. Is your squad ready to battle?",
     venue: "Main Stage",
     price: "₹45",
     genre: "Dance Competition",
@@ -88,7 +90,7 @@ const events: Event[] = [
     shares: "145 Shares",
     image: "/posters/STEPUP.webp",
     modalImage: "/images/gallery/image4.webp", // Example: Assign a unique image
-    description: "Step Up is the ultimate solo dance challenge where individual performers take center stage. This is a test of pure skill, creativity, and stage command. With strict rules and a two-round elimination format, only the most versatile and captivating dancer will rise to the top. Are you ready to own the spotlight?",
+    description: "Step Up is the ultimate solo dance competition where your body gets to tell your story! Forget old routines; this is all about your individuality, rhythm, and pure fun. Whether you do lyrical, hip-hop, contemporary, or any other style—every move matters. Bring your fire, your flair, and your authentic self. Own the spotlight, let your soul dance loud, and turn your passion into glory!",
     venue: "Main Stage",
     price: "₹40",
     genre: "Solo Dance",
@@ -103,7 +105,7 @@ const events: Event[] = [
     date: "10.10.2025",
     time: "11:30",
     shares: "95 Shares",
-    image: "/posters/Echoes of noor Draft-05.4.webp", // Placeholder image
+    image: "/posters/echoes of noor.webp", // Updated
     modalImage: "/images/gallery/image5.webp", // Example: Assign a unique image
     description: "A spoken word and poetry event celebrating the festival's theme, 'Noorwana'. Artists perform original pieces reflecting on light, cosmos, and inner luminescence.",
     venue: "Main Stage",
@@ -120,8 +122,8 @@ const events: Event[] = [
     date: "11.10.2025",
     time: "09:00",
     shares: "234 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
-    description: "Welcome to Bidding Before Wicket, the ultimate cricket strategy showdown! This isn't just an auction; it's a high-stakes battle of wits where you build your dream team with a 100 Cr budget. Navigate the auction with special powers like 'Jump Bidding' and the risky 'Budget Boost'. Qualify through a quiz round, then dominate the auction table to assemble a squad with the highest rating. Do you have what it takes to be a champion owner?",
+    image: "/posters/wicket.webp", // Updated
+    description: "Ready for an exciting player auction? It's a game of strategy where every bid is a test of how much you want a player. Think smart, be patient, and make the right choices—one mistake could cost you the game. Who will you bid on? Will you discover a hidden star? Don't miss your shot to be a master bidder!",
     venue: "Business School Auditorium",
     price: "₹25",
     genre: "Cricket Auction",
@@ -136,8 +138,8 @@ const events: Event[] = [
     date: "10.10.2025",
     time: "11:00",
     shares: "189 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
-    description: "Welcome to Seal the Deal, a premier trading event designed to challenge and sharpen your financial acumen. This competition offers a unique opportunity to experience the intensity and decision-making rigour of trading in a simulated environment. With a substantial dummy capital and a range of trading strategies, participants will need skill, precision, and strategy to emerge victorious.",
+    image: "/posters/deal.webp", // Updated
+    description: "Want to try the thrill of stock trading without risking any real money? Here's your chance! Our event lets you experience the fast-paced market. We give you virtual money to buy and sell stocks. Use your smart strategies and quick thinking to make the most profit. Test your instincts and prove you're a great trader!",
     venue: "-",
     price: "₹15",
     genre: "Simulated Trading",
@@ -152,8 +154,8 @@ const events: Event[] = [
     date: "10.10.2025",
     time: "16:00",
     shares: "110 Shares",
-    image: "/posters/VERSEVAAD_page-0001.webp", // Placeholder image
-    description: '"Versevaad" is a two-round rap battle event designed to showcase originality, creativity, and improvisational skills. The competition emphasizes clean content, prohibiting any form of vulgarity.',
+    image: "/posters/VERSVAAD.webp", // Updated
+    description: "If you love rapping and playing with words, this is your stage! Don't hold back—bring the fire in your words and the rhythm in your voice. Whether you're a pro or just love the flow, what matters is your passion. This competition is about the power of words delivered fast, with raw hip-hop energy. Step up, be bold, and let your lyrical skills hit harder than any beat drop. Make the crowd feel your vibe!",
     venue: "Main Stage",
     price: "Free",
     genre: "Poetic Debate",
@@ -168,7 +170,7 @@ const events: Event[] = [
     date: "10.10.2025",
     time: "14:00",
     shares: "234 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
+    image: "/posters/convo.webp", // Updated
     description: "Join us for 'In Conversation With,' a curated talk series featuring distinguished guests from the worlds of art, activism, and creation. Listen as they share their personal journeys and behind-the-scenes stories in an intimate setting, followed by an interactive live Q&A session designed to spark ideas and inspire the next generation.",
     venue: "Tech Lawn",
     price: "Free",
@@ -184,8 +186,8 @@ const events: Event[] = [
     date: "12.10.2025",
     time: "10:00",
     shares: "70 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
-    description: "Unleash your creativity and bring your imagination to life in our hands-on clay modelling event! This is a solo artist's playground, where you'll have the time, space, and materials to translate a concept from your mind into a tangible piece of art.",
+    image: "/posters/clay.webp", // Updated
+    description: "It's time to get messy, creative, and competitive! Clay Modelling is where you let your imagination run wild. Squish, mold, and craft your best piece in a fun battle filled with laughter and a bit of craziness. You will get muddy! Sign up now, let out your inner artist, and let the clay battle begin!",
     venue: "Tech Lawn",
     price: "₹40",
     genre: "Sculpture",
@@ -200,8 +202,8 @@ const events: Event[] = [
     date: "10.10.2025",
     time: "10:00",
     shares: "115 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
-    description: "Bring your vision to life through the lens! FOCUS is a creative photography challenge that pushes you to capture stories, colours, and reflections in their purest form — without heavy edits or digital tricks.",
+    image: "/posters/focus.webp", // Updated
+    description: "In Focus, your pictures tell the story. Go on the hunt for that perfect moment! This contest is all about capturing the spirit of the event in three fun groups: Portraits, Creative Shots, and Candids. We'll judge your photos on how they look and the story they tell. Grab your camera, show your creative side, and become the storyteller people will remember!",
     venue: "Amphitheatre",
     price: "₹50",
     genre: "Photography",
@@ -216,8 +218,8 @@ const events: Event[] = [
     date: "12.10.2025",
     time: "11:00",
     shares: "350 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
-    description: "Drop into Sabrang's official BGMI tournament, where strategy and skill collide. Squads of four will battle it out in a multi-day event with a unique scoring system that rewards both aggressive play and survival. With bonus points for kill streaks and chicken dinners, only the most versatile team will claim victory. Register your squad, gear up, and get ready for the ultimate battle royale showdown.",
+    image: "/posters/bgmi.webp", // Updated
+    description: "Get ready for action in the BGMI Tournament! This is more than a game; it's where skill meets strategy. Be brave enough for non-stop action, taking down other squads, and making clutch plays. Team up, show your skills, and aim for the final circle. Play aggressively, survive the chaos, and grab that 'WINNER WINNER CHICKEN DINNER'!",
     venue: "Online / E-Sports Arena",
     price: "₹50/squad",
     genre: "E-Sports",
@@ -232,8 +234,8 @@ const events: Event[] = [
     date: "10.10.2025",
     time: "11:00",
     shares: "410 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
-    description: "Gear up for Sabrang's official 5v5 Valorant tournament! This high-stakes competition tests your team's strategy, aim, and coordination across a multi-stage format, from group stages to a best-of-five grand final. With strict fair play rules and a professional map veto process, only the most skilled team will emerge as champions.",
+    image: "/posters/valo.webp", // Updated
+    description: "Jump into the Valorant tournament everyone wants to join! Expect intense 5v5 matches, amazing headshots, and agent powers flying everywhere. A single great play can make your team legendary on campus. Will you make a heroic move to win the glory, or watch from the side? Get your squad locked in—spots are vanishing fast!",
     venue: "E-Sports Arena",
     price: "₹100/team",
     genre: "E-Sports",
@@ -248,8 +250,8 @@ const events: Event[] = [
     date: "11.10.2025",
     time: "11:00",
     shares: "290 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
-    description: "Dive into the ultimate mobile battle royale with Sabrang's official Free Fire Tournament. This is a high-stakes competition where only the sharpest squads will survive. With strict rules against teaming and hacking, and a point system that rewards both placement and kills, your path to victory depends on pure skill and strategy. Join the lobby, prove your worth, and fight for the Booyah!",
+    image: "/posters/free fire.webp", // Updated
+    description: "The Free Fire Tournament is a thrilling eSports event that's all about strategy and teamwork. It feels like a life-or-death battle where one smart move can change everything. You'll need sharp aim and fast reflexes to revive your friends, take down enemies, and stay inside the safe zones. Survive the map, fight for your team, and grab the ultimate Booyah!",
     venue: "Online / E-Sports Arena",
     price: "₹40/squad",
     genre: "E-Sports",
@@ -264,8 +266,8 @@ const events: Event[] = [
     date: "12.10.2025",
     time: "11:00",
     shares: "67 Shares",
-    image: "/posters/DUMBSHOW_page-0001.webp",
-    description: "Get ready for a fun and challenging game of silent acting! Dumb Show brings teams together to act out movie names, phrases, or themes without speaking, relying on gestures and body language to communicate. Test your creativity and teamwork as participants race against the clock to guess the correct answer, making for an exciting and laughter-filled experience for everyone involved.",
+    image: "/posters/dumb.webp", // Updated
+    description: "Prepare for a hilarious game of mismatched movements! Dumb Show is like Charades but with a funny, chaotic twist. Your team will mime movie titles, phrases, or songs for your teammates to guess while the clock is ticking. The time limit makes it wild and fun, testing your acting skills and how well you can read your teammates' minds!",
     venue: "Amphitheatre",
     price: "Free",
     genre: "Mime Acting",
@@ -280,7 +282,7 @@ const events: Event[] = [
     date: "11.10.2025",
     time: "13:00",
     shares: "50 Shares",
-    image: "/images/Logo@2x.png",
+    image: "/posters/courtroom.webp", // Updated
     description: "Step into the shoes of detectives and unravel a thrilling murder mystery! With twists, turns, and surprising revelations, this event promises to test your problem-solving skills, creativity, and intuition.",
     venue: "Amphitheatre",
     price: "₹30",
@@ -296,7 +298,7 @@ const events: Event[] = [
     date: "12.10.2025",
     time: "14:00",
     shares: "60 Shares",
-    image: "/images/Logo@2x.png",
+    image: "/posters/art.webp", // Updated
     description: "The Art Relay is a unique event that tests an artist's flexibility and innovative thinking. Participants are tasked with creating a single artwork that evolves through multiple phases based on a series of revealed prompts.",
     venue: "Tech Lawn",
     price: "₹20",
@@ -306,7 +308,6 @@ const events: Event[] = [
     isFlagship: false
   }
 ];
-
 const categories = [
   { name: "All", value: "all" },
   { name: "Flagship", value: "Flagship" },
@@ -525,7 +526,7 @@ export default function EventsPage() {
   });
 
   // IDs of events to show with the poster style (no overlay)
-  const posterEventIds = [1, 2, 3, 4, 5, 9, 17];
+  const posterEventIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
 
   // Calculate navigation state
   const currentEventIndex = selectedEvent ? filteredEvents.findIndex(event => event.id === selectedEvent.id) : -1;
