@@ -389,15 +389,15 @@ export default function PeopleStrip() {
        name: "Vandan P. Shah",
        committee: "Social Media"
      },
-     { 
-       img: "/images/Team/final/Tanveer.webp", 
-       bg: "bg-slate-500",
-       name: "Tanveer Kanderiya",
-       committee: "Prize & Certificates",
-       socials: {
-         instagram: "https://instagram.com/tanveer_kumawatt"
-       }
-     },
+    //  { 
+    //    img: "/images/Team/final/Tanveer.webp", 
+    //    bg: "bg-slate-500",
+    //    name: "Tanveer Kanderiya",
+    //    committee: "Prize & Certificates",
+    //    socials: {
+    //      instagram: "https://instagram.com/tanveer_kumawatt"
+    //    }
+    //  },
      { 
        img: "/images/Team/final/Aayushi Meel.webp", 
        bg: "bg-zinc-500",
