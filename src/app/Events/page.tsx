@@ -629,8 +629,8 @@ export default function EventsPage() {
             <div className="absolute top-4 left-4 z-[10001] px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-sm">
               {currentEventIndex + 1} / {filteredEvents.length}
             </div>
-            <div className="flex flex-col md:grid md:grid-cols-2 max-h-[85vh] md:max-h-[80vh]">
-              <div className="relative aspect-video md:aspect-auto md:h-full bg-neutral-900 overflow-hidden flex-shrink-0">
+            <div className="flex flex-col md:grid md:grid-cols-2 h-[85vh] max-h-[90vh]">
+              <div className="relative h-[80%] md:h-full aspect-square md:aspect-auto bg-neutral-900 overflow-hidden flex-shrink-0">
                 <img
                   src={selectedEvent.modalImage || selectedEvent.image || '/images/backgrounds/eventpage.webp'}
                   alt={`A unique visual for ${selectedEvent.title}`}
@@ -645,7 +645,7 @@ export default function EventsPage() {
                 <div className="absolute inset-0 bg-black/40" />
                 <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #FFF 1px, transparent 0)', backgroundSize: '25px 25px' }} />
               </div>
-              <div className="p-6 text-white space-y-4 overflow-y-auto md:p-8 md:space-y-6 md:border-l md:border-white/10">
+              <div className="p-6 text-white space-y-4 overflow-y-auto md:p-8 md:space-y-6 md:border-l md:border-white/10 flex-grow">
                 <div>
                   <h2 className="text-2xl md:text-3xl font-bold mb-2 tracking-tight">{selectedEvent.title}</h2>
                   <div className="flex flex-wrap items-center gap-3 text-sm text-gray-300">
@@ -974,7 +974,7 @@ export default function EventsPage() {
                               draggable={false}
                               src={event.image}
                               alt={event.title}
-                              className="absolute inset-0 w-full h-full object-cover opacity-0"
+                              className="absolute inset-0 w-full h-full object-cover"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 target.style.display = 'none';
@@ -990,7 +990,7 @@ export default function EventsPage() {
                           </div>
 
                           {/* --- MYSTERIOUS & SUSPENSEFUL OVERLAY --- */}
-                          <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-slate-800 overflow-hidden p-2 md:p-4 flex flex-col justify-between">
+                          <div className="absolute inset-0 bg-black/70 overflow-hidden p-2 md:p-4 flex flex-col justify-between">
                             <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #00ff88 1px, transparent 0)', backgroundSize: '20px 20px' }} />
                             <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-pulse opacity-30" />
                             <div className="absolute bottom-0 right-0 w-full h-0.5 bg-gradient-to-l from-transparent via-red-400 to-transparent animate-pulse opacity-30 delay-1000" />
