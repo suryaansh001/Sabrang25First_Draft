@@ -533,6 +533,45 @@ function CheckoutPageContent() {
     return parseFloat(Math.max(0, totalPrice - discount).toFixed(2));
   }, [totalPrice, appliedPromo]);
 
+  // Revalidate promo code when total price changes
+  useEffect(() => {
+    if (appliedPromo && totalPrice > 0) {
+      // Re-apply the promo code with the new total price
+      const revalidatePromo = async () => {
+        try {
+          const userEmail = getDerivedEmail();
+          const emailForValidation = userEmail || 'temp@example.com';
+          
+          const response = await fetch(createApiUrl('/admin/promo-codes/validate'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ 
+              code: appliedPromo.code, 
+              userEmail: emailForValidation, 
+              orderAmount: totalPrice 
+            })
+          });
+          
+          const data = await response.json();
+          if (response.ok && data.success) {
+            // Update the discount amount with the new calculation
+            setAppliedPromo({ code: appliedPromo.code, discountAmount: data.discountAmount });
+          } else {
+            // If promo is no longer valid, remove it
+            setAppliedPromo(null);
+            setPromoStatus({ loading: false, error: 'Promo code is no longer valid for this order amount' });
+          }
+        } catch (e) {
+          console.error('Failed to revalidate promo code:', e);
+          // Keep the existing promo but log the error
+        }
+      };
+      
+      revalidatePromo();
+    }
+  }, [totalPrice, appliedPromo?.code]); // Only re-run when totalPrice or promo code changes
+
   const getDerivedEmail = () => {
     // Search across all groups for collegeMailId or email
     for (const group of fieldGroups) {
