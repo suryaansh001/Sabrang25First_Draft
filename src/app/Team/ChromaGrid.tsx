@@ -10,6 +10,7 @@ interface Person {
   name: string;
   committee: string;
   socials?: { linkedin?: string; instagram?: string; twitter?: string; };
+  title?: string;
 }
 
 // New Holographic Card Component for Committee Members
@@ -294,7 +295,15 @@ export default function PeopleStrip() {
        img: "/images/Team/final/Deepak_Sogani.webp", 
        bg: "bg-gradient-to-br from-orange-500 via-rose-500 to-yellow-400",
        name: "Mr. Deepak Sogani",
-       committee: "Student Affairs"
+      committee: "Student Affairs",
+      title: "Head - Student Affairs"
+     },
+     { 
+       img: "/images/Team/final/VC.png", 
+       bg: "bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500",
+      name: "Vijaysekhar Chellaboina",
+      committee: "Student Affairs",
+      title: "Vice Chancellor"
      },
      // Core Committee Members
      { 
@@ -442,7 +451,8 @@ export default function PeopleStrip() {
        img: "/images/Team/final/Anushka_Pathak.webp",
        bg: "bg-purple-600",
        name: "Anushka Pathak",
-       committee: "Student Affairs"
+      committee: "Student Affairs",
+      title: "Executive - Student Affairs"
      },
     //  {
     //    img: "/images/Team/final/Dheevi Fozdar.webp",
@@ -601,35 +611,20 @@ export default function PeopleStrip() {
        );
     }
 
-    // Student Affairs card style with gradient backgrounds
+    // Student Affairs card style with minimal background and interesting accents
     if (isStudentAffairs) {
       return (
         <div className={`relative ${sizeClasses[size]} ${className} ${transformClass} cursor-pointer transition-all duration-700 ease-out group hover:scale-110 hover:z-20 team-member-card`} style={cardStyle}>
-          {/* Enhanced Glow Effect for Student Affairs */}
-          <div className="absolute -inset-2 bg-gradient-to-r from-purple-500/30 via-pink-500/30 to-blue-500/30 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-all duration-700" />
+          {/* Subtle animated glow ring */}
+          <div className="absolute -inset-[3px] rounded-lg bg-gradient-to-r from-fuchsia-500/40 via-cyan-400/40 to-indigo-500/40 opacity-40 blur-md group-hover:opacity-70 transition-opacity duration-700" />
           
-          <div className={`relative w-full h-full rounded-lg overflow-hidden shadow-2xl border-2 border-white/20 group-hover:border-white/40 transition-all duration-500`}>
-            {/* Enhanced Background with multiple layers */}
-            <div className="absolute inset-0">
-              {/* Primary gradient background */}
-              <div className={`absolute inset-0 ${person.bg} rounded-lg opacity-90`} />
-              
-              {/* Animated overlay pattern */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/20 rounded-lg" />
-              
-              {/* Floating geometric shapes */}
-              <div className="absolute top-4 right-4 w-8 h-8 bg-white/20 rounded-full" />
-              <div className="absolute bottom-6 left-6 w-6 h-6 bg-white/15 rounded-full" />
-              <div className="absolute top-1/2 left-4 w-4 h-4 bg-white/25 rounded-full" />
+          <div className={`relative w-full h-full rounded-lg overflow-hidden shadow-2xl border border-white/30 group-hover:border-white/60 transition-all duration-500 bg-white/5 backdrop-blur-md`}>           
+            {/* Decorative floating orbs (no solid background) */}
+            <div className="pointer-events-none absolute inset-0">
+              <div className="absolute -top-6 -left-4 w-24 h-24 bg-fuchsia-400/10 rounded-full blur-2xl animate-pulse" />
+              <div className="absolute -bottom-8 -right-6 w-28 h-28 bg-cyan-400/10 rounded-full blur-2xl animate-[pulse_3s_ease-in-out_infinite]" />
+              <div className="absolute top-1/3 left-6 w-3 h-3 bg-white/30 rounded-full animate-ping" />
             </div>
-
-            {/* Enhanced splash background */}
-            <img
-              src="/images/BG-TEAM.png"
-              alt="splash"
-              className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay pointer-events-none group-hover:opacity-80 transition-all duration-500"
-              loading="lazy"
-            />
 
             {/* Main Image with enhanced styling */}
             <div className="relative z-10 w-full h-full flex items-center justify-center p-4">
@@ -644,13 +639,13 @@ export default function PeopleStrip() {
               />
               
               {/* Image border glow */}
-              <div className="absolute inset-0 rounded-lg ring-2 ring-white/30 group-hover:ring-white/50 transition-all duration-500" />
+              <div className="absolute inset-0 rounded-lg ring-1 ring-white/30 group-hover:ring-white/60 transition-all duration-500" />
             </div>
             
             {/* Enhanced text overlay with better contrast */}
             <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-4 text-white z-30">
               {/* Background for text readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent rounded-b-lg" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent rounded-b-lg" />
               
               {/* Text content */}
               <div className="relative z-10 text-center">
@@ -658,10 +653,12 @@ export default function PeopleStrip() {
                   {person.name}
                 </h3>
                 
-                {/* Student Affairs role indicator */}
-                <div className="mt-2 inline-flex items-center px-2 py-1 bg-white/20 backdrop-blur-sm rounded-md border border-white/30">
-                  <span className="text-xs font-semibold text-white">⭐ Student Affairs</span>
-                </div>
+                {/* Custom title indicator if provided */}
+                {person.title && (
+                  <div className="mt-2 inline-flex items-center px-2 py-1 bg-white/20 backdrop-blur-sm rounded-md border border-white/30">
+                    <span className="text-xs font-semibold text-white">⭐ {person.title}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -795,14 +792,7 @@ export default function PeopleStrip() {
 
       
  
-      {/* Student Affairs heading */}
-      <div 
-        className="text-center"
-      >
-        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-2xl tracking-widest uppercase px-4" style={{ fontFamily: 'Impact, Charcoal, sans-serif' }}>
-          Student Affairs
-        </h2>
-      </div>
+      {/* Student Affairs heading removed as requested */}
 
       {/* Student Affairs cards - styled like OH and placed above OH */}
       <div className="relative mt-6 mb-12">
