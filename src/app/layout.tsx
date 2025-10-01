@@ -3,6 +3,7 @@ import "./globals.css";
 import { quivertFont, tanNimbusFont } from "./fonts";
 import AppShell from "../../components/AppShell";
 import { VideoProvider } from "../../components/VideoContext";
+import LeftScrollTree from "../../components/LeftScrollTree";
 
 import FooterStrip from "../../components/FooterStrip";
 import ChatbotContent from "../../components/ChatbotContent";
@@ -123,6 +124,7 @@ export default function RootLayout({
         <VideoProvider>
         
             <div className="min-h-screen flex flex-col">
+              <LeftScrollTree />
               <AppShell>{children}</AppShell>
               <FooterStrip />
               

@@ -25,6 +25,7 @@ interface Event {
   details: string;
   isFlagship: boolean;
   rules?: string[];
+  coordinators?: { name: string; phone?: string }[];
 }
 
 // ... (rest of the file remains the same)
@@ -105,7 +106,7 @@ const events: Event[] = [
     date: "10.10.2025",
     time: "11:30",
     shares: "95 Shares",
-    image: "/posters/echoes of noor.webp", // Updated
+    image: "/posters/echoesofnoor.webp", // Updated
     modalImage: "/images/gallery/image5.webp", // Example: Assign a unique image
     description: "A spoken word and poetry event celebrating the festival's theme, 'Noorwana'. Artists perform original pieces reflecting on light, cosmos, and inner luminescence.",
     venue: "Main Stage",
@@ -250,7 +251,7 @@ const events: Event[] = [
     date: "11.10.2025",
     time: "11:00",
     shares: "290 Shares",
-    image: "/posters/free fire.webp", // Updated
+    image: "/posters/freefire.webp", // Updated
     description: "The Free Fire Tournament is a thrilling eSports event that's all about strategy and teamwork. It feels like a life-or-death battle where one smart move can change everything. You'll need sharp aim and fast reflexes to revive your friends, take down enemies, and stay inside the safe zones. Survive the map, fight for your team, and grab the ultimate Booyah!",
     venue: "Online / E-Sports Arena",
     price: "₹40/squad",
@@ -513,6 +514,11 @@ export default function EventsPage() {
 
   // Filter events based on category and flagship toggle
   const filteredEvents = events.filter(event => {
+    // Apply global flagship-only constraint first
+    const flagshipMatch = !showFlagshipOnly || event.isFlagship;
+
+    if (!flagshipMatch) return false;
+
     if (selectedCategory === "all") return true;
     if (selectedCategory === "Flagship") return event.isFlagship;
     if (selectedCategory === "Non-Flagship") return !event.isFlagship;
@@ -521,8 +527,7 @@ export default function EventsPage() {
     
     // Fallback to original category matching
     const categoryMatch = event.category === selectedCategory;
-    const flagshipMatch = !showFlagshipOnly || event.isFlagship;
-    return categoryMatch && flagshipMatch;
+    return categoryMatch;
   });
 
   // IDs of events to show with the poster style (no overlay)
@@ -588,6 +593,11 @@ export default function EventsPage() {
     return eventData?.prizePool;
   };
 
+  const getEventCoordinators = (eventId: number) => {
+    const eventData = EVENTS_DATA.find(e => e.id === eventId);
+    return eventData?.coordinators;
+  };
+
   // If any event is selected, immediately show the overlay and hide everything else
   if (selectedEvent) {
     return (
@@ -630,7 +640,7 @@ export default function EventsPage() {
               {currentEventIndex + 1} / {filteredEvents.length}
             </div>
             <div className="flex flex-col md:grid md:grid-cols-2 h-[85vh] max-h-[90vh]">
-              <div className="relative h-[80%] md:h-full aspect-square md:aspect-auto bg-neutral-900 overflow-hidden flex-shrink-0">
+              <div className="relative h-48 sm:h-64 md:h-full aspect-[16/9] md:aspect-auto bg-neutral-900 overflow-hidden flex-shrink-0">
                 <img
                   src={selectedEvent.modalImage || selectedEvent.image || '/images/backgrounds/eventpage.webp'}
                   alt={`A unique visual for ${selectedEvent.title}`}
@@ -647,7 +657,15 @@ export default function EventsPage() {
               </div>
               <div className="p-6 text-white space-y-4 overflow-y-auto md:p-8 md:space-y-6 md:border-l md:border-white/10 flex-grow">
                 <div>
-                  <h2 className="text-2xl md:text-3xl font-bold mb-2 tracking-tight">{selectedEvent.title}</h2>
+                  <div className="flex items-center justify-between gap-2">
+                    <h2 className="text-2xl md:text-3xl font-bold mb-2 tracking-tight">{selectedEvent.title}</h2>
+                    <button
+                      onClick={() => router.push(`/Events/${selectedEvent.id}/rules`)}
+                      className="md:hidden inline-flex items-center gap-2 px-4 py-2 rounded-md border-2 bg-gradient-to-b from-white/15 to-white/5 text-white text-sm hover:from-white/20 hover:to-white/10 border-white/30 transition shadow-[inset_0_1px_0_rgba(255,255,255,0.25),_0_2px_0_rgba(255,255,255,0.12),_0_4px_10px_rgba(0,0,0,0.35)] active:translate-y-[1px]"
+                    >
+                      <Info className="w-4 h-4" /> Rules
+                    </button>
+                  </div>
                   <div className="flex flex-wrap items-center gap-3 text-sm text-gray-300">
                     <span className="inline-flex items-center gap-1"><Calendar className="w-4 h-4" />{getEventCatalogData(selectedEvent.id)?.date || selectedEvent.date}</span>
                     <span className="inline-flex items-center gap-1">
@@ -663,6 +681,17 @@ export default function EventsPage() {
                   <h3 className="font-semibold text-lg mb-2">Details</h3>
                   <p className="text-gray-300 whitespace-pre-line">{selectedEvent.details}</p>
                 </div>
+                {/* Coordinators in modal */}
+                {getEventCoordinators(selectedEvent.id)?.length ? (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">Coordinators</h3>
+                    <ul className="text-sm text-gray-300 space-y-1">
+                      {getEventCoordinators(selectedEvent.id)!.map((c, i) => (
+                        <li key={i}>{c.name}{c.phone ? ` - ${c.phone}` : ''}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
                 {showRules && (
                   <div>
                     <h3 className="font-semibold text-lg mb-2">Rules</h3>
@@ -690,7 +719,7 @@ export default function EventsPage() {
                   )}
                 </div>
                 <div className="flex flex-wrap gap-3 pt-2">
-                  <button onClick={() => router.push(`/Events/${selectedEvent.id}/rules`)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border bg-white/10 text-white hover:bg-white/15 border-white/20 transition">
+                  <button onClick={() => router.push(`/Events/${selectedEvent.id}/rules`)} className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-md border-2 bg-gradient-to-b from-white/15 to-white/5 text-white hover:from-white/20 hover:to-white/10 border-white/30 transition shadow-[inset_0_1px_0_rgba(255,255,255,0.25),_0_2px_0_rgba(255,255,255,0.12),_0_4px_10px_rgba(0,0,0,0.35)]">
                     <Info className="w-4 h-4" /> Rules
                   </button>
                   <button onClick={() => router.push(`/checkout`)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition shadow-lg">
@@ -937,6 +966,19 @@ export default function EventsPage() {
                             <h3 className="font-bold text-sm md:text-base text-white uppercase tracking-wider flex-grow mb-3">
                               {event.title}
                             </h3>
+                            {/* Tiny coordinator line below title (supports up to two) */}
+                            {(() => {
+                              const coordinators = getEventCoordinators(event.id) || [];
+                              if (!coordinators.length) return null;
+                              const firstTwo = coordinators
+                                .slice(0, 2)
+                                .map(c => `${c.name}${c.phone ? ` - ${c.phone}` : ''}`);
+                              return (
+                                <div className="-mt-2 mb-2 text-[10px] text-white/80">
+                                  {firstTwo.join(' • ')}
+                                </div>
+                              );
+                            })()}
 
                             <button
                               type="button"

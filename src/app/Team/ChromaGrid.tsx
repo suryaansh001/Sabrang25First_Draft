@@ -48,7 +48,7 @@ const HolographicCard = ({
   if (!person) {
     return (
       <div className="group relative">
-        <div className="relative h-96 w-64 rounded-lg backdrop-blur-xl bg-white/10 border border-white/20 overflow-hidden shadow-2xl">
+        <div className="relative h-96 w-64 rounded-lg bg-white/10 border border-white/20 overflow-hidden shadow-2xl">
           <div className="flex items-center justify-center h-full text-white">
             <p>Loading...</p>
           </div>
@@ -110,7 +110,7 @@ const HolographicCard = ({
         
         {/* Name on Border - Top */}
         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
-          <div className="bg-gradient-to-r from-purple-500/90 via-pink-500/90 to-blue-500/90 px-3 py-1 rounded-full border-2 border-white/30 backdrop-blur-sm">
+          <div className="bg-gradient-to-r from-purple-500/90 via-pink-500/90 to-blue-500/90 px-3 py-1 rounded-full border-2 border-white/30">
             <h3 className={`text-xs sm:text-sm font-bold text-white whitespace-nowrap transition-all duration-300 ${(hoveredCard || (isMobile && isClicked)) ? 'scale-105' : ''}`}>
               {person.name || 'Unknown'}
             </h3>
@@ -127,7 +127,7 @@ const HolographicCard = ({
             }}
           >
             {/* FRONT - Image Only */}
-            <div className={`absolute inset-0 w-full h-full rounded-lg backdrop-blur-xl bg-white/10 border-4 border-white/30 overflow-hidden shadow-2xl backface-hidden transition-opacity duration-300 ${(hoveredCard || (isMobile && isClicked)) ? 'opacity-0' : 'opacity-100'}`}>
+            <div className={`absolute inset-0 w-full h-full rounded-lg bg-white/10 border-4 border-white/30 overflow-hidden shadow-2xl backface-hidden transition-opacity duration-300 ${(hoveredCard || (isMobile && isClicked)) ? 'opacity-0' : 'opacity-100'}`}>
               {/* Main Image */}
               <img
                 src={person.img || ''}
@@ -140,7 +140,7 @@ const HolographicCard = ({
               />
               
               {/* Subtle overlay for better image quality */}
-              <div className="absolute inset-0 bg-black/5" />
+              <div className="absolute inset-0 bg-black/10" />
               
               {/* Hidden name overlay - keeping in code but not displaying */}
               <div className="hidden absolute bottom-0 left-0 right-0 p-3 text-white">
@@ -177,7 +177,7 @@ const HolographicCard = ({
               </div>
               
                <div className="relative z-10 flex flex-col h-full items-center justify-center gap-2 sm:gap-4 text-center p-2 sm:p-4">
-                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 sm:p-4 border border-white/20 w-full">
+                 <div className="bg-white/10 rounded-lg p-2 sm:p-4 border border-white/20 w-full">
                    {/* Mobile optimized name */}
                    <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-white mb-2 sm:mb-4 break-words leading-tight">{person.name || 'Unknown'}</h3>
                    
@@ -293,7 +293,7 @@ export default function PeopleStrip() {
     { 
       img: "/images/Team/final/VC.png", 
       bg: "bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500",
-     name: "DR. Vijaysekhar Chellaboina",
+     name: "Dr. Vijaysekhar Chellaboina",
      committee: "Student Affairs",
      title: "Vice Chancellor,JKLU"
     },
@@ -451,7 +451,7 @@ export default function PeopleStrip() {
      {
        img: "/images/Team/final/Anushka_Pathak.webp",
        bg: "bg-purple-600",
-       name: "Anushka Pathak",
+       name: "Ms. Anushka Pathak",
       committee: "Student Affairs",
       title: "Executive - Student Affairs,JKLU"
      },
@@ -599,7 +599,7 @@ export default function PeopleStrip() {
                    </h3>
                    
                    {/* Enhanced role indicator */}
-                   {person.name === 'Diya Garg' && <div className="mt-2 inline-flex items-center px-2 py-1 bg-white/20 backdrop-blur-sm rounded-md border border-white/30">
+                   {person.name === 'Diya Garg' && <div className="mt-2 inline-flex items-center px-2 py-1 bg-white/20 rounded-md border border-white/30">
                      <span className="text-xs font-semibold text-white">⭐ Organizing Head</span>
                    </div>}
                  </div>
@@ -619,7 +619,7 @@ export default function PeopleStrip() {
           {/* Subtle animated glow ring */}
           <div className="absolute -inset-[3px] rounded-lg bg-gradient-to-r from-fuchsia-500/40 via-cyan-400/40 to-indigo-500/40 opacity-40 blur-md group-hover:opacity-70 transition-opacity duration-700" />
           
-          <div className={`relative w-full h-full rounded-lg overflow-hidden shadow-2xl border border-white/30 group-hover:border-white/60 transition-all duration-500 bg-white/5 backdrop-blur-md`}>           
+        <div className={`relative w-full h-full rounded-lg overflow-hidden shadow-2xl border border-white/30 group-hover:border-white/60 transition-all duration-500 bg-white/5`}>
             {/* Decorative floating orbs (no solid background) */}
             <div className="pointer-events-none absolute inset-0">
               <div className="absolute -top-6 -left-4 w-24 h-24 bg-fuchsia-400/10 rounded-full blur-2xl animate-pulse" />
@@ -656,7 +656,7 @@ export default function PeopleStrip() {
                 
                 {/* Custom title indicator if provided */}
                 {person.title && (
-                  <div className="mt-2 inline-flex items-center px-2 py-1 bg-white/20 backdrop-blur-sm rounded-md border border-white/30">
+                  <div className="mt-2 inline-flex items-center px-2 py-1 bg-white/20 rounded-md border border-white/30">
                     <span className="text-xs font-semibold text-white">⭐ {person.title}</span>
                   </div>
                 )}
@@ -679,12 +679,7 @@ export default function PeopleStrip() {
             <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/20 rounded-lg" />
           </div>
           
-          <img
-            src="/images/BG-TEAM.png"
-            alt="splash"
-            className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay pointer-events-none group-hover:opacity-80 transition-all duration-500"
-            loading="lazy"
-          />
+          {/* Removed overlay image to prevent white trails */}
 
           <div className="relative z-10 w-full h-full flex items-center justify-center p-4">
             <img

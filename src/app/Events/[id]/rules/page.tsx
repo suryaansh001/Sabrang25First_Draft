@@ -256,9 +256,17 @@ export default function EventRulesPage() {
 							<h1 className="text-4xl md:text-6xl font-black tracking-tighter leading-none">
 								<span className={`bg-gradient-to-r ${accents.headingGradient} bg-clip-text text-transparent`}>{event.title}</span>
 							</h1>
-							<p className="mt-4 text-lg text-neutral-300 max-w-lg mx-auto md:mx-0">
-								{event.description || 'Everything you need to know to participate successfully. Read carefully and compete with confidence.'}
-							</p>
+						<p className="mt-4 text-lg text-neutral-300 max-w-lg mx-auto md:mx-0">
+							{event.description || 'Everything you need to know to participate successfully. Read carefully and compete with confidence.'}
+						</p>
+						{event.coordinators && event.coordinators.length > 0 && (
+							<div className="mt-3 text-sm text-neutral-300">
+								<span className="font-semibold">Coordinators: </span>
+								{event.coordinators.map((c, i) => (
+									<span key={i} className="mr-3">{c.name}{c.phone ? ` - ${c.phone}` : ''}</span>
+								))}
+							</div>
+						)}
 						</motion.div>
 					</div>
 				</div>

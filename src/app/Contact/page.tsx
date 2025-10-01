@@ -6,6 +6,7 @@ import Footer from '../../../components/Footer';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '../../../components/NavigationContext';
 import { Home, Info, Calendar, Star, Users, HelpCircle, Handshake, Mail as MailIcon, X, Phone, MessageCircle, Send, AlertCircle } from 'lucide-react';
+import { FaDiscord } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 
@@ -470,7 +471,18 @@ const Contact = () => {
         </div>
       </div>
 
-      <Footer />
+		{/* Discord Floating Button */}
+		<a
+			href="https://discord.gg/wSG8bUEJCA"
+			target="_blank"
+			rel="noopener noreferrer"
+			aria-label="Join our Discord"
+			className="group fixed bottom-4 sm:bottom-6 left-4 sm:left-6 z-50 w-10 h-10 sm:w-12 sm:h-12 rounded-xl rotate-45 flex items-center justify-center shadow-[0_8px_30px_rgba(0,0,0,0.6)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.7)] transition-all duration-300 hover:scale-110 bg-gradient-to-br from-purple-900/70 via-black/60 to-indigo-900/60 border border-white/15 backdrop-blur-sm hover:from-purple-700/70 hover:to-indigo-800/70"
+		>
+			<FaDiscord className="-rotate-45 w-5 h-5 sm:w-6 sm:h-6 text-white drop-shadow-[0_0_10px_rgba(168,85,247,0.55)] group-hover:drop-shadow-[0_0_14px_rgba(167,139,250,0.7)] transition-colors" />
+		</a>
+
+		<Footer />
     </div>
   );
 };

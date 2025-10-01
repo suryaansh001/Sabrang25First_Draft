@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Logo from '../../../components/Logo';
 import { Calendar, Users, Handshake, Info, Clock, Star, Mail, Home, HelpCircle, X, ChevronUp, Search, MessageCircle } from 'lucide-react';
+import { FaDiscord } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '../../../components/NavigationContext';
 
@@ -74,40 +75,88 @@ const FAQ = () => {
 
   const faqs = [
     {
-      question: "What kind of events will there be in Sabrang?",
-      answer: "There will be a mix of cultural, creative, competitive, and gaming events. The event list is available on Sabrang's website. There will be flagship events like Verse Vaad, Rampwalk, Echoes of Noor, and Dance Battle, along with non-flagship events including Courtroom, Seal the Deal, BGMI, and Free Fire gaming tournaments.",
-      category: "Events",
-      icon: "🎭"
+      question: "When and where is Sabrang 2025 happening?",
+      answer: "Sabrang 2025 will be held from October 10 to October 12, 2025 at JK Lakshmipat University (JKLU), Jaipur.",
+      category: "General",
+      icon: "📅"
     },
     {
-      question: "Is there a registration fee for the fest or for specific events?",
-      answer: "There will be a one-time registration fee that will be applicable for all three days of Sabrang. The fee will be for the fest, and you can participate in any 3 events.",
-      category: "Registration",
-      icon: "💰"
+      question: "Is there an entry fee for Sabrang?",
+      answer: "Participants: Event-wise fee varies depending on the competition and will be shown during online registration. Visitors: A Visitor Pass of ₹69 per day is required.",
+      category: "Fees",
+      icon: "💳"
     },
     {
-      question: "Will there be on-the-spot registrations for some events?",
-      answer: "Registration will be open for all three days of Sabrang. You can register either online on Sabrang's website or on the spot at the campus.",
+      question: "How do I register for Sabrang Events?",
+      answer: "Registration is online only through the official website https://sabrang.jklu.edu.in/. Select the event(s), add them to the cart, and complete the checkout process. On-site registration is not available.",
       category: "Registration",
       icon: "📝"
     },
     {
-      question: "Can I be a part of Sabrang without competing in any competition?",
-      answer: "Yes, you can still be a part of Sabrang and enjoy the events without participating in competitions. However, you still need to register even if you are not participating in any event.",
-      category: "Participation",
-      icon: "👥"
+      question: "Will I need to show ID at the venue?",
+      answer: "Yes. Participants and visitors must carry a valid photo ID (college ID or government-issued ID) along with the event/visitor pass for entry.",
+      category: "Entry",
+      icon: "🪪"
     },
     {
-      question: "Will accommodation be provided for outstation participants?",
-      answer: "Accommodation for outstation participants will be provided on a chargeable basis. Transport will also be available for participants upon prior notice and it will be provided free of charge.",
+      question: "Is there any accommodation available for outstation participants?",
+      answer: "Yes, accommodation is available on a chargeable basis. Contact the registration team for details about hostels, partner hotels, and booking procedures.",
       category: "Accommodation",
       icon: "🏨"
     },
     {
-      question: "What payment options are available for passes?",
-      answer: "For registrations, payment can be made online through Sabrang's website.",
-      category: "Payment",
-      icon: "💳"
+      question: "Are there parking arrangements for visitors?",
+      answer: "Yes, parking arrangements are available at the venue.",
+      category: "Logistics",
+      icon: "🅿️"
+    },
+    {
+      question: "Is there a pick-up and drop facility for participants?",
+      answer: "Yes. Shuttle services are available at pre-decided stops. Additionally, if a team or a certain number of participants are coming from the same university, transport can be provided for them free of charge.",
+      category: "Transport",
+      icon: "🚌"
+    },
+    {
+      question: "Do visitors also need to register or only participants?",
+      answer: "Visitors must also register and purchase a Visitor Pass (₹69 per day).",
+      category: "Visitors",
+      icon: "🎟️"
+    },
+    {
+      question: "Who do I contact for event-related queries after registration?",
+      answer: "Registration Core: Ayushi Kabra — +91 89499 41985 | ayushikabra@jklu.edu.in; Jayash Gahlot — +91 83062 74199 | jayashgahlot@jklu.edu.in. Event Coordination: Diya Garg — +91 72968 59397 | diyagarg@jklu.edu.in",
+      category: "Contacts",
+      icon: "☎️"
+    },
+    {
+      question: "Is onsite registration open?",
+      answer: "No. Only online registration is valid.",
+      category: "Registration",
+      icon: "❌"
+    },
+    {
+      question: "I made a mistake during my registration. Can I register again?",
+      answer: "Yes, you can register again. In case of errors, you may also contact the registration team for corrections.",
+      category: "Registration",
+      icon: "♻️"
+    },
+    {
+      question: "Can we register for more than one event?",
+      answer: "Yes, participants may register for multiple events, subject to schedule.",
+      category: "Participation",
+      icon: "➕"
+    },
+    {
+      question: "When will the registrations open and close?",
+      answer: "Online registrations are already open and will remain open until the last day of Sabrang, October 12, 2025.",
+      category: "Registration",
+      icon: "⏰"
+    },
+    {
+      question: "Will the registrations be refundable or not?",
+      answer: "No, registrations are non-refundable.",
+      category: "Refunds",
+      icon: "🚫"
     }
   ];
 
@@ -432,6 +481,19 @@ const FAQ = () => {
           <ChevronUp className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </button>
       )}
+
+      {/* Discord Button */}
+      <a
+        href="https://discord.gg/wSG8bUEJCA"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Join our Discord"
+        className="group fixed bottom-4 sm:bottom-6 left-4 sm:left-6 z-50 w-10 h-10 sm:w-12 sm:h-12 rounded-xl rotate-45 flex items-center justify-center shadow-[0_8px_30px_rgba(0,0,0,0.6)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.7)] transition-all duration-300 hover:scale-110
+        bg-gradient-to-br from-purple-900/70 via-black/60 to-indigo-900/60 border border-white/15 backdrop-blur-sm
+        hover:from-purple-700/70 hover:to-indigo-800/70"
+      >
+        <FaDiscord className="-rotate-45 w-5 h-5 sm:w-6 sm:h-6 text-white drop-shadow-[0_0_10px_rgba(168,85,247,0.55)] group-hover:drop-shadow-[0_0_14px_rgba(167,139,250,0.7)] transition-colors" />
+      </a>
       
       {/* Footer is rendered globally in AppShell */}
     </div>

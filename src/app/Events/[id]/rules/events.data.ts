@@ -9,6 +9,7 @@ export interface Event {
     rules?: string[];
     criteria?: Criterion[];
     prizePool?: string;
+    coordinators?: { name: string; roll?: string; email?: string; phone?: string }[];
     flagshipBenefits?: {
         supportArtists: {
             maxCount: number;
@@ -42,6 +43,10 @@ export const events: Event[] = [
         category: 'Flagship',
         prizePool: '₹40,000',
         description: 'Panache is the ultimate ramp walk competition! It\'s not just about your outfit, but the confidence, energy, and attitude you bring. This is your dazzling platform to show off your charisma and unique sense of style. With stunning lights and great music, this event celebrates individuality and glamour. Step onto the runway, own your presence, and let the world see your incredible style shine!',
+        coordinators: [
+            { name: 'Anandi K', roll: '2025Bdes004', email: 'anandikolapkar@jklu.edu.in', phone: '7219879565' },
+            { name: 'Pragyansh Mishra', roll: '2024BTech037', email: 'pragyanshmishra@jklu.edu.in', phone: '7597291845' }
+        ],
         rules: [
             'Team size: 10-20 members.',
             'Participants must arrive at the venue 2 hours before the event commences.',
@@ -87,6 +92,9 @@ export const events: Event[] = [
         category: 'Flagship',
         prizePool: '₹25,000',
         description: "This is the ultimate music showdown for all bands! It's not just about playing your instruments, but showing your energy, creativity, and unique vibe. Get on stage, play your powerful music loud and proud, and feel the excitement from the crowd. Band Jam is where passion takes over, and your music gets to do all the talking. Come own the sound!",
+        coordinators: [
+            { name: 'Ankush Panda', roll: '2025bdes005', email: 'Ankushpanda@jklu.edu.in', phone: '8240832834' }
+        ],
         rules: [
             'Participants must arrive 1 hour before the competition begins.',
             'Team Size: 3 - 8 members.',
@@ -136,6 +144,10 @@ export const events: Event[] = [
         category: 'Flagship',
         prizePool: '₹35,000',
         description: "Get your crew together for an epic dance showdown! This isn't a solo act; it's a team effort that mixes hip-hop, Bollywood, and freestyle. You'll need perfect teamwork, sharp moves, and tons of energy to impress the crowd. With great music and bright lights, only the best team will take the win. Is your squad ready to battle?",
+        coordinators: [
+            { name: 'Rishika Sharma', roll: '2024BBA072', email: 'rishikasharma@jklu.edu.in', phone: '9929175875' },
+            { name: 'Smile Chhabra', roll: '2024BBA084', email: 'smilechhabra@jklu.edu.in', phone: '9571839843' }
+        ],
         rules: [
             'Team Size: Each team must consist of 6 to 12 members (including performers and backstage help).',
             'Reporting Time: All teams must report at the venue 2 hours before the event for briefing and sound check.',
@@ -189,6 +201,10 @@ export const events: Event[] = [
         category: 'Flagship',
         prizePool: '₹17,000',
         description: 'Step Up is the ultimate solo dance competition where your body gets to tell your story! Forget old routines; this is all about your individuality, rhythm, and pure fun. Whether you do lyrical, hip-hop, contemporary, or any other style—every move matters. Bring your fire, your flair, and your authentic self. Own the spotlight, let your soul dance loud, and turn your passion into glory!',
+        coordinators: [
+            { name: 'Harshal Bhanshali', roll: '2024BTech210', email: 'harshalbhansali@jklu.edu.in', phone: '8949048853' },
+            { name: 'Rishika Singh', roll: '2024BTech168', email: 'rishikasingh2024@jklu.edu.in', phone: '7300118679' }
+        ],
         rules: [
             'Team Size: Solo (only 1 participant per entry).',
             'Eligibility: Open to all students with a valid ID card.',
@@ -241,10 +257,14 @@ export const events: Event[] = [
     { 
         id: 5, 
         title: 'ECHOES OF NOOR', 
-        image: '/posters/echoes of noor.webp', 
+        image: '/posters/echoesofnoor.webp', 
         category: 'Flagship', 
         prizePool: '₹17,000',
         description: "A spoken word and poetry event celebrating the festival's theme, 'Noorwana'. Artists perform original pieces reflecting on light, cosmos, and inner luminescence.",
+        coordinators: [
+            { name: 'Dev Gautam', roll: '2023BBA013', email: 'Devgautam@jklu.edu.in', phone: '9896527244' },
+            { name: 'Monika Bishnoi', roll: '2024BBA050', email: 'monikakhichar@jklu.edu.in', phone: '8690546147' }
+        ],
         criteria: [
             'Vocal Quality – Clarity, tone, and overall sound of the voice.',
             'Vocal Range – Ability to hit high and low notes effectively.',
@@ -268,6 +288,10 @@ export const events: Event[] = [
         category: 'Fun & Games',
         prizePool: '₹13,000',
         description: "Ready for an exciting player auction? It's a game of strategy where every bid is a test of how much you want a player. Think smart, be patient, and make the right choices—one mistake could cost you the game. Who will you bid on? Will you discover a hidden star? Don't miss your shot to be a master bidder!",
+        coordinators: [
+            { name: 'Lokesh Dhariwal', roll: '2024BBA045', email: 'lokeshdhariwal@jklu.edu.in', phone: '6371599630' },
+            { name: 'Kartik Sharma', roll: '2024BTech092', email: 'kartiksharma2024@jklu.edu.in', phone: '8769329369' }
+        ],
         rules: [
             'SOME POWERS TO MAKE GAME MORE INTRESTING:',
             '1) JUMP BIDDING RULE: Each team will be allowed to use the Jump Bidding feature once during the entire auction. This allows a team to skip the regular bidding increments and directly bid any higher amount from the base price. However, if no other team places a bid after the jump, the initiating team will be compulsorily required to buy the player at their quoted jump price.',
@@ -305,6 +329,10 @@ export const events: Event[] = [
         category: 'Fun & Games',
         prizePool: '₹5,000',
         description: "Want to try the thrill of stock trading without risking any real money? Here's your chance! Our event lets you experience the fast-paced market. We give you virtual money to buy and sell stocks. Use your smart strategies and quick thinking to make the most profit. Test your instincts and prove you're a great trader!",
+        coordinators: [
+            { name: 'Prakshit Jangid', roll: '2024BTech026', email: 'parikshitjangid@jklu.edu.in', phone: '9887650405' },
+            { name: 'Tawab', roll: '2024BTech273', email: 'tawabkhan@jklu.edu.in', phone: '9636418623' }
+        ],
         rules: [
             'Team Size: 1 member.',
             'Trading Capital: Each participant will be allotted ₹10,00,000 (INR) in dummy cash to begin their trading activities.',
@@ -345,6 +373,10 @@ export const events: Event[] = [
         category: 'Flagship',
         prizePool: '₹20,000',
         description: 'If you love rapping and playing with words, this is your stage! Don\'t hold back—bring the fire in your words and the rhythm in your voice. Whether you\'re a pro or just love the flow, what matters is your passion. This competition is about the power of words delivered fast, with raw hip-hop energy. Step up, be bold, and let your lyrical skills hit harder than any beat drop. Make the crowd feel your vibe!',
+        coordinators: [
+            { name: 'Animay Nigam', roll: '2022BTech013', email: 'animaynigam@jklu.edu.in', phone: '9351073194' },
+            { name: 'Rajat Thakral', roll: '2022BTech080', email: 'Rajatthakral@jklu.edu.in', phone: '8696694397' }
+        ],
         rules: [
             'Eligibility: Open to all individuals; no age restrictions. Participants must register prior to the event.',
             'Conduct: Respect towards fellow participants, judges, and the audience is mandatory. Any form of hate speech, discrimination, or personal attacks will result in disqualification.',
@@ -391,6 +423,10 @@ export const events: Event[] = [
         category: 'Workshops & Talks',
         prizePool: '₹9,000',
         description: "Join us for 'In Conversation With,' a curated talk series featuring distinguished guests from the worlds of art, activism, and creation. Listen as they share their personal journeys and behind-the-scenes stories in an intimate setting, followed by an interactive live Q&A session designed to spark ideas and inspire the next generation.",
+        coordinators: [
+            { name: 'Chestha Kulshrestha', roll: '2024BTech185', email: 'Chesthakulshrestha@jklu.edu.in', phone: '9928883938' },
+            { name: 'Naresh Sharma', roll: '2024BBA055', email: 'nareshsharma@jklu.edu.in', phone: '8005944257' }
+        ],
         rules: [
             'Entry is on a first-come, first-served basis due to limited seating.',
             'Please arrive at least 15 minutes before the session begins to ensure you are seated.',
@@ -417,6 +453,10 @@ export const events: Event[] = [
         category: 'Creative Arts',
         prizePool: '₹5,000',
         description: "It's time to get messy, creative, and competitive! Clay Modelling is where you let your imagination run wild. Squish, mold, and craft your best piece in a fun battle filled with laughter and a bit of craziness. You will get muddy! Sign up now, let out your inner artist, and let the clay battle begin!",
+        coordinators: [
+            { name: 'Swadha Saxena', roll: '2024BBA086', email: 'swadhasaxena@jklu.edu.in', phone: '9079707725' },
+            { name: 'Varra Srivalli', roll: '2024BTech261', email: 'varrasrivalli@jklu.edu.in', phone: '9502303519' }
+        ],
         rules: [
             'Team size: 1 member',
             'Open to all students with a valid ID card',
@@ -437,6 +477,10 @@ export const events: Event[] = [
         category: 'Creative Arts',
         prizePool: '₹7,000',
         description: "In Focus, your pictures tell the story. Go on the hunt for that perfect moment! This contest is all about capturing the spirit of the event in three fun groups: Portraits, Creative Shots, and Candids. We'll judge your photos on how they look and the story they tell. Grab your camera, show your creative side, and become the storyteller people will remember!",
+        coordinators: [
+            { name: 'Kartik Singh', roll: '2024BTech148', email: 'kartiksingh@jklu.edu.in', phone: '9997727827' },
+            { name: 'Laksh Sharma', roll: '2024BTech153', email: 'lakshsharma@jklu.edu.in', phone: '8094110057' }
+        ],
         rules: [
             'Team Size: Solo participation only (1 member per team).',
             'Rounds: The competition will have 2 rounds.',
@@ -481,6 +525,10 @@ export const events: Event[] = [
         category: 'Fun & Games',
         prizePool: '₹15,000',
         description: "Get ready for action in the BGMI Tournament! This is more than a game; it's where skill meets strategy. Be brave enough for non-stop action, taking down other squads, and making clutch plays. Team up, show your skills, and aim for the final circle. Play aggressively, survive the chaos, and grab that 'WINNER WINNER CHICKEN DINNER'!",
+        coordinators: [
+            { name: 'Lakshit Pareek', roll: '2024BTech254', email: 'lakshitpareek@jklu.edu.in', phone: '9216333707' },
+            { name: 'suryansh singh rajput', roll: '2023B.des055', email: 'suryanshsinghrajput@jklu.edu.com', phone: '8962892668' }
+        ],
         rules: [
             'Team Size: 4 members (required) + 1 substitute (optional). Maximum 5 players per team.',
             'Tournament will be played over two days during scheduled slots.',
@@ -518,6 +566,10 @@ export const events: Event[] = [
         category: 'Fun & Games',
         prizePool: '₹15,000',
         description: 'Jump into the Valorant tournament everyone wants to join! Expect intense 5v5 matches, amazing headshots, and agent powers flying everywhere. A single great play can make your team legendary on campus. Will you make a heroic move to win the glory, or watch from the side? Get your squad locked in—spots are vanishing fast!',
+        coordinators: [
+            { name: 'Shubham Sharma', roll: '2023btech081', email: 'shubhamsharma2023@jklu.edu.in', phone: '6375695553' },
+            { name: 'Nikhilesh', roll: '2024btech006', email: 'nikhileshsinghpanwar@jklu.edu.in', phone: '6377966199' }
+        ],
         rules: [
             'Team Size: 5 members (required) + 1-2 substitutes (optional). Maximum 7 players per team.',
             'Eligibility: Open to all current students of [College Name]. Participants must have a valid college ID. Teams must register before the deadline (no on-spot entries).',
@@ -556,10 +608,14 @@ export const events: Event[] = [
     {
         id: 15,
         title: 'FREE FIRE TOURNAMENT',
-        image: '/posters/free fire.webp',
+        image: '/posters/freefire.webp',
         category: 'Fun & Games',
         prizePool: '₹10,000',
         description: 'The Free Fire Tournament is a thrilling eSports event that\'s all about strategy and teamwork. It feels like a life-or-death battle where one smart move can change everything. You\'ll need sharp aim and fast reflexes to revive your friends, take down enemies, and stay inside the safe zones. Survive the map, fight for your team, and grab the ultimate Booyah!',
+        coordinators: [
+            { name: 'Yash Bansal', roll: '2024BTech128', email: 'yashbansal@jklu.edu.in', phone: '8619011601' },
+            { name: 'Maheem Gupta', roll: '2024BTech278', email: 'mahimgupta@jklu.edu.in', phone: '9521150006' }
+        ],
         rules: [
             'Team Size: 4 members (required) + 1 substitute (optional). Maximum 5 players per team.',
             'Lobby Joining: Room ID & Password will be shared 10 minutes before the match. Late entry beyond 5 minutes = disqualified for that match. Participants are responsible for their own devices, headphones, and IDs.',
@@ -599,6 +655,10 @@ export const events: Event[] = [
         category: 'Fun & Games',
         prizePool: '₹9,000',
         description: 'Prepare for a hilarious game of mismatched movements! Dumb Show is like Charades but with a funny, chaotic twist. Your team will mime movie titles, phrases, or songs for your teammates to guess while the clock is ticking. The time limit makes it wild and fun, testing your acting skills and how well you can read your teammates\' minds!',
+        coordinators: [
+            { name: 'Ashlesha Sharma', roll: '2024BTech235', email: 'ashleshasharma@jklu.edu.in', phone: '7850816065' },
+            { name: 'Esha Bafna', roll: '2024BTech022', email: 'eshabafna@jklu.edu.in', phone: '9549447600' }
+        ],
         rules: [
             'Team Size: 3 members. Before starting, each team must introduce themselves with a funny name.',
             'This event comprises 2 rounds.',
@@ -639,6 +699,10 @@ export const events: Event[] = [
         category: 'Special Events',
         prizePool: '₹13,000',
         description: 'Step into the shoes of detectives and unravel a thrilling murder mystery! With twists, turns, and surprising revelations, this event promises to test your problem-solving skills, creativity, and intuition.',
+        coordinators: [
+            { name: 'Satvik Agrawal', roll: '2024BTech190', email: 'satvikagrawal@jklu.edu.in', phone: '8272031402' },
+            { name: 'Mohit Khurana', roll: '2024BTech155', email: 'mohitkhurana@jklu.edu.in', phone: '8905744728' }
+        ],
         rules: [
             'Team Size: 2 – 4 members',
             'Open to all students with a valid ID card',
@@ -681,6 +745,10 @@ export const events: Event[] = [
         category: 'Creative Arts',
         prizePool: '₹5,000',
         description: 'The Art Relay is a unique event that tests an artist\'s flexibility and innovative thinking. Participants are tasked with creating a single artwork that evolves through multiple phases based on a series of revealed prompts.',
+        coordinators: [
+            { name: 'Ansh Gupta', roll: '2024BTech095', email: 'anshgupta@jklu.edu.in', phone: '9166083618' },
+            { name: 'Likhitha Bhupathi', roll: '2024BTech218', email: 'bhupathilikhitha@jklu.edu.in', phone: '6304774047' }
+        ],
         rules: [
             'Open to all students with a valid ID card',
             'A canvas of 4*4 will be provided. The first prompt will also be immediately provided as soon as participants are settled.',
