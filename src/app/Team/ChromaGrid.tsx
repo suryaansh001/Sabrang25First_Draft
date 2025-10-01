@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo } from "react";
 import { Linkedin, Instagram, Twitter } from 'lucide-react';
 import CommitteePopup from '../../../components/CommitteePopup';
-import { getCommitteeByName, CommitteeData } from '../../lib/teamData';
+import { getCommitteeByName, getCommitteeByNameAsync, CommitteeData } from '../../lib/teamData';
 
 // Define the Person type interface
 interface Person {
@@ -251,8 +251,10 @@ export default function PeopleStrip() {
   const [activeCommittee, setActiveCommittee] = useState<string | null>(null);
 
   // Function to handle committee popup
-  const handleViewCommittee = (committeeName: string) => {
-    const committeeData = getCommitteeByName(committeeName);
+  const handleViewCommittee = async (committeeName: string) => {
+    // Try runtime CSV first
+    const csvCommittee = await getCommitteeByNameAsync(committeeName);
+    const committeeData = csvCommittee || getCommitteeByName(committeeName);
     if (committeeData) {
       setSelectedCommittee(committeeData);
       setIsPopupOpen(true);
@@ -305,6 +307,13 @@ export default function PeopleStrip() {
       committee: "Student Affairs",
       title: "Incharge - Student Affairs,JKLU"
      },
+    // Design committee representative image
+    { 
+      img: "/images/Team/final/design.webp", 
+      bg: "bg-pink-500",
+      name: "Srishti Jain",
+      committee: "Design"
+    },
      
      // Core Committee Members
      { 
@@ -408,6 +417,13 @@ export default function PeopleStrip() {
     //      instagram: "https://instagram.com/tanveer_kumawatt"
     //    }
     //  },
+    // Prize & Certificates committee representative image
+    { 
+      img: "/images/Team/final/pnc.webp", 
+      bg: "bg-slate-500",
+      name: "Lokesh Sharma",
+      committee: "Prize & Certificates"
+    },
      { 
        img: "/images/Team/final/Aayushi Meel.webp", 
        bg: "bg-zinc-500",
@@ -490,6 +506,7 @@ export default function PeopleStrip() {
     "Stage & Venue",
     "Media & Report",
     "Hospitality",
+    "Design",
     "Internal Arrangements",
     "Decor",
     "Sponsorship & Promotion",
