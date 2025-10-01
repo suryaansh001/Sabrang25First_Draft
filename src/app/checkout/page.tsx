@@ -134,7 +134,7 @@ interface TeamSizeConfig {
 
 const TEAM_SIZE_CONFIG: Record<string, TeamSizeConfig> = {
   'RAMPWALK - PANACHE': { min: 7, max: 18 },
-  'DANCE BATTLE': { min: 6, max: 12 },
+  'DANCE BATTLE': { min: 10, max: 21 },
   'ECHOES OF NOOR': { min: 1, max: 2 },
   'VERSEVAAD': { min: 1, max: 2 },
   'BANDJAM': { min: 3, max: 8 },
