@@ -290,21 +290,22 @@ export default function PeopleStrip() {
 
    // People array with detailed information for each person
    const people: Person[] = [
+    { 
+      img: "/images/Team/final/VC.png", 
+      bg: "bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500",
+     name: "DR. Vijaysekhar Chellaboina",
+     committee: "Student Affairs",
+     title: "Vice Chancellor,JKLU"
+    },
      // Student Affairs
      { 
        img: "/images/Team/final/Deepak_Sogani.webp", 
        bg: "bg-gradient-to-br from-orange-500 via-rose-500 to-yellow-400",
        name: "Mr. Deepak Sogani",
       committee: "Student Affairs",
-      title: "Head - Student Affairs"
+      title: "Incharge - Student Affairs,JKLU"
      },
-     { 
-       img: "/images/Team/final/VC.png", 
-       bg: "bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500",
-      name: "Vijaysekhar Chellaboina",
-      committee: "Student Affairs",
-      title: "Vice Chancellor"
-     },
+     
      // Core Committee Members
      { 
        img: "/images/Team/final/Rahul_Verma.webp", 
@@ -452,7 +453,7 @@ export default function PeopleStrip() {
        bg: "bg-purple-600",
        name: "Anushka Pathak",
       committee: "Student Affairs",
-      title: "Executive - Student Affairs"
+      title: "Executive - Student Affairs,JKLU"
      },
     //  {
     //    img: "/images/Team/final/Dheevi Fozdar.webp",
