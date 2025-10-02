@@ -489,6 +489,106 @@ const AboutPage = () => {
           </div>
         </section>
 
+        {/* Special Guest Highlight - Navjot Ahuja */}
+        <section className="py-20 px-6 bg-gradient-to-br from-purple-900/30 via-pink-900/20 to-black/30 relative overflow-hidden">
+          {/* Background decorative elements */}
+          <div className="absolute inset-0">
+            <div className="absolute top-20 left-20 w-40 h-40 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '5s' }} />
+            <div className="absolute bottom-20 right-20 w-60 h-60 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '7s', animationDelay: '2s' }} />
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '9s', animationDelay: '1s' }} />
+          </div>
+
+          <div className="max-w-7xl mx-auto relative z-10">
+            <div className="text-center mb-16">
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <Star className="w-8 h-8 text-yellow-400 animate-pulse" />
+                <h2 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
+                  This Year's Highlight
+                </h2>
+                <Star className="w-8 h-8 text-yellow-400 animate-pulse" />
+              </div>
+              <div className="w-32 h-1 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full mx-auto animate-pulse" />
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              {/* Left: Artist Images */}
+              <div className="relative">
+                <div className="grid grid-cols-2 gap-4 lg:gap-6">
+                  <div className="relative group transform hover:scale-105 transition-all duration-500">
+                    <img 
+                      src="/images/artist/navjotAhuja/navjotProfile.JPG" 
+                      alt="Navjot Ahuja - Special Guest Artist"
+                      className="w-full h-64 lg:h-80 object-cover rounded-2xl border-3 border-purple-500/50 shadow-2xl group-hover:border-purple-400"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-purple-900/80 via-transparent to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-purple-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                  <div className="relative group transform hover:scale-105 transition-all duration-500 mt-8">
+                    <img 
+                      src="/images/artist/navjotAhuja/navjot_with_dj.webp" 
+                      alt="Navjot Ahuja Performance"
+                      className="w-full h-64 lg:h-80 object-cover rounded-2xl border-3 border-pink-500/50 shadow-2xl group-hover:border-pink-400"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-pink-900/80 via-transparent to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-pink-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                </div>
+                
+                {/* Floating animation elements */}
+                <div className="absolute -top-4 -right-4 w-8 h-8 bg-yellow-400 rounded-full animate-bounce opacity-60" style={{ animationDelay: '0s' }} />
+                <div className="absolute top-1/2 -left-4 w-6 h-6 bg-purple-400 rounded-full animate-bounce opacity-60" style={{ animationDelay: '1s' }} />
+                <div className="absolute -bottom-4 left-1/2 w-10 h-10 bg-pink-400 rounded-full animate-bounce opacity-60" style={{ animationDelay: '2s' }} />
+              </div>
+              
+              {/* Right: Content */}
+              <div className="space-y-8 bg-black/40 backdrop-blur-sm p-8 rounded-2xl border border-white/10 relative z-10">
+                <div className="text-center lg:text-left">
+                  <h3 className="text-5xl lg:text-6xl font-black text-white mb-4" style={{ fontFamily: "'Quivert', sans-serif" }}>
+                    NAVJOT AHUJA
+                  </h3>
+                  <p className="text-2xl text-yellow-400 font-bold tracking-wider mb-4">LIVE IN CONCERT</p>
+                  <p className="text-lg text-purple-400 font-semibold mb-6">Day 3 - October 12, 2025</p>
+                </div>
+                
+                <div className="space-y-6">
+                  <p className="text-xl text-gray-300 leading-relaxed">
+                    This year, Sabrang brings you something <span className="text-purple-400 font-bold">extraordinary</span> – a live performance by <span className="text-yellow-400 font-bold">Navjot Ahuja</span>, whose music has touched thousands of hearts across the nation.
+                  </p>
+                  
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-sm">
+                    <p className="text-gray-300 text-lg leading-relaxed italic">
+                      "Experience an evening of soulful melodies, electrifying energy, and unforgettable musical moments that will resonate in your heart long after the last note fades."
+                    </p>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-4 text-center">
+                      <div className="text-2xl font-bold text-purple-400 mb-1">LIVE</div>
+                      <div className="text-sm text-purple-300">Performance</div>
+                    </div>
+                    <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 text-center">
+                      <div className="text-2xl font-bold text-yellow-400 mb-1">DAY 3</div>
+                      <div className="text-sm text-yellow-300">Grand Finale</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="text-center lg:text-left pt-4">
+                  <p className="text-cyan-400 font-bold text-lg mb-4 animate-pulse">
+                    ✨ Join us for this spectacular musical journey! ✨
+                  </p>
+                  <button 
+                    onClick={() => navigate('/checkout')}
+                    className="px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold rounded-full transform hover:scale-110 transition-all duration-300 shadow-2xl hover:shadow-yellow-500/25 border border-yellow-400/50"
+                  >
+                    Don't Miss Out - Register Now!
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Beyond Competitions Section */}
         <section className="py-20 px-6 bg-black/30 relative">
           {/* Mobile background image with overlay */}

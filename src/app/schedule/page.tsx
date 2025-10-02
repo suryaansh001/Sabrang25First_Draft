@@ -132,7 +132,7 @@ export default function SchedulePage() {
 			{ time: "11:00 – 1:00", event: "Dumb Show", description: "Silent performance art", location: "Amphitheatre", category: "Performance" },
 			{ time: "2:00 – 4:00", event: "Art Relay", description: "Collaborative art creation", location: "Tech Lawn", category: "Art" },
 			{ time: "4:00 – 7:00", event: "Valedictory", description: "Closing ceremony and awards", location: "Main Stage", category: "Ceremony" },
-			{ time: "7:30 – 9:00", event: "Artist", description: "Special artist performance", location: "Main stage", category: "Music" },
+			{ time: "7:30 – 9:00", event: "Navjot Ahuja Live Concert", description: "Special artist performance - Navjot Ahuja", location: "Main stage", category: "Music", isSpecialArtist: true },
 			{ time: "9:00 – 10:00", event: "DJ night", description: "Final music and dance party", location: "Main stage", category: "Entertainment" },
 		]
 	};
@@ -505,6 +505,7 @@ export default function SchedulePage() {
 									{timelineData[activeDay].map((event, index) => {
 										const x = 200 + (index * 400);
 										const y = 400 + (index % 2 === 0 ? 0 : -100);
+										const isSpecialArtist = (event as any).isSpecialArtist;
 										
 										return (
 											<g
@@ -517,45 +518,82 @@ export default function SchedulePage() {
 												<motion.circle
 													cx={x}
 													cy={y}
-													r="25"
-													fill="#ffffff"
-													className="drop-shadow-[0_0_25px_rgba(139,92,246,0.9)]"
+													r={isSpecialArtist ? "35" : "25"}
+													fill={isSpecialArtist ? "#fbbf24" : "#ffffff"}
+													className={isSpecialArtist ? "drop-shadow-[0_0_30px_rgba(251,191,36,0.9)]" : "drop-shadow-[0_0_25px_rgba(139,92,246,0.9)]"}
 													initial={{ scale: 0, opacity: 0 }}
-													animate={{ scale: hoveredIndex === index ? 1.25 : 1, opacity: 1 }}
+													animate={{ scale: hoveredIndex === index ? 1.25 : (isSpecialArtist ? 1.15 : 1), opacity: 1 }}
 													transition={{ delay: 0.5 + index * 0.2, type: 'spring', stiffness: 250, damping: 15 }}
-												/>
+												>
+													{isSpecialArtist && (
+														<animate attributeName="r" values="35;38;35" dur="2s" repeatCount="indefinite" />
+													)}
+												</motion.circle>
+
+												{/* Special star decoration for artist */}
+												{isSpecialArtist && (
+													<>
+														<motion.polygon
+															points={`${x},${y-20} ${x+6},${y-6} ${x+20},${y-6} ${x+10},${y+2} ${x+15},${y+16} ${x},${y+8} ${x-15},${y+16} ${x-10},${y+2} ${x-20},${y-6} ${x-6},${y-6}`}
+															fill="#fbbf24"
+															className="drop-shadow-[0_0_15px_rgba(251,191,36,0.8)]"
+															initial={{ scale: 0, rotate: 0 }}
+															animate={{ scale: 1, rotate: 360 }}
+															transition={{ delay: 1.5 + index * 0.2, duration: 2, repeat: Infinity, repeatType: "loop" }}
+														/>
+													</>
+												)}
 												
 												<motion.rect
 													x={x - 220}
 													y={y + (index % 2 === 0 ? 50 : -250)}
 													width="440"
-													height="200"
+													height={isSpecialArtist ? "220" : "200"}
 													rx="20"
-													fill="rgba(0,0,0,0.75)"
-													stroke={hoveredIndex === index ? '#ec4899' : 'url(#timelineGradient)'}
-													strokeWidth={hoveredIndex === index ? 5 : 3}
+													fill={isSpecialArtist ? "rgba(20,20,20,0.85)" : "rgba(0,0,0,0.75)"}
+													stroke={hoveredIndex === index ? '#ec4899' : (isSpecialArtist ? '#fbbf24' : 'url(#timelineGradient)')}
+													strokeWidth={hoveredIndex === index ? 5 : (isSpecialArtist ? 4 : 3)}
 													initial={{ opacity: 0, y: 30 }}
 													animate={{ opacity: 1, y: 0 }}
 													transition={{ delay: 1 + index * 0.2 }}
-												/>
+												>
+													{isSpecialArtist && (
+														<animate attributeName="stroke" values="#fbbf24;#f59e0b;#fbbf24" dur="3s" repeatCount="indefinite" />
+													)}
+												</motion.rect>
 												
 												<motion.text
 													x={x}
 													y={y + (index % 2 === 0 ? 95 : -205)}
 													textAnchor="middle"
-													className="text-xl font-bold fill-white"
+													className={isSpecialArtist ? "text-xl font-bold fill-yellow-400" : "text-xl font-bold fill-white"}
 													initial={{ opacity: 0 }}
 													animate={{ opacity: 1 }}
 													transition={{ delay: 1.2 + index * 0.2 }}
 												>
 													{event.time}
 												</motion.text>
+
+												{/* Special Artist Badge */}
+												{isSpecialArtist && (
+													<motion.text
+														x={x}
+														y={y + (index % 2 === 0 ? 115 : -185)}
+														textAnchor="middle"
+														className="text-sm font-bold fill-yellow-300"
+														initial={{ opacity: 0 }}
+														animate={{ opacity: 1 }}
+														transition={{ delay: 1.25 + index * 0.2 }}
+													>
+														⭐ SPECIAL ARTIST ⭐
+													</motion.text>
+												)}
 												
 												<motion.text
 													x={x}
-													y={y + (index % 2 === 0 ? 130 : -170)}
+													y={y + (index % 2 === 0 ? (isSpecialArtist ? 140 : 130) : (isSpecialArtist ? -160 : -170))}
 													textAnchor="middle"
-													className="text-lg font-semibold fill-purple-300"
+													className={isSpecialArtist ? "text-lg font-bold fill-yellow-200" : "text-lg font-semibold fill-purple-300"}
 													initial={{ opacity: 0 }}
 													animate={{ opacity: 1 }}
 													transition={{ delay: 1.3 + index * 0.2 }}
@@ -565,9 +603,9 @@ export default function SchedulePage() {
 												
 												<motion.text
 													x={x}
-													y={y + (index % 2 === 0 ? 165 : -135)}
+													y={y + (index % 2 === 0 ? (isSpecialArtist ? 175 : 165) : (isSpecialArtist ? -125 : -135))}
 													textAnchor="middle"
-													className="text-base fill-gray-300"
+													className={isSpecialArtist ? "text-base fill-yellow-100" : "text-base fill-gray-300"}
 													initial={{ opacity: 0 }}
 													animate={{ opacity: 1 }}
 													transition={{ delay: 1.4 + index * 0.2 }}
@@ -577,9 +615,9 @@ export default function SchedulePage() {
 												
 												<motion.text
 													x={x}
-													y={y + (index % 2 === 0 ? 200 : -100)}
+													y={y + (index % 2 === 0 ? (isSpecialArtist ? 210 : 200) : (isSpecialArtist ? -90 : -100))}
 													textAnchor="middle"
-													className="text-base fill-pink-300"
+													className={isSpecialArtist ? "text-base fill-yellow-300" : "text-base fill-pink-300"}
 													initial={{ opacity: 0 }}
 													animate={{ opacity: 1 }}
 													transition={{ delay: 1.5 + index * 0.2 }}
@@ -624,56 +662,94 @@ export default function SchedulePage() {
 									animate={{ opacity: 1, y: 0 }}
 									transition={{ duration: 0.3 }}
 								>
-									{timelineData[activeDay].map((event, index) => (
-										<motion.div
-											key={index}
-											initial={{ opacity: 0, y: 24, scale: 0.98 }}
-											whileInView={{ opacity: 1, y: 0, scale: 1 }}
-											viewport={{ amount: 0.2, once: false }}
-											transition={{ type: 'spring', stiffness: 220, damping: 20, delay: index * 0.1 }}
-											whileTap={{ scale: 0.985 }}
-											className="relative group"
-										>
-											{/* Event Circle */}
-											<div className="absolute -left-12 top-6 w-6 h-6 bg-white rounded-full border-4 border-purple-500 shadow-lg shadow-purple-500/50" />
-
-											{/* Event Card */}
-											<div className="bg-gray-900/80 backdrop-blur-md border border-gray-600/50 rounded-2xl p-4 sm:p-6 shadow-xl">
-												{/* Category Badge */}
-												<div className="flex items-center justify-between mb-3">
-													<span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${getCategoryColor(event.category || '')} text-white`}>
-														{event.category}
-													</span>
-													<ChevronRight className="w-4 h-4 text-gray-400" />
+									{timelineData[activeDay].map((event, index) => {
+										const isSpecialArtist = (event as any).isSpecialArtist;
+										return (
+											<motion.div
+												key={index}
+												initial={{ opacity: 0, y: 24, scale: 0.98 }}
+												whileInView={{ opacity: 1, y: 0, scale: 1 }}
+												viewport={{ amount: 0.2, once: false }}
+												transition={{ type: 'spring', stiffness: 220, damping: 20, delay: index * 0.1 }}
+												whileTap={{ scale: 0.985 }}
+												className="relative group"
+											>
+												{/* Event Circle */}
+												<div className={`absolute -left-12 top-6 w-6 h-6 rounded-full border-4 shadow-lg ${
+													isSpecialArtist 
+														? 'bg-yellow-400 border-yellow-500 shadow-yellow-500/50' 
+														: 'bg-white border-purple-500 shadow-purple-500/50'
+												}`}>
+													{isSpecialArtist && (
+														<div className="absolute -top-1 -right-1 w-2 h-2 bg-orange-400 rounded-full animate-pulse" />
+													)}
 												</div>
 
-												{/* Event Title */}
-												<h3 className="text-lg sm:text-xl font-bold text-white mb-2">
-													{event.event}
-												</h3>
+												{/* Event Card */}
+												<div className={`backdrop-blur-md rounded-2xl p-4 sm:p-6 shadow-xl ${
+													isSpecialArtist 
+														? 'bg-gradient-to-br from-yellow-900/60 via-orange-900/40 to-gray-900/80 border border-yellow-500/50' 
+														: 'bg-gray-900/80 border border-gray-600/50'
+												}`}>
+													{/* Special Artist Header */}
+													{isSpecialArtist && (
+														<div className="flex items-center justify-center mb-4">
+															<div className="flex items-center gap-2 px-3 py-1 bg-yellow-500/20 border border-yellow-400/30 rounded-full">
+																<Star className="w-4 h-4 text-yellow-400 animate-pulse" />
+																<span className="text-yellow-300 text-xs font-bold uppercase tracking-wider">Featured Artist</span>
+																<Star className="w-4 h-4 text-yellow-400 animate-pulse" />
+															</div>
+														</div>
+													)}
 
-												{/* Time */}
-												<div className="flex items-center space-x-2 mb-2">
-													<Clock className="w-4 h-4 text-purple-400" />
-													<span className="text-purple-300 font-medium">{event.time}</span>
+													{/* Category Badge */}
+													<div className="flex items-center justify-between mb-3">
+														<span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${getCategoryColor(event.category || '')} text-white`}>
+															{event.category}
+														</span>
+														<ChevronRight className="w-4 h-4 text-gray-400" />
+													</div>
+
+													{/* Event Title */}
+													<h3 className={`text-lg sm:text-xl font-bold mb-2 ${
+														isSpecialArtist ? 'text-yellow-100' : 'text-white'
+													}`}>
+														{event.event}
+													</h3>
+
+													{/* Time */}
+													<div className="flex items-center space-x-2 mb-2">
+														<Clock className={`w-4 h-4 ${isSpecialArtist ? 'text-yellow-400' : 'text-purple-400'}`} />
+														<span className={`font-medium ${isSpecialArtist ? 'text-yellow-300' : 'text-purple-300'}`}>
+															{event.time}
+														</span>
+													</div>
+
+													{/* Description */}
+													<p className={`text-sm sm:text-base mb-3 leading-relaxed ${
+														isSpecialArtist ? 'text-yellow-100' : 'text-gray-200'
+													}`}>
+														{event.description}
+													</p>
+
+													{/* Location */}
+													<div className="flex items-center space-x-2">
+														<MapPin className={`w-4 h-4 ${isSpecialArtist ? 'text-orange-400' : 'text-pink-400'}`} />
+														<span className={`text-sm ${isSpecialArtist ? 'text-orange-300' : 'text-pink-300'}`}>
+															{event.location}
+														</span>
+													</div>
+
+													{/* Overlay */}
+													<div className={`absolute inset-0 rounded-2xl pointer-events-none ${
+														isSpecialArtist 
+															? 'bg-gradient-to-r from-yellow-500/5 to-orange-500/5' 
+															: 'bg-gradient-to-r from-purple-500/5 to-pink-500/5'
+													}`} />
 												</div>
-
-												{/* Description */}
-												<p className="text-gray-200 text-sm sm:text-base mb-3 leading-relaxed">
-													{event.description}
-												</p>
-
-												{/* Location */}
-												<div className="flex items-center space-x-2">
-													<MapPin className="w-4 h-4 text-pink-400" />
-													<span className="text-pink-300 text-sm">{event.location}</span>
-												</div>
-
-												{/* Overlay */}
-												<div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 rounded-2xl pointer-events-none" />
-											</div>
-										</motion.div>
-									))}
+											</motion.div>
+										);
+									})}
 								</motion.div>
 							</div>
 						</div>

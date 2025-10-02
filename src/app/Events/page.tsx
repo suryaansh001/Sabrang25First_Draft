@@ -885,6 +885,18 @@ export default function EventsPage() {
                     >Dive into the vibrant spirit of JKLU’s Cultural Fest – a celebration of art, music, dance, and creativity.</motion.p>
                   </div>
 
+                  {/* Featured Artist - Day 3 Special Lineup - Commented out for now */}
+                  {/* 
+                  <motion.div 
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.8 }}
+                    className="mb-12 lg:mb-16 relative overflow-hidden"
+                  >
+                    ... Artist section content ...
+                  </motion.div>
+                  */}
+
                   {/* Category Filters */}
                   <motion.div 
                     initial={{ opacity: 0, y: 20 }}
