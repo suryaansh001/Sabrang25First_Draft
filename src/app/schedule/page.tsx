@@ -12,6 +12,7 @@ interface TimelineEvent {
 	description: string;
 	location: string;
 	category?: string;
+	isSpecialArtist?: boolean;
 }
 
 interface TimelineData {
