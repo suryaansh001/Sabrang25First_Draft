@@ -576,7 +576,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               <div className="flex gap-3 overflow-x-auto pb-4 mb-6" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 <div className="flex-shrink-0 relative group">
                   <img 
-                    src="/images/artist/navjotAhuja/navjotProfile.JPG" 
+                    src="/images/artist/navjotAhuja/navjot1.jpg" 
                     alt="Navjot Ahuja Profile" 
                     className="w-32 h-40 object-cover rounded-lg border-2 border-purple-500/50 transition-all duration-300 group-hover:scale-105 group-hover:border-purple-400"
                   />
@@ -584,7 +584,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                 </div>
                 <div className="flex-shrink-0 relative group">
                   <img 
-                    src="/images/artist/navjotAhuja/navjot3.JPG" 
+                    src="/images/artist/navjotAhuja/navjot3.jpg" 
                     alt="Navjot Ahuja Performance" 
                     className="w-32 h-40 object-cover rounded-lg border-2 border-pink-500/50 transition-all duration-300 group-hover:scale-105 group-hover:border-pink-400"
                   />
@@ -592,7 +592,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                 </div>
                 <div className="flex-shrink-0 relative group">
                   <img 
-                    src="/images/artist/navjotAhuja/navjot_with_dj.webp" 
+                    src="/images/artist/navjotAhuja/navjot4.jpg" 
                     alt="Navjot Ahuja with DJ" 
                     className="w-32 h-40 object-cover rounded-lg border-2 border-cyan-500/50 transition-all duration-300 group-hover:scale-105 group-hover:border-cyan-400"
                   />

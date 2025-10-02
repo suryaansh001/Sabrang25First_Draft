@@ -491,6 +491,16 @@ const AboutPage = () => {
 
         {/* Special Guest Highlight - Navjot Ahuja */}
         <section className="py-20 px-6 bg-gradient-to-br from-purple-900/30 via-pink-900/20 to-black/30 relative overflow-hidden">
+          {/* Background image */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{ 
+              backgroundImage: 'url(/images/artist/navjotAhuja/navjot1.jpg)'
+            }}
+          />
+          {/* Black overlay with opacity */}
+          <div className="absolute inset-0 bg-black opacity-60" />
+          
           {/* Background decorative elements */}
           <div className="absolute inset-0">
             <div className="absolute top-20 left-20 w-40 h-40 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '5s' }} />
@@ -516,7 +526,7 @@ const AboutPage = () => {
                 <div className="grid grid-cols-2 gap-4 lg:gap-6">
                   <div className="relative group transform hover:scale-105 transition-all duration-500">
                     <img 
-                      src="/images/artist/navjotAhuja/navjotProfile.JPG" 
+                      src="/images/artist/navjotAhuja/navjot3.jpg" 
                       alt="Navjot Ahuja - Special Guest Artist"
                       className="w-full h-64 lg:h-80 object-cover rounded-2xl border-3 border-purple-500/50 shadow-2xl group-hover:border-purple-400"
                     />
@@ -525,7 +535,7 @@ const AboutPage = () => {
                   </div>
                   <div className="relative group transform hover:scale-105 transition-all duration-500 mt-8">
                     <img 
-                      src="/images/artist/navjotAhuja/navjot_with_dj.webp" 
+                      src="/images/artist/navjotAhuja/navjot4.jpg" 
                       alt="Navjot Ahuja Performance"
                       className="w-full h-64 lg:h-80 object-cover rounded-2xl border-3 border-pink-500/50 shadow-2xl group-hover:border-pink-400"
                     />
