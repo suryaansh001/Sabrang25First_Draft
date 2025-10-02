@@ -671,127 +671,264 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
 
       {/* Desktop/Laptop layout (>= lg) */}
       <div className="hidden lg:block">
-        {/* Top Right Black Pill Notch */}
-        {!isLoading && (
-          <div 
-            className="absolute top-0 right-30 z-20 w-[500px] h-[70px] bg-black rounded-[30px]"
-            style={{ transform: 'translateX(50%)' }}
-          />
-        )}
-        
-        {/* Top-left Logo (desktop) */}
-        {!isLoading && (
-          <div className="absolute top-6 left-10 z-50">
-            <img
-              src="/images/Logo@2x.png"
-              alt="Logo"
-              className="h-32 w-auto"
-              loading="eager"
-              fetchPriority="high"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = '/images/Logo.svg';
-              }}
-            />
-          </div>
-        )}
-        
-        {/* Register Now Button */}
-        {!isLoading && (
-          <div className="absolute top-6 right-6 z-50 flex items-center space-x-5">
-            <a href="/checkout" className="px-28 py-5 bg-black/40 backdrop-blur-sm rounded-full text-white text-sm font-medium hover:bg-black/60 transition-all duration-300 border border-white/30">
-              Register Now
-            </a>
-            <a href="/Events" className="p-2 text-white transition-all duration-300 flex items-center justify-center">
-            <img src="/JKLU_logo_white.png" alt="JKLU" className="w-15 h-15 object-contain" />
-            </a>
-          </div>
-        )}
-        
-        {/* SidebarDock with InfinityTransition navigation */}
-        {!isLoading && (
-          <div className="fixed inset-0 pointer-events-none z-[99999]">
-            <SidebarDock 
-              className="hidden lg:block pointer-events-auto"
-              onNavigate={(href) => { navigate(href); }}
-            />
-          </div>
-        )}
-        
-        {/* Right Panel */}
-        <div 
-          className="absolute top-0 h-full bg-black p-6 sm:p-8 md:p-12 lg:p-16"
-          style={{
-            left: '0',
-            right: '0',
-            clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% calc(100% - 100px), 200px calc(100% - 100px), 200px calc(100% - 60px), 0% calc(100% - 60px))'
-          }}
-        >
-          {/* Video background only */}
-          <div className="absolute inset-0 -z-10">
-            <VideoBackground />
-          </div>
-          
-          {/* Background decorative circles removed per request */}
-          
-          {/* Navigation */}
-          <nav className="relative z-40 flex items-center justify-between p-8 pt-0 pointer-events-none">
-            <div className="flex items-center space-x-4 ml-12">
-              {/* Navigation links */}
-            </div>
-          </nav>
-          
-          {/* Main Content */}
+        {/* Desktop Hero Section */}
+        <section className="relative h-screen bg-black overflow-hidden">
+          {/* Top Right Black Pill Notch */}
           {!isLoading && (
-            <div className="relative z-10 flex items-center justify-center h-full">
-              <div className="text-center">
-                                                 <h1 className="text-8xl md:text-7xl lg:text-9xl font-black text-white leading-none">
-                  <span className="text-orange-50 drop-shadow-lg text-9xl md:text-11xl lg:text-[11rem]" style={{ 
-                    fontFamily: "'Quivert', sans-serif", 
-                    letterSpacing: '0.02em',
-                    textShadow: '0 0 30px rgba(255,248,240,0.5)'
-                  }}>
-                    SABRANG
-                  </span><br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 drop-shadow-2xl text-5xl md:text-6xl lg:text-8xl" style={{ 
-                    fontFamily: "'TAN Nimbus', sans-serif", 
-                    textShadow: '0 0 20px rgba(34,211,238,0.5)'
-                  }}>
-                    2025
-                  </span>
-                </h1>
-                
-                {/* Desktop Date */}
-                <div className="mt-8">
-                  <ShinyText 
-                    text="October 10-12, 2025"
-                    speed={6}
-                    className="text-white/90 text-xl font-bold tracking-widest"
-                  />
-                </div>
-                {/* Prize Pool Banner */}
-                <div className="mt-6 flex items-center justify-center">
-                  <div className="relative prize-pill prize-pill-lg">
-                    <div className="prize-glow" />
-                    <div className="prize-shimmer" />
-                    <div className="flex items-center gap-3">
-                      <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white/20 border border-white/30">
-                        <Trophy className="w-5 h-5 text-yellow-300" />
-                      </span>
-                      <span className="font-extrabold tracking-widest">
-                        Prize Pool ₹2.5 Lakh+
-                      </span>
+            <div 
+              className="absolute top-0 right-30 z-20 w-[500px] h-[70px] bg-black rounded-[30px]"
+              style={{ transform: 'translateX(50%)' }}
+            />
+          )}
+          
+          {/* Top-left Logo (desktop) */}
+          {!isLoading && (
+            <div className="absolute top-6 left-10 z-50">
+              <img
+                src="/images/Logo@2x.png"
+                alt="Logo"
+                className="h-32 w-auto"
+                loading="eager"
+                fetchPriority="high"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/images/Logo.svg';
+                }}
+              />
+            </div>
+          )}
+          
+          {/* Register Now Button */}
+          {!isLoading && (
+            <div className="absolute top-6 right-6 z-50 flex items-center space-x-5">
+              <a href="/checkout" className="px-28 py-5 bg-black/40 backdrop-blur-sm rounded-full text-white text-sm font-medium hover:bg-black/60 transition-all duration-300 border border-white/30">
+                Register Now
+              </a>
+              <a href="/Events" className="p-2 text-white transition-all duration-300 flex items-center justify-center">
+              <img src="/JKLU_logo_white.png" alt="JKLU" className="w-15 h-15 object-contain" />
+              </a>
+            </div>
+          )}
+          
+          {/* SidebarDock with InfinityTransition navigation */}
+          {!isLoading && (
+            <div className="fixed inset-0 pointer-events-none z-[99999]">
+              <SidebarDock 
+                className="hidden lg:block pointer-events-auto"
+                onNavigate={(href) => { navigate(href); }}
+              />
+            </div>
+          )}
+          
+          {/* Right Panel */}
+          <div 
+            className="absolute top-0 h-full bg-black p-6 sm:p-8 md:p-12 lg:p-16"
+            style={{
+              left: '0',
+              right: '0',
+              clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% calc(100% - 100px), 200px calc(100% - 100px), 200px calc(100% - 60px), 0% calc(100% - 60px))'
+            }}
+          >
+            {/* Video background only */}
+            <div className="absolute inset-0 -z-10">
+              <VideoBackground />
+            </div>
+            
+            {/* Background decorative circles removed per request */}
+            
+            {/* Navigation */}
+            <nav className="relative z-40 flex items-center justify-between p-8 pt-0 pointer-events-none">
+              <div className="flex items-center space-x-4 ml-12">
+                {/* Navigation links */}
+              </div>
+            </nav>
+            
+            {/* Main Content */}
+            {!isLoading && (
+              <div className="relative z-10 flex items-center justify-center h-full">
+                <div className="text-center">
+                                                   <h1 className="text-8xl md:text-7xl lg:text-9xl font-black text-white leading-none">
+                    <span className="text-orange-50 drop-shadow-lg text-9xl md:text-11xl lg:text-[11rem]" style={{ 
+                      fontFamily: "'Quivert', sans-serif", 
+                      letterSpacing: '0.02em',
+                      textShadow: '0 0 30px rgba(255,248,240,0.5)'
+                    }}>
+                      SABRANG
+                    </span><br />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 drop-shadow-2xl text-5xl md:text-6xl lg:text-8xl" style={{ 
+                      fontFamily: "'TAN Nimbus', sans-serif", 
+                      textShadow: '0 0 20px rgba(34,211,238,0.5)'
+                    }}>
+                      2025
+                    </span>
+                  </h1>
+                  
+                  {/* Desktop Date */}
+                  <div className="mt-8">
+                    <ShinyText 
+                      text="October 10-12, 2025"
+                      speed={6}
+                      className="text-white/90 text-xl font-bold tracking-widest"
+                    />
+                  </div>
+                  {/* Prize Pool Banner */}
+                  <div className="mt-6 flex items-center justify-center">
+                    <div className="relative prize-pill prize-pill-lg">
+                      <div className="prize-glow" />
+                      <div className="prize-shimmer" />
+                      <div className="flex items-center gap-3">
+                        <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white/20 border border-white/30">
+                          <Trophy className="w-5 h-5 text-yellow-300" />
+                        </span>
+                        <span className="font-extrabold tracking-widest">
+                          Prize Pool ₹2.5 Lakh+
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        </section>
       </div>
 
       {/* Early Bird Floating Component - Desktop */}
       {!isLoading && showEarlyBird && (
         <EarlyBirdFloating onClose={() => setShowEarlyBird(false)} />
+      )}
+
+      {/* Special Navjot Ahuja Section - Desktop Only */}
+      {!isLoading && (
+         <section className="hidden lg:block relative w-full h-screen overflow-hidden bg-gradient-to-br from-purple-700/50 via-black/30 to-indigo-700/50">
+          {/* Background vertical photos */}
+          <div className="absolute inset-0 flex">
+            <div className="w-1/3 relative overflow-hidden">
+              <img 
+                src="/images/artist/navjotAhuja/navjot1.jpg" 
+                alt="Navjot Ahuja 1" 
+                className="w-full h-full object-cover opacity-60"
+              />
+               <div className="absolute inset-0 bg-gradient-to-r from-purple-700/40 to-transparent" />
+            </div>
+            <div className="w-1/3 relative overflow-hidden">
+              <img 
+                src="/images/artist/navjotAhuja/navjot2.jpg" 
+                alt="Navjot Ahuja 2" 
+                className="w-full h-full object-cover opacity-60"
+              />
+               <div className="absolute inset-0 bg-gradient-to-r from-purple-700/40 to-transparent" />
+            </div>
+            <div className="w-1/3 relative overflow-hidden">
+              <img 
+                src="/images/artist/navjotAhuja/navjot3.JPG" 
+                alt="Navjot Ahuja 3" 
+                className="w-full h-full object-cover opacity-60"
+              />
+               <div className="absolute inset-0 bg-gradient-to-r from-purple-700/40 to-transparent" />
+            </div>
+          </div>
+
+           {/* Content overlay */}
+           <div className="relative z-10 flex items-center justify-between h-full pl-32 pr-16">
+             {/* Left side - Description */}
+             <div className="w-1/2 text-white">
+              <div className="mb-8">
+                <h2 className="text-6xl font-bold mb-4 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent" style={{ fontFamily: "'Quivert', sans-serif" }}>
+                  NAVJOT AHUJA
+                </h2>
+                <div className="w-32 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 mb-6" />
+              </div>
+              
+              <div className="space-y-6 text-lg leading-relaxed">
+                <p className="text-gray-200">
+                  🎤 <span className="text-yellow-400 font-semibold">Experience the magic</span> of Navjot Ahuja's soulful voice and electrifying stage presence
+                </p>
+                <p className="text-gray-300">
+                  A night of melodies that will resonate in your heart forever. Don't miss this once-in-a-lifetime performance!
+                </p>
+                
+                {/* Day 3 Highlight */}
+                 <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-sm border border-purple-300/20 rounded-2xl p-6">
+                  <div className="flex items-center gap-3 mb-3">
+                     <Calendar className="w-8 h-8 text-purple-300" />
+                     <span className="text-2xl font-bold text-white">Day 3 - October 12, 2025</span>
+                   </div>
+                   <div className="flex items-center gap-3">
+                     <Clock className="w-6 h-6 text-pink-300" />
+                    <span className="text-xl text-gray-200">Evening Performance</span>
+                  </div>
+                </div>
+                
+                <p className="text-yellow-400 font-bold text-xl animate-pulse">
+                  ✨ Ready to be mesmerized? ✨
+                </p>
+              </div>
+            </div>
+
+            {/* Right side - Tilted zigzag pattern */}
+            <div className="w-1/2 flex justify-end items-center">
+              <div className="relative">
+                {/* Zigzag pattern background */}
+                <div className="absolute inset-0 transform rotate-12">
+                  <svg width="400" height="500" viewBox="0 0 400 500" className="opacity-20">
+                    <defs>
+                      <pattern id="zigzag" x="0" y="0" width="80" height="100" patternUnits="userSpaceOnUse">
+                        <path d="M0,0 L40,50 L80,0 L80,100 L40,50 L0,100 Z" fill="url(#gradient)" />
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#8b5cf6" />
+                          <stop offset="50%" stopColor="#ec4899" />
+                          <stop offset="100%" stopColor="#06b6d4" />
+                        </linearGradient>
+                      </pattern>
+                    </defs>
+                    <rect width="400" height="500" fill="url(#zigzag)" />
+                  </svg>
+                </div>
+                
+                {/* Tilted text */}
+                <div className="absolute top-8 right-8 transform rotate-12">
+                  <h3 className="text-3xl font-bold text-white mb-2" style={{ fontFamily: "'TAN Nimbus', sans-serif" }}>
+                    LIVE IN CONCERT
+                  </h3>
+                  <p className="text-yellow-400 font-semibold text-lg">
+                    SPECIAL GUEST
+                  </p>
+                </div>
+                
+                {/* Tilted Navjot photo */}
+                <div className="relative transform rotate-12">
+                  <div className="relative">
+                    <img 
+                      src="/images/artist/navjotAhuja/navjotpng.png" 
+                      alt="Navjot Ahuja Tilted" 
+                      className="w-80 h-80 object-cover rounded-2xl shadow-2xl border-4 border-white/20"
+                    />
+                     {/* Glow effect */}
+                     <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-400/20 to-pink-400/20 blur-xl" />
+                  </div>
+                </div>
+                
+                 {/* Floating elements */}
+                 <div className="absolute -top-4 -right-4 w-8 h-8 bg-yellow-300/60 rounded-full animate-pulse" />
+                 <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-purple-300/60 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+                 <div className="absolute top-1/2 -left-8 w-4 h-4 bg-pink-300/60 rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom CTA */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+            <button 
+              onClick={() => navigate('/checkout')}
+               className="px-12 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white font-bold rounded-full transform hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-purple-400/25 border border-purple-300/50 text-xl"
+            >
+              Secure Your Spot - Register Now!
+            </button>
+            <p className="text-center text-gray-400 text-sm mt-2">
+              Limited seats available for this exclusive performance
+            </p>
+          </div>
+        </section>
       )}
 
               {/* Infinity transition handled by AppShell */}
