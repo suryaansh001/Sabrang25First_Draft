@@ -396,7 +396,7 @@ export const events: Event[] = [
                 ]
             },
             {
-                heading: 'Round 2: Storytelling Rap (FACE OFF)',
+                heading: 'Round 2: Storytelling Rap',
                 items: [
                     'Theme: Perform an original storytelling rap centered around a coherent narrative.',
                     'Performance: Deliver a live rap with a clear beginning, development, and conclusion.',
