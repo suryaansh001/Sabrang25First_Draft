@@ -542,7 +542,7 @@ function CheckoutPageContent() {
           const userEmail = getDerivedEmail();
           const emailForValidation = userEmail || 'temp@example.com';
           
-          const response = await fetch(createApiUrl('/admin/promo-codes/validate'), {
+          const response = await retryFetch(createApiUrl('/admin/promo-codes/validate'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -551,7 +551,7 @@ function CheckoutPageContent() {
               userEmail: emailForValidation, 
               orderAmount: totalPrice 
             })
-          });
+          }, 2); // 2 retries for promo validation
           
           const data = await response.json();
           if (response.ok && data.success) {
@@ -621,16 +621,16 @@ function CheckoutPageContent() {
       // Most promo codes don't require specific email domains anyway
       const emailForValidation = userEmail || 'temp@example.com';
       
-      const response = await fetch(createApiUrl('/admin/promo-codes/validate'), {
+      const response = await retryFetch(createApiUrl('/admin/promo-codes/validate'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ 
-          code, 
-          userEmail: emailForValidation, 
-          orderAmount: totalPrice 
+        body: JSON.stringify({
+          code,
+          userEmail: emailForValidation,
+          orderAmount: totalPrice
         })
-      });
+      }, 2); // 2 retries for promo validation
       
       const data = await response.json();
       if (!response.ok || !data.success) {
@@ -1133,8 +1133,50 @@ function CheckoutPageContent() {
     }
   };
 
+  // Helper function to detect mobile devices
+  const isMobileDevice = () => {
+    if (typeof navigator === 'undefined') return false;
+    return /Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  };
+
+  // Helper function to get mobile-optimized timeout
+  const getMobileTimeout = (baseTimeout: number) => {
+    return isMobileDevice() ? baseTimeout * 2 : baseTimeout;
+  };
+
+  // Helper function for retry logic
+  const retryFetch = async (url: string, options: RequestInit, maxRetries: number = 3): Promise<Response> => {
+    for (let i = 0; i < maxRetries; i++) {
+      try {
+        // Check network status before each attempt
+        if (typeof navigator !== 'undefined' && !navigator.onLine) {
+          throw new Error('No internet connection. Please check your network and try again.');
+        }
+        
+        const response = await fetch(url, options);
+        return response;
+      } catch (error) {
+        console.log(`🔄 Retry attempt ${i + 1}/${maxRetries} failed:`, error);
+        
+        if (i === maxRetries - 1) {
+          throw error;
+        }
+        
+        // Exponential backoff: wait 1s, 2s, 3s...
+        await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+      }
+    }
+    throw new Error('All retry attempts failed');
+  };
+
   const proceedToPayment = async () => {
     console.log('🚀 proceedToPayment function called');
+    
+    // Check network connectivity before starting
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      throw new Error('No internet connection. Please check your network and try again.');
+    }
+    
     try {
       // First, register the user on backend using existing /register with image upload
       // Map fields: name -> 'name', collegeMailId -> 'email', and attach a 'profileImage'
@@ -1225,9 +1267,9 @@ function CheckoutPageContent() {
       const registrationController = new AbortController();
       const registrationTimeout = setTimeout(() => {
         registrationController.abort();
-      }, 30000); // 30 second timeout
+      }, getMobileTimeout(30000)); // 30s desktop, 60s mobile
 
-      const registrationResponse = await fetch(createApiUrl('/register'), {
+      const registrationResponse = await retryFetch(createApiUrl('/register'), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -1236,7 +1278,7 @@ function CheckoutPageContent() {
         },
         body: registrationForm,
         signal: registrationController.signal
-      });
+      }, 2); // 2 retries for registration
       
       clearTimeout(registrationTimeout);
 
@@ -1244,9 +1286,12 @@ function CheckoutPageContent() {
         const errText = await registrationResponse.text().catch(() => '');
         const errorMsg = errText || 'Registration failed';
         
-        // Provide user-friendly error messages
+        // Provide user-friendly error messages with mobile-specific guidance
         if (errorMsg.includes('network') || errorMsg.includes('fetch') || errorMsg.includes('timeout')) {
-          throw new Error('Network connection issue. Please check your internet and try again.');
+          const mobileGuidance = isMobileDevice() ? 
+            'Mobile networks can be slower. Please check your internet connection and try again. If using cellular data, try switching to WiFi.' :
+            'Network connection issue. Please check your internet and try again.';
+          throw new Error(mobileGuidance);
         }
         
         throw new Error(errorMsg);
@@ -1266,9 +1311,9 @@ function CheckoutPageContent() {
       const paymentController = new AbortController();
       const paymentTimeout = setTimeout(() => {
         paymentController.abort();
-      }, 15000); // 15 second timeout for payment order creation
+      }, getMobileTimeout(15000)); // 15s desktop, 30s mobile
 
-      const response = await fetch(createApiUrl('/api/payments/create-order'), {
+      const response = await retryFetch(createApiUrl('/api/payments/create-order'), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -1278,7 +1323,7 @@ function CheckoutPageContent() {
         },
         body: JSON.stringify(orderData),
         signal: paymentController.signal
-      });
+      }, 3); // 3 retries for payment order creation
       
       clearTimeout(paymentTimeout);
 
@@ -1298,9 +1343,12 @@ function CheckoutPageContent() {
           orderData: orderData
         });
         
-        // Provide user-friendly error messages
+        // Provide user-friendly error messages with mobile-specific guidance
         if (errorMsg.includes('network') || errorMsg.includes('fetch') || errorMsg.includes('timeout')) {
-          throw new Error('Network connection issue during payment setup. Please check your internet and try again.');
+          const mobileGuidance = isMobileDevice() ? 
+            'Mobile networks can be slower during payment setup. Please check your internet connection and try again. If using cellular data, try switching to WiFi.' :
+            'Network connection issue during payment setup. Please check your internet and try again.';
+          throw new Error(mobileGuidance);
         }
         
         throw new Error(errorMsg);
@@ -1344,9 +1392,13 @@ function CheckoutPageContent() {
       
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
-          errorMessage = 'Request timed out. Please check your internet connection and try again.';
+          errorMessage = isMobileDevice() ? 
+            'Request timed out. Mobile networks can be slower - please check your internet connection and try again. If using cellular data, try switching to WiFi.' :
+            'Request timed out. Please check your internet connection and try again.';
         } else if (error.message?.toLowerCase().includes('failed to fetch')) {
-          errorMessage = 'Network connection failed. Please check your internet and try clicking "Pay Now" again.';
+          errorMessage = isMobileDevice() ? 
+            'Network connection failed. Mobile networks can be unstable - please check your internet and try clicking "Pay Now" again. If using cellular data, try switching to WiFi.' :
+            'Network connection failed. Please check your internet and try clicking "Pay Now" again.';
         } else {
           errorMessage = error.message;
         }
