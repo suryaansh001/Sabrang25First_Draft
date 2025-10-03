@@ -43,7 +43,7 @@ function CheckoutOffersPage() {
 
   const fetchOffers = async () => {
     try {
-      const response = await fetch('http://localhost:5000/admin/checkout-offers', {
+      const response = await fetch(createApiUrl('/admin/checkout-offers'), {
         credentials: 'include'
       });
       if (response.ok) {
@@ -61,7 +61,7 @@ function CheckoutOffersPage() {
     if (!confirm('Are you sure you want to delete this checkout offer?')) return;
     
     try {
-      const response = await fetch(`http://localhost:5000/admin/checkout-offers/${id}`, {
+      const response = await fetch(createApiUrl(`/admin/checkout-offers/${id}`), {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -76,7 +76,7 @@ function CheckoutOffersPage() {
 
   const toggleOfferStatus = async (id: string, currentStatus: boolean) => {
     try {
-      const response = await fetch(`http://localhost:5000/admin/checkout-offers/${id}`, {
+      const response = await fetch(createApiUrl(`/admin/checkout-offers/${id}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

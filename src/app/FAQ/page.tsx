@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Logo from '../../../components/Logo';
 import { Calendar, Users, Handshake, Info, Clock, Star, Mail, Home, HelpCircle, X, ChevronUp, Search, MessageCircle } from 'lucide-react';
+import { FaDiscord } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '../../../components/NavigationContext';
 
@@ -53,7 +54,7 @@ const DecorativeIcon = ({ seed = 0 }: { seed?: number }) => {
 
 const FAQ = () => {
   const router = useRouter();
-  const { navigate } = useNavigation();
+  // const { navigate } = useNavigation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -65,49 +66,97 @@ const FAQ = () => {
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
     { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
-    { title: 'Schedule', href: '/schedule/progress', icon: <Clock className="w-5 h-5" /> },
-    { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
+      { title: 'Schedule', href: '/schedule', icon: <Clock className="w-5 h-5" /> },
+    { title: 'Our Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
     { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
     { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
-    { title: 'Contact', href: '/Contact', icon: <Mail className="w-5 h-5" /> },
+    { title: 'Contact Us', href: '/Contact', icon: <Mail className="w-5 h-5" /> },
   ];
 
   const faqs = [
     {
-      question: "What kind of events will there be in Sabrang?",
-      answer: "There will be a mix of cultural, creative and competitive, and gaming events. The event list is available on Sabrang's website. There will be flagship events like verse vaad, rampwalk, echoes of noor, dance battle along with non-flagship events including courtroom, seal the deal, bgmi and freefire gaming tournaments.",
-      category: "Events",
-      icon: "🎭"
+      question: "When and where is Sabrang 2025 happening?",
+      answer: "Sabrang 2025 will be held from October 10 to October 12, 2025 at JK Lakshmipat University (JKLU), Jaipur.",
+      category: "General",
+      icon: "📅"
     },
     {
-      question: "Is there a registration fee for the fest or specific events?",
-      answer: "There will be a one-time registration fee which will be applicable for all three days of Sabrang. The fees will be for the fest, and you can participate in any 3 events.",
-      category: "Registration",
-      icon: "💰"
+      question: "Is there an entry fee for Sabrang?",
+      answer: "Participants: Event-wise fee varies depending on the competition and will be shown during online registration. Visitors: A Visitor Pass of ₹69 per day is required.",
+      category: "Fees",
+      icon: "💳"
     },
     {
-      question: "Will there be on-the-spot registrations for some events?",
-      answer: "Registration will be open for all three days of Sabrang. You can register either online on Sabrang's website or on the spot on the campus.",
+      question: "How do I register for Sabrang Events?",
+      answer: "Registration is online only through the official website https://sabrang.jklu.edu.in/. Select the event(s), add them to the cart, and complete the checkout process. On-site registration is not available.",
       category: "Registration",
       icon: "📝"
     },
     {
-      question: "Can I be part of Sabrang without competing in any competition?",
-      answer: "Yes, you can still be part of Sabrang and enjoy the events without participating. You still have to register even if you are not participating in any event.",
-      category: "Participation",
-      icon: "👥"
+      question: "Will I need to show ID at the venue?",
+      answer: "Yes. Participants and visitors must carry a valid photo ID (college ID or government-issued ID) along with the event/visitor pass for entry.",
+      category: "Entry",
+      icon: "🪪"
     },
     {
-      question: "Will accommodation be provided for outstation participants?",
-      answer: "Accommodation for outstation participants will be provided on a chargeable basis. Transport will also be available for participants on prior information.",
+      question: "Is there any accommodation available for outstation participants?",
+      answer: "Yes, accommodation is available on a chargeable basis. Contact the registration team for details about hostels, partner hotels, and booking procedures.",
       category: "Accommodation",
       icon: "🏨"
     },
     {
-      question: "What are the payment options available for passes?",
-      answer: "For registrations, the payment method will be online through Sabrang's website.",
-      category: "Payment",
-      icon: "💳"
+      question: "Are there parking arrangements for visitors?",
+      answer: "Yes, parking arrangements are available at the venue.",
+      category: "Logistics",
+      icon: "🅿️"
+    },
+    {
+      question: "Is there a pick-up and drop facility for participants?",
+      answer: "Yes. Shuttle services are available at pre-decided stops. Additionally, if a team or a certain number of participants are coming from the same university, transport can be provided for them free of charge.",
+      category: "Transport",
+      icon: "🚌"
+    },
+    {
+      question: "Do visitors also need to register or only participants?",
+      answer: "Visitors must also register and purchase a Visitor Pass (₹69 per day).",
+      category: "Visitors",
+      icon: "🎟️"
+    },
+    {
+      question: "Who do I contact for event-related queries after registration?",
+      answer: "Registration Core: Ayushi Kabra — +91 89499 41985 | ayushikabra@jklu.edu.in; Jayash Gahlot — +91 83062 74199 | jayashgahlot@jklu.edu.in. Event Coordination: Diya Garg — +91 72968 59397 | diyagarg@jklu.edu.in",
+      category: "Contacts",
+      icon: "☎️"
+    },
+    {
+      question: "Is onsite registration open?",
+      answer: "No. Only online registration is valid.",
+      category: "Registration",
+      icon: "❌"
+    },
+    {
+      question: "I made a mistake during my registration. Can I register again?",
+      answer: "Yes, you can register again. In case of errors, you may also contact the registration team for corrections.",
+      category: "Registration",
+      icon: "♻️"
+    },
+    {
+      question: "Can we register for more than one event?",
+      answer: "Yes, participants may register for multiple events, subject to schedule.",
+      category: "Participation",
+      icon: "➕"
+    },
+    {
+      question: "When will the registrations open and close?",
+      answer: "Online registrations are already open and will remain open until the last day of Sabrang, October 12, 2025.",
+      category: "Registration",
+      icon: "⏰"
+    },
+    {
+      question: "Will the registrations be refundable or not?",
+      answer: "No, registrations are non-refundable.",
+      category: "Refunds",
+      icon: "🚫"
     }
   ];
 
@@ -205,7 +254,7 @@ const FAQ = () => {
               {mobileNavItems.map((item) => (
                 <button
                   key={item.title}
-                  onClick={() => { setMobileMenuOpen(false); navigate(item.href); }}
+                  onClick={() => { setMobileMenuOpen(false); router.push(item.href); }}
                   className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
                 >
                   <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
@@ -269,8 +318,15 @@ const FAQ = () => {
                 </span>
               </h2>
               <p className="text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto px-2">
-                We've compiled the most common questions to help you get started. Can't find what you're looking for? 
-                <button className="text-purple-400 hover:text-purple-300 transition-colors ml-2">
+              We've compiled the most common questions to help you get started. Can't find what you're looking for?
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    router.push('/Contact');
+                  }} 
+                  className="text-purple-400 hover:text-purple-300 transition-colors ml-2 cursor-pointer underline hover:no-underline"
+                >
                   Contact us directly
                 </button>
               </p>
@@ -344,13 +400,24 @@ const FAQ = () => {
                         <p className="text-gray-200 leading-relaxed text-sm sm:text-base md:text-lg break-words">
                           {faq.answer}
                         </p>
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-white/10">
-                          <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-400">
+                        <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-white/10">
+                          <button 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                             
+                              router.push('/Contact');
+                            }} 
+                            className="flex items-center space-x-2 text-xs sm:text-sm text-gray-400 hover:text-gray-200 transition-colors group cursor-pointer relative z-10"
+                            type="button"
+                          >
                             <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-                            <span>Need more help?</span>
-                          </div>
-                          <button className="text-purple-400 hover:text-purple-300 text-xs sm:text-sm font-medium transition-colors">
-                            Contact Support
+                            <span className="relative">
+                              Need more help? 
+                              <span className="text-purple-400 group-hover:text-purple-300 font-medium group-hover:underline ml-1 relative z-10">
+                                Contact Us
+                              </span>
+                            </span>
                           </button>
                         </div>
                       </div>
@@ -383,14 +450,14 @@ const FAQ = () => {
                   Still have questions?
                 </h3>
                 <p className="text-base sm:text-lg text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-2">
-                  Our team is here to help! Reach out to us and we'll get back to you as soon as possible.
+                  Our team is here to help! Reach out to us, and we'll get back to you as soon as possible.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                   <button 
                     onClick={() => router.push('/Contact')}
                     className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl text-white font-semibold transition-all duration-300 transform hover:scale-105 text-sm sm:text-base"
                   >
-                    Contact Support
+                    Contact Us
                   </button>
                   <button 
                     onClick={() => router.push('/Events')}
@@ -414,6 +481,19 @@ const FAQ = () => {
           <ChevronUp className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </button>
       )}
+
+      {/* Discord Button */}
+      <a
+        href="https://discord.gg/wSG8bUEJCA"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Join our Discord"
+        className="group fixed bottom-4 sm:bottom-6 left-4 sm:left-6 z-50 w-10 h-10 sm:w-12 sm:h-12 rounded-xl rotate-45 flex items-center justify-center shadow-[0_8px_30px_rgba(0,0,0,0.6)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.7)] transition-all duration-300 hover:scale-110
+        bg-gradient-to-br from-purple-900/70 via-black/60 to-indigo-900/60 border border-white/15 backdrop-blur-sm
+        hover:from-purple-700/70 hover:to-indigo-800/70"
+      >
+        <FaDiscord className="-rotate-45 w-5 h-5 sm:w-6 sm:h-6 text-white drop-shadow-[0_0_10px_rgba(168,85,247,0.55)] group-hover:drop-shadow-[0_0_14px_rgba(167,139,250,0.7)] transition-colors" />
+      </a>
       
       {/* Footer is rendered globally in AppShell */}
     </div>

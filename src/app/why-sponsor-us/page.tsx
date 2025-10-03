@@ -4,6 +4,7 @@ import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Users, CheckCircle, ArrowRight, Download, Megaphone, Eye, Star as StarIcon, Briefcase, Home, Info, Calendar, Clock, HelpCircle, Handshake, Mail } from 'lucide-react';
 import { useNavigation } from '../../../components/NavigationContext';
+import Logo from '../../../components/Logo';
 import emailjs from '@emailjs/browser';
 
 // --- Data from your sponsorship deck ---
@@ -104,15 +105,15 @@ const sponsorshipTiers = [
 
 const TierCard = ({ tier, index }: { tier: any, index: number }) => (
   <motion.div
-    className={`group relative bg-black/60 backdrop-blur-md border rounded-2xl p-8 flex flex-col h-full shadow-2xl ${tier.featured ? 'border-blue-400' : 'border-white/20'}`}
+    className={`group relative bg-black/60 backdrop-blur-md border rounded-2xl p-4 sm:p-6 lg:p-8 flex flex-col h-full shadow-2xl ${tier.featured ? 'border-blue-400' : 'border-white/20'}`}
     variants={{ hidden: { opacity: 0, y: 50 }, visible: { opacity: 1, y: 0 } }}
     whileHover={{ y: -8, scale: 1.02, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
     transition={{ type: 'spring', stiffness: 400, damping: 30, delay: index * 0.1 }}
   >
-    {tier.featured && <div className="absolute top-0 right-8 -mt-4 px-3 py-1 text-sm font-semibold rounded-full bg-blue-500 text-white shadow-lg shadow-blue-500/50">Most Popular</div>}
-    <div className="text-center mb-8">
-      <h3 className="text-2xl font-bold text-white mb-2">{tier.name}</h3>
-      <div className="text-5xl font-extrabold text-white">{tier.price}</div>
+    {tier.featured && <div className="absolute top-0 right-4 sm:right-8 -mt-2 sm:-mt-4 px-2 sm:px-3 py-1 text-xs sm:text-sm font-semibold rounded-full bg-blue-500 text-white shadow-lg shadow-blue-500/50">Most Popular</div>}
+    <div className="text-center mb-6 sm:mb-8">
+      <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-white mb-2">{tier.name}</h3>
+      <div className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white">{tier.price}</div>
     </div>
     <div className="space-y-6 flex-grow mb-8">
       {tier.description ? (
@@ -175,6 +176,8 @@ const contactFields: FormField[] = [
 export default function WhySponsorUsPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isMediumLaptop, setIsMediumLaptop] = useState(false);
   const [formData, setFormData] = useState({
     companyName: '',
     contactPerson: '',
@@ -186,6 +189,20 @@ export default function WhySponsorUsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
   const { navigate } = useNavigation();
+
+  // Screen size detection
+  React.useEffect(() => {
+    const checkScreenSize = () => {
+      const width = window.innerWidth;
+      setIsMobile(width < 1024);
+      setIsMediumLaptop(width >= 1024 && width < 1280);
+    };
+    
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -274,7 +291,7 @@ export default function WhySponsorUsPage() {
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
     { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Highlights', href: '/Gallery', icon: <StarIcon className="w-5 h-5" /> },
-    { title: 'Schedule', href: '/schedule/progress', icon: <Clock className="w-5 h-5" /> },
+    { title: 'Schedule', href: '/schedule', icon: <Clock className="w-5 h-5" /> },
     { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
     { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
     { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
@@ -294,17 +311,8 @@ export default function WhySponsorUsPage() {
       {/* Glassy Translucent Overlay */}
       <div className="fixed inset-0 -z-10 bg-black/50 backdrop-blur-sm" />
 
-      {/* Mobile top-left logo */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
-        <a href="/" aria-label="Go to homepage">
-          <img
-            src="/images/Logo@2x.png"
-            alt="Logo"
-            className="h-10 w-auto cursor-pointer"
-            onError={(e) => { (e.target as HTMLImageElement).src = '/images/Logo.svg'; }}
-          />
-        </a>
-      </div>
+      {/* Logo - Desktop and Mobile */}
+      <Logo className="lg:block" />
 
       {/* Mobile hamburger */}
       <button
@@ -361,7 +369,7 @@ export default function WhySponsorUsPage() {
             className="mb-8"
             variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } } }}
           >
-            <h1 className="text-6xl md:text-8xl font-bold text-white mb-4">
+            <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white mb-4 ${isMediumLaptop ? 'text-6xl' : ''}`}>
               SABRANG 2025
             </h1>
             <motion.div 
@@ -370,10 +378,10 @@ export default function WhySponsorUsPage() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="h-1 bg-gradient-to-r from-pink-400 to-purple-400 mb-6 lg:mb-8 mx-auto"
             />
-            <p className="text-xl md:text-2xl text-blue-300/80 mb-4 tracking-widest">Why Sponsor Us</p>
+            <p className={`text-lg sm:text-xl md:text-2xl text-blue-300/80 mb-4 tracking-widest ${isMediumLaptop ? 'text-xl' : ''}`}>Why Sponsor Us?</p>
           </motion.div>
           <motion.p
-            className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-12"
+            className={`text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-12 px-4 ${isMediumLaptop ? 'text-lg' : ''}`}
             variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } } }}
           >
             A strategic partnership opportunity to connect your brand with thousands of India's brightest young minds at the intersection of culture and innovation.
@@ -389,8 +397,8 @@ export default function WhySponsorUsPage() {
               Become a Partner <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </button>
             <a
-              href="/Sponsorship_Deck_Sabrang_2025.pdf"
-              download
+              href="/decks/SponsorshipDeck.pdf"
+              download="SponsorshipDeck.pdf"
               className="group w-full sm:w-auto relative inline-flex items-center justify-center gap-3 px-8 py-4 text-lg font-semibold bg-white/10 border border-white/20 rounded-full text-white transition-all duration-300 hover:bg-white/20 transform hover:scale-105"
             >
               Download Deck <Download className="w-5 h-5" /> 
@@ -424,13 +432,13 @@ export default function WhySponsorUsPage() {
               <div className="w-20 h-1 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-full mx-auto animate-pulse" style={{ animationDuration: '3s' }}></div>
             </motion.div>
             <motion.h2
-              className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
+              className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent px-4 ${isMediumLaptop ? 'text-5xl' : ''}`}
               variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8 } } }}
             >
-              The Sabrang Advantage
+             What We Offer ?
             </motion.h2>
             <motion.p
-              className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed"
+              className={`text-lg sm:text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed px-4 ${isMediumLaptop ? 'text-xl' : ''}`}
               variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, delay: 0.2 } } }}
             >
               Leverage our platform to achieve your brand's strategic objectives and connect with India's brightest minds.
@@ -438,7 +446,7 @@ export default function WhySponsorUsPage() {
           </motion.div>
           
           <motion.div
-            className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
+            className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 px-4"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
@@ -533,20 +541,20 @@ export default function WhySponsorUsPage() {
             variants={{ hidden: {}, visible: {} }}
           >
             <motion.h2
-              className="text-4xl md:text-5xl font-extrabold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
+              className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent px-4 ${isMediumLaptop ? 'text-4xl' : ''}`}
               variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}
             >
-              A Glimpse of the Spectacle
+             Witness the Unseen
             </motion.h2>
             <motion.p
-              className="text-lg text-gray-400 max-w-3xl mx-auto"
+              className={`text-base sm:text-lg text-gray-400 max-w-3xl mx-auto px-4 ${isMediumLaptop ? 'text-lg' : ''}`}
               variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, delay: 0.2 } } }}
             >
               Our flagship events are the heart of Sabrang, drawing massive crowds and media attention.
             </motion.p>
           </motion.div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 px-4">
             {flagshipEvents.map((event, index) => {
                const eventImages = [
                  '/images/about-section/Panache.png',
@@ -611,13 +619,13 @@ export default function WhySponsorUsPage() {
             variants={{ hidden: {}, visible: {} }}
           >
             <motion.h2
-              className="text-4xl md:text-5xl font-extrabold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
+              className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent px-4 ${isMediumLaptop ? 'text-4xl' : ''}`}
               variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}
             >
               Partnership Tiers
             </motion.h2>
             <motion.p
-              className="text-lg text-gray-400 max-w-3xl mx-auto"
+              className={`text-base sm:text-lg text-gray-400 max-w-3xl mx-auto px-4 ${isMediumLaptop ? 'text-lg' : ''}`}
               variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, delay: 0.2 } } }}
             >
               Choose a level of partnership that aligns with your brand's vision and goals.
@@ -625,7 +633,7 @@ export default function WhySponsorUsPage() {
           </motion.div>
           
           <motion.div
-            className="grid lg:grid-cols-3 gap-8 items-stretch"
+            className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch px-4"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}

@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { quivertFont, tanNimbusFont } from "./fonts";
 import AppShell from "../../components/AppShell";
 import { VideoProvider } from "../../components/VideoContext";
+import LeftScrollTree from "../../components/LeftScrollTree";
 
 import FooterStrip from "../../components/FooterStrip";
 import ChatbotContent from "../../components/ChatbotContent";
@@ -44,6 +45,13 @@ export const metadata: Metadata = {
   other: {
     'google-site-verification': 'your-verification-code-here',
   }
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
@@ -116,6 +124,7 @@ export default function RootLayout({
         <VideoProvider>
         
             <div className="min-h-screen flex flex-col">
+              <LeftScrollTree />
               <AppShell>{children}</AppShell>
               <FooterStrip />
               

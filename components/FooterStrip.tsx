@@ -9,7 +9,7 @@ export default function FooterStrip() {
 				{/* Copyright */}
 				<a className="hover:text-white underline-offset-4 ">
 					<div className="text-white/70 text-xs sm:text-sm">
-						<span>Sabrang - JK Lakshmipat University © 2025 JKLU. All Right Reserved</span>
+						<span>Sabrang - JK Lakshmipat University © 2025 JKLU. All Rights Reserved</span>
 					</div>
 				</a>
 

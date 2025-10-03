@@ -43,11 +43,11 @@ const AboutPage = () => {
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
     { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
-    { title: 'Schedule', href: '/schedule/progress', icon: <Clock className="w-5 h-5" /> },
-    { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
+    { title: 'Schedule', href: '/schedule', icon: <Clock className="w-5 h-5" /> },
+    { title: 'Our Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
     { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
     { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
-    { title: 'Contact', href: '/Contact', icon: <Mail className="w-5 h-5" /> },
+    { title: 'Contact Us', href: '/Contact', icon: <Mail className="w-5 h-5" /> },
   ];
 
   return (
@@ -291,7 +291,7 @@ const AboutPage = () => {
                   <div className="space-y-4 text-left">
                     {[
                       '₹3,00,000+ in prizes for winners and top performers',
-                      'Flagship competitions that push creativity and skill',
+                      'Flagship competitions that push creativity and skills',
                       'National-level participation',
                       'Immersive themes every year',
                       'Epic nights with DJs, live bands, and celebrities'
@@ -353,7 +353,8 @@ const AboutPage = () => {
                  </div>
                  <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
                    <h3 className="text-lg md:text-4xl font-bold text-white mb-2 md:mb-4 drop-shadow-lg">Panache</h3>
-                   <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg">Glamorous fashion show</p>
+                   <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg mb-4">Glamorous fashion show</p>
+                   <div className="text-sm md:text-lg font-bold text-white drop-shadow-lg">Prize Pool: ₹40,000</div>
                  </div>
                </div>
                
@@ -389,7 +390,8 @@ const AboutPage = () => {
                  </div>
                  <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
                    <h3 className="text-lg md:text-4xl font-bold text-white mb-2 md:mb-4 drop-shadow-lg">Band Jam</h3>
-                   <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg">Electrifying music</p>
+                   <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg mb-4">Electrifying music</p>
+                   <div className="text-sm md:text-lg font-bold text-white drop-shadow-lg">Prize Pool: ₹25,000</div>
                  </div>
                </div>
                
@@ -425,15 +427,16 @@ const AboutPage = () => {
                  </div>
                  <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
                    <h3 className="text-lg md:text-4xl font-bold text-white mb-2 md:mb-4 drop-shadow-lg">Dance Battle</h3>
-                   <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg">Ultimate dance glory</p>
+                   <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg mb-4">Ultimate dance glory</p>
+                   <div className="text-sm md:text-lg font-bold text-white drop-shadow-lg">Prize Pool: ₹35,000</div>
                  </div>
                </div>
             </div>
 
             {/* Additional Flagship Cards */}
-            <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">
+            <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-8">
               {/* Step Up */}
-              <div className="relative group h-[180px] md:h-[280px] rounded-xl md:rounded-2xl overflow-hidden">
+              <div className="relative group h-[240px] md:h-[600px] rounded-xl md:rounded-2xl overflow-hidden">
                 <div className="absolute inset-0">
                   <img 
                     src="/images/stepup.JPG" 
@@ -443,14 +446,14 @@ const AboutPage = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                 </div>
                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
-                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
-                  <h3 className="text-base md:text-2xl font-bold text-white mb-2">Step Up</h3>
-                  <p className="text-xs md:text-sm text-gray-200">Solo dance energy</p>
+                  <h3 className="text-lg md:text-4xl font-bold text-white mb-2 md:mb-4 drop-shadow-lg">Step Up</h3>
+                  <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg mb-4">Solo dance energy</p>
+                  <div className="text-sm md:text-lg font-bold text-white drop-shadow-lg">Prize Pool: ₹17,000</div>
                 </div>
               </div>
 
               {/* Echoes of Noor */}
-               <div className="relative group h-[180px] md:h-[280px] rounded-xl md:rounded-2xl overflow-hidden">
+               <div className="relative group h-[240px] md:h-[600px] rounded-xl md:rounded-2xl overflow-hidden">
                  <div className="absolute inset-0">
                    <img 
                      src="/images/about-section/Echoes_of_Noor.webp" 
@@ -460,14 +463,14 @@ const AboutPage = () => {
                    <div className="absolute inset-0 bg-gradient-to-br from-black-600/80 to-pink-600/80"></div>
                  </div>
                  <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
-                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
-                  <h3 className="text-base md:text-2xl font-bold text-white mb-2">Echoes of Noor</h3>
-                  <p className="text-xs md:text-sm text-gray-200">Spoken word & poetry</p>
+                  <h3 className="text-lg md:text-4xl font-bold text-white mb-2 md:mb-4 drop-shadow-lg">Echoes of Noor</h3>
+                  <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg mb-4">Spoken word & poetry</p>
+                  <div className="text-sm md:text-lg font-bold text-white drop-shadow-lg">Prize Pool: ₹17,000</div>
                 </div>
               </div>
 
               {/* VerseVaad */}
-              <div className="relative group h-[180px] md:h-[280px] rounded-xl md:rounded-2xl overflow-hidden">
+              <div className="relative group h-[240px] md:h-[600px] rounded-xl md:rounded-2xl overflow-hidden">
                 <div className="absolute inset-0">
                   <img 
                     src="/images/about-section/Versevaad.webp" 
@@ -477,9 +480,119 @@ const AboutPage = () => {
                   <div className="absolute inset-0 bg-gradient-to-br from-black-700/90 to-cyan-600/80"></div>
                 </div>
                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center p-6">
-                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold mb-3">⭐ FLAGSHIP</div>
-                  <h3 className="text-base md:text-2xl font-bold text-white mb-2">VerseVaad</h3>
-                  <p className="text-xs md:text-sm text-gray-200">Poetic debate battle</p>
+                  <h3 className="text-lg md:text-4xl font-bold text-white mb-2 md:mb-4 drop-shadow-lg">VerseVaad</h3>
+                  <p className="text-xs md:text-xl text-gray-200 drop-shadow-lg mb-4">Poetic debate battle</p>
+                  <div className="text-sm md:text-lg font-bold text-white drop-shadow-lg">Prize Pool: ₹20,000</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Special Guest Highlight - Navjot Ahuja */}
+        <section className="py-20 px-6 bg-gradient-to-br from-purple-900/30 via-pink-900/20 to-black/30 relative overflow-hidden">
+          {/* Background image */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{ 
+              backgroundImage: 'url(/images/artist/navjotAhuja/navjot1.jpg)'
+            }}
+          />
+          {/* Black overlay with opacity */}
+          <div className="absolute inset-0 bg-black opacity-60" />
+          
+          {/* Background decorative elements */}
+          <div className="absolute inset-0">
+            <div className="absolute top-20 left-20 w-40 h-40 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '5s' }} />
+            <div className="absolute bottom-20 right-20 w-60 h-60 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '7s', animationDelay: '2s' }} />
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '9s', animationDelay: '1s' }} />
+          </div>
+
+          <div className="max-w-7xl mx-auto relative z-10">
+            <div className="text-center mb-16">
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <Star className="w-8 h-8 text-yellow-400 animate-pulse" />
+                <h2 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
+                  This Year's Highlight
+                </h2>
+                <Star className="w-8 h-8 text-yellow-400 animate-pulse" />
+              </div>
+              <div className="w-32 h-1 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full mx-auto animate-pulse" />
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              {/* Left: Artist Images */}
+              <div className="relative">
+                <div className="grid grid-cols-2 gap-4 lg:gap-6">
+                  <div className="relative group transform hover:scale-105 transition-all duration-500">
+                    <img 
+                      src="/images/artist/navjotAhuja/navjot3.jpg" 
+                      alt="Navjot Ahuja - Special Guest Artist"
+                      className="w-full h-64 lg:h-80 object-cover rounded-2xl border-3 border-purple-500/50 shadow-2xl group-hover:border-purple-400"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-purple-900/80 via-transparent to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-purple-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                  <div className="relative group transform hover:scale-105 transition-all duration-500 mt-8">
+                    <img 
+                      src="/images/artist/navjotAhuja/navjot4.jpg" 
+                      alt="Navjot Ahuja Performance"
+                      className="w-full h-64 lg:h-80 object-cover rounded-2xl border-3 border-pink-500/50 shadow-2xl group-hover:border-pink-400"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-pink-900/80 via-transparent to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-pink-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                </div>
+                
+                {/* Floating animation elements */}
+                <div className="absolute -top-4 -right-4 w-8 h-8 bg-yellow-400 rounded-full animate-bounce opacity-60" style={{ animationDelay: '0s' }} />
+                <div className="absolute top-1/2 -left-4 w-6 h-6 bg-purple-400 rounded-full animate-bounce opacity-60" style={{ animationDelay: '1s' }} />
+                <div className="absolute -bottom-4 left-1/2 w-10 h-10 bg-pink-400 rounded-full animate-bounce opacity-60" style={{ animationDelay: '2s' }} />
+              </div>
+              
+              {/* Right: Content */}
+              <div className="space-y-8 bg-black/40 backdrop-blur-sm p-8 rounded-2xl border border-white/10 relative z-10">
+                <div className="text-center lg:text-left">
+                  <h3 className="text-5xl lg:text-6xl font-black text-white mb-4" style={{ fontFamily: "'Quivert', sans-serif" }}>
+                    NAVJOT AHUJA
+                  </h3>
+                  <p className="text-2xl text-yellow-400 font-bold tracking-wider mb-4">LIVE IN CONCERT</p>
+                  <p className="text-lg text-purple-400 font-semibold mb-6">Day 3 - October 12, 2025</p>
+                </div>
+                
+                <div className="space-y-6">
+                  <p className="text-xl text-gray-300 leading-relaxed">
+                    This year, Sabrang brings you something <span className="text-purple-400 font-bold">extraordinary</span> – a live performance by <span className="text-yellow-400 font-bold">Navjot Ahuja</span>, whose music has touched thousands of hearts across the nation.
+                  </p>
+                  
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-sm">
+                    <p className="text-gray-300 text-lg leading-relaxed italic">
+                      "Experience an evening of soulful melodies, electrifying energy, and unforgettable musical moments that will resonate in your heart long after the last note fades."
+                    </p>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-4 text-center">
+                      <div className="text-2xl font-bold text-purple-400 mb-1">LIVE</div>
+                      <div className="text-sm text-purple-300">Performance</div>
+                    </div>
+                    <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 text-center">
+                      <div className="text-2xl font-bold text-yellow-400 mb-1">DAY 3</div>
+                      <div className="text-sm text-yellow-300">Grand Finale</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="text-center lg:text-left pt-4">
+                  <p className="text-cyan-400 font-bold text-lg mb-4 animate-pulse">
+                    ✨ Join us for this spectacular musical journey! ✨
+                  </p>
+                  <button 
+                    onClick={() => navigate('/checkout')}
+                    className="px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold rounded-full transform hover:scale-110 transition-all duration-300 shadow-2xl hover:shadow-yellow-500/25 border border-yellow-400/50"
+                  >
+                    Don't Miss Out - Register Now!
+                  </button>
                 </div>
               </div>
             </div>
@@ -564,7 +677,7 @@ const AboutPage = () => {
                 </h2>
                 <p className="text-xl text-gray-300 leading-relaxed">
                   Imagine vibrant lights, roaring crowds, breathtaking performances, and an energy 
-                  that doesn't fade until the last beat drops. That's Sabrang more than a fest, 
+                  that doesn't fade until the last beat drops. That is Sabrang more than a fest, 
                   it's an experience you'll remember for years.
                 </p>
                 <div className="flex items-center space-x-4 pt-4">

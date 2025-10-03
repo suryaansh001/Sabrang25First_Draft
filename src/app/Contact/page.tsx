@@ -6,6 +6,7 @@ import Footer from '../../../components/Footer';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '../../../components/NavigationContext';
 import { Home, Info, Calendar, Star, Users, HelpCircle, Handshake, Mail as MailIcon, X, Phone, MessageCircle, Send, AlertCircle } from 'lucide-react';
+import { FaDiscord } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 
@@ -110,10 +111,10 @@ const Contact = () => {
     { title: 'Events', href: '/Events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
     { title: 'Schedule', href: '/schedule', icon: <Calendar className="w-5 h-5" /> },
-    { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
+    { title: 'Our Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
     { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
     { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
-    { title: 'Contact', href: '/Contact', icon: <MailIcon className="w-5 h-5" /> },
+    { title: 'Contact Us', href: '/Contact', icon: <MailIcon className="w-5 h-5" /> },
   ];
 
   return (
@@ -226,7 +227,7 @@ const Contact = () => {
                   
                   <div className="bg-black/30 p-6 rounded-lg border-l-4 border-blue-400">
                     <h3 className="text-lg font-semibold mb-1">Ayushi Kabra</h3>
-                    <p className="text-blue-300 text-sm mb-4">RegistrationS Core</p>
+                    <p className="text-blue-300 text-sm mb-4">Registration Core</p>
                     <div className="space-y-2">
                       <div className="flex items-center gap-3 text-sm">
                         <MailIcon className="w-4 h-4 text-blue-400" />
@@ -244,13 +245,13 @@ const Contact = () => {
                   </div>
 
                   <div className="bg-black/30 p-6 rounded-lg border-l-4 border-purple-400">
-                    <h3 className="text-lg font-semibold mb-1">Jayash Gehlot</h3>
-                    <p className="text-purple-300 text-sm mb-4">Registrations Core</p>
+                    <h3 className="text-lg font-semibold mb-1">Jayash Gahlot</h3>
+                    <p className="text-purple-300 text-sm mb-4">Registration Core</p>
                     <div className="space-y-2">
                       <div className="flex items-center gap-3 text-sm">
                         <MailIcon className="w-4 h-4 text-purple-400" />
-                        <a href="mailto:jayashgehlot@jklu.edu.in" className="text-gray-300 hover:text-white">
-                          jayashgehlot@jklu.edu.in
+                        <a href="mailto:jayashgahlot@jklu.edu.in" className="text-gray-300 hover:text-white">
+                          jayashgahlot@jklu.edu.in
                         </a>
                       </div>
                       <div className="flex items-center gap-3 text-sm">
@@ -470,7 +471,18 @@ const Contact = () => {
         </div>
       </div>
 
-      <Footer />
+		{/* Discord Floating Button */}
+		<a
+			href="https://discord.gg/wSG8bUEJCA"
+			target="_blank"
+			rel="noopener noreferrer"
+			aria-label="Join our Discord"
+			className="group fixed bottom-4 sm:bottom-6 left-4 sm:left-6 z-50 w-10 h-10 sm:w-12 sm:h-12 rounded-xl rotate-45 flex items-center justify-center shadow-[0_8px_30px_rgba(0,0,0,0.6)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.7)] transition-all duration-300 hover:scale-110 bg-gradient-to-br from-purple-900/70 via-black/60 to-indigo-900/60 border border-white/15 backdrop-blur-sm hover:from-purple-700/70 hover:to-indigo-800/70"
+		>
+			<FaDiscord className="-rotate-45 w-5 h-5 sm:w-6 sm:h-6 text-white drop-shadow-[0_0_10px_rgba(168,85,247,0.55)] group-hover:drop-shadow-[0_0_14px_rgba(167,139,250,0.7)] transition-colors" />
+		</a>
+
+		<Footer />
     </div>
   );
 };

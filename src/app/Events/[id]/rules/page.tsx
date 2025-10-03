@@ -3,9 +3,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { AlertCircle, ArrowLeft, Gavel, ListChecks, Shield, Star } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Gavel, ListChecks, Shield, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { events, Event, Criterion } from './events.data';
-import EventCard from '../../EventCard';
+
 
 const defaultRules: string[] = [
 	'Carry a valid college ID and entry pass.',
@@ -31,6 +31,21 @@ export default function EventRulesPage() {
 
 	const event = useMemo<Event | undefined>(() => events.find(e => e.id === eventId), [eventId]);
 
+  // Index and navigation helpers
+  const currentIndex = useMemo(() => events.findIndex(e => e.id === eventId), [eventId]);
+  const hasPrevious = currentIndex > 0;
+  const hasNext = currentIndex >= 0 && currentIndex < events.length - 1;
+  const previousEvent = hasPrevious ? events[currentIndex - 1] : undefined;
+  const nextEvent = hasNext ? events[currentIndex + 1] : undefined;
+
+  const navigateToEvent = (targetId: number) => {
+    try { router.prefetch(`/Events/${targetId}/rules`); } catch {}
+    router.push(`/Events/${targetId}/rules`);
+  };
+
+  const handlePrev = () => { if (previousEvent) navigateToEvent(previousEvent.id); };
+  const handleNext = () => { if (nextEvent) navigateToEvent(nextEvent.id); };
+
 	const { scrollY } = useScroll();
 	const heroBgY = useTransform(scrollY, [0, 500], ["0%", "30%"]);
 	const heroBgScale = useTransform(scrollY, [0, 500], [1, 1.2]);
@@ -42,6 +57,31 @@ export default function EventRulesPage() {
 	const criteria = useMemo<Criterion[]>(() => {
 		return event?.criteria && event.criteria.length > 0 ? event.criteria : defaultCriteria;
 	}, [event]);
+
+  // Prefetch neighbours for snappier navigation
+  useEffect(() => {
+    if (previousEvent) {
+      try { router.prefetch(`/Events/${previousEvent.id}/rules`); } catch {}
+    }
+    if (nextEvent) {
+      try { router.prefetch(`/Events/${nextEvent.id}/rules`); } catch {}
+    }
+  }, [previousEvent, nextEvent, router]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft' && hasPrevious) {
+        e.preventDefault();
+        handlePrev();
+      } else if (e.key === 'ArrowRight' && hasNext) {
+        e.preventDefault();
+        handleNext();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [hasPrevious, hasNext, previousEvent, nextEvent]);
 
 	const accents = (() => {
 		switch (event?.category) {
@@ -116,6 +156,25 @@ export default function EventRulesPage() {
 
 	return (
 		<div className="min-h-screen bg-neutral-900 text-white relative isolate">
+			{/* Navigation Arrows */}
+			{hasPrevious && (
+				<button
+					aria-label="Previous event"
+					onClick={handlePrev}
+					className="fixed left-[150px] top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center"
+				>
+					<ChevronLeft className="w-6 h-6" />
+				</button>
+			)}
+			{hasNext && (
+				<button
+					aria-label="Next event"
+					onClick={handleNext}
+					className="fixed right-4 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center"
+				>
+					<ChevronRight className="w-6 h-6" />
+				</button>
+			)}
 			{/* Aurora Glow Background */}
 			<div className="absolute inset-x-0 top-1/2 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
 				<div 
@@ -160,16 +219,27 @@ export default function EventRulesPage() {
 				/>
 				<div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-neutral-900" />
 
-				<div className="relative z-10 max-w-6xl mx-auto px-6">
-					<div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
-						{/* Left: Event Card */}
+				<div className="relative z-10 max-w-6xl mx-auto px-10 mr-120	">
+					<div className="grid md:grid-cols-2 gap-6 md:gap-16 items-center">
+						{/* Left: Event Poster */}
 						<motion.div
-							className="flex justify-center md:justify-end"
+							className="flex justify-start md:justify-end"
 							initial={{ opacity: 0, x: -50 }}
 							animate={{ opacity: 1, x: 0 }}
 							transition={{ duration: 0.7, ease: 'easeOut' }}
 						>
-							<EventCard event={event} />
+							<div className="relative w-[300px] aspect-[3/4] rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+								<img
+									src={event.image}
+									alt={`${event.title} Poster`}
+									className="w-full h-full object-cover"
+									draggable={false}
+									onError={(e) => {
+										const target = e.target as HTMLImageElement;
+										target.src = '/images/Logo@2x.png'; // Fallback image
+									}}
+								/>
+							</div>
 						</motion.div>
 
 						{/* Right: Event Details */}
@@ -186,9 +256,17 @@ export default function EventRulesPage() {
 							<h1 className="text-4xl md:text-6xl font-black tracking-tighter leading-none">
 								<span className={`bg-gradient-to-r ${accents.headingGradient} bg-clip-text text-transparent`}>{event.title}</span>
 							</h1>
-							<p className="mt-4 text-lg text-neutral-300 max-w-lg mx-auto md:mx-0">
-								{event.description || 'Everything you need to know to participate successfully. Read carefully and compete with confidence.'}
-							</p>
+						<p className="mt-4 text-lg text-neutral-300 max-w-lg mx-auto md:mx-0">
+							{event.description || 'Everything you need to know to participate successfully. Read carefully and compete with confidence.'}
+						</p>
+						{event.coordinators && event.coordinators.length > 0 && (
+							<div className="mt-3 text-sm text-neutral-300">
+								<span className="font-semibold">Coordinators: </span>
+								{event.coordinators.map((c, i) => (
+									<span key={i} className="mr-3">{c.name}{c.phone ? ` - ${c.phone}` : ''}</span>
+								))}
+							</div>
+						)}
 						</motion.div>
 					</div>
 				</div>

@@ -16,30 +16,33 @@ interface Event {
   time: string;
   shares: string;
   image: string;
+  modalImage?: string; // This new property will hold the unique image for the detail modal
   description: string;
   venue: string;
   price: string;
-  capacity: string;
   genre: string;
   category: string;
   details: string;
   isFlagship: boolean;
   rules?: string[];
+  coordinators?: { name: string; phone?: string }[];
 }
+
+// ... (rest of the file remains the same)
 
 const events: Event[] = [
   // 1. Rampwalk – Panache – Theme Based
   {
     id: 1,
     title: "RAMPWALK - PANACHE",
-    date: "25.12.2024",
-    time: "19:00",
+    date: "10.10.2025",
+    time: "18:00",
     shares: "567 Shares",
-    image: "/images/about-section/Panache.png",
-    description: "The grandest runway event of Sabrang, Panache is where elegance, charisma, and confidence collide. Teams will display original collections or concepts with full choreography, soundtrack, and fashion narratives. Expectations - Glamour, high-stakes competition, and crowd pulling visuals.",
-    venue: "Main Auditorium",
+    image: "/posters/PANACHE.webp",
+    modalImage: "/images/gallery/image1.webp", // Example: Assign a unique image
+    description: "Panache is the ultimate ramp walk competition! It's not just about your outfit, but the confidence, energy, and attitude you bring. This is your dazzling platform to show off your charisma and unique sense of style. With stunning lights and great music, this event celebrates individuality and glamour. Step onto the runway, own your presence, and let the world see your incredible style shine!",
+    venue: "Main Stage",
     price: "₹85-120",
-    capacity: "3,000 people",
     genre: "Fashion Show",
     category: "Flagship",
     details: "A single-day fashion spectacle focusing on thematic costume interpretation and runway impact. Judging criteria include costume design, thematic relevance, stage presence, and overall narrative.",
@@ -49,14 +52,14 @@ const events: Event[] = [
   {
     id: 2,
     title: "BANDJAM",
-    date: "27.12.2024",
-    time: "19:30",
+    date: "11.10.2025",
+    time: "17:00",
     shares: "189 Shares",
-    image: "/images/about-section/Bandjam.png",
-    description: "Get ready to experience the electrifying talent of the Band Jam Competition, where instruments roar to life with powerful melodies. This musical face-off will fill the air with rhythm and energy, leaving the audience moved by the magic of sound.",
-    venue: "Open Air Amphitheater",
+    image: "/posters/BANDJAM.webp",
+    modalImage: "/images/gallery/image2.webp", // Example: Assign a unique image
+    description: "This is the ultimate music showdown for all bands! It's not just about playing your instruments, but showing your energy, creativity, and unique vibe. Get on stage, play your powerful music loud and proud, and feel the excitement from the crowd. Band Jam is where passion takes over, and your music gets to do all the talking. Come own the sound!",
+    venue: "Main Stage",
     price: "₹60",
-    capacity: "5,000 people",
     genre: "Music Festival",
     category: "Flagship",
     details: "Bands are judged on creativity, technical prowess, audience engagement, and stage presence. Bandjam is the sonic pulse of Sabrang.",
@@ -66,14 +69,14 @@ const events: Event[] = [
   {
     id: 3,
     title: "DANCE BATTLE",
-    date: "28.12.2024",
-    time: "18:00",
+    date: "11.10.2025",
+    time: "19:30",
     shares: "156 Shares",
-    image: "/images/about-section/Dance.png",
-    description: "Get ready for an electrifying crew vs. crew dance showdown! In this high-stakes elimination battle, teams of 6-12 members will face off, showcasing their best choreography and freestyle moves. With strict rules on music, props, and conduct, only the most disciplined and creative crew will be crowned champions. It's a test of skill, synchronization, and raw energy.",
-    venue: "Dance Studio",
+    image: "/posters/DANCE_BATTLE.webp",
+    modalImage: "/images/gallery/image3.webp", // Example: Assign a unique image
+    description: "Get your crew together for an epic dance showdown! This isn't a solo act; it's a team effort that mixes hip-hop, Bollywood, and freestyle. You'll need perfect teamwork, sharp moves, and tons of energy to impress the crowd. With great music and bright lights, only the best team will take the win. Is your squad ready to battle?",
+    venue: "Main Stage",
     price: "₹45",
-    capacity: "1,500 people",
     genre: "Dance Competition",
     category: "Flagship",
     details: "Each round challenges rhythm, originality, and intensity. It's not just about dancing – it's about commanding the floor.",
@@ -83,14 +86,14 @@ const events: Event[] = [
   {
     id: 4,
     title: "STEP UP",
-    date: "01.01.2025",
-    time: "18:00",
+    date: "12.10.2025",
+    time: "11:30",
     shares: "145 Shares",
-    image: "/images/home2.png",
-    description: "Step Up is the ultimate solo dance challenge where individual performers take center stage. This is a test of pure skill, creativity, and stage command. With strict rules and a two-round elimination format, only the most versatile and captivating dancer will rise to the top. Are you ready to own the spotlight?",
-    venue: "Dance Studio",
+    image: "/posters/STEPUP.webp",
+    modalImage: "/images/gallery/image4.webp", // Example: Assign a unique image
+    description: "Step Up is the ultimate solo dance competition where your body gets to tell your story! Forget old routines; this is all about your individuality, rhythm, and pure fun. Whether you do lyrical, hip-hop, contemporary, or any other style—every move matters. Bring your fire, your flair, and your authentic self. Own the spotlight, let your soul dance loud, and turn your passion into glory!",
+    venue: "Main Stage",
     price: "₹40",
-    capacity: "1,200 people",
     genre: "Solo Dance",
     category: "Flagship",
     details: "A two-round solo dance elimination where individual performers showcase their skill, creativity, and stage command.",
@@ -100,14 +103,14 @@ const events: Event[] = [
   {
     id: 5,
     title: "ECHOES OF NOOR",
-    date: "02.01.2025",
-    time: "16:00",
+    date: "10.10.2025",
+    time: "11:30",
     shares: "95 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
+    image: "/posters/echoesofnoor.webp", // Updated
+    modalImage: "/images/gallery/image5.webp", // Example: Assign a unique image
     description: "A spoken word and poetry event celebrating the festival's theme, 'Noorwana'. Artists perform original pieces reflecting on light, cosmos, and inner luminescence.",
-    venue: "Literature Hall",
+    venue: "Main Stage",
     price: "Free",
-    capacity: "150 people",
     genre: "Spoken Word",
     category: "Flagship",
     details: "Performances are judged on lyrical content, emotional delivery, and thematic relevance. A platform for the voices of tomorrow.",
@@ -117,14 +120,13 @@ const events: Event[] = [
   {
     id: 7,
     title: "BIDDING BEFORE WICKET",
-    date: "03.01.2025",
-    time: "20:00",
+    date: "11.10.2025",
+    time: "09:00",
     shares: "234 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
-    description: "Welcome to Bidding Before Wicket, the ultimate cricket strategy showdown! This isn't just an auction; it's a high-stakes battle of wits where you build your dream team with a 100 Cr budget. Navigate the auction with special powers like 'Jump Bidding' and the risky 'Budget Boost'. Qualify through a quiz round, then dominate the auction table to assemble a squad with the highest rating. Do you have what it takes to be a champion owner?",
+    image: "/posters/wicket.webp", // Updated
+    description: "Ready for an exciting player auction? It's a game of strategy where every bid is a test of how much you want a player. Think smart, be patient, and make the right choices—one mistake could cost you the game. Who will you bid on? Will you discover a hidden star? Don't miss your shot to be a master bidder!",
     venue: "Business School Auditorium",
     price: "₹25",
-    capacity: "200 people",
     genre: "Cricket Auction",
     category: "Fun & Games",
     details: "Based on IPL stats and records. The goal? Build the most powerful team and outscore opponents in cricket-themed questions.",
@@ -134,14 +136,13 @@ const events: Event[] = [
   {
     id: 8,
     title: "SEAL THE DEAL",
-    date: "04.01.2025",
-    time: "18:00",
+    date: "10.10.2025",
+    time: "11:00",
     shares: "189 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
-    description: "Welcome to Seal the Deal, a premier trading event designed to challenge and sharpen your financial acumen. This competition offers a unique opportunity to experience the intensity and decision-making rigour of trading in a simulated environment. With a substantial dummy capital and a range of trading strategies, participants will need skill, precision, and strategy to emerge victorious.",
-    venue: "Conference Room",
+    image: "/posters/deal.webp", // Updated
+    description: "Want to try the thrill of stock trading without risking any real money? Here's your chance! Our event lets you experience the fast-paced market. We give you virtual money to buy and sell stocks. Use your smart strategies and quick thinking to make the most profit. Test your instincts and prove you're a great trader!",
+    venue: "-",
     price: "₹15",
-    capacity: "150 people",
     genre: "Simulated Trading",
     category: "Fun & Games",
     details: "A solo simulated trading competition. Participants start with a dummy capital of ₹10,00,000 and aim for the highest gains within a 1-hour time limit. Judged on profit, with tie-breakers for trade success.",
@@ -151,14 +152,13 @@ const events: Event[] = [
   {
     id: 9,
     title: "VERSEVAAD",
-    date: "05.01.2025",
-    time: "15:00",
+    date: "10.10.2025",
+    time: "16:00",
     shares: "110 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
-    description: '"Versevaad" is a two-round rap battle event designed to showcase originality, creativity, and improvisational skills. The competition emphasizes clean content, prohibiting any form of vulgarity.',
-    venue: "Literature Hall",
+    image: "/posters/VERSVAAD.webp", // Updated
+    description: "If you love rapping and playing with words, this is your stage! Don't hold back—bring the fire in your words and the rhythm in your voice. Whether you're a pro or just love the flow, what matters is your passion. This competition is about the power of words delivered fast, with raw hip-hop energy. Step up, be bold, and let your lyrical skills hit harder than any beat drop. Make the crowd feel your vibe!",
+    venue: "Main Stage",
     price: "Free",
-    capacity: "100 people",
     genre: "Poetic Debate",
     category: "Flagship",
     details: "Teams are given topics and must construct their arguments in rhyming couplets or free verse. Judged on content, poetic quality, and delivery.",
@@ -168,14 +168,13 @@ const events: Event[] = [
   {
     id: 10,
     title: "IN CONVERSATION WITH",
-    date: "12.01.2025",
-    time: "16:00",
+    date: "10.10.2025",
+    time: "14:00",
     shares: "234 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
+    image: "/posters/convo.webp", // Updated
     description: "Join us for 'In Conversation With,' a curated talk series featuring distinguished guests from the worlds of art, activism, and creation. Listen as they share their personal journeys and behind-the-scenes stories in an intimate setting, followed by an interactive live Q&A session designed to spark ideas and inspire the next generation.",
-    venue: "Main Auditorium",
+    venue: "Tech Lawn",
     price: "Free",
-    capacity: "1,000 people",
     genre: "Talk Series",
     category: "Workshops & Talks",
     details: "Live Q&A sessions. This is where ideas spark and inspire the next generation.",
@@ -185,14 +184,13 @@ const events: Event[] = [
   {
     id: 11,
     title: "CLAY MODELLING",
-    date: "06.01.2025",
-    time: "14:00",
+    date: "12.10.2025",
+    time: "10:00",
     shares: "70 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
-    description: "Unleash your creativity and bring your imagination to life in our hands-on clay modelling event! This is a solo artist's playground, where you'll have the time, space, and materials to translate a concept from your mind into a tangible piece of art.",
-    venue: "Art Studio",
+    image: "/posters/clay.webp", // Updated
+    description: "It's time to get messy, creative, and competitive! Clay Modelling is where you let your imagination run wild. Squish, mold, and craft your best piece in a fun battle filled with laughter and a bit of craziness. You will get muddy! Sign up now, let out your inner artist, and let the clay battle begin!",
+    venue: "Tech Lawn",
     price: "₹40",
-    capacity: "80 people",
     genre: "Sculpture",
     category: "Creative Arts",
     details: "A solo competition where participants are given 2-3 hours to interpret a theme using air-dry clay. Judged on creativity, material handling, and relevance to the theme.",
@@ -202,14 +200,13 @@ const events: Event[] = [
   {
     id: 12,
     title: "FOCUS",
-    date: "09.01.2025",
+    date: "10.10.2025",
     time: "10:00",
     shares: "115 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
-    description: "Bring your vision to life through the lens! FOCUS is a creative photography challenge that pushes you to capture stories, colours, and reflections in their purest form — without heavy edits or digital tricks.",
-    venue: "Campus Wide",
+    image: "/posters/focus.webp", // Updated
+    description: "In Focus, your pictures tell the story. Go on the hunt for that perfect moment! This contest is all about capturing the spirit of the event in three fun groups: Portraits, Creative Shots, and Candids. We'll judge your photos on how they look and the story they tell. Grab your camera, show your creative side, and become the storyteller people will remember!",
+    venue: "Amphitheatre",
     price: "₹50",
-    capacity: "150 people",
     genre: "Photography",
     category: "Creative Arts",
     details: "A two-round photography competition focused on creativity, composition, and minimal editing. Participants will tackle themed challenges within the campus.",
@@ -219,14 +216,13 @@ const events: Event[] = [
   {
     id: 13,
     title: "BGMI TOURNAMENT",
-    date: "07.01.2025",
-    time: "12:00",
+    date: "12.10.2025",
+    time: "11:00",
     shares: "350 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
-    description: "Drop into Sabrang's official BGMI tournament, where strategy and skill collide. Squads of four will battle it out in a multi-day event with a unique scoring system that rewards both aggressive play and survival. With bonus points for kill streaks and chicken dinners, only the most versatile team will claim victory. Register your squad, gear up, and get ready for the ultimate battle royale showdown.",
+    image: "/posters/bgmi.webp", // Updated
+    description: "Get ready for action in the BGMI Tournament! This is more than a game; it's where skill meets strategy. Be brave enough for non-stop action, taking down other squads, and making clutch plays. Team up, show your skills, and aim for the final circle. Play aggressively, survive the chaos, and grab that 'WINNER WINNER CHICKEN DINNER'!",
     venue: "Online / E-Sports Arena",
     price: "₹50/squad",
-    capacity: "256 players",
     genre: "E-Sports",
     category: "Fun & Games",
     details: "A multi-round tournament for squads of four. Points are awarded for placement and kills. The final rounds will be live-streamed.",
@@ -236,14 +232,13 @@ const events: Event[] = [
   {
     id: 14,
     title: "VALORANT TOURNAMENT",
-    date: "08.01.2025",
-    time: "12:00",
+    date: "10.10.2025",
+    time: "11:00",
     shares: "410 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
-    description: "Gear up for Sabrang's official 5v5 Valorant tournament! This high-stakes competition tests your team's strategy, aim, and coordination across a multi-stage format, from group stages to a best-of-five grand final. With strict fair play rules and a professional map veto process, only the most skilled team will emerge as champions.",
+    image: "/posters/valo.webp", // Updated
+    description: "Jump into the Valorant tournament everyone wants to join! Expect intense 5v5 matches, amazing headshots, and agent powers flying everywhere. A single great play can make your team legendary on campus. Will you make a heroic move to win the glory, or watch from the side? Get your squad locked in—spots are vanishing fast!",
     venue: "E-Sports Arena",
     price: "₹100/team",
-    capacity: "160 players",
     genre: "E-Sports",
     category: "Fun & Games",
     details: "A 5v5, single-elimination bracket tournament. Matches are played on standard competitive settings. Defy the limits!",
@@ -253,14 +248,13 @@ const events: Event[] = [
   {
     id: 15,
     title: "FREE FIRE TOURNAMENT",
-    date: "09.01.2025",
-    time: "12:00",
+    date: "11.10.2025",
+    time: "11:00",
     shares: "290 Shares",
-    image: "/images/Logo@2x.png", // Placeholder image
-    description: "Dive into the ultimate mobile battle royale with Sabrang's official Free Fire Tournament. This is a high-stakes competition where only the sharpest squads will survive. With strict rules against teaming and hacking, and a point system that rewards both placement and kills, your path to victory depends on pure skill and strategy. Join the lobby, prove your worth, and fight for the Booyah!",
+    image: "/posters/freefire.webp", // Updated
+    description: "The Free Fire Tournament is a thrilling eSports event that's all about strategy and teamwork. It feels like a life-or-death battle where one smart move can change everything. You'll need sharp aim and fast reflexes to revive your friends, take down enemies, and stay inside the safe zones. Survive the map, fight for your team, and grab the ultimate Booyah!",
     venue: "Online / E-Sports Arena",
     price: "₹40/squad",
-    capacity: "192 players",
     genre: "E-Sports",
     category: "Fun & Games",
     details: "Squad-based battle royale. The tournament will consist of multiple qualifying rounds leading to a grand final.",
@@ -270,14 +264,13 @@ const events: Event[] = [
   {
     id: 17,
     title: "DUMB SHOW",
-    date: "02.01.2025",
-    time: "19:00",
+    date: "12.10.2025",
+    time: "11:00",
     shares: "67 Shares",
-    image: "/images/Schedule.jpg",
-    description: "Get ready for a fun and challenging game of silent acting! Dumb Show brings teams together to act out movie names, phrases, or themes without speaking, relying on gestures and body language to communicate. Test your creativity and teamwork as participants race against the clock to guess the correct answer, making for an exciting and laughter-filled experience for everyone involved.",
-    venue: "Theater Hall",
+    image: "/posters/dumb.webp", // Updated
+    description: "Prepare for a hilarious game of mismatched movements! Dumb Show is like Charades but with a funny, chaotic twist. Your team will mime movie titles, phrases, or songs for your teammates to guess while the clock is ticking. The time limit makes it wild and fun, testing your acting skills and how well you can read your teammates' minds!",
+    venue: "Amphitheatre",
     price: "Free",
-    capacity: "300 people",
     genre: "Mime Acting",
     category: "Fun & Games",
     details: "It's fast, funny, and tests how well you know your teammates – and your acting chops.",
@@ -287,14 +280,13 @@ const events: Event[] = [
   {
     id: 18,
     title: "COURTROOM",
-    date: "11.01.2025",
-    time: "14:00",
+    date: "11.10.2025",
+    time: "13:00",
     shares: "50 Shares",
-    image: "/images/Logo@2x.png",
+    image: "/posters/courtroom.webp", // Updated
     description: "Step into the shoes of detectives and unravel a thrilling murder mystery! With twists, turns, and surprising revelations, this event promises to test your problem-solving skills, creativity, and intuition.",
-    venue: "Moot Court Hall",
+    venue: "Amphitheatre",
     price: "₹30",
-    capacity: "100 people",
     genre: "Mock Trial",
     category: "Special Events",
     details: "Teams will be given a case brief and must prepare arguments for prosecution and defense. Judged on legal reasoning, presentation, and courtroom etiquette.",
@@ -304,28 +296,25 @@ const events: Event[] = [
   {
     id: 19,
     title: "ART RELAY",
-    date: "11.01.2025",
-    time: "11:00",
+    date: "12.10.2025",
+    time: "14:00",
     shares: "60 Shares",
-    image: "/images/Logo@2x.png",
+    image: "/posters/art.webp", // Updated
     description: "The Art Relay is a unique event that tests an artist's flexibility and innovative thinking. Participants are tasked with creating a single artwork that evolves through multiple phases based on a series of revealed prompts.",
-    venue: "Art Studio",
+    venue: "Tech Lawn",
     price: "₹20",
-    capacity: "40 people",
     genre: "Solo Art",
     category: "Creative Arts",
     details: "A solo art challenge where participants create an evolving artwork on a single canvas based on a series of prompts revealed every 10 minutes. Judged on creativity, cohesiveness, and relevance to prompts.",
     isFlagship: false
   }
 ];
-
 const categories = [
   { name: "All", value: "all" },
-  { name: "Cultural", value: "Flagship" },
-  { name: "Fun & Games", value: "Fun & Games" },
-  { name: "Creative Arts", value: "Creative Arts" },
-  { name: "Workshops & Talks", value: "Workshops & Talks" },
-  { name: "Special Events", value: "Special Events" }
+  { name: "Flagship", value: "Flagship" },
+  { name: "Non-Flagship", value: "Non-Flagship" },
+  { name: "E-Sports", value: "E-Sports" },
+  { name: "Others", value: "Others" }
 ];
 
 export default function EventsPage() {
@@ -373,6 +362,15 @@ export default function EventsPage() {
     };
   }, [selectedEvent, mobileMenuOpen, scrollPosition]);
 
+  // Prefetch rules page for the selected event to speed up navigation
+  useEffect(() => {
+    if (selectedEvent) {
+      try {
+        router.prefetch(`/Events/${selectedEvent.id}/rules`);
+      } catch {}
+    }
+  }, [selectedEvent, router]);
+
   const [showScrollTop, setShowScrollTop] = useState(false);
   // ComingSoonOverlay removed – show main content directly
   const [isPageLoaded, setIsPageLoaded] = useState(true);
@@ -390,17 +388,20 @@ export default function EventsPage() {
     { title: 'About', href: '/About', icon: <Info className="w-5 h-5" /> },
     { title: 'Events', href: '/events', icon: <Calendar className="w-5 h-5" /> },
     { title: 'Highlights', href: '/Gallery', icon: <Star className="w-5 h-5" /> },
-    { title: 'Schedule', href: '/schedule/progress', icon: <Clock className="w-5 h-5" /> },
-    { title: 'Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
+    { title: 'Schedule', href: '/schedule', icon: <Clock className="w-5 h-5" /> },
+    { title: 'Our Team', href: '/Team', icon: <Users className="w-5 h-5" /> },
     { title: 'FAQ', href: '/FAQ', icon: <HelpCircle className="w-5 h-5" /> },
     { title: 'Why Sponsor Us', href: '/why-sponsor-us', icon: <Handshake className="w-5 h-5" /> },
-    { title: 'Contact', href: '/Contact', icon: <Mail className="w-5 h-5" /> },
+    { title: 'Contact Us', href: '/Contact', icon: <Mail className="w-5 h-5" /> },
   ];
 
   const handleCardClick = (event: Event) => {
     // Save current scroll position and event ID before opening modal
     setScrollPosition(window.scrollY);
     setClickedEventId(event.id);
+    try {
+      router.prefetch(`/Events/${event.id}/rules`);
+    } catch {}
     setSelectedEvent(event);
   };
 
@@ -513,10 +514,24 @@ export default function EventsPage() {
 
   // Filter events based on category and flagship toggle
   const filteredEvents = events.filter(event => {
-    const categoryMatch = selectedCategory === "all" || event.category === selectedCategory;
+    // Apply global flagship-only constraint first
     const flagshipMatch = !showFlagshipOnly || event.isFlagship;
-    return categoryMatch && flagshipMatch;
+
+    if (!flagshipMatch) return false;
+
+    if (selectedCategory === "all") return true;
+    if (selectedCategory === "Flagship") return event.isFlagship;
+    if (selectedCategory === "Non-Flagship") return !event.isFlagship;
+    if (selectedCategory === "E-Sports") return event.genre === "E-Sports";
+    if (selectedCategory === "Others") return !event.isFlagship && event.genre !== "E-Sports";
+    
+    // Fallback to original category matching
+    const categoryMatch = event.category === selectedCategory;
+    return categoryMatch;
   });
+
+  // IDs of events to show with the poster style (no overlay)
+  const posterEventIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
 
   // Calculate navigation state
   const currentEventIndex = selectedEvent ? filteredEvents.findIndex(event => event.id === selectedEvent.id) : -1;
@@ -578,6 +593,10 @@ export default function EventsPage() {
     return eventData?.prizePool;
   };
 
+  const getEventCoordinators = (eventId: number) => {
+    const eventData = EVENTS_DATA.find(e => e.id === eventId);
+    return eventData?.coordinators;
+  };
 
   // If any event is selected, immediately show the overlay and hide everything else
   if (selectedEvent) {
@@ -620,19 +639,33 @@ export default function EventsPage() {
             <div className="absolute top-4 left-4 z-[10001] px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-sm">
               {currentEventIndex + 1} / {filteredEvents.length}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2">
-              <div className="relative aspect-[4/3] md:aspect-auto md:h-full bg-black/40">
+            <div className="flex flex-col md:grid md:grid-cols-2 h-[85vh] max-h-[90vh]">
+              <div className="relative h-48 sm:h-64 md:h-full aspect-[16/9] md:aspect-auto bg-neutral-900 overflow-hidden flex-shrink-0">
                 <img
-                  src={selectedEvent.image}
-                  alt={selectedEvent.title}
+                  src={selectedEvent.modalImage || selectedEvent.image || '/images/backgrounds/eventpage.webp'}
+                  alt={`A unique visual for ${selectedEvent.title}`}
                   className="absolute inset-0 w-full h-full object-cover"
                   draggable={false}
+                  onError={(e) => {
+                    // Fallback to a default image if the specified one fails to load
+                    const target = e.target as HTMLImageElement;
+                    target.src = selectedEvent.image || '/images/backgrounds/eventpage.webp';
+                  }}
                 />
-                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/70 to-transparent" />
+                <div className="absolute inset-0 bg-black/40" />
+                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #FFF 1px, transparent 0)', backgroundSize: '25px 25px' }} />
               </div>
-              <div className="p-6 md:p-8 text-white space-y-5 md:space-y-6 overflow-y-auto max-h-[70vh] md:max-h-[75vh] md:border-l md:border-white/10">
+              <div className="p-6 text-white space-y-4 overflow-y-auto md:p-8 md:space-y-6 md:border-l md:border-white/10 flex-grow">
                 <div>
-                  <h2 className="text-2xl md:text-3xl font-bold mb-2 tracking-tight">{selectedEvent.title}</h2>
+                  <div className="flex items-center justify-between gap-2">
+                    <h2 className="text-2xl md:text-3xl font-bold mb-2 tracking-tight">{selectedEvent.title}</h2>
+                    <button
+                      onClick={() => router.push(`/Events/${selectedEvent.id}/rules`)}
+                      className="md:hidden inline-flex items-center gap-2 px-4 py-2 rounded-md border-2 bg-gradient-to-b from-white/15 to-white/5 text-white text-sm hover:from-white/20 hover:to-white/10 border-white/30 transition shadow-[inset_0_1px_0_rgba(255,255,255,0.25),_0_2px_0_rgba(255,255,255,0.12),_0_4px_10px_rgba(0,0,0,0.35)] active:translate-y-[1px]"
+                    >
+                      <Info className="w-4 h-4" /> Rules
+                    </button>
+                  </div>
                   <div className="flex flex-wrap items-center gap-3 text-sm text-gray-300">
                     <span className="inline-flex items-center gap-1"><Calendar className="w-4 h-4" />{getEventCatalogData(selectedEvent.id)?.date || selectedEvent.date}</span>
                     <span className="inline-flex items-center gap-1">
@@ -641,7 +674,6 @@ export default function EventsPage() {
                       {getEventCatalogData(selectedEvent.id)?.endTime12hr && ` - ${getEventCatalogData(selectedEvent.id)?.endTime12hr}`}
                     </span>
                     <span className="inline-flex items-center gap-1"><MapPin className="w-4 h-4" />{selectedEvent.venue}</span>
-                    <span className="inline-flex items-center gap-1"><Users className="w-4 h-4" />{selectedEvent.capacity}</span>
                   </div>
                 </div>
                 <p className="text-gray-200 leading-relaxed">{selectedEvent.description}</p>
@@ -649,6 +681,17 @@ export default function EventsPage() {
                   <h3 className="font-semibold text-lg mb-2">Details</h3>
                   <p className="text-gray-300 whitespace-pre-line">{selectedEvent.details}</p>
                 </div>
+                {/* Coordinators in modal */}
+                {getEventCoordinators(selectedEvent.id)?.length ? (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">Coordinators</h3>
+                    <ul className="text-sm text-gray-300 space-y-1">
+                      {getEventCoordinators(selectedEvent.id)!.map((c, i) => (
+                        <li key={i}>{c.name}{c.phone ? ` - ${c.phone}` : ''}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
                 {showRules && (
                   <div>
                     <h3 className="font-semibold text-lg mb-2">Rules</h3>
@@ -676,10 +719,14 @@ export default function EventsPage() {
                   )}
                 </div>
                 <div className="flex flex-wrap gap-3 pt-2">
+<<<<<<< HEAD
                   <button onClick={() => router.push(`/events/${selectedEvent.id}/rules`)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border bg-white/10 text-white hover:bg-white/15 border-white/20 transition">
+=======
+                  <button onClick={() => router.push(`/Events/${selectedEvent.id}/rules`)} className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-md border-2 bg-gradient-to-b from-white/15 to-white/5 text-white hover:from-white/20 hover:to-white/10 border-white/30 transition shadow-[inset_0_1px_0_rgba(255,255,255,0.25),_0_2px_0_rgba(255,255,255,0.12),_0_4px_10px_rgba(0,0,0,0.35)]">
+>>>>>>> 8eb10235cf0f8efc636a21abd3e789b2341fb81f
                     <Info className="w-4 h-4" /> Rules
                   </button>
-                  <button onClick={() => router.push(`/coming-soon`)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition shadow-lg">
+                  <button onClick={() => router.push(`/checkout`)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition shadow-lg">
                     Checkout
                   </button>
                   <button onClick={handleShare} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 transition">
@@ -782,7 +829,7 @@ export default function EventsPage() {
           >
             <button
               onClick={() => {
-                router.push('/coming-soon');
+                router.push('/checkout');
               }}
               className="relative px-4 py-2 rounded-2xl bg-black/60 backdrop-blur-md border border-white/20 text-white hover:bg-white/10 transition cursor-pointer"
             >
@@ -810,7 +857,12 @@ export default function EventsPage() {
                       initial={{ opacity: 0, x: -50 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.8, delay: 0.2 }}
-                      className="text-6xl md:text-8xl font-bold text-white mb-4"
+                      className="text-6xl md:text-8xl font-black text-white mb-4 tracking-wider"
+                      style={{ 
+                        fontFamily: 'system-ui, -apple-system, sans-serif',
+                        textShadow: '0 0 20px rgba(255, 255, 255, 0.3), 0 0 40px rgba(255, 255, 255, 0.1)',
+                        letterSpacing: '0.1em'
+                      }}
                     >
                       SABRANG 2025
                     </motion.h1>
@@ -836,6 +888,18 @@ export default function EventsPage() {
                       className="text-gray-300 text-lg max-w-md mx-auto"
                     >Dive into the vibrant spirit of JKLU’s Cultural Fest – a celebration of art, music, dance, and creativity.</motion.p>
                   </div>
+
+                  {/* Featured Artist - Day 3 Special Lineup - Commented out for now */}
+                  {/* 
+                  <motion.div 
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.8 }}
+                    className="mb-12 lg:mb-16 relative overflow-hidden"
+                  >
+                    ... Artist section content ...
+                  </motion.div>
+                  */}
 
                   {/* Category Filters */}
                   <motion.div 
@@ -870,72 +934,41 @@ export default function EventsPage() {
                   </motion.div>
 
                   {/* Events Grid - card with image and bottom info */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
-                    {filteredEvents.map((event, index) => (
-                      <motion.div
-                        key={event.id}
-                        data-event-id={event.id}
-                        initial={{ opacity: 0, y: 24 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.35, delay: index * 0.04 }}
-                        className="relative rounded-lg overflow-hidden border border-white/10 group cursor-pointer shadow-lg"
-                        onClick={() => handleCardClick(event)}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(event); } }}
-                        tabIndex={0}
-                      >
-                        {/* Image container */}
-                        <div className="relative w-full aspect-[2/3] bg-black/20">
-                          <img
-                            loading="lazy"
-                            decoding="async"
-                            sizes="(min-width:1024px) 25vw, (min-width:768px) 33vw, 50vw"
-                            fetchPriority="low"
-                            draggable={false}
-                            src={event.image}
-                            alt={event.title}
-                            className="absolute inset-0 w-full h-full object-cover opacity-0"
-                            onError={(e) => {
-                              console.error(`Failed to load image: ${event.image}`);
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                              const fallback = document.getElementById(`fallback-${event.id}`);
-                              if (fallback) fallback.style.display = 'block';
-                            }}
-                          />
-                          <div
-                            className={`absolute inset-0 ${event.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`}
-                            style={{ display: 'none' }}
-                            id={`fallback-${event.id}`}
-                          />
-                        </div>
-
-                        {/* --- MYSTERIOUS & SUSPENSEFUL OVERLAY --- */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-slate-800 overflow-hidden p-2 md:p-4 flex flex-col justify-between">
-                          
-                          {/* Mysterious grid pattern */}
-                          <div className="absolute inset-0 opacity-5" style={{
-                            backgroundImage: 'radial-gradient(circle at 1px 1px, #00ff88 1px, transparent 0)',
-                            backgroundSize: '20px 20px',
-                          }} />
-
-                          {/* Glitch effect lines */}
-                          <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-pulse opacity-30" />
-                          <div className="absolute bottom-0 right-0 w-full h-0.5 bg-gradient-to-l from-transparent via-red-400 to-transparent animate-pulse opacity-30 delay-1000" />
-
-                          {/* Top section - Mysterious badge */}
-                          <div className="relative z-10 flex justify-between items-start">
-                            <div className="px-2 md:px-3 py-0.5 md:py-1 bg-black/50 border border-green-400/50 rounded-sm backdrop-blur-sm">
-                              <span className="text-[10px] md:text-xs font-bold text-green-400 uppercase tracking-widest" style={{ fontFamily: 'monospace' }}>
-                                {event.isFlagship ? '⚡ FLAGSHIP' : event.category}
-                              </span>
-                            </div>
-                            {event.isFlagship && (
-                              <div className="w-4 h-4 md:w-6 md:h-6 bg-gradient-to-r from-green-400 to-blue-400 rounded-sm border border-green-400/50 flex items-center justify-center animate-pulse">
-                                <span className="text-[8px] md:text-xs">🔒</span>
-                              </div>
-                            )}
+                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
+                    {filteredEvents.map((event, index) => {
+                      const showPosterStyle = posterEventIds.includes(event.id);
+                      return showPosterStyle ? (
+                        <motion.div
+                          key={event.id}
+                          data-event-id={event.id}
+                          initial={{ opacity: 0, y: 24 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.35, delay: index * 0.04 }}
+                          className="rounded-lg overflow-hidden border border-white/10 group cursor-pointer shadow-lg bg-neutral-900/60 flex flex-col"
+                          onClick={() => handleCardClick(event)}
+                          onMouseEnter={() => { try { router.prefetch(`/Events/${event.id}/rules`); } catch {} }}
+                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(event); } }}
+                          tabIndex={0}
+                        >
+                          {/* Image container */}
+                          <div className="relative w-full aspect-[2/3] overflow-hidden">
+                            <img
+                              loading="lazy"
+                              decoding="async"
+                              sizes="(min-width:1024px) 25vw, (min-width:768px) 33vw, 50vw"
+                              fetchPriority="low"
+                              draggable={false}
+                              src={event.image}
+                              alt={event.title}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = '/images/Logo@2x.png'; // Fallback image
+                              }}
+                            />
                           </div>
 
+<<<<<<< HEAD
                           {/* Center - Event name positioned in middle only */}
                           <div className="absolute inset-0 flex items-center justify-center z-10">
                             <div className="relative text-center">
@@ -974,15 +1007,19 @@ export default function EventsPage() {
                                   {/* Glow effect */}
                                   <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-amber-600/20 rounded-full blur-sm animate-pulse" />
                                 </div>
+=======
+                          {/* Content container */}
+                          <div className="p-3 md:p-4 flex flex-col flex-grow">
+                            <div className="flex flex-col items-start gap-y-1.5 sm:flex-row sm:justify-between sm:items-center mb-2">
+                              <div className={`px-2 py-0.5 rounded-sm text-white text-[10px] font-bold uppercase tracking-widest ${event.isFlagship ? 'bg-yellow-500/20 border border-yellow-400/30 text-yellow-300' : 'bg-black/50 border border-white/20'}`}>
+                                {event.isFlagship ? '⚡ Flagship' : event.category}
+>>>>>>> 8eb10235cf0f8efc636a21abd3e789b2341fb81f
                               </div>
-                            )}
-                            
-                            {/* Price badge (from EVENT_CATALOG if available) */}
-                            <div className="flex justify-center mb-1.5">
-                              <div className="text-white text-[9px] md:text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded-full border border-white/20">
+                              <div className="text-white text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded-full border border-white/20">
                                 {catalogById.get(event.id)?.price || event.price}
                               </div>
                             </div>
+<<<<<<< HEAD
                             
                             {/* Add to cart button */}
                             <div className="px-1 md:px-2 py-1.5 md:py-2 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
@@ -998,24 +1035,119 @@ export default function EventsPage() {
                                 </span>
                               </button>
                             </div>
+=======
+
+                            <h3 className="font-bold text-sm md:text-base text-white uppercase tracking-wider flex-grow mb-3">
+                              {event.title}
+                            </h3>
+                            {/* Tiny coordinator line below title (supports up to two) */}
+                            {(() => {
+                              const coordinators = getEventCoordinators(event.id) || [];
+                              if (!coordinators.length) return null;
+                              const firstTwo = coordinators
+                                .slice(0, 2)
+                                .map(c => `${c.name}${c.phone ? ` - ${c.phone}` : ''}`);
+                              return (
+                                <div className="-mt-2 mb-2 text-[10px] text-white/80">
+                                  {firstTwo.join(' • ')}
+                                </div>
+                              );
+                            })()}
+
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }}
+                              className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs transition-all duration-200 cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/80 border-purple-400/60 text-white shadow-[0_0_12px_rgba(168,85,247,0.45)]' : 'bg-white/10 border-white/30 text-white/90 hover:bg-white/15 backdrop-blur-sm'}`}
+                              aria-pressed={cartIds.includes(event.id)}
+                            >
+                              <ShoppingCart className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                              <span className="uppercase tracking-wider">
+                                {cartIds.includes(event.id) ? 'Added' : 'Add to cart'}
+                              </span>
+                            </button>
+                          </div>
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key={event.id}
+                          data-event-id={event.id}
+                          initial={{ opacity: 0, y: 24 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.35, delay: index * 0.04 }}
+                          className="relative rounded-lg overflow-hidden border border-white/10 group cursor-pointer shadow-lg"
+                          onClick={() => handleCardClick(event)}
+                          onMouseEnter={() => { try { router.prefetch(`/Events/${event.id}/rules`); } catch {} }}
+                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(event); } }}
+                          tabIndex={0}
+                        >
+                          {/* Image container (hidden) */}
+                          <div className="relative w-full aspect-[2/3] bg-black/20">
+                            <img
+                              loading="lazy"
+                              decoding="async"
+                              sizes="(min-width:1024px) 25vw, (min-width:768px) 33vw, 50vw"
+                              fetchPriority="low"
+                              draggable={false}
+                              src={event.image}
+                              alt={event.title}
+                              className="absolute inset-0 w-full h-full object-cover"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                const fallback = document.getElementById(`fallback-${event.id}`);
+                                if (fallback) fallback.style.display = 'block';
+                              }}
+                            />
+                            <div
+                              className={`absolute inset-0 ${event.isFlagship ? 'bg-gradient-to-br from-yellow-600 via-orange-600 to-red-600' : 'bg-gradient-to-br from-blue-600 to-purple-600'}`}
+                              style={{ display: 'none' }}
+                              id={`fallback-${event.id}`}
+                            />
+>>>>>>> 8eb10235cf0f8efc636a21abd3e789b2341fb81f
                           </div>
 
-                          {/* Mysterious border with glitch */}
-                          <div className="absolute inset-0 border border-green-400/30 rounded-lg" />
-                          <div className="absolute inset-0 border border-red-400/20 rounded-lg animate-pulse opacity-50" />
-                          
-                          {/* Mysterious corner elements */}
-                          <div className="absolute top-1 md:top-2 left-1 md:left-2 w-1.5 md:w-2 h-1.5 md:h-2 border-l border-t border-green-400" />
-                          <div className="absolute top-1 md:top-2 right-1 md:right-2 w-1.5 md:w-2 h-1.5 md:h-2 border-r border-t border-red-400" />
-                          <div className="absolute bottom-1 md:bottom-2 left-1 md:left-2 w-1.5 md:w-2 h-1.5 md:h-2 border-l border-b border-red-400" />
-                          <div className="absolute bottom-1 md:bottom-2 right-1 md:right-2 w-1.5 md:w-2 h-1.5 md:h-2 border-r border-b border-green-400" />
-                          
-                          {/* Floating particles */}
-                          <div className="absolute top-1/3 left-1/4 w-0.5 md:w-1 h-0.5 md:h-1 bg-green-400 rounded-full animate-ping delay-500" />
-                          <div className="absolute bottom-1/3 right-1/4 w-0.5 md:w-1 h-0.5 md:h-1 bg-red-400 rounded-full animate-ping delay-1000" />
-                        </div>
-                      </motion.div>
-                    ))}
+                          {/* --- MYSTERIOUS & SUSPENSEFUL OVERLAY --- */}
+                          <div className="absolute inset-0 bg-black/70 overflow-hidden p-2 md:p-4 flex flex-col justify-between">
+                            <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #00ff88 1px, transparent 0)', backgroundSize: '20px 20px' }} />
+                            <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-pulse opacity-30" />
+                            <div className="absolute bottom-0 right-0 w-full h-0.5 bg-gradient-to-l from-transparent via-red-400 to-transparent animate-pulse opacity-30 delay-1000" />
+                            <div className="relative z-10 flex justify-between items-start">
+                              <div className="px-2 md:px-3 py-0.5 md:py-1 bg-black/50 border border-green-400/50 rounded-sm backdrop-blur-sm">
+                                <span className="text-[10px] md:text-xs font-bold text-green-400 uppercase tracking-widest" style={{ fontFamily: 'monospace' }}>
+                                  {event.isFlagship ? '⚡ FLAGSHIP' : event.category}
+                                </span>
+                              </div>
+                              {event.isFlagship && (<div className="w-4 h-4 md:w-6 md:h-6 bg-gradient-to-r from-green-400 to-blue-400 rounded-sm border border-green-400/50 flex items-center justify-center animate-pulse"><span className="text-[8px] md:text-xs">🔒</span></div>)}
+                            </div>
+                            <div className="absolute inset-0 flex items-center justify-center z-10">
+                              <div className="relative text-center">
+                                <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 via-transparent to-red-400/20 animate-pulse opacity-50" />
+                                <h3 className="relative font-bold text-sm md:text-lg lg:text-xl text-white px-1 md:px-2 uppercase tracking-widest leading-tight" style={{ textShadow: '0 0 10px rgba(0, 255, 136, 0.8), 0 0 20px rgba(0, 255, 136, 0.4)', fontFamily: 'monospace', letterSpacing: '0.2em' }}>{event.title}</h3>
+                                <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-pulse" />
+                              </div>
+                            </div>
+                            <div className="relative z-10 flex flex-col justify-end h-full">
+                              {getEventPrizePool(event.id) && (<div className="flex justify-center mb-20"><div className="text-white text-[8px] md:text-xs font-bold"><div className="flex items-center gap-1"><Crown className="w-2 h-2 md:w-3 md:h-3" /><span className="font-extrabold tracking-wide">Prize Pool: {getEventPrizePool(event.id)}</span></div></div></div>)}
+                              <div className="flex justify-center mb-1.5"><div className="text-white text-[9px] md:text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded-full border border-white/20">{catalogById.get(event.id)?.price || event.price}</div></div>
+                              <div className="px-2 md:px-3 py-2 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
+                                <button type="button" onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }} className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs transition-all duration-200 cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/30 border-purple-400/60 text-white shadow-[0_0_12px_rgba(168,85,247,0.45)]' : 'bg-white/10 border-white/30 text-white/90 hover:bg-white/15'}`} aria-pressed={cartIds.includes(event.id)}>
+                                  <span className={`inline-block w-3 h-3 md:w-4 md:h-4 rounded-full ring-1 ${cartIds.includes(event.id) ? 'bg-purple-500 ring-purple-300' : 'bg-transparent ring-white/40'}`}></span>
+                                  <span className="uppercase tracking-wider" style={{ fontFamily: 'monospace' }}>{cartIds.includes(event.id) ? 'Added' : 'Add to cart'}</span>
+                                </button>
+                              </div>
+                            </div>
+                            <div className="absolute inset-0 border border-green-400/30 rounded-lg" />
+                            <div className="absolute inset-0 border border-red-400/20 rounded-lg animate-pulse opacity-50" />
+                            <div className="absolute top-1 md:top-2 left-1 md:left-2 w-1.5 md:w-2 h-1.5 md:h-2 border-l border-t border-green-400" />
+                            <div className="absolute top-1 md:top-2 right-1 md:right-2 w-1.5 md:w-2 h-1.5 md:h-2 border-r border-t border-red-400" />
+                            <div className="absolute bottom-1 md:bottom-2 left-1 md:left-2 w-1.5 md:w-2 h-1.5 md:h-2 border-l border-b border-red-400" />
+                            <div className="absolute bottom-1 md:bottom-2 right-1 md:right-2 w-1.5 md:w-2 h-1.5 md:h-2 border-r border-b border-green-400" />
+                            <div className="absolute top-1/3 left-1/4 w-0.5 md:w-1 h-0.5 md:h-1 bg-green-400 rounded-full animate-ping delay-500" />
+                            <div className="absolute bottom-1/3-right-1/4 w-0.5 md:w-1 h-0.5 md:h-1 bg-red-400 rounded-full animate-ping delay-1000" />
+                          </div>
+                        </motion.div>
+                      );
+                    })}
                   </div>
                 </div>
               </motion.main>
@@ -1037,7 +1169,7 @@ export default function EventsPage() {
           <button
             aria-label="Open cart"
             onClick={() => {
-              router.push('/coming-soon');
+              router.push('/checkout');
             }}
             className={`lg:hidden fixed top-4 right-[100px] z-50 w-12 h-12 rounded-full flex items-center justify-center text-white active:scale-95 transition shadow-xl ${cartIds.length ? 'bg-gradient-to-r from-purple-600 to-pink-600 ring-2 ring-white/20' : 'bg-black/60 backdrop-blur-md border border-white/20 hover:bg-white/10'}`}
           >
