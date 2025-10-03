@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, ChevronLeft, CreditCard, ArrowRight, X, Home, Info, Calendar, Star, Clock, Users, HelpCircle, Handshake, Mail, Camera, Ticket, CheckCircle, XCircle, Loader } from 'lucide-react';
 import createApiUrl from '../../lib/api';
+import { mobileApiRequest, mobilePaymentRequest, isMobileNetwork } from '../../lib/mobileApiRequest';
 import { events as EVENTS_DATA } from '../Events/[id]/rules/events.data';
 import { EventCatalogItem, EVENT_CATALOG as ORIGINAL_EVENT_CATALOG } from '../../lib/eventCatalog';
 import {load} from '@cashfreepayments/cashfree-js';
@@ -284,6 +285,18 @@ function CheckoutPageContent() {
   // Force reduced motion for smooth scrolling experience on this page
   useEffect(() => {
     setReducedMotion(true);
+    
+    // Log mobile network status for debugging
+    if (typeof window !== 'undefined') {
+      const isMobile = isMobileNetwork();
+      console.log(`📱 Mobile network detected: ${isMobile}`);
+      
+      // Add network change listener for mobile debugging
+      const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+      if (connection) {
+        console.log(`📶 Connection type: ${connection.type || 'unknown'}, effective: ${connection.effectiveType || 'unknown'}`);
+      }
+    }
   }, []);
 
   // Preselect events passed via query param selected=1,2,3 or from localStorage cart
@@ -1221,28 +1234,21 @@ function CheckoutPageContent() {
         });
       });
 
-      // Add timeout to registration request to prevent hanging
-      const registrationController = new AbortController();
-      const registrationTimeout = setTimeout(() => {
-        registrationController.abort();
-      }, 30000); // 30 second timeout
-
-      const registrationResponse = await fetch(createApiUrl('/register'), {
+      // Use mobile-optimized registration request
+      console.log('📱 Starting mobile-optimized registration request...');
+      const registrationResponse = await mobileApiRequest('/register', {
         method: 'POST',
         credentials: 'include',
         body: registrationForm,
-        signal: registrationController.signal
       });
-      
-      clearTimeout(registrationTimeout);
 
       if (!registrationResponse.ok) {
         const errText = await registrationResponse.text().catch(() => '');
         const errorMsg = errText || 'Registration failed';
         
-        // Provide user-friendly error messages
+        // Enhanced mobile-specific error messages
         if (errorMsg.includes('network') || errorMsg.includes('fetch') || errorMsg.includes('timeout')) {
-          throw new Error('Network connection issue. Please check your internet and try again.');
+          throw new Error('Mobile network issue detected. Please check your internet connection and try again. If on mobile data, try switching to WiFi.');
         }
         
         throw new Error(errorMsg);
@@ -1258,31 +1264,24 @@ function CheckoutPageContent() {
 
       console.log('🚀 Creating payment order with data:', orderData);
       
-      // Add timeout to payment order request to prevent hanging
-      const paymentController = new AbortController();
-      const paymentTimeout = setTimeout(() => {
-        paymentController.abort();
-      }, 15000); // 15 second timeout for payment order creation
-
-      const response = await fetch(createApiUrl('/api/payments/create-order'), {
+      // Use mobile-optimized payment request with extra retries
+      const response = await mobilePaymentRequest('/api/payments/create-order', {
         method: 'POST',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(orderData),
-        signal: paymentController.signal
       });
-      
-      clearTimeout(paymentTimeout);
 
       if (!response.ok) {
         const errText = await response.text().catch(() => '');
         const errorMsg = errText || 'Failed to create order';
         
-        // Provide user-friendly error messages
+        // Enhanced mobile-specific error messages for payment
         if (errorMsg.includes('network') || errorMsg.includes('fetch') || errorMsg.includes('timeout')) {
-          throw new Error('Network connection issue during payment setup. Please check your internet and try again.');
+          const networkType = isMobileNetwork() ? 'mobile data' : 'current network';
+          throw new Error(`Payment setup failed due to ${networkType} connectivity. Please try switching networks or check your internet connection.`);
         }
         
         throw new Error(errorMsg);
@@ -2970,9 +2969,14 @@ function CheckoutPageContent() {
                                   {paymentInitializationState.error}
                                 </div>
                                 <div className="text-orange-200 text-xs bg-orange-500/10 border border-orange-500/20 rounded p-2">
-                                  💡 <strong>Network Issue?</strong> This is likely a temporary connectivity problem. 
-                                  Please check your internet connection and click the "Pay" button above to retry. 
-                                  If the problem persists, try refreshing the page or switching networks.
+                                  💡 <strong>Mobile Network Issue?</strong> This is likely a temporary connectivity problem. 
+                                  <br />
+                                  <strong>Try these steps:</strong>
+                                  <br />• Check your internet connection
+                                  <br />• Switch between WiFi and mobile data
+                                  <br />• Click "Pay" button above to retry
+                                  <br />• If still failing, try refreshing the page
+                                  <br />• On mobile: ensure you have strong signal strength
                                 </div>
                               </div>
                             )}
