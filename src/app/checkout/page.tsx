@@ -1205,6 +1205,15 @@ function CheckoutPageContent() {
       if (!derivedName) derivedName = 'Participant';
       if (!derivedEmail) throw new Error('Email is required for registration');
 
+      // Validate that events are selected
+      if (!selectedEvents || selectedEvents.length === 0) {
+        console.error('❌ No events selected for registration');
+        throw new Error('Please select at least one event before proceeding to payment');
+      }
+
+      console.log(`✅ Registration validation passed: ${selectedEvents.length} events selected`, 
+        selectedEvents.map(e => e.title || e.id));
+
       // Generate a strong random password since checkout flow does not collect one
       const generatedPassword = Math.random().toString(36).slice(-10) + 'A1!';
 
@@ -1278,10 +1287,37 @@ function CheckoutPageContent() {
         amount: finalPrice.toString(),
         customerName: derivedName,
         customerEmail: derivedEmail,
-        customerPhone: flat['contactNo'] || '9999999999'
+        customerPhone: flat['contactNo'] || '9999999999',
+        // Include complete registration data for backend storage and fallback
+        registrationData: {
+          name: derivedName,
+          email: derivedEmail,
+          contactNo: flat['contactNo'] || '9999999999',
+          gender: flat['gender'] || '',
+          age: flat['age'] || '',
+          universityName: flat['universityName'] || '',
+          address: flat['address'] || '',
+          referralCode: flat['referralCode'] || '',
+          items: selectedEvents.map(e => ({ id: e.id, title: e.title, price: e.price })),
+          visitorPassDays: visitorPassDays,
+          visitorPassDetails: visitorPassDetails,
+          formsBySignature: formDataBySignature,
+          teamMembersBySignature: teamMembersBySignature,
+          flagshipBenefitsByEvent: flagshipBenefitsByEvent,
+          finalPrice: finalPrice,
+          paymentSessionId: '', // Will be filled after payment order creation
+          amount: finalPrice.toString()
+        }
       };
 
-      console.log('🚀 Creating payment order with new API approach:', orderData);
+      console.log('🚀 Creating payment order with new API approach:', {
+        ...orderData,
+        registrationData: {
+          ...orderData.registrationData,
+          itemsCount: orderData.registrationData.items.length,
+          eventsCount: selectedEvents.length
+        }
+      });
 
       // Use the new API utility function
       const orderResult = await createPaymentOrder(orderData);
