@@ -1205,14 +1205,23 @@ function CheckoutPageContent() {
       if (!derivedName) derivedName = 'Participant';
       if (!derivedEmail) throw new Error('Email is required for registration');
 
-      // Validate that events are selected
-      if (!selectedEvents || selectedEvents.length === 0) {
-        console.error('❌ No events selected for registration');
-        throw new Error('Please select at least one event before proceeding to payment');
+      // Validate that either events OR visitor pass is selected
+      const hasEvents = selectedEvents && selectedEvents.length > 0;
+      const hasVisitorPass = visitorPassDays > 0;
+      
+      if (!hasEvents && !hasVisitorPass) {
+        console.error('❌ No events or visitor pass selected');
+        throw new Error('Please select at least one event or visitor pass before proceeding to payment');
       }
 
-      console.log(`✅ Registration validation passed: ${selectedEvents.length} events selected`, 
-        selectedEvents.map(e => e.title || e.id));
+      if (hasEvents) {
+        console.log(`✅ Registration validation passed: ${selectedEvents.length} events selected`, 
+          selectedEvents.map(e => e.title || e.id));
+      }
+      
+      if (hasVisitorPass) {
+        console.log(`✅ Visitor pass selected: ${visitorPassDays} day(s)`);
+      }
 
       // Generate a strong random password since checkout flow does not collect one
       const generatedPassword = Math.random().toString(36).slice(-10) + 'A1!';
@@ -1232,7 +1241,23 @@ function CheckoutPageContent() {
       registrationForm.append('formsBySignature', JSON.stringify(formDataBySignature));
       registrationForm.append('teamMembersBySignature', JSON.stringify(teamMembersBySignature));
       registrationForm.append('flagshipBenefitsByEvent', JSON.stringify(flagshipBenefitsByEvent));
-      registrationForm.append('items', JSON.stringify(selectedEvents.map(e => ({ id: e.id, title: e.title, price: e.price }))));
+      
+      // Build items array including events and visitor pass
+      const allItems = [
+        ...selectedEvents.map(e => ({ 
+          id: e.id, 
+          title: e.title, 
+          price: parsePrice(e.price) // Parse price to number
+        })),
+        // Add visitor pass as an item if selected
+        ...(visitorPassDays > 0 ? [{
+          id: 'VISITOR_PASS',
+          title: `Visitor Pass (${visitorPassDays} day${visitorPassDays > 1 ? 's' : ''})`,
+          price: visitorPassDays * 69 // ₹69 per day
+        }] : [])
+      ];
+      
+      registrationForm.append('items', JSON.stringify(allItems));
       registrationForm.append('visitorPassDays', visitorPassDays.toString());
       registrationForm.append('visitorPassDetails', JSON.stringify(visitorPassDetails));
       if (attachedImage) {
@@ -1298,7 +1323,20 @@ function CheckoutPageContent() {
           universityName: flat['universityName'] || '',
           address: flat['address'] || '',
           referralCode: flat['referralCode'] || '',
-          items: selectedEvents.map(e => ({ id: e.id, title: e.title, price: e.price })),
+          // Include both events and visitor pass in items
+          items: [
+            ...selectedEvents.map(e => ({ 
+              id: e.id, 
+              title: e.title, 
+              price: parsePrice(e.price) // Parse price to number (removes ₹ symbol)
+            })),
+            // Add visitor pass as an item if selected
+            ...(visitorPassDays > 0 ? [{
+              id: 'VISITOR_PASS',
+              title: `Visitor Pass (${visitorPassDays} day${visitorPassDays > 1 ? 's' : ''})`,
+              price: visitorPassDays * 69
+            }] : [])
+          ],
           visitorPassDays: visitorPassDays,
           visitorPassDetails: visitorPassDetails,
           formsBySignature: formDataBySignature,
