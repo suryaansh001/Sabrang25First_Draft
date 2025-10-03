@@ -45,6 +45,52 @@ function PaymentSuccessContent() {
     // Check payment status and process payment completion
     const checkPaymentStatus = async () => {
       try {
+        // FALLBACK SYNC: Check if we have pending registration data from fallback flow
+        const pendingDataStr = localStorage.getItem('pending_registration');
+        if (pendingDataStr) {
+          try {
+            const pendingData = JSON.parse(pendingDataStr);
+            
+            // Check if this order matches the pending registration
+            if (pendingData.orderId === orderId) {
+              console.log('🔄 [FALLBACK] Found pending registration data, syncing with backend...');
+              
+              // Call backend to save purchase data
+              const savePurchaseResponse = await fetch(createApiUrl('/api/payments/save-purchase'), {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  orderId: pendingData.orderId,
+                  paymentSessionId: pendingData.registrationData?.paymentSessionId || '',
+                  amount: pendingData.registrationData?.amount || '0',
+                  customerName: pendingData.registrationData?.customerName || '',
+                  customerEmail: pendingData.registrationData?.customerEmail || '',
+                  customerPhone: pendingData.registrationData?.customerPhone || '',
+                  referralCode: pendingData.registrationData?.referralCode || '',
+                  registrationData: pendingData.registrationData
+                })
+              });
+
+              if (savePurchaseResponse.ok) {
+                const saveResult = await savePurchaseResponse.json();
+                console.log('✅ [FALLBACK] Purchase data synced with backend:', saveResult);
+                
+                // Clear the pending data
+                localStorage.removeItem('pending_registration');
+                console.log('🗑️ Cleared pending registration from localStorage');
+              } else {
+                console.error('❌ [FALLBACK] Failed to sync purchase data with backend');
+              }
+            }
+          } catch (pendingError) {
+            console.error('❌ Error processing pending registration:', pendingError);
+            // Continue with normal flow
+          }
+        }
+        
         // First, verify payment status using the new API approach
         console.log('🔍 Verifying payment status with new API for orderId:', orderId);
         

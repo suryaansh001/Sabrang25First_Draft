@@ -1,19 +1,19 @@
-// Cashfree API utility functions using direct API calls
+// Cashfree API utility functions with FALLBACK support
 import createApiUrl from '../lib/api';
 
-// Cashfree API configuration - DIRECT TO CASHFREE (No backend proxy)
+// Cashfree configuration for DIRECT API fallback
 const CASHFREE_CONFIG = {
   API_URL: 'https://api.cashfree.com/pg',
   API_VERSION: '2023-08-01',
-  // Get credentials from frontend environment variables
-  // NOTE: These will be visible in browser - use with caution
+  // Fallback credentials (only used if backend fails)
   CLIENT_ID: process.env.NEXT_PUBLIC_CASHFREE_CLIENT_ID || '',
   CLIENT_SECRET: process.env.NEXT_PUBLIC_CASHFREE_CLIENT_SECRET || '',
+  HAS_FALLBACK_CREDENTIALS: !!(process.env.NEXT_PUBLIC_CASHFREE_CLIENT_ID && process.env.NEXT_PUBLIC_CASHFREE_CLIENT_SECRET)
 };
 
-console.log('🔧 Cashfree Frontend Config:', {
-  hasClientId: !!CASHFREE_CONFIG.CLIENT_ID,
-  hasClientSecret: !!CASHFREE_CONFIG.CLIENT_SECRET,
+console.log('🔧 Cashfree Config:', {
+  backendProxy: 'PRIMARY',
+  directApiFallback: CASHFREE_CONFIG.HAS_FALLBACK_CREDENTIALS ? 'ENABLED' : 'DISABLED',
   apiUrl: CASHFREE_CONFIG.API_URL
 });
 
@@ -80,10 +80,10 @@ export interface OrderStatus {
 }
 
 /**
- * Create a new payment order via our backend proxy
- * This will call our backend which in turn calls Cashfree API with proper credentials
+ * Create payment order directly with Cashfree (FALLBACK ONLY)
+ * This bypasses the backend and calls Cashfree API directly
  */
-export const createPaymentOrder = async (orderData: {
+const createPaymentOrderDirect = async (orderData: {
   amount: string;
   customerName: string;
   customerEmail: string;
@@ -96,9 +96,88 @@ export const createPaymentOrder = async (orderData: {
     amount: number;
   };
   message?: string;
+  usedFallback?: boolean;
+}> => {
+  console.log('⚠️ FALLBACK: Creating payment order directly with Cashfree API');
+  
+  if (!CASHFREE_CONFIG.HAS_FALLBACK_CREDENTIALS) {
+    throw new Error('Fallback credentials not configured. Cannot proceed.');
+  }
+
+  // Generate order ID on frontend (since backend is not available)
+  const orderId = `order_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+  
+  const orderRequest = {
+    order_amount: parseFloat(orderData.amount),
+    order_currency: "INR",
+    order_id: orderId,
+    customer_details: {
+      customer_id: `customer_${Date.now()}`,
+      customer_name: orderData.customerName || "Customer",
+      customer_email: orderData.customerEmail,
+      customer_phone: orderData.customerPhone || "9999999999"
+    },
+    order_meta: {
+      return_url: `${window.location.origin}/payment/success?order_id=${orderId}`
+    }
+  };
+
+  console.log('📤 Direct API Request:', { orderId, amount: orderData.amount });
+
+  const response = await fetch(`${CASHFREE_CONFIG.API_URL}/orders`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-version': CASHFREE_CONFIG.API_VERSION,
+      'x-client-id': CASHFREE_CONFIG.CLIENT_ID,
+      'x-client-secret': CASHFREE_CONFIG.CLIENT_SECRET
+    },
+    body: JSON.stringify(orderRequest)
+  });
+
+  if (!response.ok) {
+    const errorData = await response.text();
+    console.error('❌ Cashfree direct API error:', errorData);
+    throw new Error(`Cashfree API error: ${errorData}`);
+  }
+
+  const result = await response.json();
+  console.log('✅ Direct API order created:', result);
+
+  return {
+    success: true,
+    data: {
+      order_id: result.order_id,
+      payment_session_id: result.payment_session_id,
+      amount: parseFloat(orderData.amount)
+    },
+    usedFallback: true
+  };
+};
+
+/**
+ * Create a new payment order via backend proxy with FALLBACK to direct API
+ * PRIMARY: Calls backend → backend calls Cashfree
+ * FALLBACK: If backend fails, calls Cashfree API directly from frontend
+ */
+export const createPaymentOrder = async (orderData: {
+  amount: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  registrationData?: any; // Complete registration data for fallback
+}): Promise<{
+  success: boolean;
+  data?: {
+    payment_session_id: string;
+    order_id: string;
+    amount: number;
+  };
+  message?: string;
+  usedFallback?: boolean;
 }> => {
   try {
-    console.log('🚀 Creating payment order via backend proxy:', orderData);
+    console.log('🚀 [PRIMARY] Creating payment order via backend proxy:', orderData);
     
     const response = await fetch(createApiUrl('/api/payments/create-order'), {
       method: 'POST',
@@ -106,21 +185,53 @@ export const createPaymentOrder = async (orderData: {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(orderData)
+      body: JSON.stringify(orderData),
+      signal: AbortSignal.timeout(15000) // 15 second timeout
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(errorText || 'Failed to create payment order');
+      throw new Error(errorText || 'Backend proxy failed');
     }
 
     const result = await response.json();
-    console.log('✅ Payment order created:', result);
+    console.log('✅ [PRIMARY] Payment order created via backend:', result);
     
-    return result;
-  } catch (error) {
-    console.error('❌ Failed to create payment order:', error);
-    throw error;
+    return { ...result, usedFallback: false };
+    
+  } catch (backendError) {
+    console.error('❌ [PRIMARY] Backend proxy failed:', backendError);
+    
+    // Try fallback if credentials are available
+    if (CASHFREE_CONFIG.HAS_FALLBACK_CREDENTIALS) {
+      console.log('🔄 Attempting FALLBACK to direct Cashfree API...');
+      
+      try {
+        const fallbackResult = await createPaymentOrderDirect(orderData);
+        
+        // Store registration data in localStorage for later backend sync
+        if (orderData.registrationData) {
+          const pendingData = {
+            orderId: fallbackResult.data?.order_id,
+            registrationData: orderData.registrationData,
+            timestamp: Date.now()
+          };
+          localStorage.setItem('pending_registration', JSON.stringify(pendingData));
+          console.log('💾 Registration data stored in localStorage for backend sync');
+        }
+        
+        return fallbackResult;
+        
+      } catch (fallbackError) {
+        console.error('❌ [FALLBACK] Direct API also failed:', fallbackError);
+        const backendMsg = backendError instanceof Error ? backendError.message : String(backendError);
+        const fallbackMsg = fallbackError instanceof Error ? fallbackError.message : String(fallbackError);
+        throw new Error(`Both backend and direct API failed. Backend: ${backendMsg}, Direct: ${fallbackMsg}`);
+      }
+    } else {
+      console.error('⚠️ No fallback credentials configured');
+      throw backendError;
+    }
   }
 };
 
