@@ -13,6 +13,7 @@ import {
   Eye,
   Download
 } from "lucide-react";
+import createApiUrl from "../../../lib/api";
 
 interface AnalyticsData {
   totalUsers: number;
@@ -47,7 +48,7 @@ function AnalyticsPage() {
 
   const fetchAnalytics = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/admin/analytics/dashboard?range=${timeRange}`, {
+      const response = await fetch(createApiUrl(`/admin/analytics/dashboard?range=${timeRange}`), {
         credentials: 'include'
       });
       if (response.ok) {

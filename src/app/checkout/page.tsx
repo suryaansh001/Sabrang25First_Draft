@@ -1230,6 +1230,10 @@ function CheckoutPageContent() {
       const registrationResponse = await fetch(createApiUrl('/register'), {
         method: 'POST',
         credentials: 'include',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'User-Agent': typeof navigator !== 'undefined' ? navigator.userAgent : 'Sabrang-Frontend'
+        },
         body: registrationForm,
         signal: registrationController.signal
       });
@@ -1268,7 +1272,9 @@ function CheckoutPageContent() {
         method: 'POST',
         credentials: 'include',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          'User-Agent': typeof navigator !== 'undefined' ? navigator.userAgent : 'Sabrang-Frontend'
         },
         body: JSON.stringify(orderData),
         signal: paymentController.signal
@@ -1279,6 +1285,18 @@ function CheckoutPageContent() {
       if (!response.ok) {
         const errText = await response.text().catch(() => '');
         const errorMsg = errText || 'Failed to create order';
+        
+        // Enhanced mobile debugging
+        console.error('💸 Payment Order Creation Failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          url: createApiUrl('/api/payments/create-order'),
+          userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown',
+          isMobile: typeof navigator !== 'undefined' ? /Mobile|Android|iPhone/i.test(navigator.userAgent) : false,
+          connectionType: typeof navigator !== 'undefined' && 'connection' in navigator ? (navigator as any).connection?.effectiveType : 'Unknown',
+          errorText: errText,
+          orderData: orderData
+        });
         
         // Provide user-friendly error messages
         if (errorMsg.includes('network') || errorMsg.includes('fetch') || errorMsg.includes('timeout')) {
@@ -1308,6 +1326,19 @@ function CheckoutPageContent() {
 
     } catch (error) {
       console.error('❌ Payment initialization failed:', error);
+      
+      // Enhanced mobile debugging for payment issues
+      console.error('🔍 Mobile Debug Info:', {
+        error: error,
+        errorName: error instanceof Error ? error.name : 'Unknown',
+        errorMessage: error instanceof Error ? error.message : String(error),
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown',
+        isMobile: typeof navigator !== 'undefined' ? /Mobile|Android|iPhone/i.test(navigator.userAgent) : false,
+        connectionType: typeof navigator !== 'undefined' && 'connection' in navigator ? (navigator as any).connection?.effectiveType : 'Unknown',
+        onlineStatus: typeof navigator !== 'undefined' ? navigator.onLine : 'Unknown',
+        currentUrl: typeof window !== 'undefined' ? window.location.href : 'Unknown',
+        timestamp: new Date().toISOString()
+      });
       
       let errorMessage = 'Unknown error occurred';
       
