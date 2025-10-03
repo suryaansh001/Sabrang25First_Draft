@@ -719,11 +719,7 @@ export default function EventsPage() {
                   )}
                 </div>
                 <div className="flex flex-wrap gap-3 pt-2">
-<<<<<<< HEAD
-                  <button onClick={() => router.push(`/events/${selectedEvent.id}/rules`)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border bg-white/10 text-white hover:bg-white/15 border-white/20 transition">
-=======
                   <button onClick={() => router.push(`/Events/${selectedEvent.id}/rules`)} className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-md border-2 bg-gradient-to-b from-white/15 to-white/5 text-white hover:from-white/20 hover:to-white/10 border-white/30 transition shadow-[inset_0_1px_0_rgba(255,255,255,0.25),_0_2px_0_rgba(255,255,255,0.12),_0_4px_10px_rgba(0,0,0,0.35)]">
->>>>>>> 8eb10235cf0f8efc636a21abd3e789b2341fb81f
                     <Info className="w-4 h-4" /> Rules
                   </button>
                   <button onClick={() => router.push(`/checkout`)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition shadow-lg">
@@ -968,7 +964,6 @@ export default function EventsPage() {
                             />
                           </div>
 
-<<<<<<< HEAD
                           {/* Center - Event name positioned in middle only */}
                           <div className="absolute inset-0 flex items-center justify-center z-10">
                             <div className="relative text-center">
@@ -1007,19 +1002,11 @@ export default function EventsPage() {
                                   {/* Glow effect */}
                                   <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-amber-600/20 rounded-full blur-sm animate-pulse" />
                                 </div>
-=======
-                          {/* Content container */}
-                          <div className="p-3 md:p-4 flex flex-col flex-grow">
-                            <div className="flex flex-col items-start gap-y-1.5 sm:flex-row sm:justify-between sm:items-center mb-2">
-                              <div className={`px-2 py-0.5 rounded-sm text-white text-[10px] font-bold uppercase tracking-widest ${event.isFlagship ? 'bg-yellow-500/20 border border-yellow-400/30 text-yellow-300' : 'bg-black/50 border border-white/20'}`}>
-                                {event.isFlagship ? '⚡ Flagship' : event.category}
->>>>>>> 8eb10235cf0f8efc636a21abd3e789b2341fb81f
                               </div>
-                              <div className="text-white text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded-full border border-white/20">
-                                {catalogById.get(event.id)?.price || event.price}
-                              </div>
+                            )}
+                            <div className="text-white text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded-full border border-white/20 mb-1">
+                              {catalogById.get(event.id)?.price || event.price}
                             </div>
-<<<<<<< HEAD
                             
                             {/* Add to cart button */}
                             <div className="px-1 md:px-2 py-1.5 md:py-2 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
@@ -1035,36 +1022,6 @@ export default function EventsPage() {
                                 </span>
                               </button>
                             </div>
-=======
-
-                            <h3 className="font-bold text-sm md:text-base text-white uppercase tracking-wider flex-grow mb-3">
-                              {event.title}
-                            </h3>
-                            {/* Tiny coordinator line below title (supports up to two) */}
-                            {(() => {
-                              const coordinators = getEventCoordinators(event.id) || [];
-                              if (!coordinators.length) return null;
-                              const firstTwo = coordinators
-                                .slice(0, 2)
-                                .map(c => `${c.name}${c.phone ? ` - ${c.phone}` : ''}`);
-                              return (
-                                <div className="-mt-2 mb-2 text-[10px] text-white/80">
-                                  {firstTwo.join(' • ')}
-                                </div>
-                              );
-                            })()}
-
-                            <button
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }}
-                              className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs transition-all duration-200 cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/80 border-purple-400/60 text-white shadow-[0_0_12px_rgba(168,85,247,0.45)]' : 'bg-white/10 border-white/30 text-white/90 hover:bg-white/15 backdrop-blur-sm'}`}
-                              aria-pressed={cartIds.includes(event.id)}
-                            >
-                              <ShoppingCart className="w-3 h-3 md:w-3.5 md:h-3.5" />
-                              <span className="uppercase tracking-wider">
-                                {cartIds.includes(event.id) ? 'Added' : 'Add to cart'}
-                              </span>
-                            </button>
                           </div>
                         </motion.div>
                       ) : (
@@ -1103,7 +1060,6 @@ export default function EventsPage() {
                               style={{ display: 'none' }}
                               id={`fallback-${event.id}`}
                             />
->>>>>>> 8eb10235cf0f8efc636a21abd3e789b2341fb81f
                           </div>
 
                           {/* --- MYSTERIOUS & SUSPENSEFUL OVERLAY --- */}

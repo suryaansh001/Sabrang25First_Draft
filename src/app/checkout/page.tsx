@@ -7,8 +7,14 @@ import { Check, ChevronLeft, CreditCard, ArrowRight, X, Home, Info, Calendar, St
 import createApiUrl from '../../lib/api';
 import { events as EVENTS_DATA } from '../Events/[id]/rules/events.data';
 import { EventCatalogItem, EVENT_CATALOG as ORIGINAL_EVENT_CATALOG } from '../../lib/eventCatalog';
-import {load} from '@cashfreepayments/cashfree-js';
-import { verifyPaymentStatus } from '../../utils/paymentVerification';
+import { 
+  createPaymentOrder, 
+  getPaymentsForOrder, 
+  getOrderStatus, 
+  verifyPaymentAndRedirect, 
+  createPaymentUrl,
+  handlePaymentCallback
+} from '../../utils/cashfreeApi';
 
 
 // Control flag to enable/disable the checkout flow.
@@ -221,7 +227,6 @@ function CheckoutPageContent() {
   const [showToast, setShowToast] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const cashfreeLoadedRef = useRef<boolean>(false);
 
   const [step, setStep] = useState<Step>('select');
   const [reducedMotion, setReducedMotion] = useState<boolean>(true);
@@ -262,7 +267,7 @@ function CheckoutPageContent() {
     paymentSessionId: string;
     orderId: string;
     amount: number;
-    mode: string;
+    paymentUrl: string;
   } | null>(null);
   const [paymentMode, setPaymentMode] = useState<'card' | 'upi'>('card');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
@@ -314,23 +319,8 @@ function CheckoutPageContent() {
   useEffect(() => {
     const orderId = searchParams.get('order_id');
     if (orderId) {
-      setIsVerifying(true);
-      verifyPaymentStatus(orderId)
-        .then(result => {
-          setPaymentVerificationStatus(result);
-          // If payment is successful, clear the cart
-          if (result.success) {
-            setSelectedEventIds([]);
-            setVisitorPassDays(0);
-            try {
-              localStorage.removeItem('sabrang_cart');
-            } catch {}
-          }
-        })
-        .catch(error => {
-          setPaymentVerificationStatus({ success: false, status: 'ERROR', reason: error.message || 'Verification failed.' });
-        })
-        .finally(() => setIsVerifying(false));
+      console.log('🔄 Order ID found in URL, redirecting to success page for verification...');
+      router.replace(`/payment/success?order_id=${orderId}`);
     } else {
       setIsVerifying(false);
     }
@@ -952,21 +942,7 @@ function CheckoutPageContent() {
     if (step === 'payment') { setStep('review'); scrollToTop(); return; }
   };
 
-  // Helper function to load Cashfree SDK
-  const loadCashfreeSdk = async () => {
-    if (cashfreeLoadedRef.current) return;
-    
-    return new Promise<void>((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
-      script.onload = () => {
-        cashfreeLoadedRef.current = true;
-        resolve();
-      };
-      script.onerror = () => reject(new Error('Failed to load Cashfree SDK'));
-      document.head.appendChild(script);
-    });
-  };
+
 
   // Handle field changes
   const handleFieldChange = (signature: string, fieldName: string, value: string) => {
@@ -1297,7 +1273,7 @@ function CheckoutPageContent() {
         throw new Error(errorMsg);
       }
 
-      // Create payment order using the new simple backend endpoint
+      // Create payment order using the new direct API approach
       const orderData = {
         amount: finalPrice.toString(),
         customerName: derivedName,
@@ -1305,69 +1281,26 @@ function CheckoutPageContent() {
         customerPhone: flat['contactNo'] || '9999999999'
       };
 
-      console.log('🚀 Creating payment order with data:', orderData);
-      
-      // Add timeout to payment order request to prevent hanging
-      const paymentController = new AbortController();
-      const paymentTimeout = setTimeout(() => {
-        paymentController.abort();
-      }, getMobileTimeout(15000)); // 15s desktop, 30s mobile
+      console.log('🚀 Creating payment order with new API approach:', orderData);
 
-      const response = await retryFetch(createApiUrl('/api/payments/create-order'), {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-          'User-Agent': typeof navigator !== 'undefined' ? navigator.userAgent : 'Sabrang-Frontend'
-        },
-        body: JSON.stringify(orderData),
-        signal: paymentController.signal
-      }, 3); // 3 retries for payment order creation
-      
-      clearTimeout(paymentTimeout);
+      // Use the new API utility function
+      const orderResult = await createPaymentOrder(orderData);
 
-      if (!response.ok) {
-        const errText = await response.text().catch(() => '');
-        const errorMsg = errText || 'Failed to create order';
-        
-        // Enhanced mobile debugging
-        console.error('💸 Payment Order Creation Failed:', {
-          status: response.status,
-          statusText: response.statusText,
-          url: createApiUrl('/api/payments/create-order'),
-          userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown',
-          isMobile: typeof navigator !== 'undefined' ? /Mobile|Android|iPhone/i.test(navigator.userAgent) : false,
-          connectionType: typeof navigator !== 'undefined' && 'connection' in navigator ? (navigator as any).connection?.effectiveType : 'Unknown',
-          errorText: errText,
-          orderData: orderData
-        });
-        
-        // Provide user-friendly error messages with mobile-specific guidance
-        if (errorMsg.includes('network') || errorMsg.includes('fetch') || errorMsg.includes('timeout')) {
-          const mobileGuidance = isMobileDevice() ? 
-            'Mobile networks can be slower during payment setup. Please check your internet connection and try again. If using cellular data, try switching to WiFi.' :
-            'Network connection issue during payment setup. Please check your internet and try again.';
-          throw new Error(mobileGuidance);
-        }
-        
-        throw new Error(errorMsg);
+      if (!orderResult.success) {
+        throw new Error(orderResult.message || 'Failed to create payment order');
       }
 
-      const data = await response.json();
-      console.log('✅ Payment order created:', data);
-
-      if (!data.success) {
-        throw new Error(data.message || 'Failed to create payment order');
-      }
+      console.log('✅ Payment order created:', orderResult.data);
 
       // Store payment session data for the payment component
-      setPaymentSession({
-        paymentSessionId: data.data.payment_session_id,
-        orderId: data.data.order_id,
-        amount: data.data.amount,
-        mode: 'production' // Always use production mode
-      });
+      if (orderResult.data) {
+        setPaymentSession({
+          paymentSessionId: orderResult.data.payment_session_id,
+          orderId: orderResult.data.order_id,
+          amount: orderResult.data.amount,
+          paymentUrl: createPaymentUrl(orderResult.data.payment_session_id)
+        });
+      }
 
       // Move to payment step
       setStep('payment');
@@ -1408,29 +1341,9 @@ function CheckoutPageContent() {
     }
   };
 
-  // Initialize Cashfree SDK - always production mode
-  let cashfree: any;
-  const initializeSDK = async () => {
-    try {
-      cashfree = await load({
-        mode: "production"
-      });
-      console.log('✅ Cashfree SDK initialized in production mode');
-    } catch (error) {
-      console.error('❌ Failed to initialize Cashfree SDK:', error);
-    }
-  };
-
-  // Initialize SDK when payment session is available
-  useEffect(() => {
-    if (paymentSession) {
-      initializeSDK();
-    }
-  }, [paymentSession]);
-
-  // Clean payment function following user's preferred structure
+  // Clean payment function using direct API calls instead of SDK
   const doPayment = async () => {
-    if (!paymentSession || !cashfree) {
+    if (!paymentSession) {
       setPaymentInitializationState(prev => ({
         ...prev,
         error: 'Payment session not ready. Please go back and retry the payment setup.'
@@ -1445,14 +1358,10 @@ function CheckoutPageContent() {
     
     try {
       console.log('🚀 Starting payment with session ID:', paymentSession.paymentSessionId);
+      console.log('🔗 Redirecting to payment URL:', paymentSession.paymentUrl);
       
-      const checkoutOptions = {
-        paymentSessionId: paymentSession.paymentSessionId,
-        redirectTarget: "_self" as const,
-      };
-      
-      console.log('💳 Launching Cashfree checkout with options:', checkoutOptions);
-      await cashfree.checkout(checkoutOptions);
+      // Instead of using SDK, redirect directly to Cashfree payment URL
+      window.location.href = paymentSession.paymentUrl;
       
     } catch (error) {
       console.error('❌ Payment failed:', error);
@@ -1477,38 +1386,7 @@ function CheckoutPageContent() {
     }
   };
 
-  // Initialize Cashfree payment
-  const initializeCashfreePayment = async () => {
-    if (!paymentSession) {
-      alert('No payment session available. Please try again.');
-      return;
-    }
 
-    setIsProcessingPayment(true);
-    try {
-      console.log('🔗 Initializing Cashfree payment...');
-      console.log('Payment Session:', paymentSession);
-      
-      // Always use production mode
-      const cashfree = await load({ 
-        mode: "production"
-      });
-      
-      const checkoutOptions = {
-        paymentSessionId: paymentSession.paymentSessionId,
-        redirectTarget: '_self' as const
-      };
-      
-      console.log('� Launching Cashfree checkout with options:', checkoutOptions);
-      await cashfree.checkout(checkoutOptions);
-      
-    } catch (error) {
-      console.error('❌ Cashfree payment failed:', error);
-      alert(`Payment failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
-      setIsProcessingPayment(false);
-    }
-  };
 
   // Group events by category
   const eventsByCategory = useMemo(() => {
@@ -3098,7 +2976,7 @@ function CheckoutPageContent() {
                             </div>
                             <div className="flex justify-between text-sm">
                               <span className="text-white/70">Payment Mode:</span>
-                              <span className="text-white/90">{paymentSession.mode}</span>
+                              <span className="text-white/90">Production</span>
                             </div>
                           </div>
                         </div>
