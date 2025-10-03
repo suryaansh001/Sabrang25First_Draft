@@ -1,12 +1,21 @@
 // Cashfree API utility functions using direct API calls
 import createApiUrl from '../lib/api';
 
-// Cashfree API configuration
+// Cashfree API configuration - DIRECT TO CASHFREE (No backend proxy)
 const CASHFREE_CONFIG = {
   API_URL: 'https://api.cashfree.com/pg',
   API_VERSION: '2023-08-01',
-  // We'll get credentials from our backend proxy endpoints for security
+  // Get credentials from frontend environment variables
+  // NOTE: These will be visible in browser - use with caution
+  CLIENT_ID: process.env.NEXT_PUBLIC_CASHFREE_CLIENT_ID || '',
+  CLIENT_SECRET: process.env.NEXT_PUBLIC_CASHFREE_CLIENT_SECRET || '',
 };
+
+console.log('🔧 Cashfree Frontend Config:', {
+  hasClientId: !!CASHFREE_CONFIG.CLIENT_ID,
+  hasClientSecret: !!CASHFREE_CONFIG.CLIENT_SECRET,
+  apiUrl: CASHFREE_CONFIG.API_URL
+});
 
 export interface CashfreeOrder {
   order_id: string;
