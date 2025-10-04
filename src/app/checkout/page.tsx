@@ -1311,6 +1311,10 @@ function CheckoutPageContent() {
 
   // Clean payment function following user's preferred structure
   const doPayment = async () => {
+    if (!paymentSession) {
+      alert('No payment session available. Please try again.');
+      return;
+    }
 
     setIsProcessingPayment(true);
     
