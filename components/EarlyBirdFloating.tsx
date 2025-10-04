@@ -130,11 +130,11 @@ const EarlyBirdFloating: React.FC<EarlyBirdFloatingProps> = ({ onClose }) => {
           {/* CTA Button */}
           <div className="relative z-50" style={{ zIndex: 50 }}>
             <a
-              href="/maintenance"
+              href="/checkout"
               className="block w-full bg-white text-orange-600 font-bold py-2 px-3 rounded-lg text-center hover:bg-white/90 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg text-sm relative z-50"
               onClick={(e) => {
                 e.preventDefault();
-                window.location.href = '/maintenance';
+                window.location.href = '/checkout';
               }}
               style={{ zIndex: 50, position: 'relative' }}
             >

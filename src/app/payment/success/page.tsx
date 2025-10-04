@@ -174,7 +174,7 @@ function PaymentSuccessContent() {
           <h1 className="text-2xl font-bold mb-4">Error</h1>
           <p className="text-white/70 mb-6">{error}</p>
           <button
-            onClick={() => router.push('/maintenance')}
+            onClick={() => router.push('/checkout')}
             className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full font-medium hover:scale-105 transition-transform"
           >
             Back to Checkout
@@ -375,7 +375,7 @@ function PaymentSuccessContent() {
               </p>
               <div className="flex gap-3">
                 <button
-                  onClick={() => router.push('/maintenance')}
+                  onClick={() => router.push('/checkout')}
                   className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg hover:scale-105 transition-transform"
                 >
                   Try Again
