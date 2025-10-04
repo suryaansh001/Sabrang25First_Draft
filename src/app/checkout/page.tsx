@@ -1269,61 +1269,31 @@ function CheckoutPageContent() {
         registrationController.abort();
       }, getMobileTimeout(30000)); // 30s desktop, 60s mobile
 
-      const registrationResponse = await retryFetch(createApiUrl('/register'), {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'User-Agent': typeof navigator !== 'undefined' ? navigator.userAgent : 'Sabrang-Frontend'
-        },
-        body: registrationForm,
-        signal: registrationController.signal
-      }, 2); // 2 retries for registration
+      // Add payment amount to the registration form
+      registrationForm.append('amount', finalPrice.toString());
+      registrationForm.append('customerPhone', flat['contactNo'] || '9999999999');
+
+      console.log('🚀 Creating payment order with registration data directly');
+      console.log('📝 FormData keys:', Array.from(registrationForm.keys()));
       
-      clearTimeout(registrationTimeout);
-
-      if (!registrationResponse.ok) {
-        const errText = await registrationResponse.text().catch(() => '');
-        const errorMsg = errText || 'Registration failed';
-        
-        // Provide user-friendly error messages with mobile-specific guidance
-        if (errorMsg.includes('network') || errorMsg.includes('fetch') || errorMsg.includes('timeout')) {
-          const mobileGuidance = isMobileDevice() ? 
-            'Mobile networks can be slower. Please check your internet connection and try again. If using cellular data, try switching to WiFi.' :
-            'Network connection issue. Please check your internet and try again.';
-          throw new Error(mobileGuidance);
-        }
-        
-        throw new Error(errorMsg);
-      }
-
-      // Create payment order using the new simple backend endpoint
-      const orderData = {
-        amount: finalPrice.toString(),
-        customerName: derivedName,
-        customerEmail: derivedEmail,
-        customerPhone: flat['contactNo'] || '9999999999'
-      };
-
-      console.log('🚀 Creating payment order with data:', orderData);
-      
-      // Add timeout to payment order request to prevent hanging
+      // Single API call that handles BOTH registration AND payment order creation
       const paymentController = new AbortController();
       const paymentTimeout = setTimeout(() => {
         paymentController.abort();
-      }, getMobileTimeout(15000)); // 15s desktop, 30s mobile
+      }, getMobileTimeout(30000)); // 30s desktop, 60s mobile
 
-      const response = await retryFetch(createApiUrl('/api/payments/create-order'), {
+      const response = await retryFetch(createApiUrl('/api/direct-payment/cashfree/create-order'), {
         method: 'POST',
         credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
+          // Don't set Content-Type for FormData - let browser set it with proper boundary
           'X-Requested-With': 'XMLHttpRequest',
-          'User-Agent': typeof navigator !== 'undefined' ? navigator.userAgent : 'Sabrang-Frontend'
+          'Accept': 'application/json',
+          'Cache-Control': 'no-cache'
         },
-        body: JSON.stringify(orderData),
+        body: registrationForm, // Send all registration data + payment info in one request
         signal: paymentController.signal
-      }, 3); // 3 retries for payment order creation
+      }, 3); // 3 retries for combined registration+payment
       
       clearTimeout(paymentTimeout);
 
@@ -1332,15 +1302,15 @@ function CheckoutPageContent() {
         const errorMsg = errText || 'Failed to create order';
         
         // Enhanced mobile debugging
-        console.error('💸 Payment Order Creation Failed:', {
+        console.error('💸 Combined Registration + Payment Failed:', {
           status: response.status,
           statusText: response.statusText,
-          url: createApiUrl('/api/payments/create-order'),
+          url: createApiUrl('/api/direct-payment/cashfree/create-order'),
           userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown',
           isMobile: typeof navigator !== 'undefined' ? /Mobile|Android|iPhone/i.test(navigator.userAgent) : false,
           connectionType: typeof navigator !== 'undefined' && 'connection' in navigator ? (navigator as any).connection?.effectiveType : 'Unknown',
           errorText: errText,
-          orderData: orderData
+          formDataKeys: Array.from(registrationForm.keys())
         });
         
         // Provide user-friendly error messages with mobile-specific guidance
