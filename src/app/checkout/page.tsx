@@ -1308,14 +1308,10 @@ function CheckoutPageContent() {
   // Initialize Cashfree SDK - always production mode
   let cashfree: any;
   const initializeSDK = async () => {
-    try {
-      cashfree = await load({
-        mode: "production"
-      });
-      console.log('✅ Cashfree SDK initialized in production mode');
-    } catch (error) {
-      console.error('❌ Failed to initialize Cashfree SDK:', error);
-    }
+    cashfree = await load({
+      mode: "production"
+    });
+    console.log('✅ Cashfree SDK initialized');
   };
 
   // Initialize SDK when payment session is available
@@ -1327,7 +1323,7 @@ function CheckoutPageContent() {
 
   // Clean payment function following user's preferred structure
   const doPayment = async () => {
-    if (!paymentSession || !cashfree) {
+    if (!paymentSession) {
       setPaymentInitializationState(prev => ({
         ...prev,
         error: 'Payment session not ready. Please go back and retry the payment setup.'
@@ -1340,38 +1336,17 @@ function CheckoutPageContent() {
     // Clear any previous errors
     setPaymentInitializationState(prev => ({ ...prev, error: null }));
     
-    try {
-      console.log('🚀 Starting payment with session ID:', paymentSession.paymentSessionId);
-      
-      const checkoutOptions = {
-        paymentSessionId: paymentSession.paymentSessionId,
-        redirectTarget: "_self" as const,
-      };
-      
-      console.log('💳 Launching Cashfree checkout with options:', checkoutOptions);
-      await cashfree.checkout(checkoutOptions);
-      
-    } catch (error) {
-      console.error('❌ Payment failed:', error);
-      
-      let errorMessage = 'Payment gateway error occurred';
-      
-      if (error instanceof Error) {
-        if (error.message?.toLowerCase().includes('network') || 
-            error.message?.toLowerCase().includes('failed to fetch')) {
-          errorMessage = 'Network connection issue during payment. Please check your internet and try again.';
-        } else {
-          errorMessage = error.message;
-        }
-      }
-      
-      setPaymentInitializationState(prev => ({
-        ...prev,
-        error: errorMessage
-      }));
-    } finally {
-      setIsProcessingPayment(false);
-    }
+    console.log('🚀 Starting payment with session ID:', paymentSession.paymentSessionId);
+    
+    const checkoutOptions = {
+      paymentSessionId: paymentSession.paymentSessionId,
+      redirectTarget: "_self" as const,
+    };
+    
+    console.log('💳 Launching Cashfree checkout with options:', checkoutOptions);
+    await cashfree.checkout(checkoutOptions);
+    
+    setIsProcessingPayment(false);
   };
 
   // Initialize Cashfree payment
