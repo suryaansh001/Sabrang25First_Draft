@@ -43,7 +43,7 @@ function CheckoutOffersPage() {
 
   const fetchOffers = async () => {
     try {
-      const response = await fetch(createApiUrl('/admin/checkout-offers'), {
+      const response = await fetch(createApiUrl('/admin/maintenance-offers'), {
         credentials: 'include'
       });
       if (response.ok) {
@@ -51,17 +51,17 @@ function CheckoutOffersPage() {
         setOffers(data);
       }
     } catch (error) {
-      console.error('Failed to fetch checkout offers:', error);
+      console.error('Failed to fetch maintenance offers:', error);
     } finally {
       setLoading(false);
     }
   };
 
   const deleteOffer = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this checkout offer?')) return;
+    if (!confirm('Are you sure you want to delete this maintenance offer?')) return;
     
     try {
-      const response = await fetch(createApiUrl(`/admin/checkout-offers/${id}`), {
+      const response = await fetch(createApiUrl(`/admin/maintenance-offers/${id}`), {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -70,13 +70,13 @@ function CheckoutOffersPage() {
         setOffers(offers.filter(offer => offer._id !== id));
       }
     } catch (error) {
-      console.error('Failed to delete checkout offer:', error);
+      console.error('Failed to delete maintenance offer:', error);
     }
   };
 
   const toggleOfferStatus = async (id: string, currentStatus: boolean) => {
     try {
-      const response = await fetch(createApiUrl(`/admin/checkout-offers/${id}`), {
+      const response = await fetch(createApiUrl(`/admin/maintenance-offers/${id}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ function CheckoutOffersPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-white">
-        <div className="text-xl">Loading checkout offers...</div>
+        <div className="text-xl">Loading maintenance offers...</div>
       </div>
     );
   }

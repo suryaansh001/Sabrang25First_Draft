@@ -11,7 +11,7 @@ import {load} from '@cashfreepayments/cashfree-js';
 import { verifyPaymentStatus } from '../../utils/paymentVerification';
 
 
-// Control flag to enable/disable the checkout flow.
+// Control flag to enable/disable the maintenance flow.
 const REGISTRATION_OPEN = true;
 
 // Override prices for specific events as requested.
@@ -1189,7 +1189,7 @@ function CheckoutPageContent() {
       if (!derivedName) derivedName = 'Participant';
       if (!derivedEmail) throw new Error('Email is required for registration');
 
-      // Generate a strong random password since checkout flow does not collect one
+      // Generate a strong random password since maintenance flow does not collect one
       const generatedPassword = Math.random().toString(36).slice(-10) + 'A1!';
 
       registrationForm.append('name', derivedName);
@@ -1359,7 +1359,7 @@ function CheckoutPageContent() {
         redirectTarget: "_self" as const,
       };
       
-      console.log('💳 Launching Cashfree checkout with options:', checkoutOptions);
+      console.log('💳 Launching Cashfree maintenance with options:', checkoutOptions);
       await cashfree.checkout(checkoutOptions);
       
     } catch (error) {
@@ -1597,7 +1597,7 @@ function CheckoutPageContent() {
                   <div className="lg:col-span-3">
                     <div className="bg-yellow-500/15 border border-yellow-400/40 rounded-lg p-4 mb-6 shadow-[0_0_20px_rgba(250,204,21,0.2)] hidden">
                       <p className="text-sm text-yellow-200">
-                        <strong>Notice:</strong> Event registration is currently disabled. You can browse events but checkout is not available yet.
+                        <strong>Notice:</strong> Event registration is currently disabled. You can browse events but maintenance is not available yet.
                       </p>
                     </div>
                     {selectedEventIds.length > 0 && (
@@ -1730,7 +1730,7 @@ function CheckoutPageContent() {
                                         {event.teamSize && <span className="text-[11px] sm:text-xs text-white/60">👥 {event.teamSize}</span>}
                                       </div>
                                 </div>
-                                    {/* Date/time intentionally hidden on checkout page */}
+                                    {/* Date/time intentionally hidden on maintenance page */}
                                     <div className="flex items-center gap-2 text-xs text-white/70"></div>
                               {isDisabled && conflictMessage && (
                                       <div className="mt-2 text-xs text-red-400 flex items-center gap-1">
@@ -3053,7 +3053,7 @@ function CheckoutPageContent() {
           >
             <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => {
               setPaymentVerificationStatus(null);
-              router.replace('/checkout', { scroll: false });
+              router.replace('/maintenance', { scroll: false });
             }} />
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -3106,7 +3106,7 @@ function CheckoutPageContent() {
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                       <button
-                        onClick={() => { setPaymentVerificationStatus(null); router.replace('/checkout', { scroll: false }); setStep('review'); }}
+                        onClick={() => { setPaymentVerificationStatus(null); router.replace('/maintenance', { scroll: false }); setStep('review'); }}
                         className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 text-lg shadow-lg hover:scale-105"
                       >
                         Try Again
@@ -3210,7 +3210,7 @@ function CheckoutPageContent() {
 	              <HelpCircle className="w-5 h-5 text-purple-300" />
 	            </div>
 	            <div className="text-white">
-	              <div className="font-semibold">Facing issues during checkout?</div>
+	              <div className="font-semibold">Facing issues during maintenance?</div>
 	              <p className="text-sm text-white/70 mt-1">If you encounter any error or problem in the process, please let us know using this form.</p>
 	              <a
 	                href="https://forms.gle/eth5B3JoQATdy9aRA"
@@ -3255,7 +3255,7 @@ function CheckoutLoading() {
     <div className="min-h-screen text-white flex items-center justify-center">
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-400 mx-auto mb-4"></div>
-        <p className="text-white/70">Loading checkout...</p>
+        <p className="text-white/70">Loading maintenance...</p>
       </div>
     </div>
   );

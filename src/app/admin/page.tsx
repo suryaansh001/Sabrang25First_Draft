@@ -103,7 +103,7 @@ function AdminDashboard() {
     },
     {
       title: "Checkout Offers",
-      href: "/admin/checkout-offers",
+      href: "/admin/maintenance-offers",
       icon: <Package className="w-6 h-6" />,
       gradient: "from-indigo-500 to-blue-600",
       hoverGradient: "from-indigo-600 to-blue-700"

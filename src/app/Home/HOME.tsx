@@ -440,7 +440,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               
               {/* CTA Button */}
               <div className="flex items-center justify-center">
-                <a href="/checkout" className="btn-prism pointer-events-auto transform hover:scale-105 transition-transform duration-300">
+                <a href="/maintenance" className="btn-prism pointer-events-auto transform hover:scale-105 transition-transform duration-300">
                   <span className="text-lg font-semibold">Register Now</span>
                 </a>
               </div>
@@ -628,7 +628,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                   ✨ Ready to be mesmerized? ✨
                 </p>
                 <button 
-                  onClick={() => navigate('/checkout')}
+                  onClick={() => navigate('/maintenance')}
                   className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-full transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-purple-500/25 border border-purple-400/50"
                 >
                   Secure Your Spot - Register Now!
@@ -662,7 +662,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
           <section className="px-6 py-20 text-center bg-gradient-to-t from-purple-900/30 to-transparent">
             <h3 className="text-3xl font-bold text-white mb-4">Ready to Join?</h3>
             <p className="text-gray-300 mb-8 text-lg">Don't miss out on the biggest event of the year!</p>
-            <a href="/checkout" className="btn-prism pointer-events-auto transform hover:scale-105 transition-transform duration-300">
+            <a href="/maintenance" className="btn-prism pointer-events-auto transform hover:scale-105 transition-transform duration-300">
               <span className="text-lg font-semibold">Register Now</span>
             </a>
           </section>
@@ -700,7 +700,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
           {/* Register Now Button */}
           {!isLoading && (
             <div className="absolute top-6 right-6 z-50 flex items-center space-x-5">
-              <a href="/checkout" className="px-28 py-5 bg-black/40 backdrop-blur-sm rounded-full text-white text-sm font-medium hover:bg-black/60 transition-all duration-300 border border-white/30">
+              <a href="/maintenance" className="px-28 py-5 bg-black/40 backdrop-blur-sm rounded-full text-white text-sm font-medium hover:bg-black/60 transition-all duration-300 border border-white/30">
                 Register Now
               </a>
               <a href="/Events" className="p-2 text-white transition-all duration-300 flex items-center justify-center">
@@ -919,7 +919,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
           {/* Bottom CTA */}
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
             <button 
-              onClick={() => navigate('/checkout')}
+              onClick={() => navigate('/maintenance')}
                className="px-12 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white font-bold rounded-full transform hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-purple-400/25 border border-purple-300/50 text-xl"
             >
               Secure Your Spot - Register Now!

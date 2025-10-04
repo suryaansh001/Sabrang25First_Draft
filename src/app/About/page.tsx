@@ -588,7 +588,7 @@ const AboutPage = () => {
                     ✨ Join us for this spectacular musical journey! ✨
                   </p>
                   <button 
-                    onClick={() => navigate('/checkout')}
+                    onClick={() => navigate('/maintenance')}
                     className="px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold rounded-full transform hover:scale-110 transition-all duration-300 shadow-2xl hover:shadow-yellow-500/25 border border-yellow-400/50"
                   >
                     Don't Miss Out - Register Now!
