@@ -1,10 +1,10 @@
-use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, MapPin, Users, Star, ArrowLeft, Share2, Heart, Download, CheckCircle, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 
 interface Event {
   id: string;
@@ -158,7 +158,9 @@ const getEventDetails = (id: string): Event | null => {
   return events[id] || null;
 };
 
-export default function EventDetailPage({ params }: { params: { id: string } }) {
+export default function EventDetailPage() {
+  const params = useParams<{ id?: string | string[] }>();
+  const id = Array.isArray(params?.id) ? params?.id?.[0] : params?.id;
   const router = useRouter();
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
@@ -166,10 +168,11 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
   const [showRegistration, setShowRegistration] = useState(false);
 
   useEffect(() => {
-    const eventData = getEventDetails(params.id);
+    if (!id) return;
+    const eventData = getEventDetails(id);
     setEvent(eventData);
     setLoading(false);
-  }, [params.id]);
+  }, [id]);
 
   if (loading) {
     return (
