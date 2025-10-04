@@ -860,7 +860,7 @@ export default function EventsPage() {
                         letterSpacing: '0.1em'
                       }}
                     >
-                      SABRANG 2025
+                      EVENTS
                     </motion.h1>
                     {/* Mobile subtitle only */}
                     <motion.div
@@ -940,14 +940,14 @@ export default function EventsPage() {
                           initial={{ opacity: 0, y: 24 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.35, delay: index * 0.04 }}
-                          className="rounded-lg overflow-hidden border border-white/10 group cursor-pointer shadow-lg bg-neutral-900/60 flex flex-col"
+                          className="relative rounded-lg overflow-hidden border border-white/10 group cursor-pointer shadow-lg bg-neutral-900/60 flex flex-col"
                           onClick={() => handleCardClick(event)}
                           onMouseEnter={() => { try { router.prefetch(`/Events/${event.id}/rules`); } catch {} }}
                           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(event); } }}
                           tabIndex={0}
                         >
                           {/* Image container */}
-                          <div className="relative w-full aspect-[2/3] overflow-hidden">
+                          <div className="relative w-full aspect-[2/3] overflow-hidden bg-neutral-900">
                             <img
                               loading="lazy"
                               decoding="async"
@@ -956,7 +956,7 @@ export default function EventsPage() {
                               draggable={false}
                               src={event.image}
                               alt={event.title}
-                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 target.src = '/images/Logo@2x.png'; // Fallback image
@@ -985,25 +985,8 @@ export default function EventsPage() {
                             </div>
                           </div>
 
-                          {/* Bottom section - Prize Pool, Price + Add to cart bar */}
-                          <div className="relative z-10 flex flex-col justify-end h-full">
-                            {/* Prize Pool Display */}
-                            {getEventPrizePool(event.id) && (
-                              <div className="flex justify-center mb-18 md:mb-2">
-                                <div className="relative">
-                                  <div className="text-white text-[8px] md:text-xs font-bold bg-gradient-to-r from-yellow-500/90 to-amber-600/90 px-2 py-1 rounded-full border border-yellow-400/50 shadow-lg backdrop-blur-sm">
-                                    <div className="flex items-center gap-1">
-                                      <Crown className="w-2 h-2 md:w-3 md:h-3" />
-                                      <span className="font-extrabold tracking-wide">
-                                        Prize Pool: {getEventPrizePool(event.id)}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  {/* Glow effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-amber-600/20 rounded-full blur-sm animate-pulse" />
-                                </div>
-                              </div>
-                            )}
+                          {/* Bottom section - Price + Add to cart bar */}
+                          <div className="relative z-10 flex flex-col">
                             <div className="text-white text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded-full border border-white/20 mb-1">
                               {catalogById.get(event.id)?.price || event.price}
                             </div>
@@ -1038,7 +1021,7 @@ export default function EventsPage() {
                           tabIndex={0}
                         >
                           {/* Image container (hidden) */}
-                          <div className="relative w-full aspect-[2/3] bg-black/20">
+                          <div className="relative w-full aspect-[2/3] bg-black/20 overflow-hidden">
                             <img
                               loading="lazy"
                               decoding="async"
@@ -1047,7 +1030,7 @@ export default function EventsPage() {
                               draggable={false}
                               src={event.image}
                               alt={event.title}
-                              className="absolute inset-0 w-full h-full object-cover"
+                              className="absolute inset-0 w-full h-full object-contain object-center"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 target.style.display = 'none';
@@ -1082,8 +1065,7 @@ export default function EventsPage() {
                                 <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-pulse" />
                               </div>
                             </div>
-                            <div className="relative z-10 flex flex-col justify-end h-full">
-                              {getEventPrizePool(event.id) && (<div className="flex justify-center mb-20"><div className="text-white text-[8px] md:text-xs font-bold"><div className="flex items-center gap-1"><Crown className="w-2 h-2 md:w-3 md:h-3" /><span className="font-extrabold tracking-wide">Prize Pool: {getEventPrizePool(event.id)}</span></div></div></div>)}
+                            <div className="relative z-10 flex flex-col">
                               <div className="flex justify-center mb-1.5"><div className="text-white text-[9px] md:text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded-full border border-white/20">{catalogById.get(event.id)?.price || event.price}</div></div>
                               <div className="px-2 md:px-3 py-2 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
                                 <button type="button" onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }} className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs transition-all duration-200 cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/30 border-purple-400/60 text-white shadow-[0_0_12px_rgba(168,85,247,0.45)]' : 'bg-white/10 border-white/30 text-white/90 hover:bg-white/15'}`} aria-pressed={cartIds.includes(event.id)}>
