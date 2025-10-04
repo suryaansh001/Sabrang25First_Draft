@@ -7,14 +7,8 @@ import { Check, ChevronLeft, CreditCard, ArrowRight, X, Home, Info, Calendar, St
 import createApiUrl from '../../lib/api';
 import { events as EVENTS_DATA } from '../Events/[id]/rules/events.data';
 import { EventCatalogItem, EVENT_CATALOG as ORIGINAL_EVENT_CATALOG } from '../../lib/eventCatalog';
-import { 
-  createPaymentOrder, 
-  getPaymentsForOrder, 
-  getOrderStatus, 
-  verifyPaymentAndRedirect, 
-  createPaymentUrl,
-  handlePaymentCallback
-} from '../../utils/cashfreeApi';
+import {load} from '@cashfreepayments/cashfree-js';
+import { verifyPaymentStatus } from '../../utils/paymentVerification';
 
 
 // Control flag to enable/disable the checkout flow.
@@ -227,6 +221,7 @@ function CheckoutPageContent() {
   const [showToast, setShowToast] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const cashfreeLoadedRef = useRef<boolean>(false);
 
   const [step, setStep] = useState<Step>('select');
   const [reducedMotion, setReducedMotion] = useState<boolean>(true);
@@ -267,7 +262,7 @@ function CheckoutPageContent() {
     paymentSessionId: string;
     orderId: string;
     amount: number;
-    paymentUrl: string;
+    mode: string;
   } | null>(null);
   const [paymentMode, setPaymentMode] = useState<'card' | 'upi'>('card');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
@@ -319,8 +314,23 @@ function CheckoutPageContent() {
   useEffect(() => {
     const orderId = searchParams.get('order_id');
     if (orderId) {
-      console.log('🔄 Order ID found in URL, redirecting to success page for verification...');
-      router.replace(`/payment/success?order_id=${orderId}`);
+      setIsVerifying(true);
+      verifyPaymentStatus(orderId)
+        .then(result => {
+          setPaymentVerificationStatus(result);
+          // If payment is successful, clear the cart
+          if (result.success) {
+            setSelectedEventIds([]);
+            setVisitorPassDays(0);
+            try {
+              localStorage.removeItem('sabrang_cart');
+            } catch {}
+          }
+        })
+        .catch(error => {
+          setPaymentVerificationStatus({ success: false, status: 'ERROR', reason: error.message || 'Verification failed.' });
+        })
+        .finally(() => setIsVerifying(false));
     } else {
       setIsVerifying(false);
     }
@@ -942,7 +952,21 @@ function CheckoutPageContent() {
     if (step === 'payment') { setStep('review'); scrollToTop(); return; }
   };
 
-
+  // Helper function to load Cashfree SDK
+  const loadCashfreeSdk = async () => {
+    if (cashfreeLoadedRef.current) return;
+    
+    return new Promise<void>((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
+      script.onload = () => {
+        cashfreeLoadedRef.current = true;
+        resolve();
+      };
+      script.onerror = () => reject(new Error('Failed to load Cashfree SDK'));
+      document.head.appendChild(script);
+    });
+  };
 
   // Handle field changes
   const handleFieldChange = (signature: string, fieldName: string, value: string) => {
@@ -1068,38 +1092,27 @@ function CheckoutPageContent() {
     return '';
   };
 
-  // Start payment initialization with loading state and countdown
+  // Simplified payment initialization - no delays, minimal checking
   const startPaymentInitialization = async () => {
+    // Prevent double-clicking - if already processing, ignore
+    if (paymentInitializationState.isLoading) {
+      console.log('⚠️ Payment already in progress, ignoring duplicate click');
+      return;
+    }
+
     setPaymentInitializationState({
       isLoading: true,
-      timeLeft: 5,
+      timeLeft: 0,
       error: null,
       retryCount: paymentInitializationState.retryCount + 1
     });
 
-    // Start 5-second countdown
-    const countdownInterval = setInterval(() => {
-      setPaymentInitializationState(prev => {
-        if (prev.timeLeft <= 1) {
-          clearInterval(countdownInterval);
-          return prev;
-        }
-        return { ...prev, timeLeft: prev.timeLeft - 1 };
-      });
-    }, 1000);
-
-    // Wait for 2 seconds before actually starting the payment process
-    // This gives backend time to be ready and handles network delays
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
     try {
-      await proceedToPayment();
-      clearInterval(countdownInterval);
+      await proceedToPaymentSimple();
       setPaymentInitializationState(prev => ({ ...prev, isLoading: false }));
     } catch (error) {
-      clearInterval(countdownInterval);
-      const errorMessage = error instanceof Error ? error.message : 'Payment initialization failed';
-      console.error('❌ Payment initialization error:', errorMessage);
+      const errorMessage = error instanceof Error ? error.message : 'Payment failed';
+      console.error('❌ Payment error:', errorMessage);
       
       setPaymentInitializationState(prev => ({
         ...prev,
@@ -1118,6 +1131,80 @@ function CheckoutPageContent() {
   // Helper function to get mobile-optimized timeout
   const getMobileTimeout = (baseTimeout: number) => {
     return isMobileDevice() ? baseTimeout * 2 : baseTimeout;
+  };
+
+  // Simple payment function - minimal checking, no retries
+  const proceedToPaymentSimple = async () => {
+    console.log('🚀 Starting simple payment process');
+    
+    // Additional safety check - prevent duplicate processing
+    if (paymentSession) {
+      console.log('⚠️ Payment session already exists, redirecting to payment');
+      setStep('payment');
+      return;
+    }
+    
+    // Get basic user info quickly
+    let derivedName = 'Participant';
+    let derivedEmail = 'user@example.com';
+    let contactNo = '9999999999';
+
+    // Quick extraction from first available form
+    for (const group of fieldGroups) {
+      const data = formDataBySignature[group.signature] || {};
+      if (data['name']) derivedName = data['name'];
+      if (data['collegeMailId']) derivedEmail = data['collegeMailId'];
+      if (data['contactNo']) contactNo = data['contactNo'];
+      break; // Just take the first one
+    }
+
+    // Fallback to visitor pass
+    if (visitorPassDetails['collegeMailId']) {
+      derivedEmail = visitorPassDetails['collegeMailId'];
+      if (visitorPassDetails['name']) derivedName = visitorPassDetails['name'];
+    }
+
+    // Create payment order directly
+    const orderData = {
+      amount: finalPrice.toString(),
+      customerName: derivedName,
+      customerEmail: derivedEmail,
+      customerPhone: contactNo
+    };
+
+    console.log('🚀 Creating payment order:', orderData);
+    
+    const response = await fetch(createApiUrl('/api/payments/create-order'), {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify(orderData)
+    });
+
+    if (!response.ok) {
+      throw new Error('Payment setup failed');
+    }
+
+    const data = await response.json();
+    console.log('✅ Payment order created:', data);
+
+    if (!data.success) {
+      throw new Error(data.message || 'Payment setup failed');
+    }
+
+    // Store payment session data
+    setPaymentSession({
+      paymentSessionId: data.data.payment_session_id,
+      orderId: data.data.order_id,
+      amount: data.data.amount,
+      mode: 'production'
+    });
+
+    // Move to payment step
+    setStep('payment');
   };
 
   // Helper function for retry logic
@@ -1205,24 +1292,6 @@ function CheckoutPageContent() {
       if (!derivedName) derivedName = 'Participant';
       if (!derivedEmail) throw new Error('Email is required for registration');
 
-      // Validate that either events OR visitor pass is selected
-      const hasEvents = selectedEvents && selectedEvents.length > 0;
-      const hasVisitorPass = visitorPassDays > 0;
-      
-      if (!hasEvents && !hasVisitorPass) {
-        console.error('❌ No events or visitor pass selected');
-        throw new Error('Please select at least one event or visitor pass before proceeding to payment');
-      }
-
-      if (hasEvents) {
-        console.log(`✅ Registration validation passed: ${selectedEvents.length} events selected`, 
-          selectedEvents.map(e => e.title || e.id));
-      }
-      
-      if (hasVisitorPass) {
-        console.log(`✅ Visitor pass selected: ${visitorPassDays} day(s)`);
-      }
-
       // Generate a strong random password since checkout flow does not collect one
       const generatedPassword = Math.random().toString(36).slice(-10) + 'A1!';
 
@@ -1241,23 +1310,7 @@ function CheckoutPageContent() {
       registrationForm.append('formsBySignature', JSON.stringify(formDataBySignature));
       registrationForm.append('teamMembersBySignature', JSON.stringify(teamMembersBySignature));
       registrationForm.append('flagshipBenefitsByEvent', JSON.stringify(flagshipBenefitsByEvent));
-      
-      // Build items array including events and visitor pass
-      const allItems = [
-        ...selectedEvents.map(e => ({ 
-          id: e.id, 
-          title: e.title, 
-          price: parsePrice(e.price) // Parse price to number
-        })),
-        // Add visitor pass as an item if selected
-        ...(visitorPassDays > 0 ? [{
-          id: 'VISITOR_PASS',
-          title: `Visitor Pass (${visitorPassDays} day${visitorPassDays > 1 ? 's' : ''})`,
-          price: visitorPassDays * 69 // ₹69 per day
-        }] : [])
-      ];
-      
-      registrationForm.append('items', JSON.stringify(allItems));
+      registrationForm.append('items', JSON.stringify(selectedEvents.map(e => ({ id: e.id, title: e.title, price: e.price }))));
       registrationForm.append('visitorPassDays', visitorPassDays.toString());
       registrationForm.append('visitorPassDetails', JSON.stringify(visitorPassDetails));
       if (attachedImage) {
@@ -1307,74 +1360,77 @@ function CheckoutPageContent() {
         throw new Error(errorMsg);
       }
 
-      // Create payment order using the new direct API approach
+      // Create payment order using the new simple backend endpoint
       const orderData = {
         amount: finalPrice.toString(),
         customerName: derivedName,
         customerEmail: derivedEmail,
-        customerPhone: flat['contactNo'] || '9999999999',
-        // Include complete registration data for backend storage and fallback
-        registrationData: {
-          name: derivedName,
-          email: derivedEmail,
-          contactNo: flat['contactNo'] || '9999999999',
-          gender: flat['gender'] || '',
-          age: flat['age'] || '',
-          universityName: flat['universityName'] || '',
-          address: flat['address'] || '',
-          referralCode: flat['referralCode'] || '',
-          // Include both events and visitor pass in items
-          items: [
-            ...selectedEvents.map(e => ({ 
-              id: e.id, 
-              title: e.title, 
-              price: parsePrice(e.price) // Parse price to number (removes ₹ symbol)
-            })),
-            // Add visitor pass as an item if selected
-            ...(visitorPassDays > 0 ? [{
-              id: 'VISITOR_PASS',
-              title: `Visitor Pass (${visitorPassDays} day${visitorPassDays > 1 ? 's' : ''})`,
-              price: visitorPassDays * 69
-            }] : [])
-          ],
-          visitorPassDays: visitorPassDays,
-          visitorPassDetails: visitorPassDetails,
-          formsBySignature: formDataBySignature,
-          teamMembersBySignature: teamMembersBySignature,
-          flagshipBenefitsByEvent: flagshipBenefitsByEvent,
-          finalPrice: finalPrice,
-          paymentSessionId: '', // Will be filled after payment order creation
-          amount: finalPrice.toString()
-        }
+        customerPhone: flat['contactNo'] || '9999999999'
       };
 
-      console.log('🚀 Creating payment order with new API approach:', {
-        ...orderData,
-        registrationData: {
-          ...orderData.registrationData,
-          itemsCount: orderData.registrationData.items.length,
-          eventsCount: selectedEvents.length
+      console.log('🚀 Creating payment order with data:', orderData);
+      
+      // Add timeout to payment order request to prevent hanging
+      const paymentController = new AbortController();
+      const paymentTimeout = setTimeout(() => {
+        paymentController.abort();
+      }, getMobileTimeout(15000)); // 15s desktop, 30s mobile
+
+      const response = await retryFetch(createApiUrl('/api/payments/create-order'), {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          'User-Agent': typeof navigator !== 'undefined' ? navigator.userAgent : 'Sabrang-Frontend'
+        },
+        body: JSON.stringify(orderData),
+        signal: paymentController.signal
+      }, 3); // 3 retries for payment order creation
+      
+      clearTimeout(paymentTimeout);
+
+      if (!response.ok) {
+        const errText = await response.text().catch(() => '');
+        const errorMsg = errText || 'Failed to create order';
+        
+        // Enhanced mobile debugging
+        console.error('💸 Payment Order Creation Failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          url: createApiUrl('/api/payments/create-order'),
+          userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown',
+          isMobile: typeof navigator !== 'undefined' ? /Mobile|Android|iPhone/i.test(navigator.userAgent) : false,
+          connectionType: typeof navigator !== 'undefined' && 'connection' in navigator ? (navigator as any).connection?.effectiveType : 'Unknown',
+          errorText: errText,
+          orderData: orderData
+        });
+        
+        // Provide user-friendly error messages with mobile-specific guidance
+        if (errorMsg.includes('network') || errorMsg.includes('fetch') || errorMsg.includes('timeout')) {
+          const mobileGuidance = isMobileDevice() ? 
+            'Mobile networks can be slower during payment setup. Please check your internet connection and try again. If using cellular data, try switching to WiFi.' :
+            'Network connection issue during payment setup. Please check your internet and try again.';
+          throw new Error(mobileGuidance);
         }
-      });
-
-      // Use the new API utility function
-      const orderResult = await createPaymentOrder(orderData);
-
-      if (!orderResult.success) {
-        throw new Error(orderResult.message || 'Failed to create payment order');
+        
+        throw new Error(errorMsg);
       }
 
-      console.log('✅ Payment order created:', orderResult.data);
+      const data = await response.json();
+      console.log('✅ Payment order created:', data);
+
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to create payment order');
+      }
 
       // Store payment session data for the payment component
-      if (orderResult.data) {
-        setPaymentSession({
-          paymentSessionId: orderResult.data.payment_session_id,
-          orderId: orderResult.data.order_id,
-          amount: orderResult.data.amount,
-          paymentUrl: createPaymentUrl(orderResult.data.payment_session_id)
-        });
-      }
+      setPaymentSession({
+        paymentSessionId: data.data.payment_session_id,
+        orderId: data.data.order_id,
+        amount: data.data.amount,
+        mode: 'production' // Always use production mode
+      });
 
       // Move to payment step
       setStep('payment');
@@ -1415,9 +1471,29 @@ function CheckoutPageContent() {
     }
   };
 
-  // Clean payment function using direct API calls instead of SDK
+  // Initialize Cashfree SDK - always production mode
+  let cashfree: any;
+  const initializeSDK = async () => {
+    try {
+      cashfree = await load({
+        mode: "production"
+      });
+      console.log('✅ Cashfree SDK initialized in production mode');
+    } catch (error) {
+      console.error('❌ Failed to initialize Cashfree SDK:', error);
+    }
+  };
+
+  // Initialize SDK when payment session is available
+  useEffect(() => {
+    if (paymentSession) {
+      initializeSDK();
+    }
+  }, [paymentSession]);
+
+  // Clean payment function following user's preferred structure
   const doPayment = async () => {
-    if (!paymentSession) {
+    if (!paymentSession || !cashfree) {
       setPaymentInitializationState(prev => ({
         ...prev,
         error: 'Payment session not ready. Please go back and retry the payment setup.'
@@ -1432,10 +1508,14 @@ function CheckoutPageContent() {
     
     try {
       console.log('🚀 Starting payment with session ID:', paymentSession.paymentSessionId);
-      console.log('🔗 Redirecting to payment URL:', paymentSession.paymentUrl);
       
-      // Instead of using SDK, redirect directly to Cashfree payment URL
-      window.location.href = paymentSession.paymentUrl;
+      const checkoutOptions = {
+        paymentSessionId: paymentSession.paymentSessionId,
+        redirectTarget: "_self" as const,
+      };
+      
+      console.log('💳 Launching Cashfree checkout with options:', checkoutOptions);
+      await cashfree.checkout(checkoutOptions);
       
     } catch (error) {
       console.error('❌ Payment failed:', error);
@@ -1460,7 +1540,38 @@ function CheckoutPageContent() {
     }
   };
 
+  // Initialize Cashfree payment
+  const initializeCashfreePayment = async () => {
+    if (!paymentSession) {
+      alert('No payment session available. Please try again.');
+      return;
+    }
 
+    setIsProcessingPayment(true);
+    try {
+      console.log('🔗 Initializing Cashfree payment...');
+      console.log('Payment Session:', paymentSession);
+      
+      // Always use production mode
+      const cashfree = await load({ 
+        mode: "production"
+      });
+      
+      const checkoutOptions = {
+        paymentSessionId: paymentSession.paymentSessionId,
+        redirectTarget: '_self' as const
+      };
+      
+      console.log('� Launching Cashfree checkout with options:', checkoutOptions);
+      await cashfree.checkout(checkoutOptions);
+      
+    } catch (error) {
+      console.error('❌ Cashfree payment failed:', error);
+      alert(`Payment failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
 
   // Group events by category
   const eventsByCategory = useMemo(() => {
@@ -2876,14 +2987,14 @@ function CheckoutPageContent() {
                           disabled={paymentInitializationState.isLoading}
                           className={`px-5 py-2 rounded-full transition cursor-pointer ${
                             paymentInitializationState.isLoading 
-                              ? 'bg-gray-600 cursor-not-allowed' 
+                              ? 'bg-gray-600 cursor-not-allowed opacity-75' 
                               : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:shadow-lg'
                           }`}
                         >
                           {paymentInitializationState.isLoading 
-                            ? `Processing... ${paymentInitializationState.timeLeft}s` 
+                            ? 'Processing...' 
                             : paymentInitializationState.retryCount > 0 
-                              ? 'Retry Payment Setup' 
+                              ? 'Retry Payment' 
                               : 'Proceed to Payment'
                           }
                         </button>
@@ -2909,10 +3020,7 @@ function CheckoutPageContent() {
                         {paymentInitializationState.isLoading && (
                           <div className="glass rounded-lg p-4 border border-blue-500/30 bg-blue-500/10">
                             <div className="text-blue-200 text-sm">
-                              🔄 Initializing secure payment session...
-                            </div>
-                            <div className="text-blue-300 text-xs mt-1">
-                              We're setting up your payment securely. This usually takes 3-5 seconds.
+                              🔄 Setting up payment...
                             </div>
                           </div>
                         )}
@@ -3050,7 +3158,7 @@ function CheckoutPageContent() {
                             </div>
                             <div className="flex justify-between text-sm">
                               <span className="text-white/70">Payment Mode:</span>
-                              <span className="text-white/90">Production</span>
+                              <span className="text-white/90">{paymentSession.mode}</span>
                             </div>
                           </div>
                         </div>
