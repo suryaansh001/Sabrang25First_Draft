@@ -1,0 +1,13 @@
+.faulty-terminal-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ensure the internal canvas upscales crisply without layout shifts */
+.faulty-terminal-container > canvas {
+  width: 100% !important;
+  height: 100% !important;
+  image-rendering: auto;
+}
