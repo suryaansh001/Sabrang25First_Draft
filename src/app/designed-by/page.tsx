@@ -89,16 +89,16 @@ function TeamSection({ title, members, isMainHeading = false, isCoreSection = fa
 						style={{ animationDelay: `${index * 150}ms` }}
 					>
 						<div 
-							className="relative rounded-3xl overflow-hidden border border-purple-400/30 bg-gradient-to-br from-purple-900/40 via-indigo-900/30 to-blue-900/40 backdrop-blur-xl shadow-[0_25px_80px_rgba(139,92,246,0.2)] w-full max-w-md sm:max-w-lg lg:max-w-xl hover:shadow-[0_40px_100px_rgba(139,92,246,0.4)] transition-all duration-700 hover:scale-105 hover:border-purple-300/50 hover:-translate-y-2"
+							className="relative rounded-3xl overflow-hidden border border-purple-400/30 bg-gradient-to-br from-purple-900/40 via-indigo-900/30 to-blue-900/40 shadow-[0_25px_80px_rgba(139,92,246,0.2)] w-full max-w-md sm:max-w-lg lg:max-w-xl hover:shadow-[0_40px_100px_rgba(139,92,246,0.4)] transition-shadow duration-300 hover:border-purple-300/50"
 							onMouseEnter={() => setHoveredCard(m.name)}
 							onMouseLeave={() => setHoveredCard(null)}
 						>
 							{/* Enhanced glassmorphism border */}
-							<div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-							<div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/5 via-transparent to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+							<div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+							<div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/5 via-transparent to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 							
 							{/* Animated border glow */}
-							<div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-400/30 via-pink-400/30 to-indigo-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-sm scale-105"></div>
+							<div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-400/30 via-pink-400/30 to-indigo-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm scale-105"></div>
 							
                             <div className={`relative w-full ${
                                 isMainHeading && m.name === 'Suryansh Sharma' ? 'aspect-[3/4] min-h-[500px]' : 'aspect-[3/4] min-h-[450px]'
@@ -113,7 +113,7 @@ function TeamSection({ title, members, isMainHeading = false, isCoreSection = fa
                                         <img 
                                             src={m.image} 
                                             alt={m.name} 
-                                            className={`absolute inset-0 w-full h-full object-contain opacity-95 drop-shadow-[0_10px_30px_rgba(0,0,0,0.55)] transition-transform duration-700 will-change-transform ${
+                                            className={`absolute inset-0 w-full h-full object-contain opacity-95 drop-shadow-[0_10px_30px_rgba(0,0,0,0.55)] transition-transform duration-300 ${
                                                  ['Aman Pratap Singh','Ayush Sharma','Devam Gupta'].includes(m.name)
                                                    ? 'p-0 sm:p-0.5 scale-[1.28] group-hover:scale-[1.34]'
                                                    : m.name === 'Yash Mishra'
@@ -142,19 +142,19 @@ function TeamSection({ title, members, isMainHeading = false, isCoreSection = fa
                                 <div className="absolute inset-0 bg-gradient-to-tl from-transparent via-white/5 to-transparent" />
 								
 								{/* Enhanced shimmer effect */}
-								<div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1200"></div>
+								<div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500"></div>
 								
 								{/* Enhanced text overlay with stronger black backdrop */}
 								<div className="absolute inset-x-0 bottom-0 p-4">
 									<div className="relative">
 										{/* Stronger black backdrop for better text visibility */}
-										<div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/70 to-black/30 rounded-t-2xl backdrop-blur-sm"></div>
+										<div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/70 to-black/30 rounded-t-2xl"></div>
 										<div className="relative text-center space-y-2">
-											<p className="text-white font-bold text-base sm:text-lg drop-shadow-[0_2px_8px_rgba(0,0,0,1)] group-hover:scale-105 group-hover:drop-shadow-[0_4px_12px_rgba(139,92,246,0.8)] transition-all duration-500">
+											<p className="text-white font-bold text-base sm:text-lg drop-shadow-[0_2px_8px_rgba(0,0,0,1)] group-hover:scale-105 group-hover:drop-shadow-[0_4px_12px_rgba(139,92,246,0.8)] transition-all duration-300">
 												{m.name}
 											</p>
 											{(m.role || 'Tech Team') && (
-												<p className="text-white/90 text-xs sm:text-sm drop-shadow-[0_2px_6px_rgba(0,0,0,1)] group-hover:text-white group-hover:drop-shadow-[0_3px_8px_rgba(139,92,246,0.6)] transition-all duration-500">
+												<p className="text-white/90 text-xs sm:text-sm drop-shadow-[0_2px_6px_rgba(0,0,0,1)] group-hover:text-white group-hover:drop-shadow-[0_3px_8px_rgba(139,92,246,0.6)] transition-all duration-300">
 													{m.role || 'Tech Team'}
 												</p>
 											)}
@@ -163,11 +163,11 @@ function TeamSection({ title, members, isMainHeading = false, isCoreSection = fa
 								</div>
 								
 								{/* Enhanced hover effect overlay */}
-								<div className="absolute inset-0 bg-gradient-to-t from-purple-500/25 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+								<div className="absolute inset-0 bg-gradient-to-t from-purple-500/25 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 								
 								{/* Corner accent lights */}
-								<div className="absolute top-4 right-4 w-2 h-2 bg-purple-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 shadow-[0_0_8px_rgba(139,92,246,0.8)]"></div>
-								<div className="absolute bottom-4 left-4 w-1.5 h-1.5 bg-pink-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-200 shadow-[0_0_6px_rgba(236,72,153,0.8)]"></div>
+								<div className="absolute top-4 right-4 w-2 h-2 bg-purple-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_8px_rgba(139,92,246,0.8)]"></div>
+								<div className="absolute bottom-4 left-4 w-1.5 h-1.5 bg-pink-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_6px_rgba(236,72,153,0.8)]"></div>
 							</div>
 						</div>
 					</figure>
@@ -221,17 +221,6 @@ export default function DesignedByPage() {
 				{/* Enhanced page header with glassmorphism */}
 				<div className="text-center mb-20 relative">
 					<div className={`transition-all duration-1200 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
-						{/* Main title with enhanced effects */}
-						<div className="relative inline-block mb-8">
-							{/* Glowing background */}
-							<div className="absolute inset-0 bg-gradient-to-r from-purple-500/30 via-pink-500/30 to-indigo-500/30 rounded-3xl blur-2xl scale-110"></div>
-							{/* Glassmorphism container */}
-							<div className="relative bg-gradient-to-r from-purple-900/20 via-indigo-900/20 to-blue-900/20 backdrop-blur-xl rounded-3xl p-8 border border-purple-400/20">
-								<h1 className="text-7xl sm:text-8xl md:text-9xl font-black tracking-tight bg-gradient-to-r from-purple-200 via-pink-200 to-indigo-200 bg-clip-text text-transparent drop-shadow-[0_6px_32px_rgba(139,92,246,0.6)]">
-									Made by
-								</h1>
-							</div>
-						</div>
 						
 						{/* Enhanced decorative elements */}
 						<div className="flex justify-center space-x-6">

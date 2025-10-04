@@ -729,7 +729,7 @@ export default function EventsPage() {
                     <Share2 className="w-4 h-4" /> Share
                   </button>
                   {showCopyMessage && (
-                    <span className="text-sm text-green-300">Link copied!</span>
+                    <span className="text-sm text-white">Link copied!</span>
                   )}
                 </div>
               </div>
@@ -968,27 +968,17 @@ export default function EventsPage() {
                           <div className="absolute inset-0 flex items-center justify-center z-10">
                             <div className="relative text-center">
                               {/* Glitch overlay effect */}
-                              <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 via-transparent to-red-400/20 animate-pulse opacity-50" />
-                              
-                              {/* Main title with neon effect - middle position only */}
-                              <h3 className="relative font-bold text-sm md:text-lg lg:text-xl text-white px-1 md:px-2 uppercase tracking-widest leading-tight" 
-                                  style={{ 
-                                    textShadow: '0 0 10px rgba(0, 255, 136, 0.8), 0 0 20px rgba(0, 255, 136, 0.4)',
-                                    fontFamily: 'monospace',
-                                    letterSpacing: '0.2em'
-                                  }}>
-                                {event.title}
-                              </h3>
+                              <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 animate-pulse opacity-50" />
                               
                               {/* Scanning line effect */}
-                              <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-pulse" />
+                              <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-pulse" />
                             </div>
                           </div>
 
                           {/* Bottom section - Price + Add to cart bar */}
                           <div className="relative z-10 flex flex-col">
                             <div className="text-white text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded-full border border-white/20 mb-1">
-                              {catalogById.get(event.id)?.price || event.price}
+                              Registration Fee: {catalogById.get(event.id)?.price || event.price}
                             </div>
                             
                             {/* Add to cart button */}
@@ -1047,26 +1037,20 @@ export default function EventsPage() {
 
                           {/* --- MYSTERIOUS & SUSPENSEFUL OVERLAY --- */}
                           <div className="absolute inset-0 bg-black/70 overflow-hidden p-2 md:p-4 flex flex-col justify-between">
-                            <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #00ff88 1px, transparent 0)', backgroundSize: '20px 20px' }} />
-                            <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-pulse opacity-30" />
+                            <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #ffffff 1px, transparent 0)', backgroundSize: '20px 20px' }} />
+                            <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-pulse opacity-30" />
                             <div className="absolute bottom-0 right-0 w-full h-0.5 bg-gradient-to-l from-transparent via-red-400 to-transparent animate-pulse opacity-30 delay-1000" />
                             <div className="relative z-10 flex justify-between items-start">
-                              <div className="px-2 md:px-3 py-0.5 md:py-1 bg-black/50 border border-green-400/50 rounded-sm backdrop-blur-sm">
-                                <span className="text-[10px] md:text-xs font-bold text-green-400 uppercase tracking-widest" style={{ fontFamily: 'monospace' }}>
-                                  {event.isFlagship ? '⚡ FLAGSHIP' : event.category}
-                                </span>
-                              </div>
-                              {event.isFlagship && (<div className="w-4 h-4 md:w-6 md:h-6 bg-gradient-to-r from-green-400 to-blue-400 rounded-sm border border-green-400/50 flex items-center justify-center animate-pulse"><span className="text-[8px] md:text-xs">🔒</span></div>)}
+                              {event.isFlagship && (<div className="w-4 h-4 md:w-6 md:h-6 bg-gradient-to-r from-white/30 to-white/60 rounded-sm border border-white/40 flex items-center justify-center animate-pulse"><span className="text-[8px] md:text-xs">🔒</span></div>)}
                             </div>
                             <div className="absolute inset-0 flex items-center justify-center z-10">
                               <div className="relative text-center">
-                                <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 via-transparent to-red-400/20 animate-pulse opacity-50" />
-                                <h3 className="relative font-bold text-sm md:text-lg lg:text-xl text-white px-1 md:px-2 uppercase tracking-widest leading-tight" style={{ textShadow: '0 0 10px rgba(0, 255, 136, 0.8), 0 0 20px rgba(0, 255, 136, 0.4)', fontFamily: 'monospace', letterSpacing: '0.2em' }}>{event.title}</h3>
-                                <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-pulse" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 animate-pulse opacity-50" />
+                                <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-pulse" />
                               </div>
                             </div>
                             <div className="relative z-10 flex flex-col">
-                              <div className="flex justify-center mb-1.5"><div className="text-white text-[9px] md:text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded-full border border-white/20">{catalogById.get(event.id)?.price || event.price}</div></div>
+                              <div className="flex justify-center mb-1.5"><div className="text-white text-[9px] md:text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded-full border border-white/20">Registration Fee: {catalogById.get(event.id)?.price || event.price}</div></div>
                               <div className="px-2 md:px-3 py-2 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
                                 <button type="button" onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }} className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs transition-all duration-200 cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/30 border-purple-400/60 text-white shadow-[0_0_12px_rgba(168,85,247,0.45)]' : 'bg-white/10 border-white/30 text-white/90 hover:bg-white/15'}`} aria-pressed={cartIds.includes(event.id)}>
                                   <span className={`inline-block w-3 h-3 md:w-4 md:h-4 rounded-full ring-1 ${cartIds.includes(event.id) ? 'bg-purple-500 ring-purple-300' : 'bg-transparent ring-white/40'}`}></span>
@@ -1074,14 +1058,14 @@ export default function EventsPage() {
                                 </button>
                               </div>
                             </div>
-                            <div className="absolute inset-0 border border-green-400/30 rounded-lg" />
-                            <div className="absolute inset-0 border border-red-400/20 rounded-lg animate-pulse opacity-50" />
-                            <div className="absolute top-1 md:top-2 left-1 md:left-2 w-1.5 md:w-2 h-1.5 md:h-2 border-l border-t border-green-400" />
-                            <div className="absolute top-1 md:top-2 right-1 md:right-2 w-1.5 md:w-2 h-1.5 md:h-2 border-r border-t border-red-400" />
-                            <div className="absolute bottom-1 md:bottom-2 left-1 md:left-2 w-1.5 md:w-2 h-1.5 md:h-2 border-l border-b border-red-400" />
-                            <div className="absolute bottom-1 md:bottom-2 right-1 md:right-2 w-1.5 md:w-2 h-1.5 md:h-2 border-r border-b border-green-400" />
-                            <div className="absolute top-1/3 left-1/4 w-0.5 md:w-1 h-0.5 md:h-1 bg-green-400 rounded-full animate-ping delay-500" />
-                            <div className="absolute bottom-1/3-right-1/4 w-0.5 md:w-1 h-0.5 md:h-1 bg-red-400 rounded-full animate-ping delay-1000" />
+                            <div className="absolute inset-0 border border-white/20 rounded-lg" />
+                            <div className="absolute inset-0 border border-white/10 rounded-lg animate-pulse opacity-50" />
+                            <div className="absolute top-1 md:top-2 left-1 md:left-2 w-1.5 md:w-2 h-1.5 md:h-2 border-l border-t border-white/30" />
+                            <div className="absolute top-1 md:top-2 right-1 md:right-2 w-1.5 md:w-2 h-1.5 md:h-2 border-r border-t border-white/30" />
+                            <div className="absolute bottom-1 md:bottom-2 left-1 md:left-2 w-1.5 md:w-2 h-1.5 md:h-2 border-l border-b border-white/30" />
+                            <div className="absolute bottom-1 md:bottom-2 right-1 md:right-2 w-1.5 md:w-2 h-1.5 md:h-2 border-r border-b border-white/30" />
+                            <div className="absolute top-1/3 left-1/4 w-0.5 md:w-1 h-0.5 md:h-1 bg-white/40 rounded-full animate-ping delay-500" />
+                            <div className="absolute bottom-1/3-right-1/4 w-0.5 md:w-1 h-0.5 md:h-1 bg-white/40 rounded-full animate-ping delay-1000" />
                           </div>
                         </motion.div>
                       );
