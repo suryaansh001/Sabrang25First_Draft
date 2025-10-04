@@ -1092,27 +1092,38 @@ function CheckoutPageContent() {
     return '';
   };
 
-  // Simplified payment initialization - no delays, minimal checking
+  // Start payment initialization with loading state and countdown
   const startPaymentInitialization = async () => {
-    // Prevent double-clicking - if already processing, ignore
-    if (paymentInitializationState.isLoading) {
-      console.log('⚠️ Payment already in progress, ignoring duplicate click');
-      return;
-    }
-
     setPaymentInitializationState({
       isLoading: true,
-      timeLeft: 0,
+      timeLeft: 5,
       error: null,
       retryCount: paymentInitializationState.retryCount + 1
     });
 
+    // Start 5-second countdown
+    const countdownInterval = setInterval(() => {
+      setPaymentInitializationState(prev => {
+        if (prev.timeLeft <= 1) {
+          clearInterval(countdownInterval);
+          return prev;
+        }
+        return { ...prev, timeLeft: prev.timeLeft - 1 };
+      });
+    }, 1000);
+
+    // Wait for 2 seconds before actually starting the payment process
+    // This gives backend time to be ready and handles network delays
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
     try {
-      await proceedToPaymentSimple();
+      await proceedToPayment();
+      clearInterval(countdownInterval);
       setPaymentInitializationState(prev => ({ ...prev, isLoading: false }));
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Payment failed';
-      console.error('❌ Payment error:', errorMessage);
+      clearInterval(countdownInterval);
+      const errorMessage = error instanceof Error ? error.message : 'Payment initialization failed';
+      console.error('❌ Payment initialization error:', errorMessage);
       
       setPaymentInitializationState(prev => ({
         ...prev,
@@ -1131,80 +1142,6 @@ function CheckoutPageContent() {
   // Helper function to get mobile-optimized timeout
   const getMobileTimeout = (baseTimeout: number) => {
     return isMobileDevice() ? baseTimeout * 2 : baseTimeout;
-  };
-
-  // Simple payment function - minimal checking, no retries
-  const proceedToPaymentSimple = async () => {
-    console.log('🚀 Starting simple payment process');
-    
-    // Additional safety check - prevent duplicate processing
-    if (paymentSession) {
-      console.log('⚠️ Payment session already exists, redirecting to payment');
-      setStep('payment');
-      return;
-    }
-    
-    // Get basic user info quickly
-    let derivedName = 'Participant';
-    let derivedEmail = 'user@example.com';
-    let contactNo = '9999999999';
-
-    // Quick extraction from first available form
-    for (const group of fieldGroups) {
-      const data = formDataBySignature[group.signature] || {};
-      if (data['name']) derivedName = data['name'];
-      if (data['collegeMailId']) derivedEmail = data['collegeMailId'];
-      if (data['contactNo']) contactNo = data['contactNo'];
-      break; // Just take the first one
-    }
-
-    // Fallback to visitor pass
-    if (visitorPassDetails['collegeMailId']) {
-      derivedEmail = visitorPassDetails['collegeMailId'];
-      if (visitorPassDetails['name']) derivedName = visitorPassDetails['name'];
-    }
-
-    // Create payment order directly
-    const orderData = {
-      amount: finalPrice.toString(),
-      customerName: derivedName,
-      customerEmail: derivedEmail,
-      customerPhone: contactNo
-    };
-
-    console.log('🚀 Creating payment order:', orderData);
-    
-    const response = await fetch(createApiUrl('/api/payments/create-order'), {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-      },
-      body: JSON.stringify(orderData)
-    });
-
-    if (!response.ok) {
-      throw new Error('Payment setup failed');
-    }
-
-    const data = await response.json();
-    console.log('✅ Payment order created:', data);
-
-    if (!data.success) {
-      throw new Error(data.message || 'Payment setup failed');
-    }
-
-    // Store payment session data
-    setPaymentSession({
-      paymentSessionId: data.data.payment_session_id,
-      orderId: data.data.order_id,
-      amount: data.data.amount,
-      mode: 'production'
-    });
-
-    // Move to payment step
-    setStep('payment');
   };
 
   // Helper function for retry logic
@@ -2987,14 +2924,14 @@ function CheckoutPageContent() {
                           disabled={paymentInitializationState.isLoading}
                           className={`px-5 py-2 rounded-full transition cursor-pointer ${
                             paymentInitializationState.isLoading 
-                              ? 'bg-gray-600 cursor-not-allowed opacity-75' 
+                              ? 'bg-gray-600 cursor-not-allowed' 
                               : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:shadow-lg'
                           }`}
                         >
                           {paymentInitializationState.isLoading 
-                            ? 'Processing...' 
+                            ? `Processing... ${paymentInitializationState.timeLeft}s` 
                             : paymentInitializationState.retryCount > 0 
-                              ? 'Retry Payment' 
+                              ? 'Retry Payment Setup' 
                               : 'Proceed to Payment'
                           }
                         </button>
@@ -3020,7 +2957,10 @@ function CheckoutPageContent() {
                         {paymentInitializationState.isLoading && (
                           <div className="glass rounded-lg p-4 border border-blue-500/30 bg-blue-500/10">
                             <div className="text-blue-200 text-sm">
-                              🔄 Setting up payment...
+                              🔄 Initializing secure payment session...
+                            </div>
+                            <div className="text-blue-300 text-xs mt-1">
+                              We're setting up your payment securely. This usually takes 3-5 seconds.
                             </div>
                           </div>
                         )}
