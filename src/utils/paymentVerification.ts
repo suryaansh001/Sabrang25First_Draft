@@ -11,18 +11,13 @@ export const fetchCashfreePayments = async (orderId: string): Promise<any> => {
   try {
     console.log(`🔍 Fetching payment details for order: ${orderId}`);
     
-    // Use the correct endpoint that matches the create-order endpoint
-    const url = createApiUrl(`/api/payments/fetch-payments/${orderId}`);
-    console.log(`🔗 Calling URL: ${url}`);
-    
-    const response = await fetch(url, {
+    const response = await fetch(createApiUrl(`/api/payment/fetch-payments/${orderId}`), {
       method: 'GET',
       credentials: 'include'
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`❌ API Error: ${response.status} ${response.statusText}`, errorText);
       throw new Error(errorText || 'Failed to fetch payment details');
     }
 

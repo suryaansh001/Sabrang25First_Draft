@@ -119,7 +119,7 @@ const HolographicCard = ({
 
 
         {/* Flip Card Container */}
-        <div className="relative h-64 w-full sm:h-96 sm:w-72 perspective-1000">
+        <div className="relative h-80 w-full sm:h-96 sm:w-72 perspective-1000">
           <div
             className="relative w-full h-full transition-transform duration-700 ease-out transform-style-preserve-3d"
             style={{ 
@@ -731,7 +731,7 @@ export default function PeopleStrip() {
   const renderCommitteeLayout = (committeeName: string) => {
     const committeeMembers = people.filter(p => p.committee === committeeName);
     if (committeeMembers.length === 0) return null;
-
+    
     const isSingleMember = committeeMembers.length === 1;
     const isActive = activeCommittee === committeeName;
 
