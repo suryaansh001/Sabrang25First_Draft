@@ -267,13 +267,11 @@ function CheckoutPageContent() {
   const [paymentMode, setPaymentMode] = useState<'card' | 'upi'>('card');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [paymentInitializationState, setPaymentInitializationState] = useState<{
-    isLoading: boolean;
-    timeLeft: number;
-    error: string | null;
-    retryCount: number;
+  isLoading: boolean;
+  error: string | null;
+  retryCount: number;
   }>({
     isLoading: false,
-    timeLeft: 0,
     error: null,
     retryCount: 0
   });
@@ -1092,36 +1090,18 @@ function CheckoutPageContent() {
     return '';
   };
 
-  // Start payment initialization with loading state and countdown
+  // Start payment initialization with loading state
   const startPaymentInitialization = async () => {
     setPaymentInitializationState({
       isLoading: true,
-      timeLeft: 5,
       error: null,
       retryCount: paymentInitializationState.retryCount + 1
     });
 
-    // Start 5-second countdown
-    const countdownInterval = setInterval(() => {
-      setPaymentInitializationState(prev => {
-        if (prev.timeLeft <= 1) {
-          clearInterval(countdownInterval);
-          return prev;
-        }
-        return { ...prev, timeLeft: prev.timeLeft - 1 };
-      });
-    }, 1000);
-
-    // Wait for 2 seconds before actually starting the payment process
-    // This gives backend time to be ready and handles network delays
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
     try {
       await proceedToPayment();
-      clearInterval(countdownInterval);
       setPaymentInitializationState(prev => ({ ...prev, isLoading: false }));
     } catch (error) {
-      clearInterval(countdownInterval);
       const errorMessage = error instanceof Error ? error.message : 'Payment initialization failed';
       console.error('❌ Payment initialization error:', errorMessage);
       
@@ -1133,26 +1113,11 @@ function CheckoutPageContent() {
     }
   };
 
-  // Helper function to detect mobile devices
-  const isMobileDevice = () => {
-    if (typeof navigator === 'undefined') return false;
-    return /Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  };
-
-  // Helper function to get mobile-optimized timeout
-  const getMobileTimeout = (baseTimeout: number) => {
-    return isMobileDevice() ? baseTimeout * 2 : baseTimeout;
-  };
 
   // Helper function for retry logic
-  const retryFetch = async (url: string, options: RequestInit, maxRetries: number = 3): Promise<Response> => {
+  const retryFetch = async (url: string, options: RequestInit, maxRetries: number = 2): Promise<Response> => {
     for (let i = 0; i < maxRetries; i++) {
       try {
-        // Check network status before each attempt
-        if (typeof navigator !== 'undefined' && !navigator.onLine) {
-          throw new Error('No internet connection. Please check your network and try again.');
-        }
-        
         const response = await fetch(url, options);
         return response;
       } catch (error) {
@@ -1162,8 +1127,8 @@ function CheckoutPageContent() {
           throw error;
         }
         
-        // Exponential backoff: wait 1s, 2s, 3s...
-        await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+        // Simple backoff: wait 1s
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
     throw new Error('All retry attempts failed');
@@ -1171,11 +1136,6 @@ function CheckoutPageContent() {
 
   const proceedToPayment = async () => {
     console.log('🚀 proceedToPayment function called');
-    
-    // Check network connectivity before starting
-    if (typeof navigator !== 'undefined' && !navigator.onLine) {
-      throw new Error('No internet connection. Please check your network and try again.');
-    }
     
     try {
       // First, register the user on backend using existing /register with image upload
@@ -1263,12 +1223,6 @@ function CheckoutPageContent() {
         });
       });
 
-      // Add timeout to registration request to prevent hanging
-      const registrationController = new AbortController();
-      const registrationTimeout = setTimeout(() => {
-        registrationController.abort();
-      }, getMobileTimeout(30000)); // 30s desktop, 60s mobile
-
       const registrationResponse = await retryFetch(createApiUrl('/register'), {
         method: 'POST',
         credentials: 'include',
@@ -1276,24 +1230,12 @@ function CheckoutPageContent() {
           'X-Requested-With': 'XMLHttpRequest',
           'User-Agent': typeof navigator !== 'undefined' ? navigator.userAgent : 'Sabrang-Frontend'
         },
-        body: registrationForm,
-        signal: registrationController.signal
+        body: registrationForm
       }, 2); // 2 retries for registration
-      
-      clearTimeout(registrationTimeout);
 
       if (!registrationResponse.ok) {
         const errText = await registrationResponse.text().catch(() => '');
         const errorMsg = errText || 'Registration failed';
-        
-        // Provide user-friendly error messages with mobile-specific guidance
-        if (errorMsg.includes('network') || errorMsg.includes('fetch') || errorMsg.includes('timeout')) {
-          const mobileGuidance = isMobileDevice() ? 
-            'Mobile networks can be slower. Please check your internet connection and try again. If using cellular data, try switching to WiFi.' :
-            'Network connection issue. Please check your internet and try again.';
-          throw new Error(mobileGuidance);
-        }
-        
         throw new Error(errorMsg);
       }
 
@@ -1306,12 +1248,6 @@ function CheckoutPageContent() {
       };
 
       console.log('🚀 Creating payment order with data:', orderData);
-      
-      // Add timeout to payment order request to prevent hanging
-      const paymentController = new AbortController();
-      const paymentTimeout = setTimeout(() => {
-        paymentController.abort();
-      }, getMobileTimeout(15000)); // 15s desktop, 30s mobile
 
       const response = await retryFetch(createApiUrl('/api/payments/create-order'), {
         method: 'POST',
@@ -1321,36 +1257,12 @@ function CheckoutPageContent() {
           'X-Requested-With': 'XMLHttpRequest',
           'User-Agent': typeof navigator !== 'undefined' ? navigator.userAgent : 'Sabrang-Frontend'
         },
-        body: JSON.stringify(orderData),
-        signal: paymentController.signal
-      }, 3); // 3 retries for payment order creation
-      
-      clearTimeout(paymentTimeout);
+        body: JSON.stringify(orderData)
+      }, 2); // 2 retries for payment order creation
 
       if (!response.ok) {
         const errText = await response.text().catch(() => '');
         const errorMsg = errText || 'Failed to create order';
-        
-        // Enhanced mobile debugging
-        console.error('💸 Payment Order Creation Failed:', {
-          status: response.status,
-          statusText: response.statusText,
-          url: createApiUrl('/api/payments/create-order'),
-          userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown',
-          isMobile: typeof navigator !== 'undefined' ? /Mobile|Android|iPhone/i.test(navigator.userAgent) : false,
-          connectionType: typeof navigator !== 'undefined' && 'connection' in navigator ? (navigator as any).connection?.effectiveType : 'Unknown',
-          errorText: errText,
-          orderData: orderData
-        });
-        
-        // Provide user-friendly error messages with mobile-specific guidance
-        if (errorMsg.includes('network') || errorMsg.includes('fetch') || errorMsg.includes('timeout')) {
-          const mobileGuidance = isMobileDevice() ? 
-            'Mobile networks can be slower during payment setup. Please check your internet connection and try again. If using cellular data, try switching to WiFi.' :
-            'Network connection issue during payment setup. Please check your internet and try again.';
-          throw new Error(mobileGuidance);
-        }
-        
         throw new Error(errorMsg);
       }
 
@@ -1392,13 +1304,9 @@ function CheckoutPageContent() {
       
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
-          errorMessage = isMobileDevice() ? 
-            'Request timed out. Mobile networks can be slower - please check your internet connection and try again. If using cellular data, try switching to WiFi.' :
-            'Request timed out. Please check your internet connection and try again.';
+          errorMessage = 'Request timed out. Please check your internet connection and try again.';
         } else if (error.message?.toLowerCase().includes('failed to fetch')) {
-          errorMessage = isMobileDevice() ? 
-            'Network connection failed. Mobile networks can be unstable - please check your internet and try clicking "Pay Now" again. If using cellular data, try switching to WiFi.' :
-            'Network connection failed. Please check your internet and try clicking "Pay Now" again.';
+          errorMessage = 'Network connection failed. Please check your internet and try clicking "Pay Now" again.';
         } else {
           errorMessage = error.message;
         }
@@ -2929,7 +2837,7 @@ function CheckoutPageContent() {
                           }`}
                         >
                           {paymentInitializationState.isLoading 
-                            ? `Processing... ${paymentInitializationState.timeLeft}s` 
+                            ? 'Processing...' 
                             : paymentInitializationState.retryCount > 0 
                               ? 'Retry Payment Setup' 
                               : 'Proceed to Payment'
