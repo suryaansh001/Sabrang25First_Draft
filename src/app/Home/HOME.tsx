@@ -584,7 +584,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                 </div>
                 <div className="flex-shrink-0 relative group">
                   <img 
-                    src="/images/artist/navjotAhuja/navjot3.jpg" 
+                    src="/images/artist/navjotAhuja/navjot3.JPG" 
                     alt="Navjot Ahuja Performance" 
                     className="w-32 h-40 object-cover rounded-lg border-2 border-pink-500/50 transition-all duration-300 group-hover:scale-105 group-hover:border-pink-400"
                   />

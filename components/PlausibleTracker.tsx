@@ -1,6 +1,6 @@
 'use client';
 
-import { usePlausible } from 'next-plausible';
+import { usePlausible } from './PlausibleProvider';
 import { useEffect } from 'react';
 
 interface PlausibleTrackerProps {

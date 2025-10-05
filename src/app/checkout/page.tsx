@@ -278,6 +278,9 @@ function CheckoutPageContent() {
   const [paymentVerificationStatus, setPaymentVerificationStatus] = useState<PaymentStatus | null>(null);
   const [isVerifying, setIsVerifying] = useState(true);
 
+  // Fallback Cashfree form URL for manual payment if SDK/init fails or times out
+  const CASHFREE_FALLBACK_FORM_URL = 'https://payments.cashfree.com/forms?code=sabrang25';
+
 
   // Force reduced motion for smooth scrolling experience on this page
   useEffect(() => {
@@ -1101,12 +1104,23 @@ function CheckoutPageContent() {
       retryCount: paymentInitializationState.retryCount + 1
     });
 
+    // If initialization takes too long, surface a helpful fallback
+    const initTimeoutId = window.setTimeout(() => {
+      setPaymentInitializationState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: 'This is taking longer than expected. You can retry, or use the fallback payment link below.'
+      }));
+    }, 15000);
+
     try {
       await proceedToPayment();
       setPaymentInitializationState(prev => ({ ...prev, isLoading: false }));
     } catch (error) {
       console.error('❌ Payment initialization error:', error);
       setPaymentInitializationState(prev => ({ ...prev, isLoading: false }));
+    } finally {
+      window.clearTimeout(initTimeoutId);
     }
   };
 
@@ -1532,6 +1546,25 @@ function CheckoutPageContent() {
         {/* Rest of your steps remain as before, but card classes adjusted */}
         {/* Example: */}
         <main>
+          {/* Global payment help banner */}
+          {(step === 'review' || step === 'payment') && (
+            <div className="mb-6 rounded-xl border border-pink-400/40 bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-cyan-600/20 p-4 sm:p-5 shadow-[0_0_28px_rgba(147,51,234,0.35)]">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="text-sm text-pink-100">
+                  <div className="font-semibold text-pink-200">Payment taking too long or showing an error?</div>
+                  <div className="opacity-90">Use our secure Cashfree form to complete your payment instantly.</div>
+                </div>
+                <a
+                  href={CASHFREE_FALLBACK_FORM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-pink-500 via-fuchsia-500 to-cyan-400 hover:from-pink-600 hover:via-fuchsia-600 hover:to-cyan-500 text-white font-semibold shadow-[0_0_20px_rgba(236,72,153,0.35)] transition-transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-pink-400/70"
+                >
+                  Pay via Cashfree Form
+                </a>
+              </div>
+            </div>
+          )}
           <AnimatePresence mode="wait">
             {step === 'select' && (
         <motion.div
@@ -2806,6 +2839,14 @@ function CheckoutPageContent() {
                               Please check your internet connection and click the "Retry Payment Setup" button above. 
                               The issue is usually temporary and resolves after 1-2 retries.
                             </div>
+                            <a
+                              href={CASHFREE_FALLBACK_FORM_URL}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mt-3 inline-flex items-center gap-2 text-xs px-3 py-2 rounded-md bg-white/10 hover:bg-white/15 border border-white/15 text-white/90"
+                            >
+                              Or pay with Cashfree form
+                            </a>
                           </div>
                         )}
                         
@@ -2913,6 +2954,14 @@ function CheckoutPageContent() {
                                   Please check your internet connection and click the "Pay" button above to retry. 
                                   If the problem persists, try refreshing the page or switching networks.
                                 </div>
+                              <a
+                                href={CASHFREE_FALLBACK_FORM_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="mt-3 inline-flex items-center gap-2 text-xs px-3 py-2 rounded-md bg-white/10 hover:bg-white/15 border border-white/15 text-white/90"
+                              >
+                                Or pay via Cashfree form
+                              </a>
                               </div>
                             )}
                           </div>
@@ -2956,6 +3005,16 @@ function CheckoutPageContent() {
                               <span className="text-white/70">Payment Mode:</span>
                               <span className="text-white/90">{paymentSession.mode}</span>
                             </div>
+                          </div>
+                          <div className="mt-4">
+                            <a
+                              href={CASHFREE_FALLBACK_FORM_URL}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 text-xs px-3 py-2 rounded-md bg-white/10 hover:bg-white/15 border border-white/15 text-white/90"
+                            >
+                              Having issues? Pay via Cashfree form
+                            </a>
                           </div>
                         </div>
                       </div>
