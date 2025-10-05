@@ -4,6 +4,8 @@ import { quivertFont, tanNimbusFont } from "./fonts";
 import AppShell from "../../components/AppShell";
 import { VideoProvider } from "../../components/VideoContext";
 import LeftScrollTree from "../../components/LeftScrollTree";
+import PlausibleProvider from 'next-plausible';
+import PlausibleTracker from "../../components/PlausibleTracker";
 
 import FooterStrip from "../../components/FooterStrip";
 import ChatbotContent from "../../components/ChatbotContent";
@@ -121,16 +123,19 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <VideoProvider>
-        
-            <div className="min-h-screen flex flex-col">
-              <LeftScrollTree />
-              <AppShell>{children}</AppShell>
-              <FooterStrip />
-              
-            </div>
+        <PlausibleProvider domain="sabrang.jklu.edu.in">
+          <PlausibleTracker />
+          <VideoProvider>
           
-        </VideoProvider>
+              <div className="min-h-screen flex flex-col">
+                <LeftScrollTree />
+                <AppShell>{children}</AppShell>
+                <FooterStrip />
+                
+              </div>
+            
+          </VideoProvider>
+        </PlausibleProvider>
       </body>
     </html>
   );
