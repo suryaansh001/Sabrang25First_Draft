@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Gift, Download, Copy, Plus } from "lucide-react";
 import ProtectedRoute from "../../../../components/ProtectedRoute";
-import createApiUrl from "../../../lib/api";
+import createApiUrl from "../../../lib/api.js";
 
 interface BulkPromoForm {
   codePrefix: string;

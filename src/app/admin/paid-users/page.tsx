@@ -14,7 +14,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import ProtectedRoute from "../../../../components/ProtectedRoute";
-import createApiUrl from "../../../lib/api";
+import createApiUrl from "../../../lib/api.js";
 
 interface PaidUser {
   _id: string;
