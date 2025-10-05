@@ -1,7 +1,13 @@
 'use client';
 
-import { usePlausible } from './PlausibleProvider';
 import { useEffect } from 'react';
+
+// Declare plausible function for TypeScript
+declare global {
+  interface Window {
+    plausible?: (eventName: string, options?: { props?: Record<string, string | number | boolean> }) => void;
+  }
+}
 
 interface PlausibleTrackerProps {
   eventName?: string;
@@ -9,7 +15,11 @@ interface PlausibleTrackerProps {
 }
 
 export default function PlausibleTracker({ eventName, props }: PlausibleTrackerProps) {
-  const plausible = usePlausible();
+  const plausible = (eventName: string, options?: { props?: Record<string, string | number | boolean> }) => {
+    if (typeof window !== 'undefined' && window.plausible) {
+      window.plausible(eventName, options);
+    }
+  };
 
   useEffect(() => {
     // Track referrer information
@@ -48,7 +58,11 @@ export default function PlausibleTracker({ eventName, props }: PlausibleTrackerP
 
 // Hook for tracking Instagram-specific events
 export function useInstagramTracking() {
-  const plausible = usePlausible();
+  const plausible = (eventName: string, options?: { props?: Record<string, string | number | boolean> }) => {
+    if (typeof window !== 'undefined' && window.plausible) {
+      window.plausible(eventName, options);
+    }
+  };
 
   const trackInstagramClick = (action: string, customProps?: Record<string, string | number | boolean>) => {
     plausible('Instagram Action', {

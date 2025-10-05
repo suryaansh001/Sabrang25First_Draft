@@ -4,7 +4,6 @@ import { quivertFont, tanNimbusFont } from "./fonts";
 import AppShell from "../../components/AppShell";
 import { VideoProvider } from "../../components/VideoContext";
 import LeftScrollTree from "../../components/LeftScrollTree";
-import PlausibleProvider from '../../components/PlausibleProvider';
 import PlausibleTracker from "../../components/PlausibleTracker";
 
 import FooterStrip from "../../components/FooterStrip";
@@ -82,6 +81,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
+        {/* Plausible Analytics */}
+        <script defer data-domain="sabrang.jklu.edu.in" src="https://plausible.io/js/script.hash.outbound-links.pageview-props.revenue.tagged-events.js"></script>
+
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
@@ -123,19 +125,17 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <PlausibleProvider domain="sabrang.jklu.edu.in">
-          <PlausibleTracker />
-          <VideoProvider>
+        <PlausibleTracker />
+        <VideoProvider>
+        
+            <div className="min-h-screen flex flex-col">
+              <LeftScrollTree />
+              <AppShell>{children}</AppShell>
+              <FooterStrip />
+              
+            </div>
           
-              <div className="min-h-screen flex flex-col">
-                <LeftScrollTree />
-                <AppShell>{children}</AppShell>
-                <FooterStrip />
-                
-              </div>
-            
-          </VideoProvider>
-        </PlausibleProvider>
+        </VideoProvider>
       </body>
     </html>
   );

@@ -1262,7 +1262,33 @@ function CheckoutPageContent() {
         amount: finalPrice.toString(),
         customerName: derivedName,
         customerEmail: derivedEmail,
-        customerPhone: flat['contactNo'] || '9999999999'
+        customerPhone: flat['contactNo'] || '9999999999',
+        // Include event information for proper processing
+        items: selectedEvents.map(e => ({ 
+          id: e.id, 
+          title: e.title, 
+          price: e.price,
+          itemName: e.title, // Ensure itemName is set for backend processing
+          type: 'event',
+          quantity: 1
+        })),
+        // Include visitor pass if selected
+        visitorPassDays: visitorPassDays,
+        visitorPassDetails: visitorPassDetails,
+        // Include form data for user lookup/creation if needed
+        formDataBySignature: formDataBySignature,
+        teamMembersBySignature: teamMembersBySignature,
+        flagshipBenefitsByEvent: flagshipBenefitsByEvent,
+        // Include promo code information
+        promoCode: appliedPromo?.code || null,
+        appliedDiscount: appliedPromo?.discountAmount || 0,
+        // Add metadata for tracking
+        metadata: {
+          totalPrice: totalPrice,
+          finalPrice: finalPrice,
+          timestamp: new Date().toISOString(),
+          source: 'checkout-frontend'
+        }
       };
 
       console.log('🚀 Creating payment order with data:', orderData);
