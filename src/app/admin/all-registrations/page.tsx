@@ -121,10 +121,11 @@ function AllRegistrations() {
   const [itemsPerPage, setItemsPerPage] = useState(50);
 
   // Get unique values for filter dropdowns
-  const getUniqueValues = (key: keyof Registration) => {
+  const getUniqueValues = (key: keyof Registration): string[] => {
     const values = registrations
       .map(reg => reg[key])
       .filter((value, index, self) => value && self.indexOf(value) === index)
+      .map(value => String(value))
       .sort();
     return values;
   };
