@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { FiEdit, FiExternalLink, FiX, FiSave } from "react-icons/fi";
-import createApiUrl from "../../../lib/api";
+import createApiUrl from "../../../lib/api.js";
 
 interface Event {
   _id: string;

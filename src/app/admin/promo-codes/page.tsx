@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, Plus, Edit3, Trash2, Copy, Tag, Calendar, Users, CheckCircle, XCircle } from "lucide-react";
 import ProtectedRoute from "../../../../components/ProtectedRoute";
-import createApiUrl from "../../../lib/api";
+import createApiUrl from "../../../lib/api.js";
 
 interface PromoCode {
   _id: string;
