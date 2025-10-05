@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import createApiUrl from "../../../../lib/api";
+import createApiUrl from "../../../../lib/api.js";
 
 interface UserData {
   _id: string;
