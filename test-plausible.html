@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plausible Test</title>
+    <!-- The exact script tag from Plausible -->
+    <script defer data-domain="sabrang.jklu.edu.in" src="https://plausible.io/js/script.hash.outbound-links.pageview-props.revenue.tagged-events.js"></script>
+</head>
+<body>
+    <h1>Plausible Analytics Test</h1>
+    <p>This page tests if Plausible is working correctly.</p>
+    
+    <button onclick="testEvent()">Test Custom Event</button>
+    <a href="https://instagram.com" onclick="testOutboundLink()">Test Outbound Link</a>
+    
+    <script>
+        function testEvent() {
+            if (window.plausible) {
+                window.plausible('Test Event', {
+                    props: {
+                        button: 'test-button',
+                        timestamp: new Date().toISOString()
+                    }
+                });
+                alert('Test event sent!');
+            } else {
+                alert('Plausible not loaded');
+            }
+        }
+        
+        function testOutboundLink() {
+            console.log('Outbound link clicked - should be tracked automatically');
+        }
+        
+        // Check if Plausible loaded
+        setTimeout(() => {
+            if (window.plausible) {
+                console.log('✅ Plausible loaded successfully');
+            } else {
+                console.log('❌ Plausible not loaded');
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

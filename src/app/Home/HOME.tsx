@@ -342,6 +342,8 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         </div>
       )}
 
+      
+
       {/* Mobile & Tablet Hero (<= lg) */}
       <div className="block lg:hidden relative min-h-screen overflow-hidden">
         
@@ -525,6 +527,134 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
             </div>
           </section>
 
+          {/* Special Artist Lineup - Navjot Ahuja Section */}
+          <section className="px-6 py-16 bg-gradient-to-b from-purple-900/20 to-black/20 relative overflow-hidden">
+            {/* Background decorative elements */}
+            <div className="absolute inset-0">
+              <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
+              <div className="absolute bottom-10 right-10 w-40 h-40 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }} />
+            </div>
+            
+            <div className="relative z-10 text-center mb-8">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <Star className="w-6 h-6 text-yellow-400 animate-pulse" />
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
+                  Special Artist Lineup
+                </h2>
+                <Star className="w-6 h-6 text-yellow-400 animate-pulse" />
+              </div>
+              <p className="text-gray-400 text-sm mb-2">Spectacular Performance</p>
+              <div className="w-20 h-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mx-auto animate-pulse" />
+            </div>
+
+            {/* Artist Showcase */}
+            <div className="relative z-10">
+              <div className="text-center mb-6">
+                <h3 className="text-4xl leading-[1.15] pt-1 font-bold text-white mb-2" style={{ fontFamily: "'TAN Nimbus', 'Quivert', sans-serif" }}>
+                  NAVJOT AHUJA
+                </h3>
+                <p className="text-yellow-400 font-semibold text-lg tracking-wider">LIVE IN CONCERT</p>
+              </div>
+
+              {/* Image Carousel */}
+              <div className="flex gap-3 overflow-x-auto pb-4 mb-6" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                <div className="flex-shrink-0 relative group">
+                  <img 
+                    src="/images/artist/navjotAhuja/navjot1.jpg" 
+                    alt="Navjot Ahuja Profile" 
+                    className="w-32 h-40 object-cover rounded-lg border-2 border-purple-500/50 transition-all duration-300 group-hover:scale-105 group-hover:border-purple-400"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </div>
+                <div className="flex-shrink-0 relative group">
+                  <img 
+                    src="/images/artist/navjotAhuja/navjot3.JPG" 
+                    alt="Navjot Ahuja Performance" 
+                    className="w-32 h-40 object-cover rounded-lg border-2 border-pink-500/50 transition-all duration-300 group-hover:scale-105 group-hover:border-pink-400"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </div>
+                <div className="flex-shrink-0 relative group">
+                  <img 
+                    src="/images/artist/navjotAhuja/navjot4.jpg" 
+                    alt="Navjot Ahuja with DJ" 
+                    className="w-32 h-40 object-cover rounded-lg border-2 border-cyan-500/50 transition-all duration-300 group-hover:scale-105 group-hover:border-cyan-400"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </div>
+              </div>
+
+              {/* Artist Description */}
+              <div className="text-center mb-8">
+                <p className="text-gray-300 text-base leading-relaxed mb-4 max-w-md mx-auto">
+                  🎤 <span className="text-purple-400 font-semibold">Experience the magic</span> of Navjot Ahuja's soulful voice and electrifying stage presence
+                </p>
+                <p className="text-gray-400 text-sm mb-6">
+                  A night of melodies that will resonate in your heart forever. Don't miss this once-in-a-lifetime performance!
+                </p>
+                
+                {/* Performance Details removed as requested */}
+              </div>
+
+              {/* Call to Action */}
+              <div className="text-center">
+                <p className="text-yellow-400 font-bold text-lg mb-4 animate-pulse">
+                  ✨ Ready to be mesmerized? ✨
+                </p>
+                <button 
+                  onClick={() => navigate('/checkout')}
+                  className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-full transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-purple-500/25 border border-purple-400/50"
+                >
+                  Secure Your Spot - Register Now!
+                </button>
+                <p className="text-gray-400 text-xs mt-2">
+                  Limited seats available for this exclusive performance
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Aman's Collective - Mobile */}
+          <section className="px-6 py-14 bg-gradient-to-b from-black/10 to-black/30 relative overflow-hidden">
+            <div className="relative z-10 text-center mb-6">
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] tracking-[0.25em] bg-white/10 border border-white/15 text-amber-300">LIVE BAND</span>
+              </div>
+              <h3 className="text-3xl font-extrabold bg-gradient-to-r from-amber-300 via-yellow-400 to-rose-400 bg-clip-text text-transparent" style={{ fontFamily: "'TAN Nimbus', 'Quivert', sans-serif" }}>AMAN'S COLLECTIVE</h3>
+            </div>
+            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-white/10">
+              <img src="/images/artist/day2-artist/WhatsApp Image 2025-10-05 at 21.08.21_d4b9a99a.jpg" alt="Aman's Collective" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              <div className="absolute bottom-3 left-3 right-3 flex gap-2">
+                <button onClick={() => navigate('/checkout')} className="flex-1 py-2 rounded-full bg-gradient-to-r from-amber-400 to-rose-400 text-black text-sm font-bold">Reserve</button>
+                <a href="/Events" className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white text-sm">Details</a>
+              </div>
+            </div>
+          </section>
+
+          {/* DJ Night with Dewik - Mobile */}
+          <section className="px-6 py-14 bg-gradient-to-b from-black/10 to-black/30 relative overflow-hidden">
+            <div className="relative z-10 text-center mb-6">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <img src="/images/artist/day1%20performance/Spectal%20Logo%20White.png" alt="Dewik Logo" className="h-6 w-auto opacity-90" />
+              </div>
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] tracking-[0.25em] bg-white/10 border border-white/15 text-cyan-300">DJ NIGHT</span>
+              </div>
+              <h3 className="text-3xl font-extrabold bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-purple-500 bg-clip-text text-transparent" style={{ fontFamily: "'TAN Nimbus', 'Quivert', sans-serif" }}>DEWIK</h3>
+            </div>
+            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-white/10">
+              <img src="/images/artist/day1%20performance/artist%20photo/IMG_0345.JPG" alt="Dewik live" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              <div className="absolute bottom-3 left-3 right-3 flex gap-2">
+                <button onClick={() => navigate('/checkout')} className="flex-1 py-2 rounded-full bg-gradient-to-r from-cyan-500 to-fuchsia-500 text-white text-sm font-bold">Register</button>
+                <a href="/Events" className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white text-sm">Details</a>
+              </div>
+            </div>
+          </section>
+
+          
+
           {/* Flagship Events Preview */}
           <section className="px-6 py-16 bg-black/20">
             <div className="text-center mb-12">
@@ -559,14 +689,14 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                 </h2>
                 <Star className="w-6 h-6 text-yellow-400 animate-pulse" />
               </div>
-              <p className="text-gray-400 text-sm mb-2">Day 3 Spectacular Performance</p>
+              <p className="text-gray-400 text-sm mb-2">Spectacular Performance</p>
               <div className="w-20 h-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mx-auto animate-pulse" />
             </div>
 
             {/* Artist Showcase */}
             <div className="relative z-10">
               <div className="text-center mb-6">
-                <h3 className="text-4xl font-bold text-white mb-2" style={{ fontFamily: "'Quivert', sans-serif" }}>
+                <h3 className="text-4xl leading-[1.15] pt-1 font-bold text-white mb-2" style={{ fontFamily: "'TAN Nimbus', 'Quivert', sans-serif" }}>
                   NAVJOT AHUJA
                 </h3>
                 <p className="text-yellow-400 font-semibold text-lg tracking-wider">LIVE IN CONCERT</p>
@@ -584,7 +714,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                 </div>
                 <div className="flex-shrink-0 relative group">
                   <img 
-                    src="/images/artist/navjotAhuja/navjot3.jpg" 
+                    src="/images/artist/navjotAhuja/navjot3.JPG" 
                     alt="Navjot Ahuja Performance" 
                     className="w-32 h-40 object-cover rounded-lg border-2 border-pink-500/50 transition-all duration-300 group-hover:scale-105 group-hover:border-pink-400"
                   />
@@ -609,17 +739,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                   A night of melodies that will resonate in your heart forever. Don't miss this once-in-a-lifetime performance!
                 </p>
                 
-                {/* Performance Details */}
-                <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-6 backdrop-blur-sm">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <Calendar className="w-5 h-5 text-purple-400" />
-                    <span className="text-white font-semibold">Day 3 - October 12, 2025</span>
-                  </div>
-                  <div className="flex items-center justify-center gap-2">
-                    <Clock className="w-5 h-5 text-pink-400" />
-                    <span className="text-gray-300">Evening Performance</span>
-                  </div>
-                </div>
+                {/* Performance Details removed as requested */}
               </div>
 
               {/* Call to Action */}
@@ -830,13 +950,22 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
 
            {/* Content overlay */}
            <div className="relative z-10 flex items-center justify-between h-full pl-32 pr-16">
+             {/* Subtle moving spotlights */}
+             <div className="pointer-events-none absolute inset-0 overflow-hidden">
+               <div className="absolute -top-10 -left-10 w-[40rem] h-[40rem] rounded-full bg-[radial-gradient(circle_at_center,rgba(250,204,21,0.18),transparent_60%)] blur-2xl animate-[prizeFloat_10s_ease-in-out_infinite]" />
+               <div className="absolute bottom-0 right-0 w-[36rem] h-[36rem] rounded-full bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.15),transparent_60%)] blur-2xl animate-[prizeFloat_8s_ease-in-out_infinite]" />
+             </div>
              {/* Left side - Description */}
              <div className="w-1/2 text-white">
-              <div className="mb-8">
-                <h2 className="text-6xl font-bold mb-4 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent" style={{ fontFamily: "'Quivert', sans-serif" }}>
+             <div className="mb-8">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="px-3 py-1 rounded-full text-[11px] tracking-[0.25em] bg-yellow-500/15 border border-yellow-400/40 text-yellow-300 font-semibold">HEADLINER</span>
+                  <span className="px-3 py-1 rounded-full text-[11px] tracking-[0.25em] bg-white/10 border border-white/20 text-white/80">MAIN STAGE</span>
+                </div>
+                <h2 className="text-6xl xl:text-7xl leading-[1.05] pt-2 font-black mb-4 bg-gradient-to-r from-yellow-300 via-amber-400 to-orange-500 bg-clip-text text-transparent shine-text" style={{ fontFamily: "'TAN Nimbus', 'Quivert', sans-serif" }}>
                   NAVJOT AHUJA
                 </h2>
-                <div className="w-32 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 mb-6" />
+                <div className="w-40 h-[5px] bg-gradient-to-r from-yellow-400 via-amber-400 to-pink-500 rounded-full shadow-[0_0_30px_rgba(251,191,36,0.35)] mb-6" />
               </div>
               
               <div className="space-y-6 text-lg leading-relaxed">
@@ -847,17 +976,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                   A night of melodies that will resonate in your heart forever. Don't miss this once-in-a-lifetime performance!
                 </p>
                 
-                {/* Day 3 Highlight */}
-                 <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-sm border border-purple-300/20 rounded-2xl p-6">
-                  <div className="flex items-center gap-3 mb-3">
-                     <Calendar className="w-8 h-8 text-purple-300" />
-                     <span className="text-2xl font-bold text-white">Day 3 - October 12, 2025</span>
-                   </div>
-                   <div className="flex items-center gap-3">
-                     <Clock className="w-6 h-6 text-pink-300" />
-                    <span className="text-xl text-gray-200">Evening Performance</span>
-                  </div>
-                </div>
+                {/* Day 3 Highlight removed as requested */}
                 
                 <p className="text-yellow-400 font-bold text-xl animate-pulse">
                   ✨ Ready to be mesmerized? ✨
@@ -895,16 +1014,15 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                   </p>
                 </div>
                 
-                {/* Tilted Navjot photo */}
+                {/* Tilted Navjot photo with stronger aura */}
                 <div className="relative transform rotate-12">
                   <div className="relative">
+                    <div className="absolute -inset-3 bg-gradient-to-br from-yellow-400/40 via-pink-400/30 to-purple-500/40 blur-2xl rounded-3xl" />
                     <img 
                       src="/images/artist/navjotAhuja/navjotpng.png" 
                       alt="Navjot Ahuja Tilted" 
-                      className="w-80 h-80 object-cover rounded-2xl shadow-2xl border-4 border-white/20"
+                      className="relative w-80 h-80 object-cover rounded-2xl shadow-[0_30px_80px_rgba(0,0,0,0.6)] border-4 border-white/20"
                     />
-                     {/* Glow effect */}
-                     <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-400/20 to-pink-400/20 blur-xl" />
                   </div>
                 </div>
                 
@@ -928,6 +1046,158 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               Limited seats available for this exclusive performance
             </p>
           </div>
+        </section>
+      )}
+
+      {/* Aman's Collective - Desktop Only (between Navjot and Dewik) */}
+      {!isLoading && (
+        <section className="hidden lg:block relative w-full h-screen overflow-hidden bg-gradient-to-br from-black via-neutral-900 to-black">
+          {/* Background with soft noise, bg image and spotlight */}
+          <div className="absolute inset-0">
+            <img src="/images/artist/day2-artist/Screenshot 2025-10-05 212953.png" alt="Background" className="absolute inset-0 w-full h-full object-cover opacity-20" />
+            <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.6) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+            <div className="absolute left-1/2 -translate-x-1/2 top-10 w-[70vw] h-[70vw] rounded-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05),transparent_65%)]" />
+          </div>
+
+          <div className="relative z-10 h-full flex items-center">
+            <div className="container mx-auto px-16 flex items-center gap-16">
+              {/* Left: Photo collage */}
+              <div className="flex-1">
+                <div className="relative flex gap-4 items-end">
+                  <div className="relative w-[420px] h-[560px] -rotate-2">
+                    <div className="absolute -inset-1 bg-gradient-to-br from-rose-400/35 via-amber-300/25 to-yellow-400/35 blur-2xl rounded-3xl" />
+                    <img src="/images/artist/day2-artist/WhatsApp Image 2025-10-05 at 21.08.21_d4b9a99a.jpg" alt="Aman's Collective live" className="relative z-10 w-full h-full object-cover rounded-3xl border border-white/15 shadow-[0_20px_60px_rgba(0,0,0,0.6)]" />
+                  </div>
+                  <div className="flex flex-col gap-4 rotate-2">
+                    <img src="/images/artist/day2-artist/bg.jpg" alt="Aman poster" className="w-[220px] h-[270px] object-cover rounded-2xl border border-white/15 shadow-[0_12px_40px_rgba(0,0,0,0.55)]" />
+                    <img src="/images/artist/day2-artist/Screenshot 2025-10-05 211237.png" alt="Aman art" className="w-[220px] h-[270px] object-cover rounded-2xl border border-white/15 shadow-[0_12px_40px_rgba(0,0,0,0.55)]" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: Text and CTA */}
+              <div className="flex-1 text-white">
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="px-3 py-1 text-[11px] tracking-[0.35em] rounded-full bg-white/10 border border-white/20 text-amber-300">LIVE BAND</span>
+                </div>
+                <h2 className="text-6xl xl:text-7xl font-black leading-[1.15] pt-1 mb-2 overflow-visible bg-gradient-to-r from-amber-300 via-yellow-400 to-rose-400 bg-clip-text text-transparent" style={{ fontFamily: "'TAN Nimbus', 'Quivert', sans-serif" }}>
+                  AMAN'S COLLECTIVE
+                </h2>
+                <p className="text-gray-300 text-lg max-w-xl leading-relaxed mb-8">
+                  Soulful Hindi pop and indie vibes with powerful vocals, live guitars and a warm, intimate stage feel. A set crafted for sing-alongs and goosebumps.
+                </p>
+                <div className="flex items-center gap-4">
+                  <button onClick={() => navigate('/checkout')} className="px-10 py-4 rounded-full bg-gradient-to-r from-amber-400 to-rose-400 text-black font-bold tracking-wider hover:from-amber-300 hover:to-rose-300 transition-transform duration-300 border border-white/10 shadow-2xl hover:scale-[1.03]">Reserve Your Pass</button>
+                  <a href="/Events" className="px-6 py-4 rounded-full bg-white/10 border border-white/20 text-white/90 hover:bg-white/15 transition">Explore Events</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* DJ Night with Dewik - Desktop Only */}
+      {!isLoading && (
+        <section className="hidden lg:block relative w-full h-screen overflow-hidden bg-black">
+          {/* Background: Spectal/DJ logo with neon beams */}
+          <div className="absolute inset-0">
+            <img
+              src="/images/artist/day1%20performance/Spectal%20Logo%20White.png"
+              alt="Dewik DJ Logo"
+              className="absolute inset-0 w-[1100px] h-[1100px] object-contain opacity-[0.12] m-auto"
+              style={{ filter: 'drop-shadow(0 0 45px rgba(99,102,241,0.45))' }}
+            />
+            {/* Neon light beams */}
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute -left-1/4 top-0 w-[60%] h-full bg-gradient-to-br from-fuchsia-500/10 via-purple-500/5 to-transparent blur-3xl" />
+              <div className="absolute -right-1/4 top-0 w-[60%] h-full bg-gradient-to-tl from-cyan-400/10 via-sky-500/5 to-transparent blur-3xl" />
+              <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black via-transparent to-transparent" />
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="relative z-10 h-full flex items-center">
+            <div className="container mx-auto px-16 flex items-center gap-16">
+              {/* Left: Title and copy */}
+              <div className="flex-1 text-white">
+                <div className="mb-4 flex flex-col items-start gap-2">
+                  <img
+                    src="/images/artist/day1%20performance/Spectal%20Logo%20White.png"
+                    alt="Dewik logo"
+                    className="h-10 w-auto -ml-2 md:-ml-3 drop-shadow-[0_4px_24px_rgba(34,211,238,0.45)]"
+                  />
+                  <span className="px-3 py-1 text-xs tracking-[0.35em] rounded-full bg-white/10 border border-white/20 text-cyan-300">DJ NIGHT</span>
+                </div>
+                <h2 className="text-6xl xl:text-7xl font-black leading-[1.6] mb-4 overflow-visible">
+                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-purple-500" style={{ fontFamily: "'TAN Nimbus', 'Quivert', sans-serif" }}>DEWIK</span>
+                  <span className="block text-3xl font-bold text-white/90 tracking-widest">LIVE DJ SET</span>
+                </h2>
+                <p className="text-gray-300 text-lg max-w-xl leading-relaxed mb-8">
+                  High-energy blends of House, Hip Hop, and Bollywood with festival-grade drops. Feel the bass, the lights, and the rush — a night engineered for the dancefloor.
+                </p>
+
+                {/* Equalizer bars */}
+                <div className="flex items-end gap-1 h-14 mb-10">
+                  <div className="w-2 bg-cyan-400/80 rounded-sm animate-[equalize_1.2s_ease-in-out_infinite]" />
+                  <div className="w-2 bg-fuchsia-400/80 rounded-sm animate-[equalize_1.4s_ease-in-out_infinite]" />
+                  <div className="w-2 bg-purple-400/80 rounded-sm animate-[equalize_1.1s_ease-in-out_infinite]" />
+                  <div className="w-2 bg-pink-400/80 rounded-sm animate-[equalize_1.5s_ease-in-out_infinite]" />
+                  <div className="w-2 bg-sky-400/80 rounded-sm animate-[equalize_1.3s_ease-in-out_infinite]" />
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => navigate('/checkout')}
+                    className="px-10 py-4 rounded-full bg-gradient-to-r from-cyan-500 to-fuchsia-500 text-white font-bold tracking-wider hover:from-cyan-400 hover:to-fuchsia-400 transition-transform duration-300 border border-white/20 shadow-2xl hover:scale-[1.03]"
+                  >
+                    Register for DJ Night
+                  </button>
+                  <a href="/Events" className="px-6 py-4 rounded-full bg-white/10 border border-white/20 text-white/90 hover:bg-white/15 transition">Explore Events</a>
+                </div>
+              </div>
+
+              {/* Right: Featured performance collage */}
+              <div className="flex-1 flex justify-end">
+                <div className="relative flex gap-4 items-end">
+                  {/* Large primary */}
+                  <div className="relative w-[460px] h-[600px] rotate-2">
+                    <div className="absolute -inset-1 bg-gradient-to-br from-cyan-400/40 via-fuchsia-400/40 to-purple-500/40 blur-2xl rounded-3xl" />
+                    <img
+                      src="/images/artist/day1%20performance/artist%20photo/IMG_0345.JPG"
+                      alt="Dewik performing live"
+                      className="relative z-10 w-full h-full object-cover rounded-3xl border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.6)]"
+                    />
+                    <div className="absolute -top-3 -left-3 px-3 py-1 rounded-full bg-fuchsia-500 text-white text-xs font-bold shadow-lg">Headliner</div>
+                  </div>
+                  {/* Stacked side thumbs */}
+                  <div className="flex flex-col gap-4 -rotate-2">
+                    <img
+                      src="/images/artist/day1%20performance/artist%20photo/IMG_2842.JPG"
+                      alt="Dewik crowd shot"
+                      className="w-[220px] h-[290px] object-cover rounded-2xl border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.55)]"
+                    />
+                    <img
+                      src="/images/artist/day1%20performance/artist%20photo/IMG_0804.JPG"
+                      alt="Dewik on decks"
+                      className="w-[220px] h-[290px] object-cover rounded-2xl border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.55)]"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom ticker */}
+          <div className="absolute bottom-0 left-0 right-0 h-14 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+            <div className="whitespace-nowrap animate-[ticker_18s_linear_infinite] text-white/80 text-sm tracking-[0.35em]">
+              <span className="mx-8">DJ NIGHT • DEWIK • OCT 10 • JKLU • TURN THE NIGHT UP •</span>
+              <span className="mx-8">HOUSE • HIP HOP • BOLLYWOOD • LIVE MIX • LIGHTS • ENERGY •</span>
+              <span className="mx-8">REGISTER NOW • LIMITED PASSES • SABRANG 25 •</span>
+            </div>
+          </div>
+
+          {/* Keyframes moved to global style block below to avoid nested styled-jsx */}
         </section>
       )}
 
@@ -1181,6 +1451,27 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
 
         .mobile-particle {
           animation: particleFloat 4s ease-in-out infinite;
+        }
+
+        /* Dewik section keyframes */
+        @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes equalize { 0%, 100% { height: 20%; } 25% { height: 65%; } 50% { height: 35%; } 75% { height: 90%; } }
+
+        /* Shimmer for NAVJOT title */
+        .shine-text {
+          position: relative;
+          overflow: hidden;
+        }
+        .shine-text:after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -120%;
+          width: 60%;
+          height: 100%;
+          background: linear-gradient(110deg, transparent 20%, rgba(255,255,255,0.35) 50%, transparent 80%);
+          transform: skewX(-20deg);
+          animation: shimmer 3s ease-in-out infinite;
         }
       `}</style>
     </div>

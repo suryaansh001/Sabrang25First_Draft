@@ -6,7 +6,6 @@ import { motion } from 'framer-motion';
 import { Check, Download, Mail, Calendar, MapPin, Home, Ticket } from 'lucide-react';
 
 import createApiUrl from '../../../lib/api';
-import { getPaymentsForOrder, getOrderStatus, verifyPaymentAndRedirect } from '../../../utils/cashfreeApi';
 
 interface PaymentStatusData {
   orderId: string;
@@ -45,169 +44,66 @@ function PaymentSuccessContent() {
     // Check payment status and process payment completion
     const checkPaymentStatus = async () => {
       try {
-        // FALLBACK SYNC: Check if we have pending registration data from fallback flow
-        const pendingDataStr = localStorage.getItem('pending_registration');
-        if (pendingDataStr) {
-          try {
-            const pendingData = JSON.parse(pendingDataStr);
-            
-            // Check if this order matches the pending registration
-            if (pendingData.orderId === orderId) {
-              console.log('🔄 [FALLBACK] Found pending registration data, syncing with backend...');
-              
-              // Call backend to save purchase data
-              const savePurchaseResponse = await fetch(createApiUrl('/api/payments/save-purchase'), {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  orderId: pendingData.orderId,
-                  paymentSessionId: pendingData.registrationData?.paymentSessionId || '',
-                  amount: pendingData.registrationData?.amount || '0',
-                  customerName: pendingData.registrationData?.customerName || '',
-                  customerEmail: pendingData.registrationData?.customerEmail || '',
-                  customerPhone: pendingData.registrationData?.customerPhone || '',
-                  referralCode: pendingData.registrationData?.referralCode || '',
-                  registrationData: pendingData.registrationData
-                })
-              });
+        // Call the success endpoint to process payment completion and send emails
+        console.log('🔄 Calling success endpoint for orderId:', orderId);
+        const successResponse = await fetch(createApiUrl(`/api/payments/success/${orderId}`), {
+          method: 'GET',
+          credentials: 'include'
+        });
 
-              if (savePurchaseResponse.ok) {
-                const saveResult = await savePurchaseResponse.json();
-                console.log('✅ [FALLBACK] Purchase data synced with backend:', saveResult);
-                
-                // Clear the pending data
-                localStorage.removeItem('pending_registration');
-                console.log('🗑️ Cleared pending registration from localStorage');
-              } else {
-                console.error('❌ [FALLBACK] Failed to sync purchase data with backend');
-              }
-            }
-          } catch (pendingError) {
-            console.error('❌ Error processing pending registration:', pendingError);
-            // Continue with normal flow
-          }
+        if (!successResponse.ok) {
+          throw new Error('Failed to process payment completion');
         }
+
+        const successData = await successResponse.json();
+        console.log('✅ Success endpoint response:', successData);
         
-        // First, verify payment status using the new API approach
-        console.log('🔍 Verifying payment status with new API for orderId:', orderId);
-        
-        // Get payments for the order using our new API function
-        const payments = await getPaymentsForOrder(orderId);
-        
-        if (payments && payments.length > 0) {
-          const latestPayment = payments[0];
-          console.log('💳 Latest payment status:', latestPayment.payment_status);
-          
-          // Only proceed with backend processing if payment is successful
-          if (latestPayment.payment_status === 'SUCCESS') {
-            console.log('✅ Payment confirmed successful, processing with backend...');
-            
-            // Call the existing success endpoint to process payment completion and send emails
-            console.log('🔄 Calling success endpoint for orderId:', orderId);
-            const successResponse = await fetch(createApiUrl(`/api/payments/success/${orderId}`), {
-              method: 'GET',
-              credentials: 'include'
-            });
+        if (!successData.success) {
+          throw new Error(successData.message || 'Failed to process payment completion');
+        }
 
-            if (!successResponse.ok) {
-              throw new Error('Failed to process payment completion');
-            }
+        // If payment is completed, get the full status
+        if (successData.purchase?.status === 'completed') {
+          const statusResponse = await fetch(createApiUrl(`/api/payments/status/${orderId}`), {
+            method: 'GET',
+            credentials: 'include'
+          });
 
-            const successData = await successResponse.json();
-            console.log('✅ Success endpoint response:', successData);
-            
-            if (!successData.success) {
-              throw new Error(successData.message || 'Failed to process payment completion');
-            }
-
-            // If payment processing is completed, get the full status
-            if (successData.purchase?.status === 'completed') {
-              const statusResponse = await fetch(createApiUrl(`/api/payments/status/${orderId}`), {
-                method: 'GET',
-                credentials: 'include'
-              });
-
-              if (statusResponse.ok) {
-                const statusData = await statusResponse.json();
-                if (statusData.success) {
-                  setPaymentData(statusData.data);
-                } else {
-                  // Fallback to success data with transaction details
-                  setPaymentData({
-                    orderId: orderId,
-                    paymentStatus: 'completed',
-                    totalAmount: latestPayment.payment_amount || 0,
-                    items: [{ itemName: 'Payment', price: latestPayment.payment_amount || 0 }],
-                    userRegistered: true,
-                    qrGenerated: true,
-                    emailSent: true,
-                    user: successData.user,
-                    transactionId: latestPayment.cf_payment_id
-                  });
-                }
-              } else {
-                // Fallback to success data with transaction details
-                setPaymentData({
-                  orderId: orderId,
-                  paymentStatus: 'completed',
-                  totalAmount: latestPayment.payment_amount || 0,
-                  items: [{ itemName: 'Payment', price: latestPayment.payment_amount || 0 }],
-                  userRegistered: true,
-                  qrGenerated: true,
-                  emailSent: true,
-                  user: successData.user,
-                  transactionId: latestPayment.cf_payment_id
-                });
-              }
+          if (statusResponse.ok) {
+            const statusData = await statusResponse.json();
+            if (statusData.success) {
+              setPaymentData(statusData.data);
             } else {
-              // Payment backend processing still pending
+              // Fallback to success data
               setPaymentData({
                 orderId: orderId,
-                paymentStatus: 'pending',
-                totalAmount: latestPayment.payment_amount || 0,
-                items: [{ itemName: 'Payment', price: latestPayment.payment_amount || 0 }],
-                userRegistered: false,
-                qrGenerated: false,
-                emailSent: false,
-                transactionId: latestPayment.cf_payment_id
+                paymentStatus: 'completed',
+                totalAmount: 0,
+                items: [{ itemName: 'Payment', price: 0 }],
+                userRegistered: true,
+                qrGenerated: true,
+                emailSent: true,
+                user: successData.user
               });
             }
-          } else if (latestPayment.payment_status === 'FAILED') {
-            // Payment failed
-            console.log('❌ Payment failed according to API');
-            setPaymentData({
-              orderId: orderId,
-              paymentStatus: 'failed',
-              totalAmount: latestPayment.payment_amount || 0,
-              items: [{ itemName: 'Payment', price: latestPayment.payment_amount || 0 }],
-              userRegistered: false,
-              qrGenerated: false,
-              emailSent: false,
-              transactionId: latestPayment.cf_payment_id
-            });
           } else {
-            // Payment pending
-            console.log('⏳ Payment still pending according to API');
+            // Fallback to success data
             setPaymentData({
               orderId: orderId,
-              paymentStatus: 'pending',
-              totalAmount: latestPayment.payment_amount || 0,
-              items: [{ itemName: 'Payment', price: latestPayment.payment_amount || 0 }],
-              userRegistered: false,
-              qrGenerated: false,
-              emailSent: false,
-              transactionId: latestPayment.cf_payment_id
+              paymentStatus: 'completed',
+              totalAmount: 0,
+              items: [{ itemName: 'Payment', price: 0 }],
+              userRegistered: true,
+              qrGenerated: true,
+              emailSent: true,
+              user: successData.user
             });
           }
         } else {
-          // No payments found
-          console.log('❌ No payments found for order');
+          // Payment still pending
           setPaymentData({
             orderId: orderId,
-            paymentStatus: 'failed',
+            paymentStatus: 'pending',
             totalAmount: 0,
             items: [{ itemName: 'Payment', price: 0 }],
             userRegistered: false,

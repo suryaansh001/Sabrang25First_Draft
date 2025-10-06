@@ -88,7 +88,7 @@ const FAQ = () => {
     },
     {
       question: "How do I register for Sabrang Events?",
-      answer: "Registration is online only through the official website https://sabrang.jklu.edu.in/. Select the event(s), add them to the cart, and complete the checkout process. On-site registration is not available.",
+      answer: "Registration is online only through the official website https://sabrang.jklu.edu.in/. Select the event(s), add them to the cart, and complete the maintenance process. On-site registration is not available.",
       category: "Registration",
       icon: "📝"
     },
