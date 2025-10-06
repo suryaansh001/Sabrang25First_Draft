@@ -122,7 +122,49 @@ function RegistrationsTeamsPage() {
     fetchRegistrations();
   }, [filters]);
 
+  // Canonical event titles that must always appear in the filter
+  const CANONICAL_EVENTS = [
+    'ART RELAY',
+    'BAND JAM',
+    'BGMI TOURNAMENT',
+    'BIDDING BEFORE WICKET',
+    'CLAY MODELLING',
+    'COURTROOM',
+    'DANCE BATTLE',
+    'DUMB SHOW',
+    'ECHOES OF NOOR',
+    'FOCUS',
+    'FREE FIRE TOURNAMENT',
+    'IN CONVERSATION WITH',
+    'RAMPWALK - PANACHE',
+    'SEAL THE DEAL',
+    'STEP UP',
+    'VALORANT TOURNAMENT',
+    'VERSEVAAD',
+    'VISITOR_PASS'
+  ];
+
   const fetchEvents = async () => {
+    const normalize = (t: string) => (t || '')
+      .toLowerCase()
+      .replace(/[\u2012\u2013\u2014\u2015]/g, '-') // normalize en/em dashes
+      .replace(/\s+/g, ' ')
+      .trim();
+    const toCanonical = (title: string): string => {
+      const norm = normalize(title);
+      // Aliases
+      if (norm === normalize('bgmi')) return 'BGMI TOURNAMENT';
+      if (norm === normalize('rampwalk - panache - theme based')) return 'RAMPWALK - PANACHE';
+      if (norm === normalize('bandjam')) return 'BAND JAM';
+      // Match canonical list case-insensitively
+      const match = CANONICAL_EVENTS.find(c => normalize(c) === norm);
+      return match || title;
+    };
+    const EXCLUDED = new Set([
+      normalize('RAMPWALK - PANACHE - THEME BASED'),
+      normalize('PHOTOGRAPHY CONTEST'),
+      normalize('TECH TALK - AI WORKSHOP')
+    ]);
     try {
       const response = await fetch(createApiUrl('/admin/events'), { credentials: 'include' });
       if (response.ok) {
@@ -132,11 +174,13 @@ function RegistrationsTeamsPage() {
           : (Array.isArray(eventsData?.data) ? eventsData.data : []);
         const mapped = list.map((ev: any) => ({
           id: ev._id || ev.id,
-          title: ev.title || ev.name || ev.eventName || ''
+          title: toCanonical(ev.title || ev.name || ev.eventName || '')
         })).filter((e: any) => e.title);
         // Merge with local catalog to ensure all events show
-        const local = EVENT_CATALOG.map(e => ({ id: e.id, title: e.title }));
-        const combined = [...mapped, ...local];
+        const local = EVENT_CATALOG.map(e => ({ id: e.id, title: toCanonical(e.title) }));
+        const required = CANONICAL_EVENTS.map(t => ({ id: t, title: t }));
+        const combined = [...mapped, ...local, ...required]
+          .filter(m => !EXCLUDED.has(normalize(m.title)));
         const dedup = Array.from(new Map(combined.map(m => [m.title, m])).values())
           .sort((a, b) => a.title.localeCompare(b.title));
         setEvents(dedup);
@@ -146,7 +190,11 @@ function RegistrationsTeamsPage() {
       // ignore and fallback
     }
     // Backend failed; show local catalog
-    const fallback = EVENT_CATALOG.map(e => ({ id: e.id, title: e.title }))
+    const fallback = [
+      ...EVENT_CATALOG.map(e => ({ id: e.id, title: toCanonical(e.title) })),
+      ...CANONICAL_EVENTS.map(t => ({ id: t, title: t }))
+    ]
+      .filter(m => !EXCLUDED.has(normalize(m.title)))
       .sort((a, b) => a.title.localeCompare(b.title));
     setEvents(fallback);
   };
