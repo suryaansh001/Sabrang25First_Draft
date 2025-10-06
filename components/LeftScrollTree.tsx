@@ -1,7 +1,12 @@
 "use client";
 import React from "react";
+import { usePathname } from "next/navigation";
 
 export default function LeftScrollTree() {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
   const [progress, setProgress] = React.useState(0);
   const [reducedMotion, setReducedMotion] = React.useState(false);
   const [dragging, setDragging] = React.useState(false);
