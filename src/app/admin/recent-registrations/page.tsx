@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { 
   ArrowLeft, 
@@ -24,6 +24,7 @@ import {
 import Link from 'next/link';
 import createApiUrl from '../../../lib/api';
 import ProtectedRoute from '../../../../components/ProtectedRoute';
+import { events as localEvents } from '../../../lib/events.data';
 
 interface User {
   _id: string;
@@ -100,6 +101,7 @@ interface UserDetailsModal {
 function RecentRegistrations() {
   const [data, setData] = useState<RegistrationResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [filterLoading, setFilterLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [selectedUser, setSelectedUser] = useState<UserDetailsModal | null>(null);
   const [showUserModal, setShowUserModal] = useState(false);
@@ -124,6 +126,27 @@ function RecentRegistrations() {
   const [events, setEvents] = useState<any[]>([]);
   const [showFilters, setShowFilters] = useState(false);
 
+  // Simple static events list for better performance
+  const staticEvents = [
+    'RAMPWALK - PANACHE',
+    'BANDJAM', 
+    'DANCE BATTLE',
+    'STEP UP',
+    'ECHOES OF NOOR',
+    'VERSEVAAD',
+    'BIDDING BEFORE WICKET',
+    'SEAL THE DEAL',
+    'BGMI TOURNAMENT',
+    'VALORANT TOURNAMENT',
+    'FREE FIRE TOURNAMENT',
+    'DUMB SHOW',
+    'COURTROOM',
+    'CLAY MODELLING',
+    'FOCUS',
+    'ART RELAY',
+    'IN CONVERSATION WITH'
+  ];
+
   useEffect(() => {
     fetchEvents();
     fetchRecentRegistrations();
@@ -143,8 +166,12 @@ function RecentRegistrations() {
     }
   };
 
-  const fetchRecentRegistrations = async () => {
-    setLoading(true);
+  const fetchRecentRegistrations = async (isFilterChange = false) => {
+    if (isFilterChange) {
+      setFilterLoading(true);
+    } else {
+      setLoading(true);
+    }
     try {
       const queryParams = new URLSearchParams();
       Object.entries(filters).forEach(([key, value]) => {
@@ -166,7 +193,11 @@ function RecentRegistrations() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load registrations');
     } finally {
-      setLoading(false);
+      if (isFilterChange) {
+        setFilterLoading(false);
+      } else {
+        setLoading(false);
+      }
     }
   };
 
@@ -222,40 +253,67 @@ function RecentRegistrations() {
     }
   };
 
-  const exportToCSV = () => {
-    if (!data?.data) return;
+  const exportToCSV = async () => {
+    try {
+      // Fetch all registrations for export (without pagination limit)
+      const exportFilters = {
+        ...filters,
+        limit: 9999, // Set a very high limit to get all records
+        page: 1
+      };
 
-    const headers = [
-      'Name', 'Email', 'Contact', 'University', 'Registration Date', 'User Type', 
-      'Events', 'Has Entered', 'Entry Time', 'Email Sent', 'Validated', 'Team Info'
-    ];
+      const queryParams = new URLSearchParams();
+      Object.entries(exportFilters).forEach(([key, value]) => {
+        if (value) queryParams.append(key, value.toString());
+      });
 
-    const csvData = data.data.map(user => [
-      user.name,
-      user.email,
-      user.contactNo || '',
-      user.universityName || '',
-      new Date(user.createdAt).toLocaleDateString(),
-      user.userType,
-      user.events.join('; '),
-      user.hasEntered ? 'Yes' : 'No',
-      user.entryTime ? new Date(user.entryTime).toLocaleString() : '',
-      user.emailSent ? 'Yes' : 'No',
-      user.isvalidated ? 'Yes' : 'No',
-      user.teamInfo.map(t => `${t.eventName}: ${t.teamName} (${t.isLeader ? 'Leader' : 'Member'})`).join('; ')
-    ]);
+      const response = await fetch(
+        createApiUrl(`/admin/recent-registrations?${queryParams.toString()}`),
+        { credentials: 'include' }
+      );
 
-    const csvContent = [headers, ...csvData]
-      .map(row => row.map(cell => `"${cell}"`).join(','))
-      .join('\n');
+      if (!response.ok) {
+        throw new Error('Failed to fetch data for export');
+      }
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `recent-registrations-${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
+      const exportData = await response.json();
+      const allUsers = exportData.data || [];
+
+      const headers = [
+        'Name', 'Email', 'Contact', 'University', 'Registration Date', 'User Type', 
+        'Events', 'Has Entered', 'Entry Time', 'Email Sent', 'Validated', 'Team Info'
+      ];
+
+      const csvData = allUsers.map((user: User) => [
+        user.name,
+        user.email,
+        user.contactNo || '',
+        user.universityName || '',
+        new Date(user.createdAt).toLocaleDateString(),
+        user.userType,
+        user.events.join('; '),
+        user.hasEntered ? 'Yes' : 'No',
+        user.entryTime ? new Date(user.entryTime).toLocaleString() : '',
+        user.emailSent ? 'Yes' : 'No',
+        user.isvalidated ? 'Yes' : 'No',
+        user.teamInfo.map(t => `${t.eventName}: ${t.teamName} (${t.isLeader ? 'Leader' : 'Member'})`).join('; ')
+      ]);
+
+      const csvContent = [headers, ...csvData]
+        .map((row: string[]) => row.map((cell: string) => `"${cell}"`).join(','))
+        .join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `recent-registrations-all-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Failed to export CSV. Please try again.');
+    }
   };
 
   const handleFilterChange = (key: string, value: string) => {
@@ -264,6 +322,10 @@ function RecentRegistrations() {
       [key]: value,
       page: 1 // Reset to first page when filters change
     }));
+    // Trigger data fetch with filter loading state
+    setTimeout(() => {
+      fetchRecentRegistrations(true);
+    }, 100); // Small delay to ensure state is updated
   };
 
   const handlePageChange = (newPage: number) => {
@@ -293,7 +355,7 @@ function RecentRegistrations() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white py-8 px-12 md:px-16 lg:px-20 xl:px-24 2xl:px-32 scroll-smooth">
       <div className="container mx-auto">
         {/* Header */}
         <motion.div
@@ -321,7 +383,7 @@ function RecentRegistrations() {
                 <span>Export CSV</span>
               </button>
               <button
-                onClick={fetchRecentRegistrations}
+                onClick={() => fetchRecentRegistrations(false)}
                 className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors"
               >
                 <RefreshCw className="w-4 h-4" />
@@ -373,12 +435,20 @@ function RecentRegistrations() {
                 <Filter className="w-5 h-5" />
                 <span>Filters</span>
               </h3>
-              <button
+              <motion.button
                 onClick={() => setShowFilters(!showFilters)}
-                className="text-gray-300 hover:text-white"
+                className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-200 text-gray-300 hover:text-white"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <ChevronDown className={`w-5 h-5 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
-              </button>
+                <span className="text-sm font-medium">Filters</span>
+                <motion.div
+                  animate={{ rotate: showFilters ? 180 : 0 }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                >
+                  <ChevronDown className="w-4 h-4" />
+                </motion.div>
+              </motion.button>
             </div>
 
             {/* Always visible search */}
@@ -395,8 +465,25 @@ function RecentRegistrations() {
               </div>
             </div>
 
-            {showFilters && (
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <motion.div
+              initial={false}
+              animate={{
+                height: showFilters ? 'auto' : 0,
+                opacity: showFilters ? 1 : 0
+              }}
+              transition={{
+                duration: 0.3,
+                ease: 'easeInOut'
+              }}
+              className="overflow-hidden"
+            >
+              {showFilters && (
+                <motion.div 
+                  initial={{ y: -20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                  className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4"
+                >
                 <div>
                   <label className="block text-sm font-medium mb-2">From Date</label>
                   <input
@@ -416,46 +503,61 @@ function RecentRegistrations() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">User Type</label>
-                  <select
-                    value={filters.userType}
-                    onChange={(e) => handleFilterChange('userType', e.target.value)}
-                    className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="all">All Types</option>
-                    <option value="participant">Participant</option>
-                    <option value="support_staff">Support Staff</option>
-                    <option value="flagship_visitor">Flagship Visitor</option>
-                    <option value="flagship_solo_visitor">Flagship Solo Visitor</option>
-                  </select>
+                  <label className="block text-sm font-medium mb-2 text-gray-300">User Type</label>
+                  <div className="relative">
+                    <select
+                      value={filters.userType}
+                      onChange={(e) => handleFilterChange('userType', e.target.value)}
+                      disabled={filterLoading}
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:bg-white/15 transition-colors appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <option value="all" className="bg-gray-800">All Types</option>
+                      <option value="participant" className="bg-gray-800">Participant</option>
+                      <option value="support_staff" className="bg-gray-800">Support Staff</option>
+                      <option value="flagship_visitor" className="bg-gray-800">Flagship Visitor</option>
+                      <option value="flagship_solo_visitor" className="bg-gray-800">Flagship Solo Visitor</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Entry Status</label>
-                  <select
-                    value={filters.hasEntered}
-                    onChange={(e) => handleFilterChange('hasEntered', e.target.value)}
-                    className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="all">All</option>
-                    <option value="true">Entered</option>
-                    <option value="false">Not Entered</option>
-                  </select>
+                  <label className="block text-sm font-medium mb-2 text-gray-300">Entry Status</label>
+                  <div className="relative">
+                    <select
+                      value={filters.hasEntered}
+                      onChange={(e) => handleFilterChange('hasEntered', e.target.value)}
+                      disabled={filterLoading}
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:bg-white/15 transition-colors appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <option value="all" className="bg-gray-800">All</option>
+                      <option value="true" className="bg-gray-800">Entered</option>
+                      <option value="false" className="bg-gray-800">Not Entered</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Event Filter</label>
-                  <select
-                    value={filters.eventFilter}
-                    onChange={(e) => handleFilterChange('eventFilter', e.target.value)}
-                    className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="all">All Events</option>
-                    {events.map(event => (
-                      <option key={event._id} value={event.name}>{event.name}</option>
-                    ))}
-                  </select>
+                  <label className="block text-sm font-medium mb-2 text-gray-300">Event Filter</label>
+                  <div className="relative">
+                    <select
+                      value={filters.eventFilter}
+                      onChange={(e) => handleFilterChange('eventFilter', e.target.value)}
+                      disabled={filterLoading}
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:bg-white/15 transition-colors appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <option value="all">All Events</option>
+                      {staticEvents.map((eventName) => (
+                        <option key={eventName} value={eventName} className="bg-gray-800">
+                          {eventName}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  </div>
                 </div>
-              </div>
-            )}
+                </motion.div>
+              )}
+            </motion.div>
           </div>
         </motion.div>
 
@@ -464,9 +566,9 @@ function RecentRegistrations() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl overflow-hidden"
+          className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl overflow-hidden relative"
         >
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto scroll-smooth scrollbar-thin scrollbar-track-gray-800 scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500">
             <table className="w-full">
               <thead>
                 <tr className="bg-white/5">
@@ -829,6 +931,32 @@ function RecentRegistrations() {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Filter Loading Popup */}
+        {filterLoading && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-8 flex flex-col items-center space-y-4 max-w-sm mx-4"
+            >
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-white mb-2">Fetching Data</h3>
+                <p className="text-gray-300 text-sm">Applying filters and loading updated results...</p>
+              </div>
+              <div className="w-full bg-gray-700 rounded-full h-2">
+                <motion.div
+                  className="bg-blue-400 h-2 rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                />
+              </div>
+            </motion.div>
           </div>
         )}
       </div>

@@ -116,7 +116,7 @@ function PaidUsersPage() {
   };
 
   return (
-    <div className="min-h-screen pt-20 pb-16 px-4 text-white font-sans bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
+    <div className="min-h-screen pt-20 pb-16 pl-6 pr-6 md:pl-8 md:pr-8 lg:pl-12 lg:pr-12 text-white font-sans bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
