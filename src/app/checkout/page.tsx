@@ -281,6 +281,81 @@ function CheckoutPageContent() {
   // Fallback Cashfree form URL for manual payment if SDK/init fails or times out
   const CASHFREE_FALLBACK_FORM_URL = 'https://payments.cashfree.com/forms?code=sabrang25';
 
+  // Memoized action row
+  const ActionRow = React.memo(function ActionRow(props: {
+    connectionQuality: 'good' | 'poor' | 'offline';
+    onSave: () => void;
+    onFallback: () => void;
+    onBack: () => void;
+    onNext: () => void;
+  }) {
+    const { connectionQuality, onSave, onFallback, onBack, onNext } = props;
+    return (
+      <div className="flex items-center gap-3 mt-8">
+        <div className={`text-xs px-2 py-1 rounded-full border ${connectionQuality === 'good' ? 'text-green-300 border-green-400/40 bg-green-500/10' : connectionQuality === 'poor' ? 'text-yellow-300 border-yellow-400/40 bg-yellow-500/10' : 'text-red-300 border-red-400/40 bg-red-500/10'}`}>
+          {connectionQuality === 'good' ? 'Good connection' : connectionQuality === 'poor' ? 'Slow connection' : 'Offline'}
+        </div>
+        <button type="button" onClick={onSave} className="px-3 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer text-xs">
+          Save Progress
+        </button>
+        <button type="button" onClick={onFallback} className="px-3 py-2 rounded-full bg-orange-500/20 border border-orange-400/40 hover:bg-orange-500/30 transition cursor-pointer text-xs text-orange-200">
+          Try Fallback Payment
+        </button>
+        <button onClick={onBack} className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer">Back</button>
+        <button onClick={onNext} className="px-5 py-2 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 transition cursor-pointer">Continue</button>
+      </div>
+    );
+  });
+
+
+  // Local draft autosave (persist non-file inputs)
+  const CHECKOUT_DRAFT_KEY = 'sabrang_checkout_draft_v1';
+  // Load draft on mount
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(CHECKOUT_DRAFT_KEY);
+      if (!raw) return;
+      const draft = JSON.parse(raw) as Record<string, any>;
+      if (Array.isArray(draft.selectedEventIds)) setSelectedEventIds(draft.selectedEventIds);
+      if (typeof draft.visitorPassDays === 'number') setVisitorPassDays(draft.visitorPassDays);
+      if (draft.visitorPassDetails && typeof draft.visitorPassDetails === 'object') setVisitorPassDetails(draft.visitorPassDetails);
+      if (draft.formDataBySignature && typeof draft.formDataBySignature === 'object') setFormDataBySignature(draft.formDataBySignature);
+      if (draft.teamMembersBySignature && typeof draft.teamMembersBySignature === 'object') setTeamMembersBySignature(draft.teamMembersBySignature);
+      if (draft.flagshipBenefitsByEvent && typeof draft.flagshipBenefitsByEvent === 'object') setFlagshipBenefitsByEvent(draft.flagshipBenefitsByEvent);
+      if (typeof draft.promoInput === 'string') setPromoInput(draft.promoInput);
+      if (draft.appliedPromo && typeof draft.appliedPromo === 'object') setAppliedPromo(draft.appliedPromo);
+    } catch {}
+  }, []);
+  // Debounced save when key state changes
+  useEffect(() => {
+    const toSave = {
+      selectedEventIds,
+      visitorPassDays,
+      visitorPassDetails,
+      formDataBySignature,
+      teamMembersBySignature,
+      flagshipBenefitsByEvent,
+      promoInput,
+      appliedPromo,
+    };
+    const id = window.setTimeout(() => {
+      try { localStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify(toSave)); } catch {}
+    }, 800);
+    return () => window.clearTimeout(id);
+  }, [
+    selectedEventIds,
+    visitorPassDays,
+    visitorPassDetails,
+    formDataBySignature,
+    teamMembersBySignature,
+    flagshipBenefitsByEvent,
+    promoInput,
+    appliedPromo,
+  ]);
+  const clearDraft = () => {
+    try { localStorage.removeItem(CHECKOUT_DRAFT_KEY); } catch {}
+  };
+
 
   // Force reduced motion for smooth scrolling experience on this page
   useEffect(() => {
@@ -438,7 +513,7 @@ function CheckoutPageContent() {
 
       return hasChanged ? updated : prev;
     });
-  }, [selectedEvents, flagshipBenefitsByEvent]);
+  }, [selectedEvents]);
 
   const fieldGroups = useMemo(() => {
     const groups: { signature: string; fields: FieldSet; events: EventCatalogItem[] }[] = [];
@@ -534,44 +609,27 @@ function CheckoutPageContent() {
     return parseFloat(Math.max(0, totalPrice - discount).toFixed(2));
   }, [totalPrice, appliedPromo]);
 
-  // Revalidate promo code when total price changes
+  const lastPriceRef = useRef(totalPrice);
+  // Revalidate promo code when total price changes (debounced, reduced frequency and threshold)
   useEffect(() => {
     if (appliedPromo && totalPrice > 0) {
-      // Re-apply the promo code with the new total price
-      const revalidatePromo = async () => {
-        try {
-          const userEmail = getDerivedEmail();
-          const emailForValidation = userEmail || 'temp@example.com';
-          
-          const response = await retryFetch(createApiUrl('/admin/promo-codes/validate'), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ 
-              code: appliedPromo.code, 
-              userEmail: emailForValidation, 
-              orderAmount: totalPrice 
-            })
-          }, 2); // 2 retries for promo validation
-          
-          const data = await response.json();
-          if (response.ok && data.success) {
-            // Update the discount amount with the new calculation
+      if (Math.abs(totalPrice - lastPriceRef.current) > 1) {
+        lastPriceRef.current = totalPrice;
+        const emailForValidation = getDerivedEmail() || 'temp@example.com';
+        debouncedPromoValidation(appliedPromo.code, emailForValidation, totalPrice, (data) => {
+          if (data?.success) {
             setAppliedPromo({ code: appliedPromo.code, discountAmount: data.discountAmount });
           } else {
-            // If promo is no longer valid, remove it
-            setAppliedPromo(null);
-            setPromoStatus({ loading: false, error: 'Promo code is no longer valid for this order amount' });
+            if (data?.message && String(data.message).toLowerCase().includes('invalid')) {
+              setAppliedPromo(null);
+              setPromoStatus({ loading: false, error: 'Promo code is no longer valid for this order amount' });
+            }
           }
-        } catch (e) {
-          console.error('Failed to revalidate promo code:', e);
-          // Keep the existing promo but log the error
-        }
-      };
-      
-      revalidatePromo();
+        });
+      }
     }
-  }, [totalPrice, appliedPromo?.code]); // Only re-run when totalPrice or promo code changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [totalPrice, appliedPromo?.code]);
 
   const getDerivedEmail = () => {
     // Search across all groups for collegeMailId or email
@@ -972,20 +1030,23 @@ function CheckoutPageContent() {
     });
   };
 
-  // Handle field changes
+  // Immediate field change handler (no debounce) to keep typing responsive
   const handleFieldChange = (signature: string, fieldName: string, value: string) => {
+    let nextValue = value;
+    if (fieldName === 'referralCode' && typeof nextValue === 'string') {
+      nextValue = nextValue.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    }
     setFormDataBySignature(prev => ({
       ...prev,
       [signature]: {
         ...prev[signature],
-        [fieldName]: value
+        [fieldName]: nextValue
       }
     }));
 
-    // If team size changes, auto-size team members array to match
     if (fieldName === 'numMembers') {
-      const totalMembers = Math.max(0, Math.min(50, parseInt(value || '0', 10) || 0));
-      const additionalMembers = Math.max(0, totalMembers - 1); // Leader is in main form
+      const totalMembers = Math.max(0, Math.min(50, parseInt(nextValue || '0', 10) || 0));
+      const additionalMembers = Math.max(0, totalMembers - 1);
       setTeamMembersBySignature(prev => {
         const existing = prev[signature] || [];
         const next = existing.slice(0, additionalMembers);
@@ -995,30 +1056,29 @@ function CheckoutPageContent() {
         return { ...prev, [signature]: next };
       });
     }
-
-    // For referralCode field, enforce uppercase letters and numbers only
-    if (fieldName === 'referralCode' && typeof value === 'string') {
-      value = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-      setFormDataBySignature(prev => ({
-        ...prev,
-        [signature]: {
-          ...prev[signature],
-          [fieldName]: value
-        }
-      }));
-    }
   };
 
   // Handle file uploads
-  const handleFileChange = (signature: string, fieldName: string, file: File | null) => {
+  const handleFileChange = async (signature: string, fieldName: string, file: File | null) => {
     if (file) {
-      setFilesBySignature(prev => ({
-        ...prev,
-        [signature]: {
-          ...prev[signature],
-          [fieldName]: file
-        }
-      }));
+      try {
+        const compressed = await compressImage(file, 500);
+        setFilesBySignature(prev => ({
+          ...prev,
+          [signature]: {
+            ...prev[signature],
+            [fieldName]: compressed
+          }
+        }));
+      } catch {
+        setFilesBySignature(prev => ({
+          ...prev,
+          [signature]: {
+            ...prev[signature],
+            [fieldName]: file
+          }
+        }));
+      }
       // Also store the filename in form data for display purposes
       setFormDataBySignature(prev => ({
         ...prev,
@@ -1114,7 +1174,7 @@ function CheckoutPageContent() {
     }, 15000);
 
     try {
-      await proceedToPayment();
+      await adaptivePaymentInit();
       setPaymentInitializationState(prev => ({ ...prev, isLoading: false }));
     } catch (error) {
       console.error('❌ Payment initialization error:', error);
@@ -1125,213 +1185,302 @@ function CheckoutPageContent() {
   };
 
 
-  // Helper function for retry logic
-  const retryFetch = async (url: string, options: RequestInit, maxRetries: number = 2): Promise<Response> => {
-    for (let i = 0; i < maxRetries; i++) {
+  // Request timeout wrapper
+  const fetchWithTimeout = async (url: string, options: RequestInit, timeout: number = 15000): Promise<Response> => {
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), timeout);
+    try {
+      const response = await fetch(url, { ...options, signal: controller.signal });
+      window.clearTimeout(timeoutId);
+      return response;
+    } catch (error: any) {
+      window.clearTimeout(timeoutId);
+      if (error?.name === 'AbortError') {
+        throw new Error('Request timeout - please check your internet connection');
+      }
+      throw error;
+    }
+  };
+
+  // Improved retry with exponential backoff
+  const retryFetch = async (
+    url: string,
+    options: RequestInit,
+    maxRetries: number = 2,
+    timeout: number = 15000
+  ): Promise<Response> => {
+    let lastError: Error | null = null;
+    for (let i = 0; i <= maxRetries; i++) {
       try {
-        const response = await fetch(url, options);
+        const response = await fetchWithTimeout(url, options, timeout);
+        if (response.ok || (response.status >= 400 && response.status < 500)) {
+          return response;
+        }
+        if (i < maxRetries) {
+          const backoffDelay = Math.min(1000 * Math.pow(2, i), 5000);
+          await new Promise(resolve => setTimeout(resolve, backoffDelay));
+          continue;
+        }
         return response;
       } catch (error) {
-        console.log(`🔄 Retry attempt ${i + 1}/${maxRetries} failed:`, error);
-        
-        if (i === maxRetries - 1) {
-          // Return a mock response instead of throwing error
-          return new Response(JSON.stringify({ success: false, message: 'Request failed' }), {
-            status: 500,
-            statusText: 'Internal Server Error'
-          });
+        lastError = error as Error;
+        console.log(`🔄 Retry attempt ${i + 1}/${maxRetries + 1} failed:`, error);
+        if (i < maxRetries) {
+          const backoffDelay = Math.min(1000 * Math.pow(2, i), 5000);
+          await new Promise(resolve => setTimeout(resolve, backoffDelay));
         }
-        
-        // Simple backoff: wait 1s
-        await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
-    // This should never be reached, but just in case
-    return new Response(JSON.stringify({ success: false, message: 'Request failed' }), {
-      status: 500,
-      statusText: 'Internal Server Error'
+    throw lastError || new Error('Request failed after retries');
+  };
+
+  // Image compression before upload
+  const compressImage = async (file: File, maxSizeKB: number = 500): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      if (file.size <= maxSizeKB * 1024) {
+        resolve(file);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const maxDimension = 1200;
+          if (width > height && width > maxDimension) {
+            height = (height * maxDimension) / width;
+            width = maxDimension;
+          } else if (height > maxDimension) {
+            width = (width * maxDimension) / height;
+            height = maxDimension;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          let quality = 0.7;
+          const toBlobAtQuality = (q: number) => new Promise<Blob | null>(res => canvas.toBlob(b => res(b), 'image/jpeg', q));
+          toBlobAtQuality(quality).then(async (blob) => {
+            if (!blob) { resolve(file); return; }
+            let compressedBlob = blob;
+            while (compressedBlob.size > maxSizeKB * 1024 && quality > 0.3) {
+              quality -= 0.1;
+              const next = await toBlobAtQuality(quality);
+              if (!next) break;
+              compressedBlob = next;
+            }
+            resolve(new File([compressedBlob], file.name, { type: 'image/jpeg', lastModified: Date.now() }));
+          });
+        };
+        img.onerror = () => reject(new Error('Image load failed'));
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = () => reject(new Error('File read failed'));
+      reader.readAsDataURL(file);
     });
   };
 
-  const proceedToPayment = async () => {
-    console.log('🚀 proceedToPayment function called');
-    
+  // Debounced promo code validation
+  let promoValidationTimeout: number;
+  const debouncedPromoValidation = (
+    code: string,
+    email: string,
+    amount: number,
+    callback: (result: any) => void
+  ) => {
+    window.clearTimeout(promoValidationTimeout);
+    promoValidationTimeout = window.setTimeout(async () => {
+      try {
+        const response = await retryFetch(
+          createApiUrl('/admin/promo-codes/validate'),
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ code, userEmail: email, orderAmount: amount })
+          },
+          1,
+          10000
+        );
+        const data = await response.json();
+        callback(data);
+      } catch (e) {
+        console.error('Promo validation failed:', e);
+        callback({ success: false, message: 'Validation failed' });
+      }
+    }, 800);
+  };
+
+  // Connection quality check
+  const checkConnectionQuality = async (): Promise<'good' | 'poor' | 'offline'> => {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) return 'offline';
     try {
-      // First, register the user on backend using existing /register with image upload
-      // Map fields: name -> 'name', collegeMailId -> 'email', and attach a 'profileImage'
-      const registrationForm = new FormData();
-      // Derive name and email from collected forms (pick from the first group that has them)
+      const start = Date.now();
+      await fetch('https://www.google.com/favicon.ico', { mode: 'no-cors', cache: 'no-store' });
+      const duration = Date.now() - start;
+      return duration < 1000 ? 'good' : 'poor';
+    } catch {
+      return 'offline';
+    }
+  };
+
+  // Connection quality indicator state and polling
+  const [connectionQuality, setConnectionQuality] = useState<'good' | 'poor' | 'offline'>('good');
+  useEffect(() => {
+    let active = true;
+    const poll = async () => {
+      const q = await checkConnectionQuality();
+      if (active) setConnectionQuality(q);
+    };
+    poll();
+    const id = window.setInterval(() => {
+      if (['forms', 'review', 'payment'].includes(step)) poll();
+    }, 30000);
+    return () => { active = false; window.clearInterval(id); };
+  }, [step]);
+
+  // Upload files in background (non-blocking)
+  const uploadFilesInBackground = async (userId: string) => {
+    try {
+      const formData = new FormData();
+      formData.append('userId', userId);
+      for (const [signature, files] of Object.entries(filesBySignature)) {
+        for (const [fieldName, file] of Object.entries(files as Record<string, File>)) {
+          try {
+            const compressed = await compressImage(file);
+            formData.append(`files_${signature}_${fieldName}`, compressed);
+          } catch (e) {
+            console.error('File compression failed:', e);
+            formData.append(`files_${signature}_${fieldName}`, file);
+          }
+        }
+      }
+      await retryFetch(
+        createApiUrl('/api/upload-documents'),
+        { method: 'POST', credentials: 'include', body: formData },
+        3,
+        30000
+      );
+    } catch (error) {
+      console.error('Background file upload failed:', error);
+    }
+  };
+
+  // Optimized flow: minimal registration, immediate order, background uploads
+  const proceedToPaymentOptimized = async () => {
+    try {
+      // Derive identity
       let derivedName: string | undefined;
       let derivedEmail: string | undefined;
-      let attachedImage: File | undefined;
-
-      // First try to get from event registration forms
       for (const group of fieldGroups) {
         const data = formDataBySignature[group.signature] || {};
-        if (!derivedName && data['name']) derivedName = data['name'];
-        if (!derivedEmail && data['collegeMailId']) derivedEmail = data['collegeMailId'];
-        const files = filesBySignature[group.signature] || {};
-        // Prefer an institution card image if present, else take the first file in the group
-        if (!attachedImage) {
-          if (files['universityCardImage']) attachedImage = files['universityCardImage'];
-          else {
-            const firstFile = Object.values(files)[0];
-            if (firstFile) attachedImage = firstFile;
-          }
-        }
+        if (!derivedName && data['name']) derivedName = String(data['name']);
+        if (!derivedEmail && data['collegeMailId']) derivedEmail = String(data['collegeMailId']);
       }
-
-      // If no email found from event forms, try to get from visitor pass details
       if (!derivedEmail && visitorPassDetails['collegeMailId']) {
-        // Use the visitor's email as the primary contact
-        derivedEmail = visitorPassDetails['collegeMailId'];
-        if (!derivedName) derivedName = visitorPassDetails['name'];
+        derivedEmail = String(visitorPassDetails['collegeMailId']);
+        if (!derivedName) derivedName = String(visitorPassDetails['name'] || 'Participant');
       }
-
-      // If still no email found, try flagship benefits for any event
-      if (!derivedEmail) {
-        for (const benefits of Object.values(flagshipBenefitsByEvent)) {
-          if (benefits.flagshipVisitorPassDetails.length > 0) {
-            derivedEmail = benefits.flagshipVisitorPassDetails[0]['collegeMailId'];
-            if (!derivedName) derivedName = benefits.flagshipVisitorPassDetails[0]['name'];
-            break;
-          }
-          if (benefits.flagshipSoloVisitorPassDetails.length > 0) {
-            derivedEmail = benefits.flagshipSoloVisitorPassDetails[0]['collegeMailId'];
-            if (!derivedName) derivedName = benefits.flagshipSoloVisitorPassDetails[0]['name'];
-            break;
-          }
-        }
-      }
-
-      // Fallbacks to avoid empty fields
       if (!derivedName) derivedName = 'Participant';
       if (!derivedEmail) derivedEmail = 'participant@example.com';
 
-      // Generate a strong random password since checkout flow does not collect one
+      const flat = formDataBySignature[fieldGroups[0]?.signature || ''] || {};
       const generatedPassword = Math.random().toString(36).slice(-10) + 'A1!';
 
-      registrationForm.append('name', derivedName);
-      registrationForm.append('email', derivedEmail);
-      registrationForm.append('password', generatedPassword);
-      // Also send flat fields if available
-      const flat = formDataBySignature[fieldGroups[0]?.signature || ''] || {};
-      if (flat['contactNo']) registrationForm.append('contactNo', flat['contactNo']);
-      if (flat['gender']) registrationForm.append('gender', flat['gender']);
-      if (flat['age']) registrationForm.append('age', flat['age']);
-      if (flat['universityName']) registrationForm.append('universityName', flat['universityName']);
-      if (flat['address']) registrationForm.append('address', flat['address']);
-      if (flat['referralCode']) registrationForm.append('referralCode', flat['referralCode']);
-      // Send complex payloads for backend to persist
-      registrationForm.append('formsBySignature', JSON.stringify(formDataBySignature));
-      registrationForm.append('teamMembersBySignature', JSON.stringify(teamMembersBySignature));
-      registrationForm.append('flagshipBenefitsByEvent', JSON.stringify(flagshipBenefitsByEvent));
-      registrationForm.append('items', JSON.stringify(selectedEvents.map(e => ({ id: e.id, title: e.title, price: e.price }))));
-      registrationForm.append('visitorPassDays', visitorPassDays.toString());
-      registrationForm.append('visitorPassDetails', JSON.stringify(visitorPassDetails));
-      if (attachedImage) {
-        registrationForm.append('profileImage', attachedImage);
-      }
+      // Step 1: Register minimally
+      const basicData = {
+        name: derivedName,
+        email: derivedEmail,
+        password: generatedPassword,
+        contactNo: flat['contactNo'],
+        gender: flat['gender'],
+        age: flat['age'],
+        universityName: flat['universityName'],
+        address: flat['address'],
+        referralCode: flat['referralCode']
+      } as Record<string, any>;
 
-      // Append team member images with deterministic keys: memberImage__<signature>__<index>
-      Object.entries(memberFilesBySignature).forEach(([signature, idxMap]) => {
-        Object.entries(idxMap).forEach(([idxStr, file]) => {
-          const idx = Number(idxStr);
-          const encodedSig = encodeURIComponent(signature);
-          registrationForm.append(`memberImage__${encodedSig}__${idx}`, file);
-        });
-      });
-
-      const registrationResponse = await retryFetch(createApiUrl('/register'), {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'User-Agent': typeof navigator !== 'undefined' ? navigator.userAgent : 'Sabrang-Frontend'
+      const registrationResponse = await retryFetch(
+        createApiUrl('/register'),
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(basicData)
         },
-        body: registrationForm
-      }, 2); // 2 retries for registration
+        2,
+        15000
+      );
+      if (!registrationResponse.ok) throw new Error('Registration failed');
+      const regData = await registrationResponse.json();
+      const userId = regData.userId || regData.id || regData.data?.userId;
 
-
-      if (!registrationResponse.ok) {
-        console.log('Registration response not ok:', registrationResponse.status);
-      }
-
-      // Create payment order using the new simple backend endpoint
+      // Step 2: Create payment order immediately
       const orderData = {
+        userId,
         amount: finalPrice.toString(),
         customerName: derivedName,
         customerEmail: derivedEmail,
         customerPhone: flat['contactNo'] || '9999999999',
-        // Include event information for proper processing
-        items: selectedEvents.map(e => ({ 
-          id: e.id, 
-          title: e.title, 
-          price: e.price,
-          itemName: e.title, // Ensure itemName is set for backend processing
-          type: 'event',
-          quantity: 1
-        })),
-        // Include visitor pass if selected
-        visitorPassDays: visitorPassDays,
-        visitorPassDetails: visitorPassDetails,
-        // Include form data for user lookup/creation if needed
-        formDataBySignature: formDataBySignature,
-        teamMembersBySignature: teamMembersBySignature,
-        flagshipBenefitsByEvent: flagshipBenefitsByEvent,
-        // Include promo code information
+        items: selectedEvents.map(e => ({ id: e.id, title: e.title, price: e.price, itemName: e.title, type: 'event', quantity: 1 })),
+        visitorPassDays,
         promoCode: appliedPromo?.code || null,
-        appliedDiscount: appliedPromo?.discountAmount || 0,
-        // Add metadata for tracking
-        metadata: {
-          totalPrice: totalPrice,
-          finalPrice: finalPrice,
-          timestamp: new Date().toISOString(),
-          source: 'checkout-frontend'
-        }
+        appliedDiscount: appliedPromo?.discountAmount || 0
       };
-
-      console.log('🚀 Creating payment order with data:', orderData);
-
-      const response = await retryFetch(createApiUrl('/api/payments/create-order'), {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-          'User-Agent': typeof navigator !== 'undefined' ? navigator.userAgent : 'Sabrang-Frontend'
+      const orderResponse = await retryFetch(
+        createApiUrl('/api/payments/create-order'),
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderData)
         },
-        body: JSON.stringify(orderData)
-      }, 2); // 2 retries for payment order creation
+        2,
+        15000
+      );
+      if (!orderResponse.ok) throw new Error('Payment order creation failed');
+      const orderResponseData = await orderResponse.json();
 
-
-      if (!response.ok) {
-        console.log('Payment order response not ok:', response.status);
+      // Step 3: Upload files in background (non-blocking)
+      if (userId) {
+        uploadFilesInBackground(userId);
+      } else {
+        console.warn('No userId returned, skipping file upload');
       }
 
-      const data = await response.json();
-      console.log('✅ Payment order created:', data);
-
-      if (!data.success) {
-        console.log('Payment order creation not successful:', data.message);
-      }
-
-      // Store payment session data for the payment component
+      // Proceed to payment
       setPaymentSession({
-        paymentSessionId: data.data.payment_session_id,
-        orderId: data.data.order_id,
-        amount: data.data.amount,
-        mode: 'production' // Always use production mode
+        paymentSessionId: orderResponseData.data.payment_session_id,
+        orderId: orderResponseData.data.order_id,
+        amount: orderResponseData.data.amount,
+        mode: 'production'
       });
-
-      // Move to payment step
       setStep('payment');
-
     } catch (error) {
-      console.error('❌ Payment initialization failed:', error);
-      // Don't throw error, just log it
+      console.error('Payment initialization failed:', error);
+      throw error;
     }
   };
+
+  const adaptivePaymentInit = async () => {
+    const quality = await checkConnectionQuality();
+    if (quality === 'offline') {
+      alert('No internet connection. Please check your connection and try again.');
+      return;
+    }
+    if (quality === 'poor') {
+      const proceed = confirm('Your internet connection seems slow. This may take longer than usual. Do you want to continue or use the alternative payment form?');
+      if (!proceed) {
+        window.open('https://c8.cashfree.com/third-party-url', '_blank');
+        return;
+      }
+    }
+    await proceedToPaymentOptimized();
+  };
+
+  // Removed old blocking proceedToPayment in favor of proceedToPaymentOptimized
 
   // Initialize Cashfree SDK - always production mode
   let cashfree: any;
@@ -1344,10 +1493,13 @@ function CheckoutPageContent() {
 
   // Initialize SDK when payment session is available
   useEffect(() => {
+    if (step === 'payment' && !cashfreeLoadedRef.current) {
+      loadCashfreeSdk();
+    }
     if (paymentSession) {
       initializeSDK();
     }
-  }, [paymentSession]);
+  }, [step, paymentSession]);
 
   // Clean payment function following user's preferred structure
   const doPayment = async () => {
@@ -2621,10 +2773,28 @@ function CheckoutPageContent() {
 
 
                     </div>
-                    <div className="flex items-center gap-3 mt-8">
-                      <button onClick={goBack} className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer">Back</button>
-                      <button onClick={goNext} className="px-5 py-2 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 transition cursor-pointer">Continue</button>
-                    </div>
+                    <ActionRow
+                      connectionQuality={connectionQuality}
+                      onSave={() => {
+                        try {
+                          const toSave = {
+                            selectedEventIds,
+                            visitorPassDays,
+                            visitorPassDetails,
+                            formDataBySignature,
+                            teamMembersBySignature,
+                            flagshipBenefitsByEvent,
+                            promoInput,
+                            appliedPromo,
+                          };
+                          localStorage.setItem('sabrang_checkout_draft_v1', JSON.stringify(toSave));
+                          alert('Progress saved locally.');
+                        } catch {}
+                      }}
+                      onFallback={() => window.open(CASHFREE_FALLBACK_FORM_URL, '_blank')}
+                      onBack={goBack}
+                      onNext={goNext}
+                    />
                   </div>
                   <div>
                     <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)]">
