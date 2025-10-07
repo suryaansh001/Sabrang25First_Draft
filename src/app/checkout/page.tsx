@@ -1546,12 +1546,12 @@ function CheckoutPageContent() {
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
                 <div className="bg-black/40 border border-purple-400/50 rounded-lg px-3 py-2 backdrop-blur-sm text-center flex-1 sm:flex-none">
                   <span className="text-purple-300 font-mono text-sm sm:text-lg font-bold tracking-wider">
-                    EARLYBIRD
+                    SPECIALOFFER
                   </span>
                 </div>
                 <button
                   onClick={() => {
-                    navigator.clipboard.writeText('EARLYBIRD');
+                    navigator.clipboard.writeText('SPECIALOFFER');
                     setShowToast(true);
                     setTimeout(() => setShowToast(false), 3000);
                   }}
