@@ -7,7 +7,6 @@ import { useVideo } from '../../../components/VideoContext';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '../../../components/NavigationContext';
 import ShinyText from '../../../components/shinytext';
-import EarlyBirdFloating from '../../../components/EarlyBirdFloating';
 
 
 // Beautiful First-Load Background Component
@@ -209,7 +208,6 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
   const [assetsLoaded, setAssetsLoaded] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [showEarlyBird, setShowEarlyBird] = useState(true);
   const router = useRouter();
   const { navigate } = useNavigation();
 
@@ -496,10 +494,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
           }}
         />
 
-        {/* Early Bird Floating Component - Mobile */}
-        {!isLoading && showEarlyBird && (
-          <EarlyBirdFloating onClose={() => setShowEarlyBird(false)} />
-        )}
+        
       </div>
 
       {/* Mobile Content Sections - separate from hero */}
@@ -912,10 +907,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         </section>
       </div>
 
-      {/* Early Bird Floating Component - Desktop */}
-      {!isLoading && showEarlyBird && (
-        <EarlyBirdFloating onClose={() => setShowEarlyBird(false)} />
-      )}
+      
 
       {/* Special Navjot Ahuja Section - Desktop Only */}
       {!isLoading && (
