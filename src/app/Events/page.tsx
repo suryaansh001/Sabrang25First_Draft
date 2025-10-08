@@ -314,9 +314,9 @@ export default function EventsPage() {
   if (selectedEvent) {
     return (
       <div className="min-h-screen relative overflow-hidden">
-        <div className="fixed inset-0 z-[9998] bg-black/40 backdrop-blur-lg" />
+        <div className={`fixed inset-0 z-[9998] bg-black/40 ${!isMobile ? 'backdrop-blur-lg' : ''}`} />
         <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
-          <div className="relative w-full max-w-6xl rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 bg-neutral-900/30 backdrop-blur-2xl border border-white/10">
+          <div className={`relative w-full max-w-6xl rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 bg-neutral-900/30 ${!isMobile ? 'backdrop-blur-2xl' : 'bg-neutral-900/95'} border border-white/10`}>
             <button
               aria-label="Close"
               onClick={handleClose}
@@ -325,8 +325,8 @@ export default function EventsPage() {
               <X className="w-5 h-5 mx-auto" />
             </button>
 
-            {/* Navigation Arrows */}
-            {hasPrevious && (
+            {/* Navigation Arrows - Hidden on mobile */}
+            {!isMobile && hasPrevious && (
               <button
                 aria-label="Previous event"
                 onClick={handlePreviousEvent}
@@ -336,7 +336,7 @@ export default function EventsPage() {
               </button>
             )}
 
-            {hasNext && (
+            {!isMobile && hasNext && (
               <button
                 aria-label="Next event"
                 onClick={handleNextEvent}
@@ -363,7 +363,7 @@ export default function EventsPage() {
                   quality={isMobile ? 60 : 75}
                 />
                 <div className="absolute inset-0 bg-black/40" />
-                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #FFF 1px, transparent 0)', backgroundSize: '25px 25px' }} />
+                {!isMobile && <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #FFF 1px, transparent 0)', backgroundSize: '25px 25px' }} />}
               </div>
               <div className="p-6 text-white space-y-4 overflow-y-auto md:p-8 md:space-y-6 md:border-l md:border-white/10 flex-grow">
                 <div>
@@ -387,12 +387,14 @@ export default function EventsPage() {
                   </div>
                 </div>
                 <p className="text-gray-200 leading-relaxed">{selectedEvent.description}</p>
-                <div>
-                  <h3 className="font-semibold text-lg mb-2">Details</h3>
-                  <p className="text-gray-300 whitespace-pre-line">{selectedEvent.details}</p>
-                </div>
-                {/* Coordinators in modal */}
-                {getEventCoordinators(selectedEvent.id)?.length ? (
+                {!isMobile && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">Details</h3>
+                    <p className="text-gray-300 whitespace-pre-line">{selectedEvent.details}</p>
+                  </div>
+                )}
+                {/* Coordinators in modal - Only on desktop */}
+                {!isMobile && getEventCoordinators(selectedEvent.id)?.length ? (
                   <div>
                     <h3 className="font-semibold text-lg mb-2">Coordinators</h3>
                     <ul className="text-sm text-gray-300 space-y-1">
@@ -606,7 +608,7 @@ export default function EventsPage() {
                   {/* Events Grid - card with image and bottom info */}
                   <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
                     {filteredEvents.map((event, index) => {
-                      const showPosterStyle = posterEventIds.includes(event.id);
+                      const showPosterStyle = isMobile || posterEventIds.includes(event.id); // Always use simple style on mobile
                       const CardWrapper = isMobile ? 'div' : motion.div;
                       const cardProps = isMobile 
                         ? {}
@@ -623,9 +625,9 @@ export default function EventsPage() {
                           {...cardProps}
                           className="rounded-lg overflow-hidden border border-white/10 group cursor-pointer shadow-lg bg-neutral-900/60 flex flex-col"
                           onClick={() => handleCardClick(event)}
-                          onMouseEnter={() => { try { router.prefetch(`/Events/${event.id}/rules`); } catch {} }}
-                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(event); } }}
-                          tabIndex={0}
+                          onMouseEnter={!isMobile ? () => { try { router.prefetch(`/Events/${event.id}/rules`); } catch {} } : undefined}
+                          onKeyDown={!isMobile ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(event); } } : undefined}
+                          tabIndex={!isMobile ? 0 : undefined}
                         >
                           {/* Image container */}
                           <div className="relative w-full aspect-[2/3] overflow-hidden">
@@ -651,27 +653,14 @@ export default function EventsPage() {
                               </div>
                             </div>
 
-                            <h3 className="font-bold text-sm md:text-base text-white uppercase tracking-wider flex-grow mb-3">
+                            <h3 className="font-bold text-sm md:text-base text-white uppercase tracking-wider flex-grow mb-2">
                               {event.title}
                             </h3>
-                            {/* Tiny coordinator line below title (supports up to two) */}
-                            {(() => {
-                              const coordinators = getEventCoordinators(event.id) || [];
-                              if (!coordinators.length) return null;
-                              const firstTwo = coordinators
-                                .slice(0, 2)
-                                .map(c => `${c.name}${c.phone ? ` - ${c.phone}` : ''}`);
-                              return (
-                                <div className="-mt-2 mb-2 text-[10px] text-white/80">
-                                  {firstTwo.join(' • ')}
-                                </div>
-                              );
-                            })()}
 
                             <button
                               type="button"
                               onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }}
-                              className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs transition-all duration-200 cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/80 border-purple-400/60 text-white shadow-[0_0_12px_rgba(168,85,247,0.45)]' : 'bg-white/10 border-white/30 text-white/90 hover:bg-white/15 backdrop-blur-sm'}`}
+                              className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs ${isMobile ? '' : 'transition-all duration-200'} cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/80 border-purple-400/60 text-white' : `bg-white/10 border-white/30 text-white/90 ${!isMobile ? 'hover:bg-white/15 backdrop-blur-sm' : ''}`}`}
                               aria-pressed={cartIds.includes(event.id) ? 'true' : 'false'}
                             >
                               <ShoppingCart className="w-3 h-3 md:w-3.5 md:h-3.5" />
@@ -688,9 +677,9 @@ export default function EventsPage() {
                           {...cardProps}
                           className="relative rounded-lg overflow-hidden border border-white/10 group cursor-pointer shadow-lg"
                           onClick={() => handleCardClick(event)}
-                          onMouseEnter={() => { try { router.prefetch(`/Events/${event.id}/rules`); } catch {} }}
-                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(event); } }}
-                          tabIndex={0}
+                          onMouseEnter={!isMobile ? () => { try { router.prefetch(`/Events/${event.id}/rules`); } catch {} } : undefined}
+                          onKeyDown={!isMobile ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(event); } } : undefined}
+                          tabIndex={!isMobile ? 0 : undefined}
                         >
                           {/* Image container (hidden) */}
                           <div className="relative w-full aspect-[2/3] bg-black/20">
@@ -729,7 +718,7 @@ export default function EventsPage() {
                               {getEventPrizePool(event.id) && (<div className="flex justify-center mb-20"><div className="text-white text-[8px] md:text-xs font-bold"><div className="flex items-center gap-1"><Crown className="w-2 h-2 md:w-3 md:h-3" /><span className="font-extrabold tracking-wide">Prize Pool: {getEventPrizePool(event.id)}</span></div></div></div>)}
                               <div className="flex justify-center mb-1.5"><div className="text-white text-[9px] md:text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded-full border border-white/20">{catalogById.get(event.id)?.price || event.price}</div></div>
                               <div className="px-2 md:px-3 py-2 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
-                                <button type="button" onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }} className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs transition-all duration-200 cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/30 border-purple-400/60 text-white shadow-[0_0_12px_rgba(168,85,247,0.45)]' : 'bg-white/10 border-white/30 text-white/90 hover:bg-white/15'}`} aria-pressed={cartIds.includes(event.id) ? 'true' : 'false'}>
+                                <button type="button" onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }} className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs ${isMobile ? '' : 'transition-all duration-200'} cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/30 border-purple-400/60 text-white' : `bg-white/10 border-white/30 text-white/90 ${!isMobile ? 'hover:bg-white/15' : ''}`}`} aria-pressed={cartIds.includes(event.id) ? 'true' : 'false'}>
                                   <span className={`inline-block w-3 h-3 md:w-4 md:h-4 rounded-full ring-1 ${cartIds.includes(event.id) ? 'bg-purple-500 ring-purple-300' : 'bg-transparent ring-white/40'}`}></span>
                                   <span className="uppercase tracking-wider" style={{ fontFamily: 'monospace' }}>{cartIds.includes(event.id) ? 'Added' : 'Add to cart'}</span>
                                 </button>
