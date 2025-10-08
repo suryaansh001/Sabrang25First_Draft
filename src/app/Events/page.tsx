@@ -31,16 +31,45 @@ export default function EventsPage() {
   const [clickedEventId, setClickedEventId] = useState<number | null>(null);
   const [cartIds, setCartIds] = useState<number[]>([]);
   const [isMobile, setIsMobile] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
 
-  // Detect mobile device
+  // Detect mobile device - only once on mount
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    
+    let resizeTimer: NodeJS.Timeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(checkMobile, 150); // Debounce resize
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      clearTimeout(resizeTimer);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
+
+  // Track scrolling state
+  useEffect(() => {
+    if (!isMobile) return;
+    
+    let scrollTimer: NodeJS.Timeout;
+    const handleScroll = () => {
+      setIsScrolling(true);
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => setIsScrolling(false), 150);
+    };
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      clearTimeout(scrollTimer);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [isMobile]);
 
 
   // Prevent background scrolling when modal or mobile menu is open
@@ -615,7 +644,7 @@ export default function EventsPage() {
                         : {
                             initial: { opacity: 0, y: 24 },
                             animate: { opacity: 1, y: 0 },
-                            transition: { duration: 0.35, delay: index * 0.04 }
+                            transition: { duration: 0.35, delay: Math.min(index * 0.04, 0.5) }
                           };
                       
                       return showPosterStyle ? (
@@ -623,22 +652,24 @@ export default function EventsPage() {
                           key={event.id}
                           data-event-id={event.id}
                           {...cardProps}
-                          className="rounded-lg overflow-hidden border border-white/10 group cursor-pointer shadow-lg bg-neutral-900/60 flex flex-col"
-                          onClick={() => handleCardClick(event)}
+                          className="rounded-lg overflow-hidden border border-white/10 cursor-pointer shadow-lg bg-neutral-900/60 flex flex-col will-change-auto"
+                          onClick={() => !isScrolling && handleCardClick(event)}
                           onMouseEnter={!isMobile ? () => { try { router.prefetch(`/Events/${event.id}/rules`); } catch {} } : undefined}
                           onKeyDown={!isMobile ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(event); } } : undefined}
                           tabIndex={!isMobile ? 0 : undefined}
                         >
                           {/* Image container */}
-                          <div className="relative w-full aspect-[2/3] overflow-hidden">
+                          <div className="relative w-full aspect-[2/3] overflow-hidden bg-neutral-800">
                             <Image
-                              loading="lazy"
+                              loading={index < 6 ? 'eager' : 'lazy'}
                               sizes="(min-width:1024px) 25vw, (min-width:768px) 33vw, 50vw"
                               src={event.image}
                               alt={event.title}
                               fill
                               className="object-cover"
-                              quality={isMobile ? 50 : 75}
+                              quality={isMobile ? 40 : 75}
+                              placeholder="blur"
+                              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                             />
                           </div>
 
@@ -675,8 +706,8 @@ export default function EventsPage() {
                           key={event.id}
                           data-event-id={event.id}
                           {...cardProps}
-                          className="relative rounded-lg overflow-hidden border border-white/10 group cursor-pointer shadow-lg"
-                          onClick={() => handleCardClick(event)}
+                          className="relative rounded-lg overflow-hidden border border-white/10 cursor-pointer shadow-lg will-change-auto"
+                          onClick={() => !isScrolling && handleCardClick(event)}
                           onMouseEnter={!isMobile ? () => { try { router.prefetch(`/Events/${event.id}/rules`); } catch {} } : undefined}
                           onKeyDown={!isMobile ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(event); } } : undefined}
                           tabIndex={!isMobile ? 0 : undefined}
@@ -684,13 +715,15 @@ export default function EventsPage() {
                           {/* Image container (hidden) */}
                           <div className="relative w-full aspect-[2/3] bg-black/20">
                             <Image
-                              loading="lazy"
+                              loading={index < 6 ? 'eager' : 'lazy'}
                               sizes="(min-width:1024px) 25vw, (min-width:768px) 33vw, 50vw"
                               src={event.image}
                               alt={event.title}
                               fill
                               className="object-cover"
-                              quality={isMobile ? 50 : 75}
+                              quality={isMobile ? 40 : 75}
+                              placeholder="blur"
+                              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                             />
                           </div>
 
