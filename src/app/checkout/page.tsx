@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ChevronLeft, CreditCard, ArrowRight, X, Home, Info, Calendar, Star, Clock, Users, HelpCircle, Handshake, Mail, Camera, Ticket, CheckCircle, XCircle, Loader } from 'lucide-react';
+import { Check, ChevronLeft, CreditCard, ArrowRight, X, Home, Info, Calendar, Star, Clock, Users, HelpCircle, Handshake, Mail, Camera, Ticket, CheckCircle, XCircle, Loader, Wifi, WifiOff, Save, AlertTriangle } from 'lucide-react';
 import createApiUrl from '../../lib/api';
 import { events as EVENTS_DATA } from '../Events/[id]/rules/events.data';
 import { EventCatalogItem, EVENT_CATALOG as ORIGINAL_EVENT_CATALOG } from '../../lib/eventCatalog';
@@ -226,6 +226,34 @@ function CheckoutPageContent() {
   const [step, setStep] = useState<Step>('select');
   const [reducedMotion, setReducedMotion] = useState<boolean>(true);
 
+  // Auto-save utility functions
+  const saveToLocalStorage = (key: string, data: any) => {
+    try {
+      localStorage.setItem(`checkout_${key}`, JSON.stringify(data));
+    } catch (error) {
+      console.warn('Failed to save to localStorage:', error);
+    }
+  };
+
+  const loadFromLocalStorage = (key: string, defaultValue: any = null) => {
+    try {
+      const saved = localStorage.getItem(`checkout_${key}`);
+      return saved ? JSON.parse(saved) : defaultValue;
+    } catch (error) {
+      console.warn('Failed to load from localStorage:', error);
+      return defaultValue;
+    }
+  };
+
+  const clearLocalStorage = () => {
+    try {
+      const keys = Object.keys(localStorage).filter(key => key.startsWith('checkout_'));
+      keys.forEach(key => localStorage.removeItem(key));
+    } catch (error) {
+      console.warn('Failed to clear localStorage:', error);
+    }
+  };
+
   // Function to scroll to top when changing steps
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -235,9 +263,9 @@ function CheckoutPageContent() {
   useEffect(() => {
     scrollToTop();
   }, [step]);
-  const [selectedEventIds, setSelectedEventIds] = useState<number[]>([]);
-  const [visitorPassDays, setVisitorPassDays] = useState<number>(0);
-  const [visitorPassDetails, setVisitorPassDetails] = useState<Record<string, string>>({});
+  const [selectedEventIds, setSelectedEventIds] = useState<number[]>(loadFromLocalStorage('selectedEventIds', []));
+  const [visitorPassDays, setVisitorPassDays] = useState<number>(loadFromLocalStorage('visitorPassDays', 0));
+  const [visitorPassDetails, setVisitorPassDetails] = useState<Record<string, string>>(loadFromLocalStorage('visitorPassDetails', {}));
   const [flagshipBenefitsByEvent, setFlagshipBenefitsByEvent] = useState<Record<number, {
     supportArtistQuantity: number;
     supportArtistDetails: Array<Record<string, string>>;
@@ -245,16 +273,16 @@ function CheckoutPageContent() {
     flagshipVisitorPassDetails: Array<Record<string, string>>;
     flagshipSoloVisitorPassQuantity: number;
     flagshipSoloVisitorPassDetails: Array<Record<string, string>>;
-  }>>({});
+  }>>(loadFromLocalStorage('flagshipBenefitsByEvent', {}));
   const [formErrors, setFormErrors] = useState<Record<string, Record<string, string>>>({});
-  const [formDataBySignature, setFormDataBySignature] = useState<Record<string, Record<string, string>>>({});
-  const [teamMembersBySignature, setTeamMembersBySignature] = useState<Record<string, Array<Record<string, string>>>>({});
+  const [formDataBySignature, setFormDataBySignature] = useState<Record<string, Record<string, string>>>(loadFromLocalStorage('formDataBySignature', {}));
+  const [teamMembersBySignature, setTeamMembersBySignature] = useState<Record<string, Array<Record<string, string>>>>(loadFromLocalStorage('teamMembersBySignature', {}));
   const [filesBySignature, setFilesBySignature] = useState<Record<string, Record<string, File>>>({});
   const [memberFilesBySignature, setMemberFilesBySignature] = useState<Record<string, Record<number, File>>>({});
   const [infoEvent, setInfoEvent] = useState<import('../Events/[id]/rules/events.data').Event | null>(null);
   // Simple offline payment instructions (QR + bank details)
   const [paymentProof, setPaymentProof] = useState<File | null>(null);
-  const [promoInput, setPromoInput] = useState<string>('');
+  const [promoInput, setPromoInput] = useState<string>(loadFromLocalStorage('promoInput', ''));
   const [appliedPromo, setAppliedPromo] = useState<{ code: string; discountAmount: number } | null>(null);
   const [promoStatus, setPromoStatus] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -277,6 +305,12 @@ function CheckoutPageContent() {
   });
   const [paymentVerificationStatus, setPaymentVerificationStatus] = useState<PaymentStatus | null>(null);
   const [isVerifying, setIsVerifying] = useState(true);
+
+  // Connection quality and save progress states
+  const [connectionQuality, setConnectionQuality] = useState<'excellent' | 'good' | 'poor' | 'offline'>('excellent');
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error' | null>(null);
 
   // Fallback Cashfree form URL for manual payment if SDK/init fails or times out
   const CASHFREE_FALLBACK_FORM_URL = 'https://payments.cashfree.com/forms?code=sabrang25';
@@ -319,13 +353,15 @@ function CheckoutPageContent() {
       verifyPaymentStatus(orderId)
         .then(result => {
           setPaymentVerificationStatus(result);
-          // If payment is successful, clear the cart
+          // If payment is successful, clear the cart and all saved form data
           if (result.success) {
             setSelectedEventIds([]);
             setVisitorPassDays(0);
             try {
               localStorage.removeItem('sabrang_cart');
             } catch {}
+            // Clear all auto-saved form data
+            clearLocalStorage();
           }
         })
         .catch(error => {
@@ -343,6 +379,119 @@ function CheckoutPageContent() {
       localStorage.setItem('sabrang_cart', JSON.stringify(selectedEventIds));
     } catch {}
   }, [selectedEventIds]);
+
+  // Auto-save form data to localStorage
+  useEffect(() => {
+    saveToLocalStorage('selectedEventIds', selectedEventIds);
+  }, [selectedEventIds]);
+
+  useEffect(() => {
+    saveToLocalStorage('visitorPassDays', visitorPassDays);
+  }, [visitorPassDays]);
+
+  useEffect(() => {
+    saveToLocalStorage('visitorPassDetails', visitorPassDetails);
+  }, [visitorPassDetails]);
+
+  useEffect(() => {
+    saveToLocalStorage('flagshipBenefitsByEvent', flagshipBenefitsByEvent);
+  }, [flagshipBenefitsByEvent]);
+
+  useEffect(() => {
+    saveToLocalStorage('formDataBySignature', formDataBySignature);
+  }, [formDataBySignature]);
+
+  useEffect(() => {
+    saveToLocalStorage('teamMembersBySignature', teamMembersBySignature);
+  }, [teamMembersBySignature]);
+
+  useEffect(() => {
+    saveToLocalStorage('promoInput', promoInput);
+  }, [promoInput]);
+
+  // Connection quality monitoring
+  useEffect(() => {
+    const checkConnection = async () => {
+      try {
+        if (!navigator.onLine) {
+          setConnectionQuality('offline');
+          return;
+        }
+
+        const startTime = performance.now();
+        const response = await fetch('/api/health', { 
+          method: 'HEAD',
+          cache: 'no-cache',
+          signal: AbortSignal.timeout(3000)
+        });
+        const endTime = performance.now();
+        const latency = endTime - startTime;
+
+        if (response.ok) {
+          if (latency < 200) {
+            setConnectionQuality('excellent');
+          } else if (latency < 500) {
+            setConnectionQuality('good');
+          } else {
+            setConnectionQuality('poor');
+          }
+        } else {
+          setConnectionQuality('poor');
+        }
+      } catch (error) {
+        setConnectionQuality('poor');
+      }
+    };
+
+    // Check connection on mount and periodically
+    checkConnection();
+    const interval = setInterval(checkConnection, 30000); // Check every 30 seconds
+
+    // Listen for online/offline events
+    const handleOnline = () => checkConnection();
+    const handleOffline = () => setConnectionQuality('offline');
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Manual save progress function
+  const saveProgress = async () => {
+    setIsSaving(true);
+    setSaveStatus('saving');
+    
+    try {
+      // Save all current form data
+      const formData = {
+        selectedEventIds,
+        visitorPassDays,
+        visitorPassDetails,
+        flagshipBenefitsByEvent,
+        formDataBySignature,
+        teamMembersBySignature,
+        promoInput,
+        timestamp: new Date().toISOString()
+      };
+
+      saveToLocalStorage('manual_save', formData);
+      setLastSaved(new Date());
+      setSaveStatus('saved');
+      
+      // Show success message briefly
+      setTimeout(() => setSaveStatus(null), 2000);
+    } catch (error) {
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus(null), 3000);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const selectedEvents = useMemo(() => EVENT_CATALOG.filter(e => selectedEventIds.includes(e.id)), [selectedEventIds]);
 
@@ -534,45 +683,6 @@ function CheckoutPageContent() {
     return parseFloat(Math.max(0, totalPrice - discount).toFixed(2));
   }, [totalPrice, appliedPromo]);
 
-  // Revalidate promo code when total price changes
-  useEffect(() => {
-    if (appliedPromo && totalPrice > 0) {
-      // Re-apply the promo code with the new total price
-      const revalidatePromo = async () => {
-        try {
-          const userEmail = getDerivedEmail();
-          const emailForValidation = userEmail || 'temp@example.com';
-          
-          const response = await retryFetch(createApiUrl('/admin/promo-codes/validate'), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ 
-              code: appliedPromo.code, 
-              userEmail: emailForValidation, 
-              orderAmount: totalPrice 
-            })
-          }, 2); // 2 retries for promo validation
-          
-          const data = await response.json();
-          if (response.ok && data.success) {
-            // Update the discount amount with the new calculation
-            setAppliedPromo({ code: appliedPromo.code, discountAmount: data.discountAmount });
-          } else {
-            // If promo is no longer valid, remove it
-            setAppliedPromo(null);
-            setPromoStatus({ loading: false, error: 'Promo code is no longer valid for this order amount' });
-          }
-        } catch (e) {
-          console.error('Failed to revalidate promo code:', e);
-          // Keep the existing promo but log the error
-        }
-      };
-      
-      revalidatePromo();
-    }
-  }, [totalPrice, appliedPromo?.code]); // Only re-run when totalPrice or promo code changes
-
   const getDerivedEmail = () => {
     // Search across all groups for collegeMailId or email
     for (const group of fieldGroups) {
@@ -631,7 +741,7 @@ function CheckoutPageContent() {
           userEmail: emailForValidation,
           orderAmount: totalPrice
         })
-      }, 2); // 2 retries for promo validation
+      }, 1); // 1 retry for promo validation
       
       const data = await response.json();
       if (!response.ok || !data.success) {
@@ -646,6 +756,35 @@ function CheckoutPageContent() {
     } catch (e) {
       setPromoStatus({ loading: false, error: 'Failed to validate promo code' });
       setAppliedPromo(null);
+    }
+  };
+
+  // Manual revalidation function - only call when needed
+  const revalidatePromoOnPriceChange = async () => {
+    if (!appliedPromo) return;
+    
+    try {
+      const userEmail = getDerivedEmail() || 'temp@example.com';
+      const response = await retryFetch(createApiUrl('/admin/promo-codes/validate'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ 
+          code: appliedPromo.code, 
+          userEmail, 
+          orderAmount: totalPrice 
+        })
+      }, 0); // No retries for revalidation
+      
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setAppliedPromo({ code: appliedPromo.code, discountAmount: data.discountAmount });
+      } else {
+        setAppliedPromo(null);
+        setPromoStatus({ loading: false, error: 'Promo code is no longer valid' });
+      }
+    } catch (e) {
+      // Silently fail - keep existing promo
     }
   };
 
@@ -1111,7 +1250,7 @@ function CheckoutPageContent() {
         isLoading: false,
         error: 'This is taking longer than expected. You can retry, or use the fallback payment link below.'
       }));
-    }, 15000);
+    }, 30000); // Changed from 15000 to 30000 (30 seconds)
 
     try {
       await proceedToPayment();
@@ -1126,7 +1265,7 @@ function CheckoutPageContent() {
 
 
   // Helper function for retry logic
-  const retryFetch = async (url: string, options: RequestInit, maxRetries: number = 2): Promise<Response> => {
+  const retryFetch = async (url: string, options: RequestInit, maxRetries: number = 1): Promise<Response> => {
     for (let i = 0; i < maxRetries; i++) {
       try {
         const response = await fetch(url, options);
@@ -1135,18 +1274,16 @@ function CheckoutPageContent() {
         console.log(`🔄 Retry attempt ${i + 1}/${maxRetries} failed:`, error);
         
         if (i === maxRetries - 1) {
-          // Return a mock response instead of throwing error
           return new Response(JSON.stringify({ success: false, message: 'Request failed' }), {
             status: 500,
             statusText: 'Internal Server Error'
           });
         }
         
-        // Simple backoff: wait 1s
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Exponential backoff instead of fixed 1s
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
       }
     }
-    // This should never be reached, but just in case
     return new Response(JSON.stringify({ success: false, message: 'Request failed' }), {
       status: 500,
       statusText: 'Internal Server Error'
@@ -1334,17 +1471,28 @@ function CheckoutPageContent() {
   };
 
   // Initialize Cashfree SDK - always production mode
-  let cashfree: any;
+  let cashfree: any = null;
   const initializeSDK = async () => {
-    cashfree = await load({
-      mode: "production"
-    });
-    console.log('✅ Cashfree SDK initialized');
+    if (cashfreeLoadedRef.current && cashfree) {
+      console.log('✅ Cashfree SDK already loaded');
+      return cashfree;
+    }
+    
+    try {
+      cashfree = await load({ mode: "production" });
+      cashfreeLoadedRef.current = true;
+      console.log('✅ Cashfree SDK initialized');
+      return cashfree;
+    } catch (error) {
+      console.error('❌ Cashfree SDK initialization failed:', error);
+      cashfreeLoadedRef.current = false;
+      return null;
+    }
   };
 
   // Initialize SDK when payment session is available
   useEffect(() => {
-    if (paymentSession) {
+    if (paymentSession && !cashfreeLoadedRef.current) {
       initializeSDK();
     }
   }, [paymentSession]);
@@ -1363,15 +1511,27 @@ function CheckoutPageContent() {
     
     console.log('🚀 Starting payment with session ID:', paymentSession.paymentSessionId);
     
-    const checkoutOptions = {
-      paymentSessionId: paymentSession.paymentSessionId,
-      redirectTarget: "_self" as const,
-    };
-    
-    console.log('💳 Launching Cashfree checkout with options:', checkoutOptions);
-    await cashfree.checkout(checkoutOptions);
-    
-    setIsProcessingPayment(false);
+    try {
+      // Ensure Cashfree SDK is initialized
+      const cashfreeInstance = await initializeSDK();
+      if (!cashfreeInstance) {
+        throw new Error('Failed to initialize Cashfree SDK');
+      }
+
+      const checkoutOptions = {
+        paymentSessionId: paymentSession.paymentSessionId,
+        redirectTarget: "_self" as const,
+      };
+      
+      console.log('💳 Launching Cashfree checkout with options:', checkoutOptions);
+      await cashfreeInstance.checkout(checkoutOptions);
+      
+    } catch (error) {
+      console.error('❌ Payment failed:', error);
+      alert('Payment failed. Please try again or use the fallback payment method.');
+    } finally {
+      setIsProcessingPayment(false);
+    }
   };
 
   // Initialize Cashfree payment
@@ -1386,21 +1546,23 @@ function CheckoutPageContent() {
       console.log('🔗 Initializing Cashfree payment...');
       console.log('Payment Session:', paymentSession);
       
-      // Always use production mode
-      const cashfree = await load({ 
-        mode: "production"
-      });
+      // Ensure Cashfree SDK is initialized
+      const cashfreeInstance = await initializeSDK();
+      if (!cashfreeInstance) {
+        throw new Error('Failed to initialize Cashfree SDK');
+      }
       
       const checkoutOptions = {
         paymentSessionId: paymentSession.paymentSessionId,
         redirectTarget: '_self' as const
       };
       
-      console.log('� Launching Cashfree checkout with options:', checkoutOptions);
-      await cashfree.checkout(checkoutOptions);
+      console.log('💳 Launching Cashfree checkout with options:', checkoutOptions);
+      await cashfreeInstance.checkout(checkoutOptions);
       
     } catch (error) {
       console.error('❌ Cashfree payment failed:', error);
+      alert('Payment failed. Please try again or use the fallback payment method.');
     } finally {
       setIsProcessingPayment(false);
     }
@@ -1484,7 +1646,7 @@ function CheckoutPageContent() {
         <div className="absolute inset-0 bg-black/40"></div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-[150px] pb-4 sm:pb-8">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 pt-[120px] sm:pt-[150px] pb-6 sm:pb-8">
         {/* Mobile hamburger */}
         <button
           aria-label="Open menu"
@@ -1504,10 +1666,80 @@ function CheckoutPageContent() {
         >
           <span className="mr-1">&lt;</span> Back
         </button>
+
+        {/* Connection Quality Indicator */}
+        <div className="fixed top-3 left-3 z-50 flex items-center gap-2 px-3 py-2 bg-black/20 backdrop-blur-sm border border-white/20 rounded-lg">
+          {connectionQuality === 'excellent' && (
+            <>
+              <Wifi className="w-4 h-4 text-green-400" />
+              <span className="text-xs text-green-400">Excellent</span>
+            </>
+          )}
+          {connectionQuality === 'good' && (
+            <>
+              <Wifi className="w-4 h-4 text-yellow-400" />
+              <span className="text-xs text-yellow-400">Good</span>
+            </>
+          )}
+          {connectionQuality === 'poor' && (
+            <>
+              <Wifi className="w-4 h-4 text-orange-400" />
+              <span className="text-xs text-orange-400">Poor</span>
+            </>
+          )}
+          {connectionQuality === 'offline' && (
+            <>
+              <WifiOff className="w-4 h-4 text-red-400" />
+              <span className="text-xs text-red-400">Offline</span>
+            </>
+          )}
+        </div>
+
+        {/* Save Progress Button */}
+        <div className="fixed top-3 left-1/2 transform -translate-x-1/2 z-50">
+          <button
+            onClick={saveProgress}
+            disabled={isSaving}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              saveStatus === 'saved' 
+                ? 'bg-green-500/20 text-green-400 border border-green-400/30' 
+                : saveStatus === 'error'
+                ? 'bg-red-500/20 text-red-400 border border-red-400/30'
+                : 'bg-blue-500/20 text-blue-400 border border-blue-400/30 hover:bg-blue-500/30'
+            } backdrop-blur-sm`}
+          >
+            {isSaving ? (
+              <>
+                <Loader className="w-4 h-4 animate-spin" />
+                <span>Saving...</span>
+              </>
+            ) : saveStatus === 'saved' ? (
+              <>
+                <CheckCircle className="w-4 h-4" />
+                <span>Saved!</span>
+              </>
+            ) : saveStatus === 'error' ? (
+              <>
+                <XCircle className="w-4 h-4" />
+                <span>Save Failed</span>
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                <span>Save Progress</span>
+              </>
+            )}
+          </button>
+          {lastSaved && (
+            <div className="text-xs text-white/60 text-center mt-1">
+              Last saved: {lastSaved.toLocaleTimeString()}
+            </div>
+          )}
+        </div>
         
         {/* Header - Mobile Optimized */}
-        <div className="mb-4 sm:mb-6 text-center">
-          <h1 className="text-lg sm:text-xl md:text-2xl font-bold title-chroma title-glow-animation">
+        <div className="mb-6 sm:mb-8 text-center">
+          <h1 className="text-2xl sm:text-2xl md:text-3xl font-bold title-chroma title-glow-animation">
               Event Registration
             </h1>
           </div>
@@ -1517,9 +1749,9 @@ function CheckoutPageContent() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="relative mb-4 sm:mb-6 overflow-hidden"
+          className="relative mb-6 sm:mb-8 overflow-hidden"
         >
-          <div className="relative bg-gradient-to-r from-purple-900/30 via-pink-900/30 to-rose-900/30 backdrop-blur-sm border border-purple-400/30 rounded-lg sm:rounded-2xl p-3 sm:p-6 shadow-[0_0_30px_rgba(168,85,247,0.3)]">
+          <div className="relative bg-gradient-to-r from-purple-900/30 via-pink-900/30 to-rose-900/30 backdrop-blur-sm border border-purple-400/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-[0_0_30px_rgba(168,85,247,0.3)]">
             {/* Animated background pattern */}
             <div className="absolute inset-0 opacity-20">
               <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-rose-500/10 animate-pulse"></div>
@@ -1528,24 +1760,24 @@ function CheckoutPageContent() {
               <div className="absolute bottom-4 left-4 sm:left-8 w-1 h-1 sm:w-3 sm:h-3 bg-rose-400/30 rounded-full animate-bounce" style={{ animationDelay: '1s' }}></div>
             </div>
             
-            <div className="relative z-10 space-y-3">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex-shrink-0">
-                  <Star className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
+            <div className="relative z-10 space-y-4">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex-shrink-0">
+                  <Star className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-sm sm:text-lg font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent">
+                  <h3 className="text-lg sm:text-lg font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent">
                     🎉 Early Bird
                   </h3>
-                  <p className="text-xs sm:text-sm text-white/80">
+                  <p className="text-base sm:text-sm text-white/80">
                     Get 25% off on all events
                   </p>
                 </div>
               </div>
               
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-                <div className="bg-black/40 border border-purple-400/50 rounded-lg px-3 py-2 backdrop-blur-sm text-center flex-1 sm:flex-none">
-                  <span className="text-purple-300 font-mono text-sm sm:text-lg font-bold tracking-wider">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
+                <div className="bg-black/40 border border-purple-400/50 rounded-lg px-4 py-3 backdrop-blur-sm text-center flex-1 sm:flex-none">
+                  <span className="text-purple-300 font-mono text-lg sm:text-lg font-bold tracking-wider">
                     SPECIALOFFER
                   </span>
                 </div>
@@ -1555,7 +1787,7 @@ function CheckoutPageContent() {
                     setShowToast(true);
                     setTimeout(() => setShowToast(false), 3000);
                   }}
-                  className="px-4 py-2.5 sm:py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg sm:rounded-xl text-white font-medium transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/25 text-sm sm:text-base touch-manipulation w-full sm:w-auto"
+                  className="px-6 py-3 sm:py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-xl sm:rounded-xl text-white font-medium transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/25 text-lg sm:text-base touch-manipulation w-full sm:w-auto min-h-[48px]"
                 >
                   Copy Code
             </button>
@@ -1600,7 +1832,7 @@ function CheckoutPageContent() {
                 exit={reducedMotion ? { opacity: 0 } : { opacity: 0, x: -30 }}
                 transition={{ duration: reducedMotion ? 0.15 : 0.25 }}
               >
-                <div className="grid lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+                <div className="grid lg:grid-cols-4 gap-6 sm:gap-6 lg:gap-8">
                   <div className="lg:col-span-3">
                     <div className="bg-yellow-500/15 border border-yellow-400/40 rounded-lg p-4 mb-6 shadow-[0_0_20px_rgba(250,204,21,0.2)] hidden">
                       <p className="text-sm text-yellow-200">
@@ -1635,7 +1867,7 @@ function CheckoutPageContent() {
 
                        return (
                          <div key={event.id} className="mb-8">
-                        <h3 className="text-base sm:text-lg font-medium text-white mb-3 sm:mb-4">
+                        <h3 className="text-lg sm:text-lg font-medium text-white mb-3 sm:mb-4">
                              <span className={`bg-gradient-to-r ${isGroupEvent ? 'from-purple-300 via-pink-400 to-rose-400' : 'from-blue-300 via-indigo-400 to-purple-400'} bg-clip-text text-transparent`}>
                                Flagship Benefits - {event.title}
                              </span>
@@ -1644,20 +1876,20 @@ function CheckoutPageContent() {
                              {isGroupEvent && (
                                <>
                           <div className="mb-4 sm:mb-6">
-                            <h4 className="font-semibold text-purple-200 mb-2 text-sm sm:text-base">Support Artists</h4>
-                            <p className="text-xs sm:text-sm text-white/70 mb-3">
+                            <h4 className="font-semibold text-purple-200 mb-2 text-base sm:text-base">Support Artists</h4>
+                            <p className="text-sm sm:text-sm text-white/70 mb-3">
                               You will get a form 5 days before the event where you can claim up to 3 support artists (makeup, stylist, manager) for your team performance.
                             </p>
                           </div>
                           
                           <div className="mb-4 sm:mb-6">
-                            <h4 className="font-semibold text-purple-200 mb-2 text-sm sm:text-base">Free Visitor Passes</h4>
-                            <p className="text-xs sm:text-sm text-white/70 mb-3">
+                            <h4 className="font-semibold text-purple-200 mb-2 text-base sm:text-base">Free Visitor Passes</h4>
+                            <p className="text-sm sm:text-sm text-white/70 mb-3">
                               You will get a form 5 days before the event where you can claim up to 3 free visitor passes for your day event.
                             </p>
                           </div>
 
-                          <div className="text-xs text-white/60 space-y-1">
+                          <div className="text-sm text-white/60 space-y-1">
                             <p>• Green room access (time-bound as per slot)</p>
                             <p>• Snacks (tea/coffee) for team + support artists</p>
                             <p>• Support artists must wear provided wristbands/badges</p>
@@ -1909,7 +2141,7 @@ function CheckoutPageContent() {
                 exit={reducedMotion ? { opacity: 0 } : { opacity: 0, x: -30 }}
                 transition={{ duration: reducedMotion ? 0.15 : 0.25 }}
               >
-                <div className="grid lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+                <div className="grid lg:grid-cols-4 gap-6 sm:gap-6 lg:gap-8">
                   <div className="lg:col-span-3">
                     {/* Important Email Notice - Mobile Optimized */}
                     <div className="bg-red-500/15 border border-red-400/40 rounded-lg p-3 mb-4 sm:mb-6 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
@@ -1931,37 +2163,37 @@ function CheckoutPageContent() {
                       </div>
                     </div>
                     
-                    <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 title-chroma text-center sm:text-left">Your Details</h2>
+                    <h2 className="text-2xl sm:text-xl font-semibold mb-6 sm:mb-6 title-chroma text-center sm:text-left">Your Details</h2>
                     {fieldGroups.length === 0 && (
-                      <p className="text-xs sm:text-sm text-gray-400">No events selected. Go back and pick at least one event.</p>
+                      <p className="text-sm sm:text-sm text-gray-400">No events selected. Go back and pick at least one event.</p>
                     )}
-                    <div className="space-y-6 sm:space-y-8">
+                    <div className="space-y-8 sm:space-y-8">
                       {/* Visitor Pass Details Section - Mobile Optimized */}
                       {visitorPassDays > 0 && (
-                        <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
-                          <div className="mb-3 sm:mb-4 text-center sm:text-left">
-                            <h3 className="font-semibold text-yellow-200 text-sm sm:text-base">Visitor Pass Details ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</h3>
-                            <p className="text-[10px] sm:text-xs text-gray-400">Fill details for your visitor pass. This pass will be valid for {visitorPassDays} day{visitorPassDays > 1 ? 's' : ''}.</p>
+                        <div className="glass rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
+                          <div className="mb-4 sm:mb-4 text-center sm:text-left">
+                            <h3 className="font-semibold text-yellow-200 text-lg sm:text-base">Visitor Pass Details ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</h3>
+                            <p className="text-sm sm:text-xs text-gray-400">Fill details for your visitor pass. This pass will be valid for {visitorPassDays} day{visitorPassDays > 1 ? 's' : ''}.</p>
                           </div>
-                          <div className="glass rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/10">
-                                <div className="flex justify-between items-center mb-3 sm:mb-4">
-                              <h4 className="text-xs sm:text-sm font-medium text-white/90">Visitor Pass</h4>
-                              <div className="text-[10px] sm:text-xs text-yellow-400 font-medium">₹{visitorPassDays * 69}</div>
+                          <div className="glass rounded-lg sm:rounded-xl p-4 sm:p-4 border border-white/10">
+                                <div className="flex justify-between items-center mb-4 sm:mb-4">
+                              <h4 className="text-base sm:text-sm font-medium text-white/90">Visitor Pass</h4>
+                              <div className="text-base sm:text-xs text-yellow-400 font-medium">₹{visitorPassDays * 69}</div>
                                 </div>
-                                <div className="grid grid-cols-1 gap-3">
+                                <div className="grid grid-cols-1 gap-4">
                                   {VISITOR_PASS_FIELDS.map(field => {
                                 const error = (formErrors['visitorPasses'] || {})[`visitor_${field.name}`];
                                 const value = visitorPassDetails[field.name] || '';
                                     const inputType = field.type === 'phone' ? 'tel' : (field.type === 'number' ? 'number' : (field.type === 'email' ? 'email' : 'text'));
                                     return (
                                       <div key={field.name} className="flex flex-col">
-                                        <label className="text-[10px] sm:text-xs text-white/70 mb-1 text-left">
+                                        <label className="text-base sm:text-xs text-white/70 mb-2 text-left">
                                           {field.label}{field.required && <span className="text-pink-400">*</span>}
                                         </label>
                                         {field.type === 'select' ? (
                                           <select
                                             required={!!field.required}
-                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-3 h-12 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-base sm:text-sm touch-manipulation`}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-4 h-14 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-lg sm:text-sm touch-manipulation`}
                                             value={value}
                                             onChange={e => {
                                           setVisitorPassDetails(prev => ({ ...prev, [field.name]: e.target.value }));
@@ -1974,12 +2206,12 @@ function CheckoutPageContent() {
                                           </select>
                                         ) : field.type === 'file' ? (
                                           <div className="relative">
-                                            <div className="text-[10px] sm:text-xs text-white/60 mb-1">Max file size 500 KB</div>
+                                            <div className="text-base sm:text-xs text-white/60 mb-2">Max file size 500 KB</div>
                                             <input
                                               type="file"
                                               accept={field.accept || '*'}
                                               required={!!field.required}
-                                              className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg sm:rounded-xl px-3 py-2.5 sm:py-2 w-full text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 sm:file:px-3 file:rounded-lg file:border-0 file:text-base sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer touch-manipulation`}
+                                              className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg sm:rounded-xl px-4 py-4 sm:py-2 w-full text-lg sm:text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 sm:file:px-3 file:rounded-lg file:border-0 file:text-lg sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer touch-manipulation min-h-[48px]`}
                                               onChange={e => {
                                                 const file = e.target.files?.[0] || null;
                                                 if (file && file.size > 500 * 1024) {
@@ -1996,7 +2228,7 @@ function CheckoutPageContent() {
                                             type={inputType}
                                             inputMode={field.type === 'phone' ? 'tel' : undefined}
                                             required={!!field.required}
-                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-3 h-12 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40 text-base sm:text-sm touch-manipulation`}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-4 h-14 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40 text-lg sm:text-sm touch-manipulation`}
                                             placeholder={field.placeholder || ''}
                                             value={value}
                                             onChange={e => {
@@ -2004,7 +2236,7 @@ function CheckoutPageContent() {
                                             }}
                                           />
                                         )}
-                                        {error && <span className="text-[10px] sm:text-xs text-pink-400 mt-1">{error}</span>}
+                                        {error && <span className="text-base sm:text-xs text-pink-400 mt-2">{error}</span>}
                                       </div>
                                     );
                                   })}
@@ -2047,7 +2279,7 @@ function CheckoutPageContent() {
                                               {field.type === 'select' ? (
                                                 <select
                                                   required={!!field.required}
-                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm`}
+                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-400 text-lg sm:text-sm min-h-[48px]`}
                                                   value={value}
                                                   onChange={e => {
                                                     setFlagshipBenefitsByEvent(prev => ({
@@ -2071,7 +2303,7 @@ function CheckoutPageContent() {
                                                   type="file"
                                                   accept={field.accept || '*'}
                                                   required={!!field.required}
-                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
+                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-400 file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-lg sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer min-h-[48px]`}
                                                   onChange={e => {
                                                     const file = e.target.files?.[0];
                                                     if (file) {
@@ -2092,7 +2324,7 @@ function CheckoutPageContent() {
                                                   type={inputType}
                                                   inputMode={field.type === 'phone' ? 'tel' : undefined}
                                                   required={!!field.required}
-                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder:text-white/40 text-sm`}
+                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder:text-white/40 text-lg sm:text-sm min-h-[48px]`}
                                                   placeholder={field.placeholder || ''}
                                                   value={value}
                                                   onChange={e => {
@@ -2146,7 +2378,7 @@ function CheckoutPageContent() {
                                               {field.type === 'select' ? (
                                                 <select
                                                   required={!!field.required}
-                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm`}
+                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg sm:text-sm min-h-[48px]`}
                                                   value={value}
                                                   onChange={e => {
                                                     setFlagshipBenefitsByEvent(prev => ({
@@ -2172,7 +2404,7 @@ function CheckoutPageContent() {
                                                     type="file"
                                                     accept={field.accept || '*'}
                                                     required={!!field.required}
-                                                    className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-base sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
+                                                    className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-lg sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer min-h-[48px]`}
                                                     onChange={e => {
                                                       const file = e.target.files?.[0] || null;
                                                       if (file && file.size > 500 * 1024) {
@@ -2197,7 +2429,7 @@ function CheckoutPageContent() {
                                                   type={inputType}
                                                   inputMode={field.type === 'phone' ? 'tel' : undefined}
                                                   required={!!field.required}
-                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-white/40 text-sm`}
+                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-white/40 text-lg sm:text-sm min-h-[48px]`}
                                                   placeholder={field.placeholder || ''}
                                                   value={value}
                                                   onChange={e => {
@@ -2251,7 +2483,7 @@ function CheckoutPageContent() {
                                               {field.type === 'select' ? (
                                                 <select
                                                   required={!!field.required}
-                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 text-sm`}
+                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-400 text-lg sm:text-sm min-h-[48px]`}
                                                   value={value}
                                                   onChange={e => {
                                                     setFlagshipBenefitsByEvent(prev => ({
@@ -2277,7 +2509,7 @@ function CheckoutPageContent() {
                                                     type="file"
                                                     accept={field.accept || '*'}
                                                     required={!!field.required}
-                                                    className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-base sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
+                                                    className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-lg sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer min-h-[48px]`}
                                                     onChange={e => {
                                                       const file = e.target.files?.[0] || null;
                                                       if (file && file.size > 500 * 1024) {
@@ -2302,7 +2534,7 @@ function CheckoutPageContent() {
                                                   type={inputType}
                                                   inputMode={field.type === 'phone' ? 'tel' : undefined}
                                                   required={!!field.required}
-                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 placeholder:text-white/40 text-sm`}
+                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-400 placeholder:text-white/40 text-lg sm:text-sm min-h-[48px]`}
                                                   placeholder={field.placeholder || ''}
                                                   value={value}
                                                   onChange={e => {
@@ -2365,7 +2597,7 @@ function CheckoutPageContent() {
                                       id={inputId}
                                       required={!!field.required}
                                       aria-describedby={error ? errorId : undefined}
-                                      className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-3 h-12 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-base sm:text-sm touch-manipulation`}
+                                      className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-4 h-14 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-lg sm:text-sm touch-manipulation`}
                                       value={value}
                                       onChange={e => handleFieldChange(group.signature, field.name, e.target.value)}
                                     >
@@ -2622,8 +2854,7 @@ function CheckoutPageContent() {
 
                     </div>
                     <div className="flex items-center gap-3 mt-8">
-                      <button onClick={goBack} className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer">Back</button>
-                      <button onClick={goNext} className="px-5 py-2 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 transition cursor-pointer">Continue</button>
+                      <button onClick={goBack} className="px-6 py-3 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer min-h-[48px] text-lg sm:text-sm">Back</button>
                     </div>
                   </div>
                   <div>
@@ -2700,7 +2931,7 @@ function CheckoutPageContent() {
                         <div className="flex gap-2 items-start flex-wrap md:flex-nowrap">
                           <input
                             type="text"
-                            className="min-w-0 flex-1 w-full bg-black/40 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40 text-sm"
+                            className="min-w-0 flex-1 w-full bg-black/40 border border-white/20 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40 text-lg sm:text-sm min-h-[48px]"
                             placeholder="Enter promo code"
                             value={promoInput}
                             onChange={e => setPromoInput(e.target.value.toUpperCase())}
@@ -2708,7 +2939,7 @@ function CheckoutPageContent() {
                           {appliedPromo ? (
                             <button
                               type="button"
-                              className="shrink-0 px-4 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 text-sm font-medium whitespace-nowrap"
+                              className="shrink-0 px-4 py-3 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 text-lg sm:text-sm font-medium whitespace-nowrap min-h-[48px]"
                               onClick={() => { setAppliedPromo(null); setPromoStatus({ loading: false, error: null }); }}
                             >
                               Remove
@@ -2716,7 +2947,7 @@ function CheckoutPageContent() {
                           ) : (
                             <button
                               type="button"
-                              className="shrink-0 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-sm font-medium whitespace-nowrap"
+                              className="shrink-0 px-4 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-lg sm:text-sm font-medium whitespace-nowrap min-h-[48px]"
                               onClick={tryApplyPromo}
                               disabled={promoStatus.loading}
                             >
@@ -2728,6 +2959,31 @@ function CheckoutPageContent() {
                         {appliedPromo && (
                           <div className="text-xs text-green-400 mt-2">Applied {appliedPromo.code}: -₹{formatPrice(appliedPromo.discountAmount)}</div>
                         )}
+                      </div>
+
+                      {/* Continue Button after Promo Code */}
+                      <div className="mt-6 flex justify-center">
+                        <button
+                          onClick={() => {
+                            // Validate forms first
+                            const isValid = validateForms();
+                            if (!isValid) {
+                              // Find the first error field and scroll to it
+                              const firstErrorField = document.querySelector('.border-pink-500');
+                              if (firstErrorField) {
+                                firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                              }
+                              return;
+                            }
+                            // If validation passes, go to review step
+                            setStep('review');
+                            scrollToTop();
+                          }}
+                          className="px-8 py-3 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:from-purple-600 hover:via-pink-600 hover:to-cyan-500 text-white font-medium rounded-xl transition-all flex items-center gap-2 min-h-[48px] shadow-lg hover:shadow-xl"
+                        >
+                          <ArrowRight className="w-5 h-5" />
+                          Continue
+                        </button>
                       </div>
 
                       <div className="border-t border-white/20 mt-6 pt-4 space-y-2">
@@ -2832,12 +3088,12 @@ function CheckoutPageContent() {
                       ))}
                     </div>
                     <div className="flex items-center gap-3 mt-8">
-                      <button onClick={goBack} className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer">Back</button>
+                      <button onClick={goBack} className="px-6 py-3 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer min-h-[48px] text-lg sm:text-sm">Back</button>
                       <div className="space-y-3">
                         <button 
                           onClick={startPaymentInitialization} 
                           disabled={paymentInitializationState.isLoading}
-                          className={`px-5 py-2 rounded-full transition cursor-pointer ${
+                          className={`px-6 py-3 rounded-full transition cursor-pointer min-h-[48px] text-lg sm:text-sm ${
                             paymentInitializationState.isLoading 
                               ? 'bg-gray-600 cursor-not-allowed' 
                               : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:shadow-lg'
@@ -2951,7 +3207,7 @@ function CheckoutPageContent() {
                             <button
                               onClick={doPayment}
                               disabled={isProcessingPayment}
-                              className="w-full bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-3 text-lg"
+                              className="w-full bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-3 text-lg min-h-[56px]"
                             >
                               {isProcessingPayment ? (
                                 <>
@@ -2965,6 +3221,29 @@ function CheckoutPageContent() {
                                 </>
                               )}
                             </button>
+
+                            {/* Prominent Fallback Payment Button */}
+                            <div className="mt-4 p-4 bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-400/40 rounded-xl">
+                              <div className="flex items-center gap-2 mb-3">
+                                <AlertTriangle className="w-5 h-5 text-orange-400" />
+                                <span className="text-orange-200 font-medium">Having trouble with payment?</span>
+                              </div>
+                              <p className="text-orange-100/90 text-sm mb-3">
+                                If the payment button above doesn't work, try our alternative payment method:
+                              </p>
+                              <a
+                                href={CASHFREE_FALLBACK_FORM_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-medium py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-3 text-base min-h-[48px]"
+                              >
+                                <CreditCard className="w-5 h-5" />
+                                Try Fallback Payment
+                              </a>
+                              <p className="text-orange-200/70 text-xs mt-2 text-center">
+                                Opens in a new tab for secure payment
+                              </p>
+                            </div>
                             
                             {/* Payment error message */}
                             {paymentInitializationState.error && step === 'payment' && (
@@ -3048,7 +3327,7 @@ function CheckoutPageContent() {
 
                     {/* Navigation */}
                     <div className="flex items-center gap-3 mt-8">
-                      <button onClick={goBack} className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer">Back</button>
+                      <button onClick={goBack} className="px-6 py-3 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer min-h-[48px] text-lg sm:text-sm">Back</button>
                     </div>
                   </div>
 
@@ -3093,9 +3372,9 @@ function CheckoutPageContent() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="relative w-full max-w-md text-center"
+              className="relative w-full max-w-sm sm:max-w-md text-center"
             >
-              <div className="glass rounded-2xl p-8 border border-white/10 shadow-[0_0_30px_rgba(147,51,234,0.2)]">
+              <div className="glass rounded-2xl p-6 sm:p-8 border border-white/10 shadow-[0_0_30px_rgba(147,51,234,0.2)]">
                 {isVerifying ? (
                   <>
                     <Loader className="w-16 h-16 text-purple-400 animate-spin mx-auto mb-6" />
@@ -3114,14 +3393,14 @@ function CheckoutPageContent() {
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                       <button
                         onClick={() => router.push('/ticket')}
-                        className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 text-lg shadow-lg hover:scale-105"
+                        className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 text-lg shadow-lg hover:scale-105 min-h-[48px]"
                       >
                         <Ticket className="w-6 h-6" />
                         View My Tickets
                       </button>
                       <button
                         onClick={() => router.push('/')}
-                        className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+                        className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 min-h-[48px]"
                       >
                         <Home className="w-5 h-5" />
                         Go to Homepage
@@ -3140,7 +3419,7 @@ function CheckoutPageContent() {
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                       <button
                         onClick={() => { setPaymentVerificationStatus(null); router.replace('/checkout', { scroll: false }); setStep('review'); }}
-                        className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 text-lg shadow-lg hover:scale-105"
+                        className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 text-lg shadow-lg hover:scale-105 min-h-[48px]"
                       >
                         Try Again
                       </button>
@@ -3222,7 +3501,7 @@ function CheckoutPageContent() {
                 <button
                   key={item.title}
                   onClick={() => { setMobileMenuOpen(false); router.push(item.href); }}
-                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-lg sm:text-base hover:bg-white/15 active:scale-[0.99] transition text-left min-h-[56px]"
                 >
                   <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
                     {item.icon}
@@ -3249,7 +3528,7 @@ function CheckoutPageContent() {
 	                href="https://forms.gle/eth5B3JoQATdy9aRA"
 	                target="_blank"
 	                rel="noopener noreferrer"
-	                className="inline-flex items-center gap-2 mt-3 px-3 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-sm border border-white/10"
+	                className="inline-flex items-center gap-2 mt-3 px-4 py-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-lg sm:text-sm border border-white/10 min-h-[48px]"
 	              >
 	                Report an issue
 	                <ArrowRight className="w-4 h-4" />
@@ -3302,4 +3581,3 @@ export default function CheckoutPage() {
     </Suspense>
   );
 }
-
