@@ -30,13 +30,20 @@ async function handleAdminRequest(request: NextRequest, method: string) {
     
     console.log(`[Admin API] ${method} ${adminPath} -> ${backendUrl}`);
 
+    // Get cookies from the request
+    const cookieHeader = request.headers.get('cookie') || '';
+    
     // Prepare request options
     const requestOptions: RequestInit = {
       method,
       headers: {
         'Content-Type': 'application/json',
-        // Forward cookies for authentication
-        'Cookie': request.headers.get('cookie') || '',
+        // Forward all cookies for authentication
+        'Cookie': cookieHeader,
+        // Also forward any authorization header if present
+        ...(request.headers.get('authorization') && {
+          'Authorization': request.headers.get('authorization')!
+        }),
       },
     };
 
