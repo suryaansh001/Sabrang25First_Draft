@@ -16,6 +16,7 @@ import {
 import createApiUrl from "../../../lib/api";
 import { events } from "../../../lib/events.data";
 
+// import { Analytics } from '@vercel/analytics';
 interface AnalyticsData {
   totalUsers: number;
   totalEvents: number;
@@ -319,6 +320,7 @@ function AnalyticsPage() {
           </div>
         </div>
       </div>
+      {/* <Analytics /> */}
     </div>
   );
 }

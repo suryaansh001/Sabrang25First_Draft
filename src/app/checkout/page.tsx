@@ -1767,7 +1767,7 @@ function CheckoutPageContent() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-lg sm:text-lg font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent">
-                    🎉 Early Bird
+                    🎉SPECIALOFFER
                   </h3>
                   <p className="text-base sm:text-sm text-white/80">
                     Get 25% off on all events
