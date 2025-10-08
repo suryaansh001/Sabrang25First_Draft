@@ -1,0 +1,200 @@
+import React, { useState } from 'react';
+import { EventCatalogItem } from '../../../lib/eventCatalog';
+import { CheckoutState } from '../types';
+import { parsePrice } from '../utils';
+import { ArrowRight, Tag, Loader } from 'lucide-react';
+import createApiUrl from '../../../lib/api';
+
+interface ReviewStepProps {
+  selectedEvents: EventCatalogItem[];
+  state: CheckoutState;
+  totalPrice: number;
+  finalPrice: number;
+  updateState: (updates: Partial<CheckoutState>) => void;
+}
+
+export function ReviewStep({
+  selectedEvents,
+  state,
+  totalPrice,
+  finalPrice,
+  updateState,
+}: ReviewStepProps) {
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoError, setPromoError] = useState<string | null>(null);
+
+  const handleApplyPromo = async () => {
+    const code = state.promoInput.trim().toUpperCase();
+    if (!code) return;
+
+    setPromoLoading(true);
+    setPromoError(null);
+
+    try {
+      const response = await fetch(createApiUrl('/admin/promo-codes/validate'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          code,
+          userEmail: 'temp@example.com',
+          orderAmount: totalPrice,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        setPromoError(data.message || 'Invalid promo code');
+        updateState({ appliedPromo: null });
+      } else {
+        updateState({ appliedPromo: { code, discountAmount: data.discountAmount } });
+        setPromoError(null);
+      }
+    } catch (e) {
+      setPromoError('Failed to validate promo code');
+      updateState({ appliedPromo: null });
+    } finally {
+      setPromoLoading(false);
+    }
+  };
+
+  const handleRemovePromo = () => {
+    updateState({ appliedPromo: null, promoInput: '' });
+    setPromoError(null);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold mb-2">
+          <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Review Your Order</span>
+        </h2>
+        <p className="text-gray-400 mb-6">Please review your selections before proceeding to payment</p>
+      </div>
+
+      {/* Selected Events */}
+      <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-cyan-500/30 shadow-[0_0_25px_rgba(6,182,212,0.25)]">
+        <h3 className="text-xl font-semibold mb-4 text-cyan-200">Selected Events</h3>
+        <div className="space-y-3">
+          {selectedEvents.map(event => (
+            <div key={event.id} className="flex justify-between items-center py-3 border-b border-white/10 last:border-0">
+              <div>
+                <p className="font-medium text-white">{event.title}</p>
+                <p className="text-sm text-white/60">{event.category}</p>
+              </div>
+              <p className="font-semibold text-cyan-300">{event.price}</p>
+            </div>
+          ))}
+
+          {state.visitorPassDays > 0 && (
+            <div className="flex justify-between items-center py-3 border-b border-white/10 last:border-0">
+              <div>
+                <p className="font-medium text-white">Visitor Pass</p>
+                <p className="text-sm text-white/60">{state.visitorPassDays} day(s)</p>
+              </div>
+              <p className="font-semibold text-yellow-400">₹{state.visitorPassDays * 69}</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Promo Code */}
+      <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-purple-500/30 shadow-[0_0_25px_rgba(168,85,247,0.2)]">
+        <h3 className="text-xl font-semibold mb-4 text-purple-200">Promo Code</h3>
+        
+        {!state.appliedPromo ? (
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={state.promoInput}
+              onChange={(e) => updateState({ promoInput: e.target.value.toUpperCase() })}
+              placeholder="Enter promo code"
+              className="flex-1 px-4 py-2.5 glass border border-white/20 rounded-lg focus:outline-none focus:border-purple-400 text-white placeholder:text-white/40 transition-colors"
+            />
+            <button
+              onClick={handleApplyPromo}
+              disabled={promoLoading || !state.promoInput.trim()}
+              className="px-6 py-2.5 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 hover:from-cyan-600 hover:via-purple-600 hover:to-pink-600 disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed rounded-lg transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(6,182,212,0.4)] hover:shadow-[0_0_20px_rgba(6,182,212,0.6)]"
+            >
+              {promoLoading ? (
+                <>
+                  <Loader className="w-4 h-4 animate-spin" />
+                  Applying...
+                </>
+              ) : (
+                <>
+                  <Tag className="w-4 h-4" />
+                  Apply
+                </>
+              )}
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between p-4 glass border border-green-400/40 rounded-lg shadow-[0_0_15px_rgba(34,197,94,0.2)]">
+            <div className="flex items-center gap-3">
+              <Tag className="w-5 h-5 text-green-400" />
+              <div>
+                <p className="font-semibold text-green-400">{state.appliedPromo.code}</p>
+                <p className="text-sm text-white/70">Discount: ₹{state.appliedPromo.discountAmount}</p>
+              </div>
+            </div>
+            <button
+              onClick={handleRemovePromo}
+              className="text-sm text-red-400 hover:text-red-300 transition-colors px-3 py-1 rounded hover:bg-red-500/10"
+            >
+              Remove
+            </button>
+          </div>
+        )}
+        
+        {promoError && (
+          <p className="text-red-400 text-sm mt-2 flex items-center gap-1">
+            <span>⚠️</span> {promoError}
+          </p>
+        )}
+      </div>
+
+      {/* Price Summary */}
+      <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-sm p-6 rounded-xl border border-purple-400/50 shadow-[0_0_30px_rgba(168,85,247,0.4)]">
+        <h3 className="text-xl font-semibold mb-4 text-purple-200">Price Summary</h3>
+        <div className="space-y-3">
+          <div className="flex justify-between text-white/70">
+            <span>Subtotal</span>
+            <span className="text-white font-medium">₹{totalPrice.toFixed(2)}</span>
+          </div>
+          
+          {state.appliedPromo && (
+            <div className="flex justify-between text-green-400">
+              <span>Discount ({state.appliedPromo.code})</span>
+              <span className="font-medium">-₹{state.appliedPromo.discountAmount.toFixed(2)}</span>
+            </div>
+          )}
+          
+          <div className="border-t border-white/20 pt-3 mt-3">
+            <div className="flex justify-between text-2xl font-bold">
+              <span className="text-white">Total</span>
+              <span className="bg-gradient-to-r from-purple-300 via-pink-400 to-rose-400 bg-clip-text text-transparent">
+                ₹{finalPrice.toFixed(2)}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Proceed to Payment */}
+      <div className="flex justify-end">
+        <button
+          onClick={() => {
+            // This will be handled by parent component navigation
+            const event = new CustomEvent('proceedToPayment');
+            window.dispatchEvent(event);
+          }}
+          className="px-8 py-4 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 hover:from-cyan-600 hover:via-purple-600 hover:to-pink-600 rounded-lg transition-all font-semibold flex items-center gap-2 shadow-[0_0_25px_rgba(6,182,212,0.6)] hover:shadow-[0_0_35px_rgba(6,182,212,0.8)] text-lg"
+        >
+          Proceed to Payment
+          <ArrowRight className="w-5 h-5" />
+        </button>
+      </div>
+    </div>
+  );
+}
