@@ -135,7 +135,7 @@ export default function ScanSuccessClient() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center pt-28 pb-12 px-4 text-white font-sans">
+    <div className="min-h-screen flex flex-col items-center justify-center pt-28 pb-12 px-16 sm:px-20 lg:px-32 xl:px-40 2xl:px-48 text-white font-sans">
       <div className="w-full max-w-lg bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-2xl p-6 md:p-10 flex flex-col items-center carnival-card animate-fade-in-up">
         <h1 className="text-2xl md:text-3xl font-extrabold mb-3 text-center bg-gradient-to-r from-green-400 to-cyan-400 text-transparent bg-clip-text leading-tight">
           Welcome to Sabrang 2025

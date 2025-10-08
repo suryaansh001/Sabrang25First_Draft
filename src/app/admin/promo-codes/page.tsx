@@ -285,7 +285,7 @@ function PromoCodesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white py-6 px-16 sm:px-20 lg:px-32 xl:px-40 2xl:px-48">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -401,10 +401,10 @@ function PromoCodesPage() {
                         <span className="font-semibold">{code.usedCount}</span>
                         <span className="text-gray-400"> / {code.usageLimit}</span>
                       </div>
-                      <div className="w-20 bg-gray-700 rounded-full h-2 mt-1">
+                      <div className="w-20 bg-gray-700 rounded-full h-2 mt-1" aria-label={`Promo code usage: ${code.usedCount} of ${code.usageLimit}`}>
                         <div 
-                          className="bg-blue-500 h-2 rounded-full" 
-                          style={{ width: `${(code.usedCount / code.usageLimit) * 100}%` }}
+                          className="bg-blue-500 h-2 rounded-full transition-all" 
+                          style={{ width: `${Math.min(100, (code.usedCount / code.usageLimit) * 100)}%` }}
                         ></div>
                       </div>
                     </td>
@@ -487,6 +487,8 @@ function PromoCodesPage() {
                   resetForm();
                 }}
                 className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                title="Close form"
+                aria-label="Close promo code form"
               >
                 <XCircle className="w-6 h-6" />
               </button>
@@ -522,6 +524,8 @@ function PromoCodesPage() {
                     value={formData.discountType}
                     onChange={(e) => setFormData({...formData, discountType: e.target.value as 'percentage' | 'fixed'})}
                     className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    title="Select discount type"
+                    aria-label="Discount Type"
                   >
                     <option value="percentage">Percentage</option>
                     <option value="fixed">Fixed Amount</option>
@@ -539,6 +543,9 @@ function PromoCodesPage() {
                     className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     min="0"
                     required
+                    title="Enter discount value"
+                    aria-label="Discount Value"
+                    placeholder="Enter discount value"
                   />
                 </div>
 
@@ -564,6 +571,9 @@ function PromoCodesPage() {
                     onChange={(e) => setFormData({...formData, minOrderAmount: Number(e.target.value)})}
                     className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     min="0"
+                    title="Enter minimum order amount"
+                    aria-label="Minimum Order Amount"
+                    placeholder="Enter minimum amount"
                   />
                 </div>
 
@@ -576,6 +586,9 @@ function PromoCodesPage() {
                     className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     min="1"
                     required
+                    title="Enter usage limit"
+                    aria-label="Usage Limit"
+                    placeholder="Enter usage limit"
                   />
                 </div>
 
@@ -587,6 +600,8 @@ function PromoCodesPage() {
                     onChange={(e) => setFormData({...formData, validUntil: e.target.value})}
                     className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
+                    title="Select expiry date"
+                    aria-label="Valid Until Date"
                   />
                 </div>
               </div>

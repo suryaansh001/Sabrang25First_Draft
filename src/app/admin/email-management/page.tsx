@@ -309,7 +309,7 @@ function EmailManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white py-8 px-16 sm:px-20 lg:px-32 xl:px-40 2xl:px-48">
       <div className="container mx-auto">
         {/* Header */}
         <motion.div

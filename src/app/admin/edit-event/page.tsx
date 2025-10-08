@@ -81,7 +81,7 @@ export default function EditEvent() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-16 sm:px-20 lg:px-32 xl:px-40 2xl:px-48 py-8">
       <h2 className="text-3xl font-bold text-gray-800 mb-8">Manage Events</h2>
       
       {error && (

@@ -225,7 +225,7 @@ function AdminDashboard() {
       {/* Binary 0/1 rain layer */}
       <BinaryRain />
 
-      <div className="relative z-10 pt-20 pb-16 px-4">
+      <div className="relative z-10 pt-20 pb-16 px-16 sm:px-20 lg:px-32 xl:px-40 2xl:px-48">
         <div className="mx-auto w-full max-w-7xl">
           {/* Header */}
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">

@@ -393,10 +393,12 @@ function RegistrationsTeamsPage() {
       if (response.ok) {
         const result = await response.json();
         const payload = result?.data || result?.user || result;
-        if (payload) {
+        // Only update if payload has valid user data (check for essential fields)
+        if (payload && payload._id && payload.name) {
           setSelectedUser(payload);
           setShowUserModal(true);
         }
+        // If payload is invalid, keep the fallback data that was already set
       }
     } catch (e) {
       console.error('Failed to load user details', e);
@@ -406,7 +408,7 @@ function RegistrationsTeamsPage() {
 
   return (
     <ProtectedRoute requireAdmin>
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white p-6">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white py-6 px-16 sm:px-20 lg:px-32 xl:px-40 2xl:px-48">
         <div className="max-w-7xl mx-auto">
           <div className="mb-6 rounded-xl border border-white/10 bg-gradient-to-r from-indigo-900/40 via-purple-900/30 to-slate-900/30 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
             <div className="flex items-start justify-between gap-4">

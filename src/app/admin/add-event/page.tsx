@@ -28,7 +28,7 @@ function AddEvent() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center pt-32 pb-16 px-4 text-white font-sans">
+    <div className="min-h-screen flex flex-col items-center justify-center pt-32 pb-16 px-16 sm:px-20 lg:px-32 xl:px-40 2xl:px-48 text-white font-sans">
       <div className="w-full max-w-2xl bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-2xl p-10">
         <h1 className="text-3xl md:text-4xl font-extrabold mb-8 text-center bg-gradient-to-r from-fuchsia-400 to-rose-400 text-transparent bg-clip-text">
           Add New Event

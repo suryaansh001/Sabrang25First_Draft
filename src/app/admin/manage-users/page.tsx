@@ -390,7 +390,7 @@ const ManageUsersPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 p-6">
+    <div className="min-h-screen bg-gray-900 py-6 px-16 sm:px-20 lg:px-32 xl:px-40 2xl:px-48">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-gray-800 rounded-lg shadow-xl border border-gray-700 p-6 mb-6">
