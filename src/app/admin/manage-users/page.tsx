@@ -1,6 +1,5 @@
-'use client';
-
-import React, { useState, useEffect } from 'react';
+"use client";
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Search, 
   Users, 
@@ -13,32 +12,42 @@ import {
   RefreshCw,
   UserPlus,
   Mail,
-  CheckCircle,
   XCircle,
-  AlertTriangle
+  AlertTriangle,
+  CheckCircle,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
+
+interface TeamInfo {
+  teamId: string;
+  eventName: string;
+  teamName: string;
+  isLeader: boolean;
+  totalMembers: number;
+  registrationComplete: boolean;
+}
 
 interface User {
   _id: string;
   name: string;
   email: string;
-  contactNo: string;
-  gender: string;
-  age: number;
-  universityName: string;
-  address: string;
-  events: string[];
+  contactNo?: string;
+  gender?: string;
+  age?: number;
+  universityName?: string;
+  address?: string;
   userType: string;
+  events: string[];
   isvalidated: boolean;
   hasEntered: boolean;
-  entryTime?: string;
   emailSent: boolean;
-  emailSentAt?: string;
   createdAt: string;
-  teamParticipations: any[];
-  purchaseHistory: any[];
-  totalAmountPaid: number;
+  teamInfo?: TeamInfo[];
+  teamParticipations?: any[];
+  purchaseHistory?: any[];
+  totalAmountPaid?: number;
 }
 
 interface Event {
@@ -62,6 +71,11 @@ const ManageUsersPage = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
+  const [activeTab, setActiveTab] = useState<'users' | 'teams'>('users');
+  const [expandedTeams, setExpandedTeams] = useState<Record<string, boolean>>({});
+  const [teams, setTeams] = useState<any[]>([]);
+  const [teamsLoading, setTeamsLoading] = useState(false);
   const [stats, setStats] = useState({
     totalUsers: 0,
     validatedUsers: 0,
@@ -72,24 +86,36 @@ const ManageUsersPage = () => {
 
   useEffect(() => {
     fetchEvents();
-    fetchUsers();
-  }, [currentPage, eventFilter, statusFilter, userTypeFilter, sortBy, sortOrder]);
+    if (activeTab === 'users') {
+      fetchUsers();
+    } else {
+      fetchTeams();
+    }
+  }, [currentPage, eventFilter, statusFilter, userTypeFilter, sortBy, sortOrder, activeTab]);
 
   const fetchEvents = async () => {
-    try {
-      const response = await fetch('/api/admin/events-public');
-      const data = await response.json();
-      // Ensure data is an array
-      if (Array.isArray(data)) {
-        setEvents(data);
-      } else {
-        console.error('Events data is not an array:', data);
-        setEvents([]);
-      }
-    } catch (error) {
-      console.error('Error fetching events:', error);
-      setEvents([]);
-    }
+    // Use exact event titles from events.data.ts
+    const predefinedEvents = [
+      { _id: '1', name: 'RAMPWALK - PANACHE', category: 'Fashion Show' },
+      { _id: '2', name: 'BANDJAM', category: 'Music Festival' },
+      { _id: '3', name: 'DANCE BATTLE', category: 'Dance Competition' },
+      { _id: '4', name: 'STEP UP', category: 'Solo Dance' },
+      { _id: '5', name: 'ECHOES OF NOOR', category: 'Spoken Word' },
+      { _id: '7', name: 'BIDDING BEFORE WICKET', category: 'Cricket Auction' },
+      { _id: '8', name: 'SEAL THE DEAL', category: 'Simulated Trading' },
+      { _id: '9', name: 'VERSEVAAD', category: 'Poetic Debate' },
+      { _id: '10', name: 'IN CONVERSATION WITH', category: 'Talk Series' },
+      { _id: '11', name: 'CLAY MODELLING', category: 'Sculpture' },
+      { _id: '12', name: 'FOCUS', category: 'Photography' },
+      { _id: '13', name: 'BGMI TOURNAMENT', category: 'E-Sports' },
+      { _id: '14', name: 'VALORANT TOURNAMENT', category: 'E-Sports' },
+      { _id: '15', name: 'FREE FIRE TOURNAMENT', category: 'E-Sports' },
+      { _id: '17', name: 'DUMB SHOW', category: 'Mime Acting' },
+      { _id: '18', name: 'COURTROOM', category: 'Mock Trial' },
+      { _id: '19', name: 'ART RELAY', category: 'Solo Art' }
+    ];
+    
+    setEvents(predefinedEvents);
   };
 
   const fetchUsers = async () => {
@@ -109,11 +135,33 @@ const ManageUsersPage = () => {
       const response = await fetch(`/api/admin/manage-users?${params}`);
       const data = await response.json();
 
+      console.log('API Response:', data);
+      console.log('Response structure:', {
+        success: data.success,
+        users: data.users ? 'exists' : 'missing',
+        pagination: data.pagination ? 'exists' : 'missing',
+        stats: data.stats ? 'exists' : 'missing'
+      });
+
       if (data.success) {
-        setUsers(data.users);
-        setTotalPages(data.pagination.totalPages);
-        setTotalCount(data.pagination.totalCount);
-        setStats(data.stats);
+        console.log('Users data received:', data.users);
+        console.log('Sample user with team data:', data.users?.[0]);
+        setUsers(data.users || []);
+        if (data.pagination) {
+          setTotalPages(data.pagination.totalPages || 1);
+          setTotalCount(data.pagination.totalCount || 0);
+        } else {
+          console.error('Missing pagination in response');
+          setTotalPages(1);
+          setTotalCount(0);
+        }
+        setStats(data.stats || {
+          totalUsers: 0,
+          validatedUsers: 0,
+          enteredUsers: 0,
+          emailSentUsers: 0,
+          activeUsers: 0
+        });
       } else {
         alert(data.message || 'Failed to fetch users');
       }
@@ -122,6 +170,38 @@ const ManageUsersPage = () => {
       alert('Error fetching users');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchTeams = async () => {
+    setTeamsLoading(true);
+    try {
+      const params = new URLSearchParams({
+        search: searchQuery,
+        eventFilter,
+        sortBy,
+        sortOrder,
+        limit: '100'
+      });
+
+      console.log('Fetching teams with params:', params.toString());
+      const response = await fetch(`/api/admin/teams?${params}`);
+      const data = await response.json();
+
+      console.log('Teams API Response:', data);
+
+      if (data.success) {
+        setTeams(data.teams || []);
+        console.log('Teams loaded:', data.teams?.length || 0);
+      } else {
+        console.error('Failed to fetch teams:', data.message);
+        setTeams([]);
+      }
+    } catch (error) {
+      console.error('Error fetching teams:', error);
+      setTeams([]);
+    } finally {
+      setTeamsLoading(false);
     }
   };
 
@@ -173,39 +253,151 @@ const ManageUsersPage = () => {
     return status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
   };
 
+  // Group users by teams (using teamParticipations from backend)
+  const groupedTeams = useMemo(() => {
+    console.log('Grouping teams from users:', users.length);
+    const map = new Map<string, { leader: User | null; members: User[]; meta: any }>();
+
+    for (const user of users) {
+      const teamParticipations = user.teamParticipations || [];
+      console.log(`User ${user.name} has ${teamParticipations.length} team participations:`, teamParticipations);
+      
+      if (teamParticipations.length === 0) continue;
+      
+      for (const team of teamParticipations) {
+        // Handle missing or undefined team data
+        if (!team || !team.teamName || !team.eventName) {
+          console.log('Skipping invalid team data:', team);
+          continue;
+        }
+        
+        const key = `${team.eventName}|${team.teamName}`;
+        console.log(`Processing team: ${key} for user: ${user.name}`);
+        
+        if (!map.has(key)) {
+          map.set(key, { 
+            leader: null, 
+            members: [], 
+            meta: {
+              teamName: team.teamName,
+              eventName: team.eventName,
+              teamId: team.teamId || team.teamName,
+              registrationComplete: true, // Assume complete if they're in teamParticipations
+              totalMembers: 0 // Will be calculated
+            }
+          });
+          console.log(`Created new team entry: ${key}`);
+        }
+        const entry = map.get(key)!;
+        
+        // Check if user is already in this team (avoid duplicates)
+        const isAlreadyLeader = entry.leader && entry.leader._id === user._id;
+        const isAlreadyMember = entry.members.some(m => m._id === user._id);
+        
+        if (isAlreadyLeader || isAlreadyMember) {
+          console.log(`User ${user.name} already in team ${key}, skipping`);
+          continue;
+        }
+        
+        // For now, treat first user as leader (we can improve this logic later)
+        if (!entry.leader) {
+          entry.leader = user;
+          console.log(`Set ${user.name} as leader of ${key}`);
+        } else {
+          entry.members.push(user);
+          console.log(`Added ${user.name} as member of ${key}`);
+        }
+        
+        // Update total members count
+        entry.meta.totalMembers = (entry.leader ? 1 : 0) + entry.members.length;
+      }
+    }
+
+    const result = Array.from(map.entries()).map(([key, value]) => ({ key, ...value }));
+    console.log('Final grouped teams:', result);
+    console.log('Team summary:', result.map(t => ({
+      key: t.key,
+      teamName: t.meta.teamName,
+      eventName: t.meta.eventName,
+      leaderName: t.leader?.name,
+      memberCount: t.members.length,
+      totalMembers: t.meta.totalMembers
+    })));
+    return result;
+  }, [users]);
+
+  const soloUsers = useMemo(() => users.filter(u => !u.teamParticipations || u.teamParticipations.length === 0), [users]);
+
+  const toggleTeam = (key: string) => {
+    setExpandedTeams(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
   const exportUsers = async () => {
+    setExporting(true);
     try {
+      // Use the same filters as the current view
       const params = new URLSearchParams({
+        search: searchQuery,
         eventFilter,
-        format: 'csv'
+        statusFilter,
+        userTypeFilter,
+        sortBy,
+        sortOrder,
+        format: 'excel',
+        export: 'true' // Flag to get all matching records, not paginated
       });
 
-      const response = await fetch(`/api/admin/export/users?${params}`);
+      console.log('Exporting with filters:', {
+        search: searchQuery,
+        eventFilter,
+        statusFilter,
+        userTypeFilter,
+        sortBy,
+        sortOrder
+      });
+
+      const response = await fetch(`/api/admin/manage-users?${params}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const blob = await response.blob();
       
+      // Create download link
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `users_export_${new Date().toISOString().split('T')[0]}.csv`;
+      
+      // Generate filename with current date and applied filters
+      const filterSuffix = eventFilter !== 'all' ? `_${eventFilter}` : '';
+      const statusSuffix = statusFilter !== 'all' ? `_${statusFilter}` : '';
+      const filename = `users_export${filterSuffix}${statusSuffix}_${new Date().toISOString().split('T')[0]}.csv`;
+      
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
+      
+      console.log('Export completed:', filename);
     } catch (error) {
       console.error('Error exporting users:', error);
-      alert('Error exporting users');
+      alert('Error exporting users: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    } finally {
+      setExporting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="bg-gray-800 rounded-lg shadow-xl border border-gray-700 p-6 mb-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Manage Users</h1>
-              <p className="text-gray-600">View, search, edit, and manage user accounts</p>
+              <h1 className="text-3xl font-bold text-white mb-2">Manage Users</h1>
+              <p className="text-gray-300">View, search, edit, and manage user accounts</p>
             </div>
             <div className="flex space-x-3">
               <Link href="/admin/manage-users/add-user">
@@ -222,10 +414,15 @@ const ManageUsersPage = () => {
               </Link>
               <button
                 onClick={exportUsers}
-                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 flex items-center"
+                disabled={exporting}
+                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500 disabled:bg-gray-700 disabled:cursor-not-allowed flex items-center border border-gray-600"
               >
-                <Download className="w-5 h-5 mr-2" />
-                Export
+                {exporting ? (
+                  <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                ) : (
+                  <Download className="w-5 h-5 mr-2" />
+                )}
+                {exporting ? 'Exporting...' : 'Export CSV'}
               </button>
             </div>
           </div>
@@ -233,64 +430,84 @@ const ManageUsersPage = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-          <div className="bg-white p-4 rounded-lg shadow-md">
+          <div className="bg-gray-800 border border-gray-700 p-4 rounded-lg shadow-xl">
             <div className="flex items-center">
-              <Users className="w-8 h-8 text-blue-600 mr-3" />
+              <Users className="w-8 h-8 text-blue-400 mr-3" />
               <div>
-                <p className="text-sm text-gray-600">Total Users</p>
-                <p className="text-xl font-bold text-gray-900">{stats.totalUsers}</p>
+                <p className="text-sm text-gray-300">Total Users</p>
+                <p className="text-xl font-bold text-white">{stats.totalUsers}</p>
               </div>
             </div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-md">
+          <div className="bg-gray-800 border border-gray-700 p-4 rounded-lg shadow-xl">
             <div className="flex items-center">
-              <CheckCircle className="w-8 h-8 text-green-600 mr-3" />
+              <CheckCircle className="w-8 h-8 text-green-400 mr-3" />
               <div>
-                <p className="text-sm text-gray-600">Validated</p>
-                <p className="text-xl font-bold text-gray-900">{stats.validatedUsers}</p>
+                <p className="text-sm text-gray-300">Validated</p>
+                <p className="text-xl font-bold text-white">{stats.validatedUsers}</p>
               </div>
             </div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-md">
+          <div className="bg-gray-800 border border-gray-700 p-4 rounded-lg shadow-xl">
             <div className="flex items-center">
-              <Users className="w-8 h-8 text-purple-600 mr-3" />
+              <Users className="w-8 h-8 text-purple-400 mr-3" />
               <div>
-                <p className="text-sm text-gray-600">Entered</p>
-                <p className="text-xl font-bold text-gray-900">{stats.enteredUsers}</p>
+                <p className="text-sm text-gray-300">Entered</p>
+                <p className="text-xl font-bold text-white">{stats.enteredUsers}</p>
               </div>
             </div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-md">
+          <div className="bg-gray-800 border border-gray-700 p-4 rounded-lg shadow-xl">
             <div className="flex items-center">
-              <Mail className="w-8 h-8 text-yellow-600 mr-3" />
+              <Mail className="w-8 h-8 text-yellow-400 mr-3" />
               <div>
-                <p className="text-sm text-gray-600">Email Sent</p>
-                <p className="text-xl font-bold text-gray-900">{stats.emailSentUsers}</p>
+                <p className="text-sm text-gray-300">Email Sent</p>
+                <p className="text-xl font-bold text-white">{stats.emailSentUsers}</p>
               </div>
             </div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-md">
+          <div className="bg-gray-800 border border-gray-700 p-4 rounded-lg shadow-xl">
             <div className="flex items-center">
-              <Users className="w-8 h-8 text-indigo-600 mr-3" />
+              <Users className="w-8 h-8 text-indigo-400 mr-3" />
               <div>
-                <p className="text-sm text-gray-600">Active</p>
-                <p className="text-xl font-bold text-gray-900">{stats.activeUsers}</p>
+                <p className="text-sm text-gray-300">Active</p>
+                <p className="text-xl font-bold text-white">{stats.activeUsers}</p>
               </div>
             </div>
           </div>
         </div>
 
+        {/* Tab Switcher */}
+        <div className="mb-4 sticky top-0 z-30">
+          <div className="flex items-center justify-center">
+            <div className="inline-flex bg-gray-800 border border-gray-600 rounded-xl overflow-hidden shadow-lg">
+              <button
+                className={`px-5 py-2 text-sm transition ${activeTab === 'users' ? 'bg-blue-600 font-semibold text-white' : 'text-gray-300 hover:bg-gray-700'}`}
+                onClick={() => setActiveTab('users')}
+              >
+                All Users ({stats.totalUsers})
+              </button>
+              <button
+                className={`px-5 py-2 text-sm transition ${activeTab === 'teams' ? 'bg-blue-600 font-semibold text-white' : 'text-gray-300 hover:bg-gray-700'}`}
+                onClick={() => setActiveTab('teams')}
+              >
+                Teams ({teams.length})
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Filters and Search */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-xl p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Search Users</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Search Users</label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
                   placeholder="Name, email, contact..."
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={handleKeyPress}
@@ -298,9 +515,9 @@ const ManageUsersPage = () => {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Event Filter</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Event Filter</label>
               <select
-                className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full py-2 px-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 value={eventFilter}
                 onChange={(e) => setEventFilter(e.target.value)}
               >
@@ -311,9 +528,9 @@ const ManageUsersPage = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Status Filter</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Status Filter</label>
               <select
-                className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full py-2 px-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
@@ -327,9 +544,9 @@ const ManageUsersPage = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">User Type</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">User Type</label>
               <select
-                className="w-full py-2 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full py-2 px-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 value={userTypeFilter}
                 onChange={(e) => setUserTypeFilter(e.target.value)}
               >
@@ -340,10 +557,10 @@ const ManageUsersPage = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Sort By</label>
               <div className="flex space-x-2">
                 <select
-                  className="flex-1 py-2 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 py-2 px-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
@@ -353,7 +570,7 @@ const ManageUsersPage = () => {
                   <option value="universityName">University</option>
                 </select>
                 <select
-                  className="py-2 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="py-2 px-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   value={sortOrder}
                   onChange={(e) => setSortOrder(e.target.value)}
                 >
@@ -366,7 +583,7 @@ const ManageUsersPage = () => {
           <button
             onClick={handleSearch}
             disabled={loading}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 flex items-center"
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-600 flex items-center border border-blue-600"
           >
             {loading ? (
               <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
@@ -377,57 +594,58 @@ const ManageUsersPage = () => {
           </button>
         </div>
 
-        {/* Users Table */}
-        <div className="bg-white rounded-lg shadow-md">
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex justify-between items-center">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">Users</h2>
-                <p className="text-sm text-gray-600">
-                  Showing {users.length} of {totalCount} users
-                </p>
-              </div>
-              <div className="text-sm text-gray-600">
-                Page {currentPage} of {totalPages}
-              </div>
-            </div>
+        {/* Content based on active tab */}
+        {loading ? (
+          <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-xl p-12 text-center">
+            <RefreshCw className="w-8 h-8 text-gray-400 animate-spin mx-auto mb-4" />
+            <p className="text-gray-300">Loading users...</p>
           </div>
-
-          {loading ? (
-            <div className="p-12 text-center">
-              <RefreshCw className="w-8 h-8 text-gray-400 animate-spin mx-auto mb-4" />
-              <p className="text-gray-600">Loading users...</p>
+        ) : activeTab === 'users' ? (
+          /* Users Table */
+          <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-xl">
+            <div className="p-6 border-b border-gray-700">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-xl font-semibold text-white">All Users</h2>
+                  <p className="text-sm text-gray-300">
+                    Showing {users.length} of {totalCount} users
+                  </p>
+                </div>
+                <div className="text-sm text-gray-300">
+                  Page {currentPage} of {totalPages}
+                </div>
+              </div>
             </div>
-          ) : (
+
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead className="bg-gray-700">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       User
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Events
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Registration
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-gray-800 divide-y divide-gray-700">
                   {users.map((user) => (
-                    <tr key={user._id} className="hover:bg-gray-50">
+                    <tr key={user._id} className="hover:bg-gray-700">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                          <div className="text-sm text-gray-500">{user.email}</div>
-                          <div className="text-sm text-gray-500">{user.contactNo}</div>
+                          <div className="text-sm font-medium text-white">{user.name}</div>
+                          <div className="text-sm text-gray-300">{user.email}</div>
+                          <div className="text-sm text-gray-300">{user.contactNo}</div>
                           {user.universityName && (
                             <div className="text-xs text-gray-400">{user.universityName}</div>
                           )}
@@ -435,8 +653,8 @@ const ManageUsersPage = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex flex-wrap gap-1">
-                          {user.events.map((event, index) => (
-                            <span key={index} className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                          {user.events && user.events.map((event, index) => (
+                            <span key={index} className="inline-block bg-blue-600 text-blue-100 text-xs px-2 py-1 rounded">
                               {event}
                             </span>
                           ))}
@@ -455,12 +673,12 @@ const ManageUsersPage = () => {
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                         <div>
                           <div>{formatDateTime(user.createdAt)}</div>
-                          {user.totalAmountPaid > 0 && (
-                            <div className="text-xs text-green-600">
-                              Paid: ₹{user.totalAmountPaid}
+                          {(user.totalAmountPaid || 0) > 0 && (
+                            <div className="text-xs text-green-400">
+                              Paid: ₹{user.totalAmountPaid || 0}
                             </div>
                           )}
                         </div>
@@ -469,19 +687,19 @@ const ManageUsersPage = () => {
                         <div className="flex space-x-2">
                           <button
                             onClick={() => setSelectedUser(user)}
-                            className="text-blue-600 hover:text-blue-900"
+                            className="text-blue-400 hover:text-blue-300"
                             title="View Details"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
                           <Link href={`/admin/manage-users/edit/${user._id}`}>
-                            <button className="text-green-600 hover:text-green-900" title="Edit User">
+                            <button className="text-green-400 hover:text-green-300" title="Edit User">
                               <Edit3 className="w-4 h-4" />
                             </button>
                           </Link>
                           <button
                             onClick={() => setShowDeleteConfirm(user._id)}
-                            className="text-red-600 hover:text-red-900"
+                            className="text-red-400 hover:text-red-300"
                             title="Delete User"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -493,44 +711,146 @@ const ManageUsersPage = () => {
                 </tbody>
               </table>
             </div>
-          )}
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="px-6 py-3 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 disabled:text-gray-400"
-                >
-                  Previous
-                </button>
-                <span className="text-sm text-gray-600">
-                  Page {currentPage} of {totalPages}
-                </span>
-                <button
-                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 disabled:text-gray-400"
-                >
-                  Next
-                </button>
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="px-6 py-3 bg-gray-700 border-t border-gray-600 flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1 text-sm text-gray-300 hover:text-white disabled:text-gray-500"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-sm text-gray-300">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1 text-sm text-gray-300 hover:text-white disabled:text-gray-500"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : teamsLoading ? (
+          <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-xl p-12 text-center">
+            <RefreshCw className="w-8 h-8 text-gray-400 animate-spin mx-auto mb-4" />
+            <p className="text-gray-300">Loading teams...</p>
+          </div>
+        ) : (
+          /* Teams View */
+          <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-xl">
+            <div className="p-6 border-b border-gray-700">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-xl font-semibold text-white">Teams</h2>
+                  <p className="text-sm text-gray-300">
+                    {teams.length} teams found
+                  </p>
+                </div>
               </div>
             </div>
-          )}
-        </div>
+
+            <div className="p-6">
+              {teams.length === 0 ? (
+                <div className="text-center py-8 text-gray-400">
+                  No teams found
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {teams.map(team => (
+                    <div key={team._id} className="rounded border border-gray-600 bg-gray-700">
+                      <button 
+                        onClick={() => toggleTeam(team._id)} 
+                        className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-600 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          {expandedTeams[team._id] ? 
+                            <ChevronDown className="w-4 h-4 text-gray-300" /> : 
+                            <ChevronRight className="w-4 h-4 text-gray-300" />
+                          }
+                          <div className="text-left">
+                            <div className="font-semibold text-white">{team.teamName}</div>
+                            <div className="text-xs text-gray-300">
+                              {team.eventName} • Members: {team.totalMembers}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-xs">
+                          <span className={`px-2 py-1 rounded text-white ${team.registrationComplete ? 'bg-green-600' : 'bg-yellow-600'}`}>
+                            {team.registrationComplete ? 'Complete' : 'Incomplete'}
+                          </span>
+                        </div>
+                      </button>
+
+                      {expandedTeams[team._id] && (
+                        <div className="px-4 pb-3 border-t border-gray-600">
+                          {/* Team Leader */}
+                          {team.leader && (
+                            <div className="flex items-center justify-between py-2 border-b border-gray-600">
+                              <div className="flex items-center gap-2">
+                                <span className="px-2 py-0.5 rounded bg-purple-600 text-white text-xs">Leader</span>
+                                <span className="font-medium text-white">{team.leader.name}</span>
+                                <span className="text-xs text-gray-300">{team.leader.email}</span>
+                                {team.leader.hasEntered && (
+                                  <span className="px-1 py-0.5 rounded bg-green-600 text-white text-xs">Entered</span>
+                                )}
+                              </div>
+                              <button 
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); /* TODO: Fetch user details */ }} 
+                                className="inline-flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300"
+                              >
+                                <Eye className="w-4 h-4" /> View
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Team Members */}
+                          <div className="divide-y divide-gray-600">
+                            {team.members.map((member: any) => (
+                              <div key={member._id} className="flex items-center justify-between py-2">
+                                <div className="flex items-center gap-2">
+                                  <span className="px-2 py-0.5 rounded bg-blue-600 text-white text-xs">Member</span>
+                                  <span className="font-medium text-white">{member.name}</span>
+                                  <span className="text-xs text-gray-300">{member.email}</span>
+                                  {member.hasEntered && (
+                                    <span className="px-1 py-0.5 rounded bg-green-600 text-white text-xs">Entered</span>
+                                  )}
+                                </div>
+                                <button 
+                                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); /* TODO: Fetch user details */ }} 
+                                  className="inline-flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300"
+                                >
+                                  <Eye className="w-4 h-4" /> View
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* User Details Modal */}
         {selectedUser && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="p-6 border-b border-gray-200">
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+            <div className="bg-gray-800 border border-gray-700 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6 border-b border-gray-700">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold text-gray-900">User Details</h3>
+                  <h3 className="text-lg font-semibold text-white">User Details</h3>
                   <button
                     onClick={() => setSelectedUser(null)}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-gray-400 hover:text-gray-200 text-2xl"
                   >
                     ×
                   </button>
@@ -539,83 +859,83 @@ const ManageUsersPage = () => {
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-3">Personal Information</h4>
-                    <div className="space-y-2">
-                      <p><span className="font-medium">Name:</span> {selectedUser.name}</p>
-                      <p><span className="font-medium">Email:</span> {selectedUser.email}</p>
-                      <p><span className="font-medium">Contact:</span> {selectedUser.contactNo}</p>
-                      <p><span className="font-medium">Gender:</span> {selectedUser.gender}</p>
-                      <p><span className="font-medium">Age:</span> {selectedUser.age}</p>
-                      <p><span className="font-medium">University:</span> {selectedUser.universityName}</p>
-                      <p><span className="font-medium">Address:</span> {selectedUser.address}</p>
+                    <h4 className="font-semibold text-white mb-3">Personal Information</h4>
+                    <div className="space-y-2 text-gray-300">
+                      <p><span className="font-medium text-gray-200">Name:</span> {selectedUser.name}</p>
+                      <p><span className="font-medium text-gray-200">Email:</span> {selectedUser.email}</p>
+                      <p><span className="font-medium text-gray-200">Contact:</span> {selectedUser.contactNo}</p>
+                      <p><span className="font-medium text-gray-200">Gender:</span> {selectedUser.gender}</p>
+                      <p><span className="font-medium text-gray-200">Age:</span> {selectedUser.age}</p>
+                      <p><span className="font-medium text-gray-200">University:</span> {selectedUser.universityName}</p>
+                      <p><span className="font-medium text-gray-200">Address:</span> {selectedUser.address}</p>
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-3">Account Information</h4>
-                    <div className="space-y-2">
-                      <p><span className="font-medium">User Type:</span> {selectedUser.userType}</p>
-                      <p><span className="font-medium">Created:</span> {formatDateTime(selectedUser.createdAt)}</p>
-                      <p><span className="font-medium">Validated:</span> 
+                    <h4 className="font-semibold text-white mb-3">Account Information</h4>
+                    <div className="space-y-2 text-gray-300">
+                      <p><span className="font-medium text-gray-200">User Type:</span> {selectedUser.userType}</p>
+                      <p><span className="font-medium text-gray-200">Created:</span> {formatDateTime(selectedUser.createdAt)}</p>
+                      <p><span className="font-medium text-gray-200">Validated:</span> 
                         <span className={`ml-2 px-2 py-1 text-xs rounded-full ${getStatusColor(selectedUser.isvalidated)}`}>
                           {selectedUser.isvalidated ? 'Yes' : 'No'}
                         </span>
                       </p>
-                      <p><span className="font-medium">Entered:</span> 
+                      <p><span className="font-medium text-gray-200">Entered:</span> 
                         <span className={`ml-2 px-2 py-1 text-xs rounded-full ${getStatusColor(selectedUser.hasEntered)}`}>
                           {selectedUser.hasEntered ? 'Yes' : 'No'}
                         </span>
                       </p>
-                      <p><span className="font-medium">Email Sent:</span> 
+                      <p><span className="font-medium text-gray-200">Email Sent:</span> 
                         <span className={`ml-2 px-2 py-1 text-xs rounded-full ${getStatusColor(selectedUser.emailSent)}`}>
                           {selectedUser.emailSent ? 'Yes' : 'No'}
                         </span>
                       </p>
-                      <p><span className="font-medium">Total Paid:</span> ₹{selectedUser.totalAmountPaid}</p>
+                      <p><span className="font-medium text-gray-200">Total Paid:</span> ₹{selectedUser.totalAmountPaid}</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="mt-6">
-                  <h4 className="font-semibold text-gray-900 mb-3">Registered Events</h4>
+                  <h4 className="font-semibold text-white mb-3">Registered Events</h4>
                   <div className="flex flex-wrap gap-2">
-                    {selectedUser.events.map((event, index) => (
-                      <span key={index} className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">
+                    {selectedUser.events && selectedUser.events.map((event, index) => (
+                      <span key={index} className="bg-blue-600 text-blue-100 text-sm px-3 py-1 rounded-full">
                         {event}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                {selectedUser.teamParticipations.length > 0 && (
+                {selectedUser.teamParticipations && selectedUser.teamParticipations.length > 0 && (
                   <div className="mt-6">
-                    <h4 className="font-semibold text-gray-900 mb-3">Team Participations</h4>
+                    <h4 className="font-semibold text-white mb-3">Team Participations</h4>
                     <div className="space-y-2">
                       {selectedUser.teamParticipations.map((team, index) => (
-                        <div key={index} className="bg-gray-50 p-3 rounded-lg">
-                          <p><span className="font-medium">Team:</span> {team.teamName}</p>
-                          <p><span className="font-medium">Event:</span> {team.eventName}</p>
+                        <div key={index} className="bg-gray-700 border border-gray-600 p-3 rounded-lg">
+                          <p className="text-gray-300"><span className="font-medium text-gray-200">Team:</span> {team.teamName}</p>
+                          <p className="text-gray-300"><span className="font-medium text-gray-200">Event:</span> {team.eventName}</p>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {selectedUser.purchaseHistory.length > 0 && (
+                {selectedUser.purchaseHistory && selectedUser.purchaseHistory.length > 0 && (
                   <div className="mt-6">
-                    <h4 className="font-semibold text-gray-900 mb-3">Purchase History</h4>
+                    <h4 className="font-semibold text-white mb-3">Purchase History</h4>
                     <div className="space-y-2">
                       {selectedUser.purchaseHistory.map((purchase, index) => (
-                        <div key={index} className="bg-gray-50 p-3 rounded-lg">
-                          <p><span className="font-medium">Order ID:</span> {purchase.orderId}</p>
-                          <p><span className="font-medium">Amount:</span> ₹{purchase.totalAmount}</p>
-                          <p><span className="font-medium">Status:</span> 
+                        <div key={index} className="bg-gray-700 border border-gray-600 p-3 rounded-lg">
+                          <p className="text-gray-300"><span className="font-medium text-gray-200">Order ID:</span> {purchase.orderId}</p>
+                          <p className="text-gray-300"><span className="font-medium text-gray-200">Amount:</span> ₹{purchase.totalAmount}</p>
+                          <p className="text-gray-300"><span className="font-medium text-gray-200">Status:</span> 
                             <span className={`ml-2 px-2 py-1 text-xs rounded-full ${
-                              purchase.paymentStatus === 'completed' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                              purchase.paymentStatus === 'completed' ? 'bg-green-600 text-green-100' : 'bg-red-600 text-red-100'
                             }`}>
                               {purchase.paymentStatus}
                             </span>
                           </p>
-                          <p><span className="font-medium">Date:</span> {formatDateTime(purchase.purchaseDate)}</p>
+                          <p className="text-gray-300"><span className="font-medium text-gray-200">Date:</span> {formatDateTime(purchase.purchaseDate)}</p>
                         </div>
                       ))}
                     </div>
@@ -628,31 +948,31 @@ const ManageUsersPage = () => {
 
         {/* Delete Confirmation Modal */}
         {showDeleteConfirm && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg max-w-md w-full">
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+            <div className="bg-gray-800 border border-gray-700 rounded-lg max-w-md w-full">
               <div className="p-6">
                 <div className="flex items-center mb-4">
-                  <AlertTriangle className="w-6 h-6 text-red-500 mr-3" />
-                  <h3 className="text-lg font-semibold text-gray-900">Delete User</h3>
+                  <AlertTriangle className="w-6 h-6 text-red-400 mr-3" />
+                  <h3 className="text-lg font-semibold text-white">Delete User</h3>
                 </div>
-                <p className="text-gray-600 mb-4">
+                <p className="text-gray-300 mb-4">
                   Are you sure you want to delete this user? This action cannot be undone and will remove all user data.
                 </p>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-200 mb-2">
                     Reason for deletion (required)
                   </label>
                   <textarea
                     id="deleteReason"
                     rows={3}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-500 focus:border-red-500 placeholder-gray-400"
                     placeholder="Enter reason for deleting this user..."
                   />
                 </div>
                 <div className="flex space-x-3">
                   <button
                     onClick={() => setShowDeleteConfirm(null)}
-                    className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400"
+                    className="flex-1 bg-gray-600 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-500 border border-gray-600"
                   >
                     Cancel
                   </button>
@@ -666,7 +986,7 @@ const ManageUsersPage = () => {
                       }
                       deleteUser(showDeleteConfirm, reason);
                     }}
-                    className="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700"
+                    className="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 border border-red-600"
                   >
                     Delete User
                   </button>
