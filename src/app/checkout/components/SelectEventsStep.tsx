@@ -68,6 +68,37 @@ export function SelectEventsStep({
 
         <h2 className="text-xl font-semibold mb-6 title-chroma">Choose Your Events</h2>
 
+        {/* Special Offer Banner */}
+        <div className="mb-6 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-rose-500/20 border border-purple-400/50 rounded-xl p-4 backdrop-blur-sm">
+          <div className="flex items-start gap-4">
+            <div className="text-3xl">🎉</div>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent">
+                SPECIAL OFFER
+              </h3>
+              <p className="text-sm text-white/80 mt-1">
+                Get 25% off on all events - Limited time only!
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center gap-3 mt-4">
+            <div className="bg-black/40 border border-purple-400/50 rounded-lg px-4 py-2 backdrop-blur-sm">
+              <span className="text-purple-300 font-mono text-lg font-bold tracking-wider">
+                SPECIALOFFER
+              </span>
+            </div>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText('SPECIALOFFER');
+                alert('Coupon code copied! Apply it at checkout.');
+              }}
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-sm font-semibold"
+            >
+              Copy Code
+            </button>
+          </div>
+        </div>
+
         {/* Events by Category */}
         {Array.from(eventsByCategory.entries()).map(([category, events]) => (
           <div key={category} className="mb-8">

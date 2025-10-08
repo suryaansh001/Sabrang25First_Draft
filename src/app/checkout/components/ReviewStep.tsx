@@ -24,20 +24,38 @@ export function ReviewStep({
   const [promoError, setPromoError] = useState<string | null>(null);
 
   const handleApplyPromo = async () => {
-    const code = state.promoInput.trim().toUpperCase();
+    const code = state.promoInput.trim();
     if (!code) return;
+
+    // Check if promo is already applied
+    if (state.appliedPromo && state.appliedPromo.code === code) {
+      setPromoError('This promo code is already applied');
+      return;
+    }
 
     setPromoLoading(true);
     setPromoError(null);
 
     try {
+      // Get user email from form data
+      let userEmail = '';
+      for (const [signature, data] of Object.entries(state.formDataBySignature)) {
+        if (data.collegeMailId) {
+          userEmail = data.collegeMailId;
+          break;
+        }
+      }
+      if (!userEmail && state.visitorPassDetails.collegeMailId) {
+        userEmail = state.visitorPassDetails.collegeMailId;
+      }
+
       const response = await fetch(createApiUrl('/admin/promo-codes/validate'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
           code,
-          userEmail: 'temp@example.com',
+          userEmail: userEmail || 'temp@example.com',
           orderAmount: totalPrice,
         }),
       });

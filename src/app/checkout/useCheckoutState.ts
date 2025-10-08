@@ -17,12 +17,17 @@ const INITIAL_STATE: CheckoutState = {
 
 export function useCheckoutState() {
   const [state, setState] = useState<CheckoutState>(INITIAL_STATE);
-  const [step, setStep] = useState<Step>('select');
+  const [step, setStep] = useState<Step>(() => loadFromStorage<Step>('checkout_current_step', 'select'));
   const [filesBySignature, setFilesBySignature] = useState<Record<string, Record<string, File>>>({});
   const [memberFilesBySignature, setMemberFilesBySignature] = useState<Record<string, Record<number, File>>>({});
   
   // Use ref to prevent excessive saves
   const saveTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+
+  // Save step to storage whenever it changes
+  useEffect(() => {
+    saveToStorage('checkout_current_step', step);
+  }, [step]);
 
   // Debounced save to storage
   const debouncedSave = useCallback((key: string, data: any) => {
