@@ -134,7 +134,7 @@ const AddTeamPage = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('/api/admin/manage-teams/add-team', {
+      const response = await fetch('/api/admin/manage-users/add-team', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
