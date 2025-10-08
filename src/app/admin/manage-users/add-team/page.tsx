@@ -51,11 +51,18 @@ const AddTeamPage = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await fetch('/api/admin/events');
+      const response = await fetch('/api/admin/events-public');
       const data = await response.json();
-      setEvents(data);
+      // Ensure data is an array
+      if (Array.isArray(data)) {
+        setEvents(data);
+      } else {
+        console.error('Events data is not an array:', data);
+        setEvents([]);
+      }
     } catch (error) {
       console.error('Error fetching events:', error);
+      setEvents([]);
     }
   };
 

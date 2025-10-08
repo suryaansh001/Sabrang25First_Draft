@@ -131,7 +131,20 @@ function AdminDashboard() {
   };
 
   const adminActions = [
-   
+    {
+      title: "Coordinator Page",
+      href: "/coordinatorPage",
+      icon: <QrCode className="w-6 h-6" />,
+      gradient: "from-blue-400 to-cyan-500",
+      hoverGradient: "from-blue-500 to-cyan-600"
+    },
+    {
+      title: "Manage Users",
+      href: "/admin/manage-users",
+      icon: <Settings className="w-6 h-6" />,
+      gradient: "from-green-400 to-emerald-500",
+      hoverGradient: "from-green-500 to-emerald-600"
+    },
     {
       title: "Scan QR",
       href: "/admin/scan-qr",

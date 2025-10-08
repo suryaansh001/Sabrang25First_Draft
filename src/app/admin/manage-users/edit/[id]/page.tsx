@@ -74,21 +74,45 @@ const EditUserPage = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await fetch('/api/admin/events');
+      const response = await fetch('/api/admin/events-public');
       const data = await response.json();
-      setEvents(data);
+      // Ensure data is an array
+      if (Array.isArray(data)) {
+        setEvents(data);
+      } else {
+        console.error('Events data is not an array:', data);
+        setEvents([]);
+      }
     } catch (error) {
       console.error('Error fetching events:', error);
+      setEvents([]);
     }
   };
 
   const fetchUser = async () => {
     try {
-      const response = await fetch(`/api/admin/manage-users?search=${userId}&limit=1`);
-      const data = await response.json();
+      // First try to get user by ID directly
+      let response = await fetch(`/api/admin/manage-users/${userId}`);
+      let data = await response.json();
 
-      if (data.success && data.users.length > 0) {
-        const userData = data.users[0];
+      // If direct ID lookup fails, try searching by email or ID
+      if (!response.ok || !data.success) {
+        response = await fetch(`/api/admin/manage-users?search=${userId}&limit=1`);
+        data = await response.json();
+      }
+
+      if (data.success) {
+        let userData;
+        
+        // Handle different response formats
+        if (data.user) {
+          userData = data.user;
+        } else if (data.users && data.users.length > 0) {
+          userData = data.users[0];
+        } else {
+          throw new Error('User not found in response');
+        }
+
         setUser(userData);
         setFormData({
           name: userData.name || '',
@@ -110,6 +134,7 @@ const EditUserPage = () => {
     } catch (error) {
       console.error('Error fetching user:', error);
       alert('Error fetching user details');
+      router.push('/admin/manage-users');
     } finally {
       setInitialLoading(false);
     }
