@@ -86,6 +86,7 @@ export function PaymentStep({
           const idx = Number(idxStr);
           const encodedSig = encodeURIComponent(signature);
           registrationForm.append(`memberImage__${encodedSig}__${idx}`, file);
+          console.log('📤 Appending team member file:', `memberImage__${encodedSig}__${idx}`, file.name);
         });
       });
 

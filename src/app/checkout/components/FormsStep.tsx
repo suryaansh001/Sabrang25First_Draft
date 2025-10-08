@@ -78,7 +78,6 @@ export function FormsStep({
 
   // Handle file changes
   const handleFileChange = (signature: string, fieldName: string, file: File | null) => {
-    console.log('📁 File change:', { signature, fieldName, file: file?.name });
     if (file) {
       setFilesBySignature(prev => {
         const updated = {
@@ -88,7 +87,6 @@ export function FormsStep({
             [fieldName]: file,
           },
         };
-        console.log('📁 Updated filesBySignature:', updated);
         return updated;
       });
     } else {
@@ -118,8 +116,10 @@ export function FormsStep({
     });
   };
 
-  // Handle team member file changes
+  // Handle team member file changes - BACKUP FILE LOGIC
   const handleMemberFileChange = (signature: string, memberIndex: number, file: File | null) => {
+    console.log('🚀 MEMBER FILE CHANGE:', { signature, memberIndex, fileName: file?.name });
+    
     if (file) {
       setMemberFilesBySignature(prev => ({
         ...prev,
@@ -128,6 +128,7 @@ export function FormsStep({
           [memberIndex]: file,
         },
       }));
+      console.log('✅ FILE STORED at index:', memberIndex);
     } else {
       setMemberFilesBySignature(prev => {
         const updated = { ...prev };
@@ -136,6 +137,7 @@ export function FormsStep({
         }
         return updated;
       });
+      console.log('❌ FILE REMOVED at index:', memberIndex);
     }
   };
 
@@ -174,7 +176,6 @@ export function FormsStep({
 
   // Validate and proceed
   const handleSubmit = () => {
-    console.log('🔍 Validating form...', { filesBySignature, state });
     const errors: Record<string, Record<string, string>> = {};
     let isValid = true;
 
@@ -185,7 +186,6 @@ export function FormsStep({
         if (field.required) {
           if (field.type === 'file') {
             const file = filesBySignature['visitorPass']?.[field.name];
-            console.log(`🔍 Checking visitor pass file ${field.name}:`, file);
             if (!file) {
               errors['visitorPass'][field.name] = `${field.label} is required`;
               isValid = false;
@@ -336,6 +336,8 @@ export function FormsStep({
                     handleFileChange('visitorPass', field.name, file);
                   }
                 }}
+                uploadedFile={field.type === 'file' ? filesBySignature['visitorPass']?.[field.name] : undefined}
+                uniqueId={`file-visitorPass-${field.name}`}
                 error={formErrors['visitorPass']?.[field.name]}
               />
             ))}
@@ -365,6 +367,8 @@ export function FormsStep({
                 value={state.formDataBySignature[group.signature]?.[field.name] || ''}
                 onChange={(value: string) => handleFieldChange(group.signature, field.name, value)}
                 onFileChange={(file: File | null) => handleFileChange(group.signature, field.name, file)}
+                uploadedFile={field.type === 'file' ? filesBySignature[group.signature]?.[field.name] : undefined}
+                uniqueId={`file-${group.signature}-${field.name}`}
                 error={formErrors[group.signature]?.[field.name]}
               />
             ))}
@@ -431,20 +435,62 @@ export function FormsStep({
                       </button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {SOLO_FIELDS.map(field => (
-                        <FormFieldInput
-                          key={`member_${idx}_${field.name}`}
-                          field={field}
-                          value={member[field.name] || ''}
-                          onChange={(value: string) => handleMemberFieldChange(group.signature, idx, field.name, value)}
-                          onFileChange={(file: File | null) => {
-                            if (field.type === 'file') {
-                              handleMemberFileChange(group.signature, idx, file);
-                            }
-                          }}
-                          error={formErrors[group.signature]?.[`member_${idx}_${field.name}`]}
-                        />
-                      ))}
+                      {SOLO_FIELDS.map(field => {
+                        const error = formErrors[group.signature]?.[`member_${idx}_${field.name}`];
+                        const value = member[field.name] || '';
+                        
+                        // Render file input directly (not using FormFieldInput)
+                        if (field.type === 'file') {
+                          const uploadedFile = memberFilesBySignature[group.signature]?.[idx];
+                          
+                          return (
+                            <div key={`member_${idx}_${field.name}`} className="flex flex-col">
+                              <label className="text-sm font-medium mb-2 text-white/90">
+                                {field.label}
+                                {field.required && <span className="text-pink-400 ml-1">*</span>}
+                              </label>
+                              <input
+                                type="file"
+                                accept={field.accept || 'image/*'}
+                                required={!!field.required}
+                                id={`team-file-${group.signature}-${idx}-${field.name}`}
+                                className={`block w-full px-4 py-2.5 glass border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
+                                onChange={e => {
+                                  const file = e.target.files?.[0] || null;
+                                  console.log('📤 DIRECT FILE INPUT CHANGE:', { 
+                                    memberIndex: idx, 
+                                    signature: group.signature, 
+                                    file: file?.name,
+                                    inputId: `team-file-${group.signature}-${idx}-${field.name}`
+                                  });
+                                  handleMemberFileChange(group.signature, idx, file);
+                                  // Store filename for display
+                                  const filename = file?.name || '';
+                                  handleMemberFieldChange(group.signature, idx, field.name, filename);
+                                }}
+                              />
+                              {value && (
+                                <span className="text-xs text-green-400 mt-1">Selected: {value}</span>
+                              )}
+                              {error && (
+                                <p className="text-xs text-pink-400 mt-1">{error}</p>
+                              )}
+                            </div>
+                          );
+                        }
+                        
+                        // Use FormFieldInput for non-file fields
+                        return (
+                          <FormFieldInput
+                            key={`member_${idx}_${field.name}`}
+                            field={field}
+                            value={value}
+                            onChange={(value: string) => handleMemberFieldChange(group.signature, idx, field.name, value)}
+                            onFileChange={(file: File | null) => {}}
+                            error={error}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
                 ))}

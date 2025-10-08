@@ -83,7 +83,9 @@ export function clearCheckoutStorage(): void {
       'checkout_visitor_pass',
       'checkout_visitor_pass_details',
       'checkout_form_data',
-      'checkout_team_members'
+      'checkout_team_members',
+      'checkout_promo_input',
+      'checkout_applied_promo'
     ];
     keys.forEach(key => sessionStorage.removeItem(key));
   } catch (e) {

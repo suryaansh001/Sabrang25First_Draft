@@ -54,26 +54,37 @@ export function useCheckoutState() {
     setState(prev => {
       const newState = { ...prev, ...updates };
       // Save to storage
-      Object.keys(updates).forEach(key => {
-        debouncedSave(key, newState[key as keyof CheckoutState]);
-      });
+      if (updates.selectedEventIds) saveToStorage('checkout_selected_events', updates.selectedEventIds);
+      if (updates.visitorPassDays !== undefined) saveToStorage('checkout_visitor_pass', updates.visitorPassDays);
+      if (updates.visitorPassDetails) saveToStorage('checkout_visitor_pass_details', updates.visitorPassDetails);
+      if (updates.formDataBySignature) saveToStorage('checkout_form_data', updates.formDataBySignature);
+      if (updates.teamMembersBySignature) saveToStorage('checkout_team_members', updates.teamMembersBySignature);
+      if (updates.promoInput !== undefined) saveToStorage('checkout_promo_input', updates.promoInput);
+      if (updates.appliedPromo !== undefined) saveToStorage('checkout_applied_promo', updates.appliedPromo);
       return newState;
     });
-  }, [debouncedSave]);
+  }, []);
 
-  // Load initial state from storage on mount
+  // Load state from storage on mount
   useEffect(() => {
-    const loadedState: CheckoutState = {
-      selectedEventIds: loadFromStorage<number[]>('selectedEventIds', []),
-      visitorPassDays: loadFromStorage<number>('visitorPassDays', 0),
-      visitorPassDetails: loadFromStorage<Record<string, string>>('visitorPassDetails', {}),
-      flagshipBenefitsByEvent: loadFromStorage<Record<number, any>>('flagshipBenefitsByEvent', {}),
-      formDataBySignature: loadFromStorage<Record<string, Record<string, string>>>('formDataBySignature', {}),
-      teamMembersBySignature: loadFromStorage<Record<string, Array<Record<string, string>>>>('teamMembersBySignature', {}),
-      promoInput: loadFromStorage<string>('promoInput', ''),
-      appliedPromo: null, // Don't persist promo
-    };
-    setState(loadedState);
+    const savedSelectedEvents = loadFromStorage<number[]>('checkout_selected_events', []);
+    const savedVisitorPass = loadFromStorage<number>('checkout_visitor_pass', 0);
+    const savedVisitorPassDetails = loadFromStorage<Record<string, string>>('checkout_visitor_pass_details', {});
+    const savedFormData = loadFromStorage<Record<string, Record<string, string>>>('checkout_form_data', {});
+    const savedTeamMembers = loadFromStorage<Record<string, Array<Record<string, string>>>>('checkout_team_members', {});
+    const savedPromoInput = loadFromStorage<string>('checkout_promo_input', '');
+    const savedAppliedPromo = loadFromStorage<{code: string; discountAmount: number} | null>('checkout_applied_promo', null);
+
+    setState({
+      selectedEventIds: savedSelectedEvents,
+      visitorPassDays: savedVisitorPass,
+      visitorPassDetails: savedVisitorPassDetails,
+      flagshipBenefitsByEvent: {},
+      formDataBySignature: savedFormData,
+      teamMembersBySignature: savedTeamMembers,
+      promoInput: savedPromoInput,
+      appliedPromo: savedAppliedPromo,
+    });
   }, []);
 
   // Cleanup timeout on unmount

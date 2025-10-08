@@ -8,14 +8,36 @@ interface FormFieldInputProps {
   onChange: (value: string) => void;
   onFileChange: (file: File | null) => void;
   error?: string;
+  uploadedFile?: File | null;
+  uniqueId?: string;
 }
 
-export function FormFieldInput({ field, value, onChange, onFileChange, error }: FormFieldInputProps) {
+export function FormFieldInput({ field, value, onChange, onFileChange, error, uploadedFile, uniqueId }: FormFieldInputProps) {
   const [filePreview, setFilePreview] = useState<string | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(uploadedFile || null);
+
+  console.log('🔄 FormFieldInput render:', { fieldName: field.name, fieldType: field.type, uploadedFile: uploadedFile?.name, selectedFile: selectedFile?.name });
+
+  // Update preview when uploadedFile prop changes
+  React.useEffect(() => {
+    console.log('🔄 uploadedFile effect:', { fieldName: field.name, uploadedFile: uploadedFile?.name });
+    if (uploadedFile) {
+      setSelectedFile(uploadedFile);
+      if (uploadedFile.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setFilePreview(reader.result as string);
+          console.log('✅ Preview set for:', field.name, uploadedFile.name);
+        };
+        reader.readAsDataURL(uploadedFile);
+      }
+    }
+  }, [uploadedFile, field.name]);
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
+    
+    console.log('📤 File input changed:', { fieldName: field.name, fieldType: field.type, fileName: file?.name });
     
     // Validate file size (500KB = 500 * 1024 bytes)
     if (file && file.size > 500 * 1024) {
@@ -25,6 +47,7 @@ export function FormFieldInput({ field, value, onChange, onFileChange, error }: 
     }
 
     setSelectedFile(file);
+    console.log('📤 Calling onFileChange with file:', file?.name, 'for field:', field.name);
     onFileChange(file);
 
     // Generate preview for images
@@ -32,6 +55,7 @@ export function FormFieldInput({ field, value, onChange, onFileChange, error }: 
       const reader = new FileReader();
       reader.onloadend = () => {
         setFilePreview(reader.result as string);
+        console.log('📤 Preview generated for:', file.name);
       };
       reader.readAsDataURL(file);
     } else {
@@ -65,6 +89,7 @@ export function FormFieldInput({ field, value, onChange, onFileChange, error }: 
         );
 
       case 'file':
+        const fileInputId = uniqueId || `file-${field.name}`;
         return (
           <div className="space-y-2">
             <input
@@ -72,13 +97,13 @@ export function FormFieldInput({ field, value, onChange, onFileChange, error }: 
               accept={field.accept}
               onChange={handleFileInput}
               className="hidden"
-              id={`file-${field.name}`}
+              id={fileInputId}
               required={field.required}
             />
             {!selectedFile ? (
               <div>
                 <label
-                  htmlFor={`file-${field.name}`}
+                  htmlFor={fileInputId}
                   className="flex items-center justify-center gap-2 w-full px-4 py-3 glass border border-white/20 rounded-lg cursor-pointer hover:border-purple-400 transition-colors group"
                 >
                   <Upload className="w-5 h-5 text-purple-300 group-hover:text-purple-200" />
