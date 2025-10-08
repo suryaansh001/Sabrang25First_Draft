@@ -68,6 +68,8 @@ export function useCheckoutState() {
   // Load state from storage on mount
   useEffect(() => {
     const savedSelectedEvents = loadFromStorage<number[]>('checkout_selected_events', []);
+    // Filter out event id 10 (In Conversation With) as registration is closed
+    const filteredSelectedEvents = savedSelectedEvents.filter(id => id !== 10);
     const savedVisitorPass = loadFromStorage<number>('checkout_visitor_pass', 0);
     const savedVisitorPassDetails = loadFromStorage<Record<string, string>>('checkout_visitor_pass_details', {});
     const savedFormData = loadFromStorage<Record<string, Record<string, string>>>('checkout_form_data', {});
@@ -76,7 +78,7 @@ export function useCheckoutState() {
     const savedAppliedPromo = loadFromStorage<{code: string; discountAmount: number} | null>('checkout_applied_promo', null);
 
     setState({
-      selectedEventIds: savedSelectedEvents,
+      selectedEventIds: filteredSelectedEvents,
       visitorPassDays: savedVisitorPass,
       visitorPassDetails: savedVisitorPassDetails,
       flagshipBenefitsByEvent: {},

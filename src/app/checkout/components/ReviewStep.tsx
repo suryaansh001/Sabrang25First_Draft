@@ -85,13 +85,13 @@ export function ReviewStep({
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold mb-2">
-          <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Review Your Order</span>
+          <span className="text-cyan-400">Review Your Order</span>
         </h2>
         <p className="text-gray-400 mb-6">Please review your selections before proceeding to payment</p>
       </div>
 
       {/* Selected Events */}
-      <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-cyan-500/30 shadow-[0_0_25px_rgba(6,182,212,0.25)]">
+      <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-white/10 shadow-lg">
         <h3 className="text-xl font-semibold mb-4 text-cyan-200">Selected Events</h3>
         <div className="space-y-3">
           {selectedEvents.map(event => (
@@ -117,7 +117,7 @@ export function ReviewStep({
       </div>
 
       {/* Promo Code */}
-      <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-purple-500/30 shadow-[0_0_25px_rgba(168,85,247,0.2)]">
+      <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-white/10 shadow-lg">
         <h3 className="text-xl font-semibold mb-4 text-purple-200">Promo Code</h3>
         
         {!state.appliedPromo ? (
@@ -127,12 +127,12 @@ export function ReviewStep({
               value={state.promoInput}
               onChange={(e) => updateState({ promoInput: e.target.value.toUpperCase() })}
               placeholder="Enter promo code"
-              className="flex-1 px-4 py-2.5 glass border border-white/20 rounded-lg focus:outline-none focus:border-purple-400 text-white placeholder:text-white/40 transition-colors"
+              className="flex-1 px-4 py-2.5 glass border border-white/20 rounded-lg focus:outline-none focus:border-white/30 text-white placeholder:text-white/40 transition-colors"
             />
             <button
               onClick={handleApplyPromo}
               disabled={promoLoading || !state.promoInput.trim()}
-              className="px-6 py-2.5 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 hover:from-cyan-600 hover:via-purple-600 hover:to-pink-600 disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed rounded-lg transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(6,182,212,0.4)] hover:shadow-[0_0_20px_rgba(6,182,212,0.6)]"
+              className="px-6 py-2.5 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg transition-all flex items-center gap-2 shadow-lg"
             >
               {promoLoading ? (
                 <>
@@ -148,7 +148,7 @@ export function ReviewStep({
             </button>
           </div>
         ) : (
-          <div className="flex items-center justify-between p-4 glass border border-green-400/40 rounded-lg shadow-[0_0_15px_rgba(34,197,94,0.2)]">
+          <div className="flex items-center justify-between p-4 glass border border-green-400/40 rounded-lg shadow-lg">
             <div className="flex items-center gap-3">
               <Tag className="w-5 h-5 text-green-400" />
               <div>
@@ -173,7 +173,7 @@ export function ReviewStep({
       </div>
 
       {/* Price Summary */}
-      <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-sm p-6 rounded-xl border border-purple-400/50 shadow-[0_0_30px_rgba(168,85,247,0.4)]">
+      <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-white/10 shadow-lg">
         <h3 className="text-xl font-semibold mb-4 text-purple-200">Price Summary</h3>
         <div className="space-y-3">
           <div className="flex justify-between text-white/70">
@@ -191,7 +191,7 @@ export function ReviewStep({
           <div className="border-t border-white/20 pt-3 mt-3">
             <div className="flex justify-between text-2xl font-bold">
               <span className="text-white">Total</span>
-              <span className="bg-gradient-to-r from-purple-300 via-pink-400 to-rose-400 bg-clip-text text-transparent">
+              <span className="text-purple-400">
                 ₹{finalPrice.toFixed(2)}
               </span>
             </div>
@@ -207,7 +207,7 @@ export function ReviewStep({
             const event = new CustomEvent('proceedToPayment');
             window.dispatchEvent(event);
           }}
-          className="px-8 py-4 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 hover:from-cyan-600 hover:via-purple-600 hover:to-pink-600 rounded-lg transition-all font-semibold flex items-center gap-2 shadow-[0_0_25px_rgba(6,182,212,0.6)] hover:shadow-[0_0_35px_rgba(6,182,212,0.8)] text-lg"
+          className="px-8 py-4 bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-all font-semibold flex items-center gap-2 shadow-lg text-lg"
         >
           Proceed to Payment
           <ArrowRight className="w-5 h-5" />

@@ -166,18 +166,18 @@ export function PaymentStep({
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold mb-2">
-          <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Payment</span>
+          <span className="text-cyan-400">Payment</span>
         </h2>
         <p className="text-gray-400 mb-6">Complete your payment to confirm registration</p>
       </div>
 
       {/* Payment Summary */}
-      <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-sm p-6 rounded-xl border border-purple-400/50 shadow-[0_0_30px_rgba(168,85,247,0.4)]">
+      <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-white/10 shadow-lg">
         <h3 className="text-xl font-semibold mb-4 text-purple-200">Payment Summary</h3>
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <span className="text-white/70">Total Amount</span>
-            <span className="text-3xl font-bold bg-gradient-to-r from-purple-300 via-pink-400 to-rose-400 bg-clip-text text-transparent">
+            <span className="text-3xl font-bold text-purple-400">
               ₹{finalPrice.toFixed(2)}
             </span>
           </div>
@@ -186,7 +186,7 @@ export function PaymentStep({
 
       {/* Payment Status */}
       {paymentStatus === 'processing' && (
-        <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-cyan-400/40 shadow-[0_0_20px_rgba(6,182,212,0.3)] flex items-center gap-4">
+        <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-white/10 shadow-lg flex items-center gap-4">
           <Loader className="w-6 h-6 animate-spin text-blue-400" />
           <div>
             <p className="font-semibold text-blue-400">Processing Payment</p>
@@ -196,7 +196,7 @@ export function PaymentStep({
       )}
 
       {paymentStatus === 'success' && (
-        <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-green-400/40 shadow-[0_0_20px_rgba(34,197,94,0.3)] flex items-center gap-4">
+        <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-green-400/40 shadow-lg flex items-center gap-4">
           <CheckCircle className="w-6 h-6 text-green-400" />
           <div>
             <p className="font-semibold text-green-400">Payment Successful</p>
@@ -206,7 +206,7 @@ export function PaymentStep({
       )}
 
       {paymentStatus === 'failed' && error && (
-        <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-red-400/40 shadow-[0_0_20px_rgba(239,68,68,0.3)] flex items-center gap-4">
+        <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-red-400/40 shadow-lg flex items-center gap-4">
           <XCircle className="w-6 h-6 text-red-400" />
           <div>
             <p className="font-semibold text-red-400">Payment Failed</p>
@@ -218,7 +218,7 @@ export function PaymentStep({
       {/* Payment Button */}
       {paymentStatus === 'idle' && (
         <div className="space-y-4">
-          <div className="bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-purple-400/40 shadow-[0_0_15px_rgba(168,85,247,0.2)]">
+          <div className="bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-white/10 shadow-lg">
             <div className="flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
               <div className="text-sm text-white/70">
@@ -235,7 +235,7 @@ export function PaymentStep({
           <button
             onClick={initiatePayment}
             disabled={isProcessing}
-            className="w-full px-8 py-5 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 hover:from-cyan-600 hover:via-purple-600 hover:to-pink-600 disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed rounded-xl transition-all font-bold text-xl flex items-center justify-center gap-3 shadow-[0_0_35px_rgba(6,182,212,0.7)] hover:shadow-[0_0_45px_rgba(6,182,212,0.9)]"
+            className="w-full px-8 py-5 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-xl transition-all font-bold text-xl flex items-center justify-center gap-3 shadow-lg"
           >
             {isProcessing ? (
               <>
@@ -256,7 +256,7 @@ export function PaymentStep({
         <button
           onClick={initiatePayment}
           disabled={isProcessing}
-          className="w-full px-8 py-5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed rounded-xl transition-all font-bold text-xl flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(168,85,247,0.6)] hover:shadow-[0_0_40px_rgba(168,85,247,0.8)]"
+          className="w-full px-8 py-5 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-xl transition-all font-bold text-xl flex items-center justify-center gap-3 shadow-lg"
         >
           <CreditCard className="w-6 h-6" />
           Retry Payment

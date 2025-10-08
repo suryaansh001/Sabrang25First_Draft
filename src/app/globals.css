@@ -84,31 +84,42 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Custom scrollbar styles */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(31, 41, 55, 0.3);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(75, 85, 99, 0.6);
-  border-radius: 4px;
-  transition: background 0.2s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(107, 114, 128, 0.8);
-}
-
-/* Firefox scrollbar */
+/* Custom scrollbar styles - Comprehensive reset */
 * {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(75, 85, 99, 0.6) rgba(31, 41, 55, 0.3);
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(75, 85, 99, 0.6) rgba(31, 41, 55, 0.3) !important;
+}
+
+*::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.3) !important;
+  border-radius: 4px !important;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.6) !important;
+  border-radius: 4px !important;
+  transition: background 0.2s ease !important;
+  border: none !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.8) !important;
+  background-image: none !important;
+}
+
+*::-webkit-scrollbar-corner {
+  background: rgba(31, 41, 55, 0.3) !important;
+}
+
+*::-webkit-scrollbar-button {
+  display: none !important;
 }
 
 @keyframes scroll {
@@ -445,21 +456,7 @@ h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, label {
   animation-delay: 6s;
 }
 
-/* Custom scrollbar hide for Webkit browsers */
-::-webkit-scrollbar {
-  display: none;
-}
-
-/* Custom scrollbar hide for Firefox */
-html {
-  scrollbar-width: none;
-  scroll-behavior: smooth;
-}
-
-/* Optional: For IE/Edge, though usually not needed if overflow is handled */
-body {
-  -ms-overflow-style: none;
-}
+/* Scrollbar behavior is controlled by the earlier rules at lines 88-112 */
 
 @keyframes particleFloat {
   0% { transform: translateY(0px); }
@@ -710,21 +707,21 @@ body {
 
 /* Custom scrollbar for schedule page */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
+  width: 8px !important;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 10px !important;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #8b5cf6, #ec4899);
-  border-radius: 10px;
+  background: rgba(107, 114, 128, 0.6) !important;
+  border-radius: 10px !important;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #7c3aed, #db2777);
+  background: rgba(107, 114, 128, 0.8) !important;
 }
 
 /* Loading Page Cosmic Animations */
@@ -1349,4 +1346,50 @@ body {
 
 .enhanced-shape.star {
   animation: starTwinkle 8s ease-in-out infinite;
+}
+
+/* FINAL SCROLLBAR OVERRIDE - Must be at the end to ensure highest priority */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+div::-webkit-scrollbar,
+section::-webkit-scrollbar,
+main::-webkit-scrollbar,
+article::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+div::-webkit-scrollbar-track,
+section::-webkit-scrollbar-track,
+main::-webkit-scrollbar-track,
+article::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.3) !important;
+  border-radius: 4px !important;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+div::-webkit-scrollbar-thumb,
+section::-webkit-scrollbar-thumb,
+main::-webkit-scrollbar-thumb,
+article::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.6) !important;
+  background-image: none !important;
+  background: linear-gradient(rgba(75, 85, 99, 0.6), rgba(75, 85, 99, 0.6)) !important;
+  border-radius: 4px !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover,
+div::-webkit-scrollbar-thumb:hover,
+section::-webkit-scrollbar-thumb:hover,
+main::-webkit-scrollbar-thumb:hover,
+article::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.8) !important;
+  background-image: none !important;
+  background: linear-gradient(rgba(107, 114, 128, 0.8), rgba(107, 114, 128, 0.8)) !important;
 }

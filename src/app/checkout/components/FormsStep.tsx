@@ -295,14 +295,14 @@ export function FormsStep({
     <div className="space-y-8">
       <div>
         <h2 className="text-2xl font-bold mb-2">
-          <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Your Details</span>
+          <span className="text-cyan-400">Your Details</span>
         </h2>
         <p className="text-gray-400 mb-6">Fill in your information for registration</p>
       </div>
 
       {/* Error Summary */}
       {totalErrors > 0 && (
-        <div className="bg-red-500/10 backdrop-blur-sm p-4 rounded-xl border border-red-400/40 shadow-[0_0_20px_rgba(239,68,68,0.3)]">
+        <div className="bg-red-500/10 backdrop-blur-sm p-4 rounded-xl border border-red-400/40 shadow-lg">
           <div className="flex items-start gap-3">
             <span className="text-2xl">⚠️</span>
             <div>
@@ -315,7 +315,7 @@ export function FormsStep({
 
       {/* Visitor Pass Form */}
       {state.visitorPassDays > 0 && (
-        <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-yellow-500/30 shadow-[0_0_25px_rgba(234,179,8,0.2)]">
+        <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-white/10 shadow-lg">
           <h3 className="text-xl font-semibold mb-4 text-yellow-200">Visitor Pass Details</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {VISITOR_PASS_FIELDS.map(field => (
@@ -347,9 +347,9 @@ export function FormsStep({
 
       {/* Event Forms */}
       {fieldGroups.map(group => (
-        <div key={group.signature} className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-purple-500/30 shadow-[0_0_25px_rgba(168,85,247,0.2)]">
+        <div key={group.signature} className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-white/10 shadow-lg">
           <h3 className="text-xl font-semibold mb-2">
-            <span className="bg-gradient-to-r from-purple-300 via-pink-400 to-rose-400 bg-clip-text text-transparent">
+            <span className="text-purple-300">
               {group.events.length === 1 ? group.events[0].title : 'Event Registration'}
             </span>
           </h3>
@@ -454,7 +454,7 @@ export function FormsStep({
                                 accept={field.accept || 'image/*'}
                                 required={!!field.required}
                                 id={`team-file-${group.signature}-${idx}-${field.name}`}
-                                className={`block w-full px-4 py-2.5 glass border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
+                                className={`block w-full px-4 py-2.5 glass border ${error ? 'border-red-400' : 'border-white/20'} rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white/30 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-gray-600 file:text-white hover:file:bg-gray-700 file:cursor-pointer cursor-pointer`}
                                 onChange={e => {
                                   const file = e.target.files?.[0] || null;
                                   console.log('📤 DIRECT FILE INPUT CHANGE:', { 
@@ -504,7 +504,7 @@ export function FormsStep({
       <div className="flex justify-end pt-4">
         <button
           onClick={handleSubmit}
-          className="px-8 py-3 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 hover:from-cyan-600 hover:via-purple-600 hover:to-pink-600 rounded-lg transition-all font-semibold shadow-[0_0_20px_rgba(6,182,212,0.5)] hover:shadow-[0_0_30px_rgba(6,182,212,0.7)]"
+          className="px-8 py-3 bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-all font-semibold shadow-lg"
         >
           Continue to Review
         </button>

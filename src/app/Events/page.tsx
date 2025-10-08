@@ -179,6 +179,8 @@ export default function EventsPage() {
   };
   
   const toggleCart = (eventId: number) => {
+    // Prevent adding event id 10 (In Conversation With) as registration is closed
+    if (eventId === 10) return;
     setCartIds(prev => prev.includes(eventId) ? prev.filter(id => id !== eventId) : [...prev, eventId]);
   };
 
@@ -189,7 +191,8 @@ export default function EventsPage() {
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed)) {
-          const ids = parsed.map(n => parseInt(String(n), 10)).filter(n => !Number.isNaN(n));
+          // Filter out event id 10 (In Conversation With) as registration is closed
+          const ids = parsed.map(n => parseInt(String(n), 10)).filter(n => !Number.isNaN(n) && n !== 10);
           setCartIds(ids);
         }
       }
@@ -500,61 +503,9 @@ export default function EventsPage() {
           {/* Logo and sidebar */}
           <Logo className="block" />
 
-          {/* Flagship Events Toggle - hide on mobile to avoid overlapping navbar */}
-          <div className="hidden lg:fixed lg:top-6 lg:right-[120px] lg:z-50 lg:block">
-            <div className="relative">
-              {/* Main toggle container */}
-              <div 
-                onClick={() => setShowFlagshipOnly(!showFlagshipOnly)}
-                className="cursor-pointer group"
-              >
-                {/* Background card */}
-                <div className="bg-black/60 backdrop-blur-md rounded-2xl p-4 border border-white/20 shadow-2xl">
-                  {/* Icon and text container */}
-                  <div className="flex items-center space-x-3">
-                    {/* Crown icon with animation */}
-                    <div className="relative">
-                      <Crown className={`w-6 h-6 ${showFlagshipOnly ? 'text-yellow-400' : 'text-gray-400'} transition-colors duration-300`} />
-                      {showFlagshipOnly && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full"
-                        />
-                      )}
-                    </div>
-                    
-                    {/* Text content */}
-                    <div className="text-white">
-                      <div className="text-sm font-semibold">
-                        {showFlagshipOnly ? 'All Events' : 'Flagship Only'}
-                      </div>
-                      <div className="text-xs text-gray-300">
-                        {showFlagshipOnly ? 'View all events' : 'Premium events only'}
-                      </div>
-                    </div>
-                    
-                    {/* Toggle indicator */}
-                    <div className={`w-8 h-4 rounded-full transition-all duration-300 ${
-                      showFlagshipOnly ? 'bg-yellow-400' : 'bg-gray-600'
-                    }`}>
-                      <motion.div
-                        animate={{ x: showFlagshipOnly ? 16 : 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="w-4 h-4 bg-white rounded-full shadow-md"
-                      />
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Hover effect overlay */}
-                <div className="absolute inset-0 bg-white/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </div>
-            </div>
-          </div>
 
-          {/* Cart button - to the left of flagship toggle on large screens */}
-          <div className="hidden lg:fixed lg:top-6 lg:right-[360px] lg:z-50 lg:block">
+          {/* Cart button on large screens */}
+          <div className="hidden lg:fixed lg:top-6 lg:right-[120px] lg:z-50 lg:block">
             <button
               onClick={() => {
                 router.push('/checkout');
@@ -688,17 +639,25 @@ export default function EventsPage() {
                               {event.title}
                             </h3>
 
-                            <button
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }}
-                              className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs ${isMobile ? '' : 'transition-all duration-200'} cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/80 border-purple-400/60 text-white' : `bg-white/10 border-white/30 text-white/90 ${!isMobile ? 'hover:bg-white/15 backdrop-blur-sm' : ''}`}`}
-                              aria-pressed={cartIds.includes(event.id) ? 'true' : 'false'}
-                            >
-                              <ShoppingCart className="w-3 h-3 md:w-3.5 md:h-3.5" />
-                              <span className="uppercase tracking-wider">
-                                {cartIds.includes(event.id) ? 'Added' : 'Add to cart'}
-                              </span>
-                            </button>
+                            {event.id === 10 ? (
+                              <div className="w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs bg-red-900/30 border-red-400/50 text-red-300 cursor-not-allowed">
+                                <span className="uppercase tracking-wider font-semibold">
+                                  Registration Closed
+                                </span>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }}
+                                className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs ${isMobile ? '' : 'transition-all duration-200'} cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/80 border-purple-400/60 text-white' : `bg-white/10 border-white/30 text-white/90 ${!isMobile ? 'hover:bg-white/15 backdrop-blur-sm' : ''}`}`}
+                                aria-pressed={cartIds.includes(event.id) ? "true" : "false"}
+                              >
+                                <ShoppingCart className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                                <span className="uppercase tracking-wider">
+                                  {cartIds.includes(event.id) ? 'Added' : 'Add to cart'}
+                                </span>
+                              </button>
+                            )}
                           </div>
                         </CardWrapper>
                       ) : (
@@ -751,10 +710,18 @@ export default function EventsPage() {
                               {getEventPrizePool(event.id) && (<div className="flex justify-center mb-20"><div className="text-white text-[8px] md:text-xs font-bold"><div className="flex items-center gap-1"><Crown className="w-2 h-2 md:w-3 md:h-3" /><span className="font-extrabold tracking-wide">Prize Pool: {getEventPrizePool(event.id)}</span></div></div></div>)}
                               <div className="flex justify-center mb-1.5"><div className="text-white text-[9px] md:text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded-full border border-white/20">{catalogById.get(event.id)?.price || event.price}</div></div>
                               <div className="px-2 md:px-3 py-2 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
-                                <button type="button" onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }} className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs ${isMobile ? '' : 'transition-all duration-200'} cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/30 border-purple-400/60 text-white' : `bg-white/10 border-white/30 text-white/90 ${!isMobile ? 'hover:bg-white/15' : ''}`}`} aria-pressed={cartIds.includes(event.id) ? 'true' : 'false'}>
-                                  <span className={`inline-block w-3 h-3 md:w-4 md:h-4 rounded-full ring-1 ${cartIds.includes(event.id) ? 'bg-purple-500 ring-purple-300' : 'bg-transparent ring-white/40'}`}></span>
-                                  <span className="uppercase tracking-wider" style={{ fontFamily: 'monospace' }}>{cartIds.includes(event.id) ? 'Added' : 'Add to cart'}</span>
-                                </button>
+                                {event.id === 10 ? (
+                                  <div className="w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs bg-red-900/30 border-red-400/50 text-red-300 cursor-not-allowed">
+                                    <span className="uppercase tracking-wider font-semibold" style={{ fontFamily: 'monospace' }}>
+                                      Registration Closed
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <button type="button" onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }} className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs ${isMobile ? '' : 'transition-all duration-200'} cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/30 border-purple-400/60 text-white' : `bg-white/10 border-white/30 text-white/90 ${!isMobile ? 'hover:bg-white/15' : ''}`}`} aria-pressed={cartIds.includes(event.id) ? "true" : "false"}>
+                                    <span className={`inline-block w-3 h-3 md:w-4 md:h-4 rounded-full ring-1 ${cartIds.includes(event.id) ? 'bg-purple-500 ring-purple-300' : 'bg-transparent ring-white/40'}`}></span>
+                                    <span className="uppercase tracking-wider" style={{ fontFamily: 'monospace' }}>{cartIds.includes(event.id) ? 'Added' : 'Add to cart'}</span>
+                                  </button>
+                                )}
                               </div>
                             </div>
                             {!isMobile && <div className="absolute inset-0 border border-green-400/30 rounded-lg" />}

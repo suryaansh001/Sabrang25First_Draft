@@ -76,7 +76,7 @@ export function FormFieldInput({ field, value, onChange, onFileChange, error, up
           <select
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="w-full px-4 py-2.5 glass border border-white/20 rounded-lg focus:outline-none focus:border-purple-400 text-white transition-colors"
+            className="w-full px-4 py-2.5 glass border border-white/20 rounded-lg focus:outline-none focus:border-white/30 text-white transition-colors"
             required={field.required}
           >
             <option value="" className="bg-gray-900">Select {field.label}</option>
@@ -104,7 +104,7 @@ export function FormFieldInput({ field, value, onChange, onFileChange, error, up
               <div>
                 <label
                   htmlFor={fileInputId}
-                  className="flex items-center justify-center gap-2 w-full px-4 py-3 glass border border-white/20 rounded-lg cursor-pointer hover:border-purple-400 transition-colors group"
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3 glass border border-white/20 rounded-lg cursor-pointer hover:border-white/30 transition-colors group"
                 >
                   <Upload className="w-5 h-5 text-purple-300 group-hover:text-purple-200" />
                   <span className="text-sm text-white/70 group-hover:text-white">Choose file</span>
@@ -112,14 +112,14 @@ export function FormFieldInput({ field, value, onChange, onFileChange, error, up
                 <p className="text-xs text-white/50 mt-1">Max size: 500KB</p>
               </div>
             ) : (
-              <div className="glass border border-purple-400/40 rounded-lg p-3">
+              <div className="glass border border-white/20 rounded-lg p-3">
                 <div className="flex items-start gap-3">
                   {filePreview ? (
                     <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border border-white/20">
                       <img src={filePreview} alt="Preview" className="w-full h-full object-cover" />
                     </div>
                   ) : (
-                    <div className="w-20 h-20 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0 border border-purple-400/40">
+                    <div className="w-20 h-20 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 border border-white/20">
                       <FileText className="w-8 h-8 text-purple-300" />
                     </div>
                   )}
@@ -152,7 +152,7 @@ export function FormFieldInput({ field, value, onChange, onFileChange, error, up
             placeholder={field.placeholder}
             maxLength={10}
             pattern="[0-9]{10}"
-            className="w-full px-4 py-2.5 glass border border-white/20 rounded-lg focus:outline-none focus:border-purple-400 text-white placeholder:text-white/40 transition-colors"
+            className="w-full px-4 py-2.5 glass border border-white/20 rounded-lg focus:outline-none focus:border-white/30 text-white placeholder:text-white/40 transition-colors"
             required={field.required}
           />
         );
@@ -164,7 +164,7 @@ export function FormFieldInput({ field, value, onChange, onFileChange, error, up
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder={field.placeholder}
-            className="w-full px-4 py-2.5 glass border border-white/20 rounded-lg focus:outline-none focus:border-purple-400 text-white placeholder:text-white/40 transition-colors"
+            className="w-full px-4 py-2.5 glass border border-white/20 rounded-lg focus:outline-none focus:border-white/30 text-white placeholder:text-white/40 transition-colors"
             required={field.required}
           />
         );
@@ -176,7 +176,7 @@ export function FormFieldInput({ field, value, onChange, onFileChange, error, up
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder={field.placeholder}
-            className="w-full px-4 py-2.5 glass border border-white/20 rounded-lg focus:outline-none focus:border-purple-400 text-white placeholder:text-white/40 transition-colors"
+            className="w-full px-4 py-2.5 glass border border-white/20 rounded-lg focus:outline-none focus:border-white/30 text-white placeholder:text-white/40 transition-colors"
             required={field.required}
           />
         );
@@ -189,7 +189,7 @@ export function FormFieldInput({ field, value, onChange, onFileChange, error, up
             onChange={(e) => onChange(e.target.value)}
             placeholder={field.placeholder}
             maxLength={field.inputProps?.maxLength}
-            className="w-full px-4 py-2.5 glass border border-white/20 rounded-lg focus:outline-none focus:border-purple-400 text-white placeholder:text-white/40 transition-colors"
+            className="w-full px-4 py-2.5 glass border border-white/20 rounded-lg focus:outline-none focus:border-white/30 text-white placeholder:text-white/40 transition-colors"
             required={field.required}
           />
         );

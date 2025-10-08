@@ -69,11 +69,18 @@ export function CheckoutContent() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    const handleProceedToForms = () => {
+      setStep('forms');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
     window.addEventListener('proceedToPayment', handleProceedToPayment);
     window.addEventListener('proceedToReview', handleProceedToReview);
+    window.addEventListener('proceedToForms', handleProceedToForms);
     return () => {
       window.removeEventListener('proceedToPayment', handleProceedToPayment);
       window.removeEventListener('proceedToReview', handleProceedToReview);
+      window.removeEventListener('proceedToForms', handleProceedToForms);
     };
   }, [setStep]);
 
@@ -185,13 +192,8 @@ export function CheckoutContent() {
 
   return (
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-black to-black text-white relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 -left-4 w-96 h-96 bg-purple-500/10 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-        <div className="absolute top-0 -right-4 w-96 h-96 bg-cyan-500/10 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-8 left-20 w-96 h-96 bg-pink-500/10 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
-      </div>
-      <div className="container mx-auto px-4 py-8 max-w-7xl relative z-10">
+      {/* Animated background elements - removed for cleaner look */}
+      <div className="container mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 py-8 max-w-7xl relative z-10">
         {/* Header */}
         <div className="mb-8">
           <button
@@ -202,7 +204,7 @@ export function CheckoutContent() {
             <span>Back</span>
           </button>
           <h1 className="text-3xl md:text-4xl font-bold mb-2">
-            <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Checkout</span>
+            <span className="text-cyan-400">Checkout</span>
           </h1>
           <p className="text-gray-400">Complete your registration for Sabrang 2025</p>
         </div>
@@ -237,7 +239,7 @@ export function CheckoutContent() {
               <button
                 onClick={goNext}
                 disabled={!canProceed()}
-                className="px-6 py-3 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 hover:from-cyan-600 hover:via-purple-600 hover:to-pink-600 disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed rounded-lg transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(6,182,212,0.5)] hover:shadow-[0_0_30px_rgba(6,182,212,0.7)]"
+                className="px-6 py-3 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg transition-all flex items-center gap-2 shadow-lg"
               >
                 Continue
                 <ArrowRight className="w-5 h-5" />

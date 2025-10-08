@@ -2,7 +2,7 @@
 
 import MobileNavbar from '../../../components/MobileNavbar';
 import FaultyTerminal from '../../../components/Faulty Terminal bg';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 type Member = { name: string; initials: string; image?: string; role?: string };
 
@@ -178,12 +178,6 @@ function TeamSection({ title, members, isMainHeading = false, isCoreSection = fa
 }
 
 export default function DesignedByPage() {
-	const [isLoaded, setIsLoaded] = useState(false);
-
-	useEffect(() => {
-		setIsLoaded(true);
-	}, []);
-
 	// Debug: Log image paths
 	console.log('Core member images:', coreMember.map(m => m.image));
 	console.log('Code team images:', codeTeam.map(m => m.image));
@@ -218,35 +212,6 @@ export default function DesignedByPage() {
 
 			{/* Main content with enhanced styling */}
 			<section className="px-4 py-24 relative">
-				{/* Enhanced page header with glassmorphism */}
-				<div className="text-center mb-20 relative">
-					<div className={`transition-all duration-1200 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
-						{/* Main title with enhanced effects */}
-						<div className="relative inline-block mb-8">
-							{/* Glowing background */}
-							<div className="absolute inset-0 bg-gradient-to-r from-purple-500/30 via-pink-500/30 to-indigo-500/30 rounded-3xl blur-2xl scale-110"></div>
-							{/* Glassmorphism container */}
-							<div className="relative bg-gradient-to-r from-purple-900/20 via-indigo-900/20 to-blue-900/20 backdrop-blur-xl rounded-3xl p-8 border border-purple-400/20">
-								<h1 className="text-7xl sm:text-8xl md:text-9xl font-black tracking-tight bg-gradient-to-r from-purple-200 via-pink-200 to-indigo-200 bg-clip-text text-transparent drop-shadow-[0_6px_32px_rgba(139,92,246,0.6)]">
-									Made by
-								</h1>
-							</div>
-						</div>
-						
-						{/* Enhanced decorative elements */}
-						<div className="flex justify-center space-x-6">
-							<div className="w-4 h-4 bg-purple-400 rounded-full animate-pulse shadow-[0_0_15px_rgba(139,92,246,0.8)]"></div>
-							<div className="w-3 h-3 bg-pink-400 rounded-full animate-pulse delay-300 shadow-[0_0_12px_rgba(236,72,153,0.8)]"></div>
-							<div className="w-4 h-4 bg-indigo-400 rounded-full animate-pulse delay-700 shadow-[0_0_15px_rgba(99,102,241,0.8)]"></div>
-							<div className="w-2 h-2 bg-purple-300 rounded-full animate-pulse delay-500"></div>
-						</div>
-						
-						{/* Floating accent elements */}
-						<div className="absolute -top-8 -left-8 w-6 h-6 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-pulse opacity-60"></div>
-						<div className="absolute -top-4 -right-12 w-4 h-4 bg-gradient-to-r from-pink-400 to-indigo-400 rounded-full animate-pulse delay-500 opacity-60"></div>
-						<div className="absolute -bottom-6 -left-6 w-5 h-5 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full animate-pulse delay-1000 opacity-60"></div>
-					</div>
-				</div>
 
 			
 					{/* Core team section */}

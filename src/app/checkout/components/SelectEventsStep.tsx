@@ -19,6 +19,9 @@ export function SelectEventsStep({
   onUpdateState,
 }: SelectEventsStepProps) {
   const toggleEvent = (id: number) => {
+    // Prevent adding event id 10 (In Conversation With) as registration is closed
+    if (id === 10) return;
+    
     if (selectedEventIds.includes(id)) {
       onUpdateState({ selectedEventIds: selectedEventIds.filter(x => x !== id) });
     } else {
@@ -59,7 +62,7 @@ export function SelectEventsStep({
       <div className="lg:col-span-3">
         {/* Cart Loaded Banner */}
         {selectedEventIds.length > 0 && (
-          <div className="bg-green-500/15 border border-green-400/40 rounded-lg p-4 mb-6 shadow-[0_0_20px_rgba(34,197,94,0.2)]">
+          <div className="bg-green-500/15 border border-green-400/40 rounded-lg p-4 mb-6 shadow-lg">
             <p className="text-sm text-green-200">
               <strong>✓ Cart Loaded:</strong> {selectedEventIds.length} event{selectedEventIds.length !== 1 ? 's' : ''} from your cart {selectedEventIds.length === 1 ? 'has' : 'have'} been automatically selected.
             </p>
@@ -69,11 +72,11 @@ export function SelectEventsStep({
         <h2 className="text-xl font-semibold mb-6 title-chroma">Choose Your Events</h2>
 
         {/* Special Offer Banner */}
-        <div className="mb-6 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-rose-500/20 border border-purple-400/50 rounded-xl p-4 backdrop-blur-sm">
+        <div className="mb-6 bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm">
           <div className="flex items-start gap-4">
             <div className="text-3xl">🎉</div>
             <div className="flex-1">
-              <h3 className="text-lg font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent">
+              <h3 className="text-lg font-bold text-purple-300">
                 SPECIAL OFFER
               </h3>
               <p className="text-sm text-white/80 mt-1">
@@ -82,7 +85,7 @@ export function SelectEventsStep({
             </div>
           </div>
           <div className="flex flex-col sm:flex-row items-center gap-3 mt-4">
-            <div className="bg-black/40 border border-purple-400/50 rounded-lg px-4 py-2 backdrop-blur-sm">
+            <div className="bg-black/40 border border-white/20 rounded-lg px-4 py-2 backdrop-blur-sm">
               <span className="text-purple-300 font-mono text-lg font-bold tracking-wider">
                 SPECIALOFFER
               </span>
@@ -103,42 +106,53 @@ export function SelectEventsStep({
         {Array.from(eventsByCategory.entries()).map(([category, events]) => (
           <div key={category} className="mb-8">
             <h3 className="text-xl sm:text-2xl font-extrabold text-white mb-4">
-              <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent">
+              <span className="text-yellow-400">
                 {category}
               </span>
             </h3>
             <div className="space-y-3">
               {events.map(event => {
                 const isSelected = selectedEventIds.includes(event.id);
+                const isClosed = event.id === 10; // In Conversation With is closed
                 return (
                   <motion.div
                     key={event.id}
-                    onClick={() => toggleEvent(event.id)}
-                    whileHover={{ scale: 1.01 }}
-                    className={`relative p-5 rounded-xl transition-all duration-200 border overflow-hidden cursor-pointer backdrop-blur-sm ${
-                      isSelected
-                        ? 'bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 border-cyan-400/50 shadow-[0_0_20px_rgba(6,182,212,0.4)]'
-                        : 'bg-white/5 border-white/10 hover:border-cyan-400/30 hover:bg-white/10 hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]'
+                    onClick={() => !isClosed && toggleEvent(event.id)}
+                    whileHover={!isClosed ? { scale: 1.01 } : {}}
+                    className={`relative p-5 rounded-xl transition-all duration-200 border overflow-hidden backdrop-blur-sm ${
+                      isClosed
+                        ? 'bg-red-900/20 border-red-400/50 cursor-not-allowed opacity-60'
+                        : isSelected
+                          ? 'bg-white/10 border-white/20 shadow-lg cursor-pointer'
+                          : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10 hover:shadow-md cursor-pointer'
                     }`}
                   >
                     <div className="flex justify-between items-start gap-2">
                       <div className="flex-1 min-w-0">
                         <h4 className="font-semibold text-lg truncate text-white">{event.title}</h4>
                         <div className="flex items-center gap-2 mt-1">
-                          <p className="text-base font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                            {event.price}
-                          </p>
-                          {event.teamSize && (
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-gray-300 border border-white/20">
-                              👥 {event.teamSize}
-                            </span>
+                          {isClosed ? (
+                            <p className="text-sm font-semibold text-red-300">
+                              Registration Closed
+                            </p>
+                          ) : (
+                            <>
+                              <p className="text-base font-bold text-cyan-400">
+                                {event.price}
+                              </p>
+                              {event.teamSize && (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-gray-300 border border-white/20">
+                                  👥 {event.teamSize}
+                                </span>
+                              )}
+                            </>
                           )}
                         </div>
                       </div>
-                      {isSelected && (
+                      {!isClosed && isSelected && (
                         <div className="relative flex-shrink-0">
                           <span className="absolute -inset-2 rounded-full bg-cyan-500/30 blur-md"></span>
-                          <div className="relative w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 flex items-center justify-center">
+                          <div className="relative w-8 h-8 rounded-full bg-cyan-600 flex items-center justify-center">
                             <Check className="w-5 h-5 text-white" />
                           </div>
                         </div>
@@ -154,9 +168,9 @@ export function SelectEventsStep({
         {/* Visitor Pass Section */}
         <div className="mb-8">
           <h3 className="text-xl sm:text-2xl font-extrabold text-white mb-4">
-            <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent">Visitor Pass</span>
+            <span className="text-yellow-400">Visitor Pass</span>
           </h3>
-          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-yellow-500/30 shadow-[0_0_25px_rgba(234,179,8,0.2)]">
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 shadow-lg">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex-1">
                 <h4 className="font-semibold text-yellow-200 mb-2">Visitor Pass</h4>
@@ -203,7 +217,7 @@ export function SelectEventsStep({
 
       {/* Sidebar Summary */}
       <div className="lg:sticky lg:top-24 h-fit self-start">
-        <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-cyan-500/30 shadow-[0_0_25px_rgba(6,182,212,0.25)]">
+        <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 shadow-lg">
           <h3 className="font-semibold text-cyan-200 mb-6">Selected Items</h3>
           <ul className="space-y-3 text-sm">
             {visitorPassDays > 0 && (
@@ -221,7 +235,7 @@ export function SelectEventsStep({
                   <div className="font-medium text-white">{ev.title}</div>
                   <div className="text-xs text-white/70 mt-1">{ev.category}</div>
                 </div>
-                <span className="font-semibold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">{ev.price}</span>
+                <span className="font-semibold text-cyan-400">{ev.price}</span>
               </li>
             ))}
           </ul>
@@ -233,6 +247,24 @@ export function SelectEventsStep({
                   ₹{(selectedEvents.reduce((sum, ev) => sum + parseFloat(ev.price.replace(/[^0-9.]/g, '') || '0'), 0) + visitorPassDays * 69).toFixed(2)}
                 </span>
               </div>
+            </div>
+          )}
+          
+          {/* Continue Button */}
+          {(selectedEventIds.length > 0 || visitorPassDays > 0) && (
+            <div className="mt-6 pt-4 border-t border-white/20">
+              <button
+                onClick={() => {
+                  const event = new CustomEvent('proceedToForms');
+                  window.dispatchEvent(event);
+                }}
+                className="w-full px-6 py-3 bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg font-semibold"
+              >
+                Continue
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
             </div>
           )}
         </div>

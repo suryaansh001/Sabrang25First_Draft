@@ -703,12 +703,12 @@ const AboutPage = () => {
         }
         
         ::-webkit-scrollbar-thumb {
-          background: linear-gradient(45deg, #8b5cf6, #ec4899);
+          background: rgba(107, 114, 128, 0.6);
           border-radius: 4px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(45deg, #7c3aed, #db2777);
+          background: rgba(107, 114, 128, 0.8);
         }
         
         /* Smooth scrolling */
