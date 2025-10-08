@@ -14,6 +14,7 @@ import {
   Download
 } from "lucide-react";
 import createApiUrl from "../../../lib/api";
+import { events } from "../../../lib/events.data";
 
 interface AnalyticsData {
   totalUsers: number;
@@ -53,7 +54,12 @@ function AnalyticsPage() {
       });
       if (response.ok) {
         const data = await response.json();
-        setAnalytics(data);
+        // Fix the events count - use the correct count from frontend data
+        const correctedData = {
+          ...data,
+          totalEvents: events.length // Use the actual events count (17)
+        };
+        setAnalytics(correctedData);
       }
     } catch (error) {
       console.error('Failed to fetch analytics:', error);

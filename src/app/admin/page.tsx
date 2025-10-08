@@ -12,10 +12,12 @@ import {
   Settings,
   Calendar,
   Gift,
-  Mail
+  Mail,
+  Trophy
 } from "lucide-react";
 import ProtectedRoute from "../../../components/ProtectedRoute";
 import createApiUrl from "../../lib/api";
+import { events } from "../../lib/events.data";
 
 interface AnalyticsData {
   totalUsers: number;
@@ -114,7 +116,12 @@ function AdminDashboard() {
       });
       if (response.ok) {
         const data = await response.json();
-        setAnalytics(data);
+        // Fix the events count - use the correct count from frontend data
+        const correctedData = {
+          ...data,
+          totalEvents: events.length // Use the actual events count (17)
+        };
+        setAnalytics(correctedData);
       }
     } catch (error) {
       console.error('Failed to fetch analytics:', error);
@@ -124,20 +131,7 @@ function AdminDashboard() {
   };
 
   const adminActions = [
-    {
-      title: "Add Event",
-      href: "/admin/add-event",
-      icon: <Plus className="w-6 h-6" />,
-      gradient: "from-blue-500 to-purple-600",
-      hoverGradient: "from-blue-600 to-purple-700"
-    },
-    {
-      title: "Edit Events",
-      href: "/admin/edit-event",
-      icon: <Edit3 className="w-6 h-6" />,
-      gradient: "from-green-400 to-cyan-400",
-      hoverGradient: "from-green-500 to-cyan-500"
-    },
+   
     {
       title: "Scan QR",
       href: "/admin/scan-qr",
