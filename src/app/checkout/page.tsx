@@ -251,6 +251,8 @@ function CheckoutPageContent() {
   const [teamMembersBySignature, setTeamMembersBySignature] = useState<Record<string, Array<Record<string, string>>>>({});
   const [filesBySignature, setFilesBySignature] = useState<Record<string, Record<string, File>>>({});
   const [memberFilesBySignature, setMemberFilesBySignature] = useState<Record<string, Record<number, File>>>({});
+  const [visitorPassFiles, setVisitorPassFiles] = useState<Record<string, File>>({});
+  const [flagshipBenefitFiles, setFlagshipBenefitFiles] = useState<Record<string, Record<number, Record<string, File>>>>({});
   const [infoEvent, setInfoEvent] = useState<import('../Events/[id]/rules/events.data').Event | null>(null);
   // Simple offline payment instructions (QR + bank details)
   const [paymentProof, setPaymentProof] = useState<File | null>(null);
@@ -1316,6 +1318,31 @@ function CheckoutPageContent() {
     }
   };
 
+  // Adaptive payment initialization based on connection quality
+  const adaptivePaymentInit = async () => {
+    const quality = await checkConnectionQuality();
+    
+    if (quality === 'offline') {
+      alert('No internet connection. Please check your connection and try again.');
+      return;
+    }
+    
+    if (quality === 'poor') {
+      const proceed = confirm(
+        'Your internet connection seems slow. This may take longer than usual. ' +
+        'Do you want to continue or use the alternative payment form?'
+      );
+      
+      if (!proceed) {
+        window.open(CASHFREE_FALLBACK_FORM_URL, '_blank');
+        return;
+      }
+    }
+    
+    // Call the fixed payment function
+    await proceedToPayment();
+  };
+
   // Connection quality indicator state and polling
   const [connectionQuality, setConnectionQuality] = useState<'good' | 'poor' | 'offline'>('good');
   useEffect(() => {
@@ -1334,24 +1361,22 @@ function CheckoutPageContent() {
 
 
   const proceedToPayment = async () => {
-    console.log('🚀 proceedToPayment function called');
+    console.log('🚀 proceedToPayment function called - FULL VERSION');
     
     try {
-      // First, register the user on backend using existing /register with image upload
-      // Map fields: name -> 'name', collegeMailId -> 'email', and attach a 'profileImage'
       const registrationForm = new FormData();
-      // Derive name and email from collected forms (pick from the first group that has them)
+      
+      // Derive identity
       let derivedName: string | undefined;
       let derivedEmail: string | undefined;
       let attachedImage: File | undefined;
 
-      // First try to get from event registration forms
+      // Get from event registration forms
       for (const group of fieldGroups) {
         const data = formDataBySignature[group.signature] || {};
         if (!derivedName && data['name']) derivedName = data['name'];
         if (!derivedEmail && data['collegeMailId']) derivedEmail = data['collegeMailId'];
         const files = filesBySignature[group.signature] || {};
-        // Prefer an institution card image if present, else take the first file in the group
         if (!attachedImage) {
           if (files['universityCardImage']) attachedImage = files['universityCardImage'];
           else {
@@ -1361,22 +1386,21 @@ function CheckoutPageContent() {
         }
       }
 
-      // If no email found from event forms, try to get from visitor pass details
+      // Fallback to visitor pass details
       if (!derivedEmail && visitorPassDetails['collegeMailId']) {
-        // Use the visitor's email as the primary contact
         derivedEmail = visitorPassDetails['collegeMailId'];
         if (!derivedName) derivedName = visitorPassDetails['name'];
       }
 
-      // If still no email found, try flagship benefits for any event
+      // Check flagship benefits
       if (!derivedEmail) {
         for (const benefits of Object.values(flagshipBenefitsByEvent)) {
-          if (benefits.flagshipVisitorPassDetails.length > 0) {
+          if (benefits.flagshipVisitorPassDetails?.length > 0) {
             derivedEmail = benefits.flagshipVisitorPassDetails[0]['collegeMailId'];
             if (!derivedName) derivedName = benefits.flagshipVisitorPassDetails[0]['name'];
             break;
           }
-          if (benefits.flagshipSoloVisitorPassDetails.length > 0) {
+          if (benefits.flagshipSoloVisitorPassDetails?.length > 0) {
             derivedEmail = benefits.flagshipSoloVisitorPassDetails[0]['collegeMailId'];
             if (!derivedName) derivedName = benefits.flagshipSoloVisitorPassDetails[0]['name'];
             break;
@@ -1384,17 +1408,18 @@ function CheckoutPageContent() {
         }
       }
 
-      // Fallbacks to avoid empty fields
+      // Fallback defaults
       if (!derivedName) derivedName = 'Participant';
       if (!derivedEmail) derivedEmail = 'participant@example.com';
 
-      // Generate a strong random password since checkout flow does not collect one
       const generatedPassword = Math.random().toString(36).slice(-10) + 'A1!';
 
+      // Basic fields
       registrationForm.append('name', derivedName);
       registrationForm.append('email', derivedEmail);
       registrationForm.append('password', generatedPassword);
-      // Also send flat fields if available
+      
+      // Add flat fields
       const flat = formDataBySignature[fieldGroups[0]?.signature || ''] || {};
       if (flat['contactNo']) registrationForm.append('contactNo', flat['contactNo']);
       if (flat['gender']) registrationForm.append('gender', flat['gender']);
@@ -1402,26 +1427,103 @@ function CheckoutPageContent() {
       if (flat['universityName']) registrationForm.append('universityName', flat['universityName']);
       if (flat['address']) registrationForm.append('address', flat['address']);
       if (flat['referralCode']) registrationForm.append('referralCode', flat['referralCode']);
-      // Send complex payloads for backend to persist (using correct field names expected by backend)
+      
+      // Send complex form data as JSON strings
       registrationForm.append('formsBySignature', JSON.stringify(formDataBySignature));
       registrationForm.append('teamMembersBySignature', JSON.stringify(teamMembersBySignature));
       registrationForm.append('flagshipBenefitsByEvent', JSON.stringify(flagshipBenefitsByEvent));
-      registrationForm.append('items', JSON.stringify(selectedEvents.map(e => ({ id: e.id, title: e.title, price: e.price }))));
+      registrationForm.append('items', JSON.stringify(selectedEvents.map(e => ({ 
+        id: e.id, 
+        title: e.title, 
+        price: e.price 
+      }))));
       registrationForm.append('visitorPassDays', visitorPassDays.toString());
       registrationForm.append('visitorPassDetails', JSON.stringify(visitorPassDetails));
+      
+      // Attach profile image (compressed)
       if (attachedImage) {
-        registrationForm.append('profileImage', attachedImage);
+        try {
+          const compressed = await compressImage(attachedImage, 500);
+          registrationForm.append('profileImage', compressed);
+          console.log('✅ Profile image compressed and attached');
+        } catch (e) {
+          console.warn('⚠️ Image compression failed, using original');
+          registrationForm.append('profileImage', attachedImage);
+        }
       }
 
-      // Append team member images with deterministic keys: memberImage__<signature>__<index>
-      Object.entries(memberFilesBySignature).forEach(([signature, idxMap]) => {
-        Object.entries(idxMap).forEach(([idxStr, file]) => {
+      // Append team member images with deterministic keys
+      for (const [signature, idxMap] of Object.entries(memberFilesBySignature)) {
+        for (const [idxStr, file] of Object.entries(idxMap)) {
           const idx = Number(idxStr);
           const encodedSig = encodeURIComponent(signature);
-          registrationForm.append(`memberImage__${encodedSig}__${idx}`, file);
-        });
-      });
+          try {
+            const compressed = await compressImage(file, 500);
+            registrationForm.append(`memberImage__${encodedSig}__${idx}`, compressed);
+            console.log(`✅ Team member ${idx} image compressed and attached`);
+          } catch (e) {
+            console.warn(`⚠️ Member ${idx} image compression failed, using original`);
+            registrationForm.append(`memberImage__${encodedSig}__${idx}`, file);
+          }
+        }
+      }
 
+      // Append all event/solo form file uploads
+      for (const [signature, files] of Object.entries(filesBySignature)) {
+        for (const [fieldName, file] of Object.entries(files)) {
+          const key = `file__${encodeURIComponent(signature)}__${fieldName}`;
+          try {
+            const compressed = await compressImage(file, 500);
+            registrationForm.append(key, compressed);
+            console.log(`✅ File ${fieldName} compressed and attached`);
+          } catch (e) {
+            console.warn(`⚠️ File ${fieldName} compression failed, using original`);
+            registrationForm.append(key, file);
+          }
+        }
+      }
+
+      // Append visitor pass files
+      if (visitorPassDays > 0 && visitorPassFiles) {
+        for (const [fieldName, file] of Object.entries(visitorPassFiles)) {
+          const key = `visitorPassFile__${fieldName}`;
+          try {
+            const compressed = await compressImage(file, 500);
+            registrationForm.append(key, compressed);
+            console.log(`✅ Visitor pass file ${fieldName} compressed and attached`);
+          } catch (e) {
+            console.warn(`⚠️ Visitor pass file ${fieldName} compression failed, using original`);
+            registrationForm.append(key, file);
+          }
+        }
+      }
+
+      // Append flagship benefits files
+      for (const [eventId, benefitFiles] of Object.entries(flagshipBenefitFiles)) {
+        for (const [indexStr, fileMap] of Object.entries(benefitFiles)) {
+          for (const [fieldName, file] of Object.entries(fileMap)) {
+            const key = `flagshipBenefit__${eventId}__${indexStr}__${fieldName}`;
+            try {
+              // Don't compress PDFs
+              if (file.type.startsWith('image/')) {
+                const compressed = await compressImage(file, 500);
+                registrationForm.append(key, compressed);
+                console.log(`✅ Flagship benefit file compressed and attached: ${key}`);
+              } else {
+                registrationForm.append(key, file);
+                console.log(`✅ Flagship benefit PDF attached: ${key}`);
+              }
+            } catch (e) {
+              console.warn(`⚠️ Flagship benefit file compression failed, using original: ${key}`);
+              registrationForm.append(key, file);
+            }
+          }
+        }
+      }
+
+      console.log('📤 Sending registration with full FormData...');
+
+      // Send registration
       const registrationResponse = await retryFetch(createApiUrl('/register'), {
         method: 'POST',
         credentials: 'include',
@@ -1430,39 +1532,37 @@ function CheckoutPageContent() {
           'User-Agent': typeof navigator !== 'undefined' ? navigator.userAgent : 'Sabrang-Frontend'
         },
         body: registrationForm
-      }, 2); // 2 retries for registration
-
+      }, 2, 45000); // 45s timeout for large uploads
 
       if (!registrationResponse.ok) {
-        console.log('Registration response not ok:', registrationResponse.status);
+        const errorText = await registrationResponse.text();
+        console.error('Registration failed:', registrationResponse.status, errorText);
+        throw new Error(`Registration failed: ${registrationResponse.status}`);
       }
 
-      // Create payment order using the new simple backend endpoint
+      console.log('✅ Registration successful');
+
+      // Create payment order
       const orderData = {
         amount: finalPrice.toString(),
         customerName: derivedName,
         customerEmail: derivedEmail,
         customerPhone: flat['contactNo'] || '9999999999',
-        // Include event information for proper processing
         items: selectedEvents.map(e => ({ 
           id: e.id, 
           title: e.title, 
           price: e.price,
-          itemName: e.title, // Ensure itemName is set for backend processing
+          itemName: e.title,
           type: 'event',
           quantity: 1
         })),
-        // Include visitor pass if selected
         visitorPassDays: visitorPassDays,
         visitorPassDetails: visitorPassDetails,
-        // Include form data for user lookup/creation if needed
         formDataBySignature: formDataBySignature,
         teamMembersBySignature: teamMembersBySignature,
         flagshipBenefitsByEvent: flagshipBenefitsByEvent,
-        // Include promo code information
         promoCode: appliedPromo?.code || null,
         appliedDiscount: appliedPromo?.discountAmount || 0,
-        // Add metadata for tracking
         metadata: {
           totalPrice: totalPrice,
           finalPrice: finalPrice,
@@ -1471,9 +1571,9 @@ function CheckoutPageContent() {
         }
       };
 
-      console.log('🚀 Creating payment order with data:', orderData);
+      console.log('🚀 Creating payment order...');
 
-      const response = await retryFetch(createApiUrl('/api/payments/create-order'), {
+      const orderResponse = await retryFetch(createApiUrl('/api/payments/create-order'), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -1482,26 +1582,27 @@ function CheckoutPageContent() {
           'User-Agent': typeof navigator !== 'undefined' ? navigator.userAgent : 'Sabrang-Frontend'
         },
         body: JSON.stringify(orderData)
-      }, 2); // 2 retries for payment order creation
+      }, 2, 15000);
 
-
-      if (!response.ok) {
-        console.log('Payment order response not ok:', response.status);
+      if (!orderResponse.ok) {
+        const errorText = await orderResponse.text();
+        console.error('Payment order failed:', orderResponse.status, errorText);
+        throw new Error(`Payment order creation failed: ${orderResponse.status}`);
       }
 
-      const data = await response.json();
+      const data = await orderResponse.json();
       console.log('✅ Payment order created:', data);
 
       if (!data.success) {
-        console.log('Payment order creation not successful:', data.message);
+        throw new Error(data.message || 'Payment order creation not successful');
       }
 
-      // Store payment session data for the payment component
+      // Store payment session
       setPaymentSession({
         paymentSessionId: data.data.payment_session_id,
         orderId: data.data.order_id,
         amount: data.data.amount,
-        mode: 'production' // Always use production mode
+        mode: 'production'
       });
 
       // Move to payment step
@@ -1509,7 +1610,11 @@ function CheckoutPageContent() {
 
     } catch (error) {
       console.error('❌ Payment initialization failed:', error);
-      // Don't throw error, just log it
+      setPaymentInitializationState(prev => ({ 
+        ...prev, 
+        isLoading: false,
+        error: error instanceof Error ? error.message : 'Payment initialization failed. Please try again.'
+      }));
     }
   };
 
@@ -2173,7 +2278,17 @@ function CheckoutPageContent() {
                                                   e.currentTarget.value = '';
                                                   return;
                                                 }
-                                                setVisitorPassDetails(prev => ({ ...prev, [field.name]: file?.name || '' }));
+                                                if (file) {
+                                                  setVisitorPassDetails(prev => ({ ...prev, [field.name]: file.name }));
+                                                  setVisitorPassFiles(prev => ({ ...prev, [field.name]: file }));
+                                                } else {
+                                                  setVisitorPassDetails(prev => ({ ...prev, [field.name]: '' }));
+                                                  setVisitorPassFiles(prev => {
+                                                    const updated = { ...prev };
+                                                    delete updated[field.name];
+                                                    return updated;
+                                                  });
+                                                }
                                               }}
                                             />
                                           </div>
@@ -2261,13 +2376,25 @@ function CheckoutPageContent() {
                                                   onChange={e => {
                                                     const file = e.target.files?.[0];
                                                     if (file) {
+                                                      // Store filename in display data
                                                       setFlagshipBenefitsByEvent(prev => ({
                                                         ...prev,
                                                         [eventId]: {
                                                           ...prev[parseInt(eventId, 10)],
                                                           supportArtistDetails: prev[parseInt(eventId, 10)].supportArtistDetails.map((detail: Record<string, string>, idx: number) => 
-                                                            idx === index ? { ...detail, [field.name]: file } : detail
+                                                            idx === index ? { ...detail, [field.name]: file.name } : detail
                                                           )
+                                                        }
+                                                      }));
+                                                      // Store actual file separately
+                                                      setFlagshipBenefitFiles(prev => ({
+                                                        ...prev,
+                                                        [`supportArtist_${eventId}`]: {
+                                                          ...(prev[`supportArtist_${eventId}`] || {}),
+                                                          [index]: {
+                                                            ...((prev[`supportArtist_${eventId}`] || {})[index] || {}),
+                                                            [field.name]: file
+                                                          }
                                                         }
                                                       }));
                                                     }
@@ -2366,15 +2493,27 @@ function CheckoutPageContent() {
                                                         e.currentTarget.value = '';
                                                         return;
                                                       }
-                                                      setFlagshipBenefitsByEvent(prev => ({
-                                                        ...prev,
-                                                        [eventId]: {
-                                                          ...prev[parseInt(eventId, 10)],
-                                                          flagshipVisitorPassDetails: prev[parseInt(eventId, 10)].flagshipVisitorPassDetails.map((detail: Record<string, string>, idx: number) => 
-                                                            idx === index ? { ...detail, [field.name]: file?.name || '' } : detail
-                                                          )
-                                                        }
-                                                      }));
+                                                      if (file) {
+                                                        setFlagshipBenefitsByEvent(prev => ({
+                                                          ...prev,
+                                                          [eventId]: {
+                                                            ...prev[parseInt(eventId, 10)],
+                                                            flagshipVisitorPassDetails: prev[parseInt(eventId, 10)].flagshipVisitorPassDetails.map((detail: Record<string, string>, idx: number) => 
+                                                              idx === index ? { ...detail, [field.name]: file.name } : detail
+                                                            )
+                                                          }
+                                                        }));
+                                                        setFlagshipBenefitFiles(prev => ({
+                                                          ...prev,
+                                                          [`flagshipVisitor_${eventId}`]: {
+                                                            ...(prev[`flagshipVisitor_${eventId}`] || {}),
+                                                            [index]: {
+                                                              ...((prev[`flagshipVisitor_${eventId}`] || {})[index] || {}),
+                                                              [field.name]: file
+                                                            }
+                                                          }
+                                                        }));
+                                                      }
                                                     }}
                                                   />
                                                 </div>
@@ -2471,15 +2610,27 @@ function CheckoutPageContent() {
                                                         e.currentTarget.value = '';
                                                         return;
                                                       }
-                                                      setFlagshipBenefitsByEvent(prev => ({
-                                                        ...prev,
-                                                        [eventId]: {
-                                                          ...prev[parseInt(eventId, 10)],
-                                                          flagshipSoloVisitorPassDetails: prev[parseInt(eventId, 10)].flagshipSoloVisitorPassDetails.map((detail: Record<string, string>, idx: number) => 
-                                                            idx === index ? { ...detail, [field.name]: file?.name || '' } : detail
-                                                          )
-                                                        }
-                                                      }));
+                                                      if (file) {
+                                                        setFlagshipBenefitsByEvent(prev => ({
+                                                          ...prev,
+                                                          [eventId]: {
+                                                            ...prev[parseInt(eventId, 10)],
+                                                            flagshipSoloVisitorPassDetails: prev[parseInt(eventId, 10)].flagshipSoloVisitorPassDetails.map((detail: Record<string, string>, idx: number) => 
+                                                              idx === index ? { ...detail, [field.name]: file.name } : detail
+                                                            )
+                                                          }
+                                                        }));
+                                                        setFlagshipBenefitFiles(prev => ({
+                                                          ...prev,
+                                                          [`flagshipSoloVisitor_${eventId}`]: {
+                                                            ...(prev[`flagshipSoloVisitor_${eventId}`] || {}),
+                                                            [index]: {
+                                                              ...((prev[`flagshipSoloVisitor_${eventId}`] || {})[index] || {}),
+                                                              [field.name]: file
+                                                            }
+                                                          }
+                                                        }));
+                                                      }
                                                     }}
                                                   />
                                                 </div>
