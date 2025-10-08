@@ -1,22 +1,19 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ArrowRight } from 'lucide-react';
 import { EVENT_CATALOG as ORIGINAL_EVENT_CATALOG, EventCatalogItem } from '../../lib/eventCatalog';
 import { useCheckoutState } from './useCheckoutState';
-import { parsePrice } from './utils';
-import { STEPS } from './constants';
 import { Step } from './types';
-import { StepIndicator } from './components/StepIndicator';
 import { SelectEventsStep } from './components/SelectEventsStep';
 import { FormsStep } from './components/FormsStep';
 import { ReviewStep } from './components/ReviewStep';
 import { PaymentStep } from './components/PaymentStep';
-
-// Override prices for specific events
-const EVENT_CATALOG: EventCatalogItem[] = ORIGINAL_EVENT_CATALOG.map(event => {
+import { StepIndicator } from './components/StepIndicator';
+import { parsePrice, clearCheckoutStorage } from './utils';
+const EVENT_CATALOG = ORIGINAL_EVENT_CATALOG.map(event => {
   switch (event.title) {
     case 'Pacnache':
       return { ...event, price: '₹2999' };
@@ -28,6 +25,13 @@ const EVENT_CATALOG: EventCatalogItem[] = ORIGINAL_EVENT_CATALOG.map(event => {
       return event;
   }
 });
+
+const STEPS = [
+  { id: 'select' as Step, name: 'Select Events' },
+  { id: 'forms' as Step, name: 'Your Details' },
+  { id: 'review' as Step, name: 'Review' },
+  { id: 'payment' as Step, name: 'Payment' },
+];
 
 export function CheckoutContent() {
   const router = useRouter();
@@ -45,8 +49,16 @@ export function CheckoutContent() {
 
   const [formErrors, setFormErrors] = useState<Record<string, Record<string, string>>>({});
 
+  // Clear storage on component unmount (when navigating away)
+  useEffect(() => {
+    return () => {
+      // This runs when component unmounts (user navigates away)
+      clearCheckoutStorage();
+    };
+  }, []);
+
   // Listen for proceed to payment event
-  React.useEffect(() => {
+  useEffect(() => {
     const handleProceedToPayment = () => {
       setStep('payment');
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -211,7 +223,7 @@ export function CheckoutContent() {
         </motion.div>
 
         {/* Navigation Buttons */}
-        {step !== 'payment' && (
+        {step !== 'payment' && step !== 'forms' && (
           <div className="flex justify-between items-center mt-8">
             <button
               onClick={goBack}

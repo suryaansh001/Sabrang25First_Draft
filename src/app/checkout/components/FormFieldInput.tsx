@@ -16,6 +16,14 @@ export function FormFieldInput({ field, value, onChange, onFileChange, error }: 
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
+    
+    // Validate file size (500KB = 500 * 1024 bytes)
+    if (file && file.size > 500 * 1024) {
+      alert('File size must be less than 500KB. Please choose a smaller file.');
+      e.target.value = ''; // Reset input
+      return;
+    }
+
     setSelectedFile(file);
     onFileChange(file);
 
@@ -68,13 +76,16 @@ export function FormFieldInput({ field, value, onChange, onFileChange, error }: 
               required={field.required}
             />
             {!selectedFile ? (
-              <label
-                htmlFor={`file-${field.name}`}
-                className="flex items-center justify-center gap-2 w-full px-4 py-3 glass border border-white/20 rounded-lg cursor-pointer hover:border-purple-400 transition-colors group"
-              >
-                <Upload className="w-5 h-5 text-purple-300 group-hover:text-purple-200" />
-                <span className="text-sm text-white/70 group-hover:text-white">Choose file</span>
-              </label>
+              <div>
+                <label
+                  htmlFor={`file-${field.name}`}
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3 glass border border-white/20 rounded-lg cursor-pointer hover:border-purple-400 transition-colors group"
+                >
+                  <Upload className="w-5 h-5 text-purple-300 group-hover:text-purple-200" />
+                  <span className="text-sm text-white/70 group-hover:text-white">Choose file</span>
+                </label>
+                <p className="text-xs text-white/50 mt-1">Max size: 500KB</p>
+              </div>
             ) : (
               <div className="glass border border-purple-400/40 rounded-lg p-3">
                 <div className="flex items-start gap-3">

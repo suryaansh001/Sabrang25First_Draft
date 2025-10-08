@@ -52,21 +52,42 @@ export function isFlagshipSoloEvent(eventTitle: string): boolean {
 }
 
 // Storage utilities with error handling
-export function saveToStorage(key: string, data: any): void {
+export function saveToStorage(key: string, value: any): void {
+  if (typeof window === 'undefined') return;
   try {
-    sessionStorage.setItem(`checkout_${key}`, JSON.stringify(data));
-  } catch (error) {
-    console.warn('Failed to save to storage:', error);
+    // Use sessionStorage instead of localStorage - clears on tab close
+    sessionStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    console.error('Failed to save to storage:', e);
   }
 }
 
 export function loadFromStorage<T>(key: string, defaultValue: T): T {
+  if (typeof window === 'undefined') return defaultValue;
   try {
-    const saved = sessionStorage.getItem(`checkout_${key}`);
-    return saved ? JSON.parse(saved) : defaultValue;
-  } catch (error) {
-    console.warn('Failed to load from storage:', error);
+    // Use sessionStorage instead of localStorage
+    const item = sessionStorage.getItem(key);
+    return item ? JSON.parse(item) : defaultValue;
+  } catch (e) {
+    console.error('Failed to load from storage:', e);
     return defaultValue;
+  }
+}
+
+export function clearCheckoutStorage(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const keys = [
+      'checkout_current_step',
+      'checkout_selected_events',
+      'checkout_visitor_pass',
+      'checkout_visitor_pass_details',
+      'checkout_form_data',
+      'checkout_team_members'
+    ];
+    keys.forEach(key => sessionStorage.removeItem(key));
+  } catch (e) {
+    console.error('Failed to clear storage:', e);
   }
 }
 

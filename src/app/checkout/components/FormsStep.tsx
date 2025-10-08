@@ -78,14 +78,19 @@ export function FormsStep({
 
   // Handle file changes
   const handleFileChange = (signature: string, fieldName: string, file: File | null) => {
+    console.log('📁 File change:', { signature, fieldName, file: file?.name });
     if (file) {
-      setFilesBySignature(prev => ({
-        ...prev,
-        [signature]: {
-          ...prev[signature],
-          [fieldName]: file,
-        },
-      }));
+      setFilesBySignature(prev => {
+        const updated = {
+          ...prev,
+          [signature]: {
+            ...prev[signature],
+            [fieldName]: file,
+          },
+        };
+        console.log('📁 Updated filesBySignature:', updated);
+        return updated;
+      });
     } else {
       setFilesBySignature(prev => {
         const updated = { ...prev };
@@ -169,6 +174,7 @@ export function FormsStep({
 
   // Validate and proceed
   const handleSubmit = () => {
+    console.log('🔍 Validating form...', { filesBySignature, state });
     const errors: Record<string, Record<string, string>> = {};
     let isValid = true;
 
@@ -177,16 +183,25 @@ export function FormsStep({
       errors['visitorPass'] = {};
       VISITOR_PASS_FIELDS.forEach(field => {
         if (field.required) {
-          const value = state.visitorPassDetails[field.name] || '';
-          if (!value.trim()) {
-            errors['visitorPass'][field.name] = `${field.label} is required`;
-            isValid = false;
-          } else if (field.name === 'contactNo' && !validatePhone(value)) {
-            errors['visitorPass'][field.name] = 'Mobile number must be exactly 10 digits';
-            isValid = false;
-          } else if (field.name === 'collegeMailId' && !validateEmail(value)) {
-            errors['visitorPass'][field.name] = 'Please enter a valid email address';
-            isValid = false;
+          if (field.type === 'file') {
+            const file = filesBySignature['visitorPass']?.[field.name];
+            console.log(`🔍 Checking visitor pass file ${field.name}:`, file);
+            if (!file) {
+              errors['visitorPass'][field.name] = `${field.label} is required`;
+              isValid = false;
+            }
+          } else {
+            const value = state.visitorPassDetails[field.name] || '';
+            if (!value.trim()) {
+              errors['visitorPass'][field.name] = `${field.label} is required`;
+              isValid = false;
+            } else if (field.name === 'contactNo' && !validatePhone(value)) {
+              errors['visitorPass'][field.name] = 'Mobile number must be exactly 10 digits';
+              isValid = false;
+            } else if (field.name === 'collegeMailId' && !validateEmail(value)) {
+              errors['visitorPass'][field.name] = 'Please enter a valid email address';
+              isValid = false;
+            }
           }
         }
       });
@@ -317,7 +332,9 @@ export function FormsStep({
                   });
                 }}
                 onFileChange={(file: File | null) => {
-                  // Handle visitor pass file uploads separately if needed
+                  if (field.type === 'file') {
+                    handleFileChange('visitorPass', field.name, file);
+                  }
                 }}
                 error={formErrors['visitorPass']?.[field.name]}
               />

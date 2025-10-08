@@ -17,17 +17,27 @@ const INITIAL_STATE: CheckoutState = {
 
 export function useCheckoutState() {
   const [state, setState] = useState<CheckoutState>(INITIAL_STATE);
-  const [step, setStep] = useState<Step>(() => loadFromStorage<Step>('checkout_current_step', 'select'));
+  const [step, setStep] = useState<Step>('select');
   const [filesBySignature, setFilesBySignature] = useState<Record<string, Record<string, File>>>({});
   const [memberFilesBySignature, setMemberFilesBySignature] = useState<Record<string, Record<number, File>>>({});
+  const [isHydrated, setIsHydrated] = useState(false);
   
   // Use ref to prevent excessive saves
   const saveTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
+  // Load step from storage after hydration to avoid mismatch
+  useEffect(() => {
+    const savedStep = loadFromStorage<Step>('checkout_current_step', 'select');
+    setStep(savedStep);
+    setIsHydrated(true);
+  }, []);
+
   // Save step to storage whenever it changes
   useEffect(() => {
-    saveToStorage('checkout_current_step', step);
-  }, [step]);
+    if (isHydrated) {
+      saveToStorage('checkout_current_step', step);
+    }
+  }, [step, isHydrated]);
 
   // Debounced save to storage
   const debouncedSave = useCallback((key: string, data: any) => {
