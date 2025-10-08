@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ChevronLeft, CreditCard, ArrowRight, X, Home, Info, Calendar, Star, Clock, Users, HelpCircle, Handshake, Mail, Camera, Ticket, CheckCircle, XCircle, Loader } from 'lucide-react';
+import { Check, ChevronLeft, CreditCard, ArrowRight, X, Home, Info, Calendar, Star, Clock, Users, HelpCircle, Handshake, Mail, Camera, Ticket, CheckCircle, XCircle, Loader, Wifi, WifiOff, Save, AlertTriangle } from 'lucide-react';
 import createApiUrl from '../../lib/api';
 import { events as EVENTS_DATA } from '../Events/[id]/rules/events.data';
 import { EventCatalogItem, EVENT_CATALOG as ORIGINAL_EVENT_CATALOG } from '../../lib/eventCatalog';
@@ -187,17 +187,17 @@ function formatPrice(price: number): string {
 const Stepper = React.memo(({ currentStep }: { currentStep: Step }) => {
   const currentStepIndex = STEPS.findIndex(s => s.id === currentStep);
   return (
-    <div className="flex items-center justify-center mb-8 sm:mb-10 overflow-x-auto px-4">
-      <div className="flex items-center space-x-2 sm:space-x-4 min-w-0">
+    <div className="flex items-center justify-center mb-6 sm:mb-8 overflow-x-auto px-2">
+      <div className="flex items-center min-w-max">
       {STEPS.map((step, i) => (
         <React.Fragment key={step.id}>
-          <div className={`flex flex-col sm:flex-row items-center ${i <= currentStepIndex ? 'text-purple-300' : 'text-gray-400'}`}>
-              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm sm:text-base font-semibold transition-all duration-300 ${i <= currentStepIndex ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/25' : 'bg-gray-700 text-gray-400'}`}>
+          <div className={`flex items-center ${i <= currentStepIndex ? 'text-purple-300' : 'text-gray-400'}`}>
+              <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold ${i <= currentStepIndex ? 'bg-purple-500 text-white' : 'bg-gray-700 text-gray-400'}`}>
               {i + 1}
             </div>
-              <span className="mt-1 sm:mt-0 sm:ml-2 text-xs sm:text-sm font-medium text-center sm:text-left max-w-[60px] sm:max-w-none truncate">{step.name}</span>
+              <span className="ml-1 sm:ml-2 text-xs sm:text-sm hidden xs:inline">{step.name}</span>
           </div>
-            {i < STEPS.length - 1 && <div className={`w-8 sm:w-16 h-px mx-1 sm:mx-2 ${i < currentStepIndex ? 'bg-gradient-to-r from-purple-400 to-pink-400' : 'bg-gray-700'}`} />}
+            {i < STEPS.length - 1 && <div className={`w-6 sm:w-12 h-px mx-2 sm:mx-4 ${i < currentStepIndex ? 'bg-purple-400' : 'bg-gray-700'}`} />}
         </React.Fragment>
       ))}
       </div>
@@ -226,6 +226,34 @@ function CheckoutPageContent() {
   const [step, setStep] = useState<Step>('select');
   const [reducedMotion, setReducedMotion] = useState<boolean>(true);
 
+  // Auto-save utility functions
+  const saveToLocalStorage = (key: string, data: any) => {
+    try {
+      localStorage.setItem(`checkout_${key}`, JSON.stringify(data));
+    } catch (error) {
+      console.warn('Failed to save to localStorage:', error);
+    }
+  };
+
+  const loadFromLocalStorage = (key: string, defaultValue: any = null) => {
+    try {
+      const saved = localStorage.getItem(`checkout_${key}`);
+      return saved ? JSON.parse(saved) : defaultValue;
+    } catch (error) {
+      console.warn('Failed to load from localStorage:', error);
+      return defaultValue;
+    }
+  };
+
+  const clearLocalStorage = () => {
+    try {
+      const keys = Object.keys(localStorage).filter(key => key.startsWith('checkout_'));
+      keys.forEach(key => localStorage.removeItem(key));
+    } catch (error) {
+      console.warn('Failed to clear localStorage:', error);
+    }
+  };
+
   // Function to scroll to top when changing steps
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -235,9 +263,9 @@ function CheckoutPageContent() {
   useEffect(() => {
     scrollToTop();
   }, [step]);
-  const [selectedEventIds, setSelectedEventIds] = useState<number[]>([]);
-  const [visitorPassDays, setVisitorPassDays] = useState<number>(0);
-  const [visitorPassDetails, setVisitorPassDetails] = useState<Record<string, string>>({});
+  const [selectedEventIds, setSelectedEventIds] = useState<number[]>(loadFromLocalStorage('selectedEventIds', []));
+  const [visitorPassDays, setVisitorPassDays] = useState<number>(loadFromLocalStorage('visitorPassDays', 0));
+  const [visitorPassDetails, setVisitorPassDetails] = useState<Record<string, string>>(loadFromLocalStorage('visitorPassDetails', {}));
   const [flagshipBenefitsByEvent, setFlagshipBenefitsByEvent] = useState<Record<number, {
     supportArtistQuantity: number;
     supportArtistDetails: Array<Record<string, string>>;
@@ -245,18 +273,16 @@ function CheckoutPageContent() {
     flagshipVisitorPassDetails: Array<Record<string, string>>;
     flagshipSoloVisitorPassQuantity: number;
     flagshipSoloVisitorPassDetails: Array<Record<string, string>>;
-  }>>({});
+  }>>(loadFromLocalStorage('flagshipBenefitsByEvent', {}));
   const [formErrors, setFormErrors] = useState<Record<string, Record<string, string>>>({});
-  const [formDataBySignature, setFormDataBySignature] = useState<Record<string, Record<string, string>>>({});
-  const [teamMembersBySignature, setTeamMembersBySignature] = useState<Record<string, Array<Record<string, string>>>>({});
+  const [formDataBySignature, setFormDataBySignature] = useState<Record<string, Record<string, string>>>(loadFromLocalStorage('formDataBySignature', {}));
+  const [teamMembersBySignature, setTeamMembersBySignature] = useState<Record<string, Array<Record<string, string>>>>(loadFromLocalStorage('teamMembersBySignature', {}));
   const [filesBySignature, setFilesBySignature] = useState<Record<string, Record<string, File>>>({});
   const [memberFilesBySignature, setMemberFilesBySignature] = useState<Record<string, Record<number, File>>>({});
-  const [visitorPassFiles, setVisitorPassFiles] = useState<Record<string, File>>({});
-  const [flagshipBenefitFiles, setFlagshipBenefitFiles] = useState<Record<string, Record<number, Record<string, File>>>>({});
   const [infoEvent, setInfoEvent] = useState<import('../Events/[id]/rules/events.data').Event | null>(null);
   // Simple offline payment instructions (QR + bank details)
   const [paymentProof, setPaymentProof] = useState<File | null>(null);
-  const [promoInput, setPromoInput] = useState<string>('');
+  const [promoInput, setPromoInput] = useState<string>(loadFromLocalStorage('promoInput', ''));
   const [appliedPromo, setAppliedPromo] = useState<{ code: string; discountAmount: number } | null>(null);
   const [promoStatus, setPromoStatus] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -280,85 +306,14 @@ function CheckoutPageContent() {
   const [paymentVerificationStatus, setPaymentVerificationStatus] = useState<PaymentStatus | null>(null);
   const [isVerifying, setIsVerifying] = useState(true);
 
+  // Connection quality and save progress states
+  const [connectionQuality, setConnectionQuality] = useState<'excellent' | 'good' | 'poor' | 'offline'>('excellent');
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error' | null>(null);
+
   // Fallback Cashfree form URL for manual payment if SDK/init fails or times out
   const CASHFREE_FALLBACK_FORM_URL = 'https://payments.cashfree.com/forms?code=sabrang25';
-
-  // Memoized action row
-  const ActionRow = React.memo(function ActionRow(props: {
-    connectionQuality: 'good' | 'poor' | 'offline';
-    onSave: () => void;
-    onFallback: () => void;
-    onBack: () => void;
-    onNext: () => void;
-  }) {
-    const { connectionQuality, onSave, onFallback, onBack, onNext } = props;
-    return (
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-8">
-        <div className={`text-xs px-3 py-2 rounded-full border text-center sm:text-left ${connectionQuality === 'good' ? 'text-green-300 border-green-400/40 bg-green-500/10' : connectionQuality === 'poor' ? 'text-yellow-300 border-yellow-400/40 bg-yellow-500/10' : 'text-red-300 border-red-400/40 bg-red-500/10'}`}>
-          {connectionQuality === 'good' ? 'Good connection' : connectionQuality === 'poor' ? 'Slow connection' : 'Offline'}
-        </div>
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-1">
-          <button type="button" onClick={onSave} className="w-full sm:w-auto px-4 py-2 rounded-xl bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer text-sm font-medium">
-            Save Progress
-          </button>
-          <button type="button" onClick={onFallback} className="w-full sm:w-auto px-4 py-2 rounded-xl bg-orange-500/20 border border-orange-400/40 hover:bg-orange-500/30 transition cursor-pointer text-sm text-orange-200 font-medium">
-            Try Fallback Payment
-          </button>
-          <button onClick={onBack} className="w-full sm:w-auto px-4 py-2 rounded-xl bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer font-medium">Back</button>
-          <button onClick={onNext} className="hidden sm:block w-full sm:w-auto px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 transition cursor-pointer font-medium hover:scale-105 active:scale-95">Continue</button>
-        </div>
-      </div>
-    );
-  });
-
-
-  // Local draft autosave (persist non-file inputs)
-  const CHECKOUT_DRAFT_KEY = 'sabrang_checkout_draft_v1';
-  // Load draft on mount
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(CHECKOUT_DRAFT_KEY);
-      if (!raw) return;
-      const draft = JSON.parse(raw) as Record<string, any>;
-      if (Array.isArray(draft.selectedEventIds)) setSelectedEventIds(draft.selectedEventIds);
-      if (typeof draft.visitorPassDays === 'number') setVisitorPassDays(draft.visitorPassDays);
-      if (draft.visitorPassDetails && typeof draft.visitorPassDetails === 'object') setVisitorPassDetails(draft.visitorPassDetails);
-      if (draft.formDataBySignature && typeof draft.formDataBySignature === 'object') setFormDataBySignature(draft.formDataBySignature);
-      if (draft.teamMembersBySignature && typeof draft.teamMembersBySignature === 'object') setTeamMembersBySignature(draft.teamMembersBySignature);
-      if (draft.flagshipBenefitsByEvent && typeof draft.flagshipBenefitsByEvent === 'object') setFlagshipBenefitsByEvent(draft.flagshipBenefitsByEvent);
-      if (typeof draft.promoInput === 'string') setPromoInput(draft.promoInput);
-      if (draft.appliedPromo && typeof draft.appliedPromo === 'object') setAppliedPromo(draft.appliedPromo);
-    } catch {}
-  }, []);
-  // Debounced save when key state changes
-  useEffect(() => {
-    const toSave = {
-      selectedEventIds,
-      visitorPassDays,
-      visitorPassDetails,
-      formDataBySignature,
-      teamMembersBySignature,
-      flagshipBenefitsByEvent,
-      promoInput,
-      appliedPromo,
-    };
-    const id = window.setTimeout(() => {
-      try { localStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify(toSave)); } catch {}
-    }, 800);
-    return () => window.clearTimeout(id);
-  }, [
-    selectedEventIds,
-    visitorPassDays,
-    visitorPassDetails,
-    formDataBySignature,
-    teamMembersBySignature,
-    flagshipBenefitsByEvent,
-    promoInput,
-    appliedPromo,
-  ]);
-  const clearDraft = () => {
-    try { localStorage.removeItem(CHECKOUT_DRAFT_KEY); } catch {}
-  };
 
 
   // Force reduced motion for smooth scrolling experience on this page
@@ -398,13 +353,15 @@ function CheckoutPageContent() {
       verifyPaymentStatus(orderId)
         .then(result => {
           setPaymentVerificationStatus(result);
-          // If payment is successful, clear the cart
+          // If payment is successful, clear the cart and all saved form data
           if (result.success) {
             setSelectedEventIds([]);
             setVisitorPassDays(0);
             try {
               localStorage.removeItem('sabrang_cart');
             } catch {}
+            // Clear all auto-saved form data
+            clearLocalStorage();
           }
         })
         .catch(error => {
@@ -422,6 +379,119 @@ function CheckoutPageContent() {
       localStorage.setItem('sabrang_cart', JSON.stringify(selectedEventIds));
     } catch {}
   }, [selectedEventIds]);
+
+  // Auto-save form data to localStorage
+  useEffect(() => {
+    saveToLocalStorage('selectedEventIds', selectedEventIds);
+  }, [selectedEventIds]);
+
+  useEffect(() => {
+    saveToLocalStorage('visitorPassDays', visitorPassDays);
+  }, [visitorPassDays]);
+
+  useEffect(() => {
+    saveToLocalStorage('visitorPassDetails', visitorPassDetails);
+  }, [visitorPassDetails]);
+
+  useEffect(() => {
+    saveToLocalStorage('flagshipBenefitsByEvent', flagshipBenefitsByEvent);
+  }, [flagshipBenefitsByEvent]);
+
+  useEffect(() => {
+    saveToLocalStorage('formDataBySignature', formDataBySignature);
+  }, [formDataBySignature]);
+
+  useEffect(() => {
+    saveToLocalStorage('teamMembersBySignature', teamMembersBySignature);
+  }, [teamMembersBySignature]);
+
+  useEffect(() => {
+    saveToLocalStorage('promoInput', promoInput);
+  }, [promoInput]);
+
+  // Connection quality monitoring
+  useEffect(() => {
+    const checkConnection = async () => {
+      try {
+        if (!navigator.onLine) {
+          setConnectionQuality('offline');
+          return;
+        }
+
+        const startTime = performance.now();
+        const response = await fetch('/api/health', { 
+          method: 'HEAD',
+          cache: 'no-cache',
+          signal: AbortSignal.timeout(3000)
+        });
+        const endTime = performance.now();
+        const latency = endTime - startTime;
+
+        if (response.ok) {
+          if (latency < 200) {
+            setConnectionQuality('excellent');
+          } else if (latency < 500) {
+            setConnectionQuality('good');
+          } else {
+            setConnectionQuality('poor');
+          }
+        } else {
+          setConnectionQuality('poor');
+        }
+      } catch (error) {
+        setConnectionQuality('poor');
+      }
+    };
+
+    // Check connection on mount and periodically
+    checkConnection();
+    const interval = setInterval(checkConnection, 30000); // Check every 30 seconds
+
+    // Listen for online/offline events
+    const handleOnline = () => checkConnection();
+    const handleOffline = () => setConnectionQuality('offline');
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Manual save progress function
+  const saveProgress = async () => {
+    setIsSaving(true);
+    setSaveStatus('saving');
+    
+    try {
+      // Save all current form data
+      const formData = {
+        selectedEventIds,
+        visitorPassDays,
+        visitorPassDetails,
+        flagshipBenefitsByEvent,
+        formDataBySignature,
+        teamMembersBySignature,
+        promoInput,
+        timestamp: new Date().toISOString()
+      };
+
+      saveToLocalStorage('manual_save', formData);
+      setLastSaved(new Date());
+      setSaveStatus('saved');
+      
+      // Show success message briefly
+      setTimeout(() => setSaveStatus(null), 2000);
+    } catch (error) {
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus(null), 3000);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const selectedEvents = useMemo(() => EVENT_CATALOG.filter(e => selectedEventIds.includes(e.id)), [selectedEventIds]);
 
@@ -517,7 +587,7 @@ function CheckoutPageContent() {
 
       return hasChanged ? updated : prev;
     });
-  }, [selectedEvents]);
+  }, [selectedEvents, flagshipBenefitsByEvent]);
 
   const fieldGroups = useMemo(() => {
     const groups: { signature: string; fields: FieldSet; events: EventCatalogItem[] }[] = [];
@@ -613,45 +683,6 @@ function CheckoutPageContent() {
     return parseFloat(Math.max(0, totalPrice - discount).toFixed(2));
   }, [totalPrice, appliedPromo]);
 
-  // Revalidate promo code when total price changes
-  useEffect(() => {
-    if (appliedPromo && totalPrice > 0) {
-      // Re-apply the promo code with the new total price
-      const revalidatePromo = async () => {
-        try {
-          const userEmail = getDerivedEmail();
-          const emailForValidation = userEmail || 'temp@example.com';
-          
-          const response = await retryFetch(createApiUrl('/admin/promo-codes/validate'), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ 
-              code: appliedPromo.code, 
-              userEmail: emailForValidation, 
-              orderAmount: totalPrice 
-            })
-          }, 2); // 2 retries for promo validation
-          
-          const data = await response.json();
-          if (response.ok && data.success) {
-            // Update the discount amount with the new calculation
-            setAppliedPromo({ code: appliedPromo.code, discountAmount: data.discountAmount });
-          } else {
-            // If promo is no longer valid, remove it
-            setAppliedPromo(null);
-            setPromoStatus({ loading: false, error: 'Promo code is no longer valid for this order amount' });
-          }
-        } catch (e) {
-          console.error('Failed to revalidate promo code:', e);
-          // Keep the existing promo but log the error
-        }
-      };
-      
-      revalidatePromo();
-    }
-  }, [totalPrice, appliedPromo?.code]); // Only re-run when totalPrice or promo code changes
-
   const getDerivedEmail = () => {
     // Search across all groups for collegeMailId or email
     for (const group of fieldGroups) {
@@ -710,7 +741,7 @@ function CheckoutPageContent() {
           userEmail: emailForValidation,
           orderAmount: totalPrice
         })
-      }, 2); // 2 retries for promo validation
+      }, 1); // 1 retry for promo validation
       
       const data = await response.json();
       if (!response.ok || !data.success) {
@@ -725,6 +756,35 @@ function CheckoutPageContent() {
     } catch (e) {
       setPromoStatus({ loading: false, error: 'Failed to validate promo code' });
       setAppliedPromo(null);
+    }
+  };
+
+  // Manual revalidation function - only call when needed
+  const revalidatePromoOnPriceChange = async () => {
+    if (!appliedPromo) return;
+    
+    try {
+      const userEmail = getDerivedEmail() || 'temp@example.com';
+      const response = await retryFetch(createApiUrl('/admin/promo-codes/validate'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ 
+          code: appliedPromo.code, 
+          userEmail, 
+          orderAmount: totalPrice 
+        })
+      }, 0); // No retries for revalidation
+      
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setAppliedPromo({ code: appliedPromo.code, discountAmount: data.discountAmount });
+      } else {
+        setAppliedPromo(null);
+        setPromoStatus({ loading: false, error: 'Promo code is no longer valid' });
+      }
+    } catch (e) {
+      // Silently fail - keep existing promo
     }
   };
 
@@ -1051,23 +1111,20 @@ function CheckoutPageContent() {
     });
   };
 
-  // Immediate field change handler (no debounce) to keep typing responsive
+  // Handle field changes
   const handleFieldChange = (signature: string, fieldName: string, value: string) => {
-    let nextValue = value;
-    if (fieldName === 'referralCode' && typeof nextValue === 'string') {
-      nextValue = nextValue.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    }
     setFormDataBySignature(prev => ({
       ...prev,
       [signature]: {
         ...prev[signature],
-        [fieldName]: nextValue
+        [fieldName]: value
       }
     }));
 
+    // If team size changes, auto-size team members array to match
     if (fieldName === 'numMembers') {
-      const totalMembers = Math.max(0, Math.min(50, parseInt(nextValue || '0', 10) || 0));
-      const additionalMembers = Math.max(0, totalMembers - 1);
+      const totalMembers = Math.max(0, Math.min(50, parseInt(value || '0', 10) || 0));
+      const additionalMembers = Math.max(0, totalMembers - 1); // Leader is in main form
       setTeamMembersBySignature(prev => {
         const existing = prev[signature] || [];
         const next = existing.slice(0, additionalMembers);
@@ -1077,29 +1134,30 @@ function CheckoutPageContent() {
         return { ...prev, [signature]: next };
       });
     }
+
+    // For referralCode field, enforce uppercase letters and numbers only
+    if (fieldName === 'referralCode' && typeof value === 'string') {
+      value = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      setFormDataBySignature(prev => ({
+        ...prev,
+        [signature]: {
+          ...prev[signature],
+          [fieldName]: value
+        }
+      }));
+    }
   };
 
   // Handle file uploads
-  const handleFileChange = async (signature: string, fieldName: string, file: File | null) => {
+  const handleFileChange = (signature: string, fieldName: string, file: File | null) => {
     if (file) {
-      try {
-        const compressed = await compressImage(file, 500);
-        setFilesBySignature(prev => ({
-          ...prev,
-          [signature]: {
-            ...prev[signature],
-            [fieldName]: compressed
-          }
-        }));
-      } catch {
-        setFilesBySignature(prev => ({
-          ...prev,
-          [signature]: {
-            ...prev[signature],
-            [fieldName]: file
-          }
-        }));
-      }
+      setFilesBySignature(prev => ({
+        ...prev,
+        [signature]: {
+          ...prev[signature],
+          [fieldName]: file
+        }
+      }));
       // Also store the filename in form data for display purposes
       setFormDataBySignature(prev => ({
         ...prev,
@@ -1192,7 +1250,7 @@ function CheckoutPageContent() {
         isLoading: false,
         error: 'This is taking longer than expected. You can retry, or use the fallback payment link below.'
       }));
-    }, 15000);
+    }, 30000); // Changed from 15000 to 30000 (30 seconds)
 
     try {
       await proceedToPayment();
@@ -1206,177 +1264,51 @@ function CheckoutPageContent() {
   };
 
 
-  // Request timeout wrapper
-  const fetchWithTimeout = async (url: string, options: RequestInit, timeout: number = 15000): Promise<Response> => {
-    const controller = new AbortController();
-    const timeoutId = window.setTimeout(() => controller.abort(), timeout);
-    try {
-      const response = await fetch(url, { ...options, signal: controller.signal });
-      window.clearTimeout(timeoutId);
-      return response;
-    } catch (error: any) {
-      window.clearTimeout(timeoutId);
-      if (error?.name === 'AbortError') {
-        throw new Error('Request timeout - please check your internet connection');
-      }
-      throw error;
-    }
-  };
-
-  // Improved retry with exponential backoff
-  const retryFetch = async (
-    url: string,
-    options: RequestInit,
-    maxRetries: number = 2,
-    timeout: number = 15000
-  ): Promise<Response> => {
-    let lastError: Error | null = null;
-    for (let i = 0; i <= maxRetries; i++) {
+  // Helper function for retry logic
+  const retryFetch = async (url: string, options: RequestInit, maxRetries: number = 1): Promise<Response> => {
+    for (let i = 0; i < maxRetries; i++) {
       try {
-        const response = await fetchWithTimeout(url, options, timeout);
-        if (response.ok || (response.status >= 400 && response.status < 500)) {
-          return response;
-        }
-        if (i < maxRetries) {
-          const backoffDelay = Math.min(1000 * Math.pow(2, i), 5000);
-          await new Promise(resolve => setTimeout(resolve, backoffDelay));
-          continue;
-        }
+        const response = await fetch(url, options);
         return response;
       } catch (error) {
-        lastError = error as Error;
-        console.log(`🔄 Retry attempt ${i + 1}/${maxRetries + 1} failed:`, error);
-        if (i < maxRetries) {
-          const backoffDelay = Math.min(1000 * Math.pow(2, i), 5000);
-          await new Promise(resolve => setTimeout(resolve, backoffDelay));
+        console.log(`🔄 Retry attempt ${i + 1}/${maxRetries} failed:`, error);
+        
+        if (i === maxRetries - 1) {
+          return new Response(JSON.stringify({ success: false, message: 'Request failed' }), {
+            status: 500,
+            statusText: 'Internal Server Error'
+          });
         }
+        
+        // Exponential backoff instead of fixed 1s
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
       }
     }
-    throw lastError || new Error('Request failed after retries');
-  };
-
-  // Image compression before upload
-  const compressImage = async (file: File, maxSizeKB: number = 500): Promise<File> => {
-    return new Promise((resolve, reject) => {
-      if (file.size <= maxSizeKB * 1024) {
-        resolve(file);
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-          const maxDimension = 1200;
-          if (width > height && width > maxDimension) {
-            height = (height * maxDimension) / width;
-            width = maxDimension;
-          } else if (height > maxDimension) {
-            width = (width * maxDimension) / height;
-            height = maxDimension;
-          }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx?.drawImage(img, 0, 0, width, height);
-          let quality = 0.7;
-          const toBlobAtQuality = (q: number) => new Promise<Blob | null>(res => canvas.toBlob(b => res(b), 'image/jpeg', q));
-          toBlobAtQuality(quality).then(async (blob) => {
-            if (!blob) { resolve(file); return; }
-            let compressedBlob = blob;
-            while (compressedBlob.size > maxSizeKB * 1024 && quality > 0.3) {
-              quality -= 0.1;
-              const next = await toBlobAtQuality(quality);
-              if (!next) break;
-              compressedBlob = next;
-            }
-            resolve(new File([compressedBlob], file.name, { type: 'image/jpeg', lastModified: Date.now() }));
-          });
-        };
-        img.onerror = () => reject(new Error('Image load failed'));
-        img.src = e.target?.result as string;
-      };
-      reader.onerror = () => reject(new Error('File read failed'));
-      reader.readAsDataURL(file);
+    return new Response(JSON.stringify({ success: false, message: 'Request failed' }), {
+      status: 500,
+      statusText: 'Internal Server Error'
     });
   };
 
-
-
-  // Connection quality check
-  const checkConnectionQuality = async (): Promise<'good' | 'poor' | 'offline'> => {
-    if (typeof navigator !== 'undefined' && !navigator.onLine) return 'offline';
-    try {
-      const start = Date.now();
-      await fetch('https://www.google.com/favicon.ico', { mode: 'no-cors', cache: 'no-store' });
-      const duration = Date.now() - start;
-      return duration < 1000 ? 'good' : 'poor';
-    } catch {
-      return 'offline';
-    }
-  };
-
-  // Adaptive payment initialization based on connection quality
-  const adaptivePaymentInit = async () => {
-    const quality = await checkConnectionQuality();
-    
-    if (quality === 'offline') {
-      alert('No internet connection. Please check your connection and try again.');
-      return;
-    }
-    
-    if (quality === 'poor') {
-      const proceed = confirm(
-        'Your internet connection seems slow. This may take longer than usual. ' +
-        'Do you want to continue or use the alternative payment form?'
-      );
-      
-      if (!proceed) {
-        window.open(CASHFREE_FALLBACK_FORM_URL, '_blank');
-        return;
-      }
-    }
-    
-    // Call the fixed payment function
-    await proceedToPayment();
-  };
-
-  // Connection quality indicator state and polling
-  const [connectionQuality, setConnectionQuality] = useState<'good' | 'poor' | 'offline'>('good');
-  useEffect(() => {
-    let active = true;
-    const poll = async () => {
-      const q = await checkConnectionQuality();
-      if (active) setConnectionQuality(q);
-    };
-    poll();
-    const id = window.setInterval(() => {
-      if (['forms', 'review', 'payment'].includes(step)) poll();
-    }, 30000);
-    return () => { active = false; window.clearInterval(id); };
-  }, [step]);
-
-
-
   const proceedToPayment = async () => {
-    console.log('🚀 proceedToPayment function called - FULL VERSION');
+    console.log('🚀 proceedToPayment function called');
     
     try {
+      // First, register the user on backend using existing /register with image upload
+      // Map fields: name -> 'name', collegeMailId -> 'email', and attach a 'profileImage'
       const registrationForm = new FormData();
-      
-      // Derive identity
+      // Derive name and email from collected forms (pick from the first group that has them)
       let derivedName: string | undefined;
       let derivedEmail: string | undefined;
       let attachedImage: File | undefined;
 
-      // Get from event registration forms
+      // First try to get from event registration forms
       for (const group of fieldGroups) {
         const data = formDataBySignature[group.signature] || {};
         if (!derivedName && data['name']) derivedName = data['name'];
         if (!derivedEmail && data['collegeMailId']) derivedEmail = data['collegeMailId'];
         const files = filesBySignature[group.signature] || {};
+        // Prefer an institution card image if present, else take the first file in the group
         if (!attachedImage) {
           if (files['universityCardImage']) attachedImage = files['universityCardImage'];
           else {
@@ -1386,21 +1318,22 @@ function CheckoutPageContent() {
         }
       }
 
-      // Fallback to visitor pass details
+      // If no email found from event forms, try to get from visitor pass details
       if (!derivedEmail && visitorPassDetails['collegeMailId']) {
+        // Use the visitor's email as the primary contact
         derivedEmail = visitorPassDetails['collegeMailId'];
         if (!derivedName) derivedName = visitorPassDetails['name'];
       }
 
-      // Check flagship benefits
+      // If still no email found, try flagship benefits for any event
       if (!derivedEmail) {
         for (const benefits of Object.values(flagshipBenefitsByEvent)) {
-          if (benefits.flagshipVisitorPassDetails?.length > 0) {
+          if (benefits.flagshipVisitorPassDetails.length > 0) {
             derivedEmail = benefits.flagshipVisitorPassDetails[0]['collegeMailId'];
             if (!derivedName) derivedName = benefits.flagshipVisitorPassDetails[0]['name'];
             break;
           }
-          if (benefits.flagshipSoloVisitorPassDetails?.length > 0) {
+          if (benefits.flagshipSoloVisitorPassDetails.length > 0) {
             derivedEmail = benefits.flagshipSoloVisitorPassDetails[0]['collegeMailId'];
             if (!derivedName) derivedName = benefits.flagshipSoloVisitorPassDetails[0]['name'];
             break;
@@ -1408,18 +1341,17 @@ function CheckoutPageContent() {
         }
       }
 
-      // Fallback defaults
+      // Fallbacks to avoid empty fields
       if (!derivedName) derivedName = 'Participant';
       if (!derivedEmail) derivedEmail = 'participant@example.com';
 
+      // Generate a strong random password since checkout flow does not collect one
       const generatedPassword = Math.random().toString(36).slice(-10) + 'A1!';
 
-      // Basic fields
       registrationForm.append('name', derivedName);
       registrationForm.append('email', derivedEmail);
       registrationForm.append('password', generatedPassword);
-      
-      // Add flat fields
+      // Also send flat fields if available
       const flat = formDataBySignature[fieldGroups[0]?.signature || ''] || {};
       if (flat['contactNo']) registrationForm.append('contactNo', flat['contactNo']);
       if (flat['gender']) registrationForm.append('gender', flat['gender']);
@@ -1427,103 +1359,26 @@ function CheckoutPageContent() {
       if (flat['universityName']) registrationForm.append('universityName', flat['universityName']);
       if (flat['address']) registrationForm.append('address', flat['address']);
       if (flat['referralCode']) registrationForm.append('referralCode', flat['referralCode']);
-      
-      // Send complex form data as JSON strings
+      // Send complex payloads for backend to persist
       registrationForm.append('formsBySignature', JSON.stringify(formDataBySignature));
       registrationForm.append('teamMembersBySignature', JSON.stringify(teamMembersBySignature));
       registrationForm.append('flagshipBenefitsByEvent', JSON.stringify(flagshipBenefitsByEvent));
-      registrationForm.append('items', JSON.stringify(selectedEvents.map(e => ({ 
-        id: e.id, 
-        title: e.title, 
-        price: e.price 
-      }))));
+      registrationForm.append('items', JSON.stringify(selectedEvents.map(e => ({ id: e.id, title: e.title, price: e.price }))));
       registrationForm.append('visitorPassDays', visitorPassDays.toString());
       registrationForm.append('visitorPassDetails', JSON.stringify(visitorPassDetails));
-      
-      // Attach profile image (compressed)
       if (attachedImage) {
-        try {
-          const compressed = await compressImage(attachedImage, 500);
-          registrationForm.append('profileImage', compressed);
-          console.log('✅ Profile image compressed and attached');
-        } catch (e) {
-          console.warn('⚠️ Image compression failed, using original');
-          registrationForm.append('profileImage', attachedImage);
-        }
+        registrationForm.append('profileImage', attachedImage);
       }
 
-      // Append team member images with deterministic keys
-      for (const [signature, idxMap] of Object.entries(memberFilesBySignature)) {
-        for (const [idxStr, file] of Object.entries(idxMap)) {
+      // Append team member images with deterministic keys: memberImage__<signature>__<index>
+      Object.entries(memberFilesBySignature).forEach(([signature, idxMap]) => {
+        Object.entries(idxMap).forEach(([idxStr, file]) => {
           const idx = Number(idxStr);
           const encodedSig = encodeURIComponent(signature);
-          try {
-            const compressed = await compressImage(file, 500);
-            registrationForm.append(`memberImage__${encodedSig}__${idx}`, compressed);
-            console.log(`✅ Team member ${idx} image compressed and attached`);
-          } catch (e) {
-            console.warn(`⚠️ Member ${idx} image compression failed, using original`);
-            registrationForm.append(`memberImage__${encodedSig}__${idx}`, file);
-          }
-        }
-      }
+          registrationForm.append(`memberImage__${encodedSig}__${idx}`, file);
+        });
+      });
 
-      // Append all event/solo form file uploads
-      for (const [signature, files] of Object.entries(filesBySignature)) {
-        for (const [fieldName, file] of Object.entries(files)) {
-          const key = `file__${encodeURIComponent(signature)}__${fieldName}`;
-          try {
-            const compressed = await compressImage(file, 500);
-            registrationForm.append(key, compressed);
-            console.log(`✅ File ${fieldName} compressed and attached`);
-          } catch (e) {
-            console.warn(`⚠️ File ${fieldName} compression failed, using original`);
-            registrationForm.append(key, file);
-          }
-        }
-      }
-
-      // Append visitor pass files
-      if (visitorPassDays > 0 && visitorPassFiles) {
-        for (const [fieldName, file] of Object.entries(visitorPassFiles)) {
-          const key = `visitorPassFile__${fieldName}`;
-          try {
-            const compressed = await compressImage(file, 500);
-            registrationForm.append(key, compressed);
-            console.log(`✅ Visitor pass file ${fieldName} compressed and attached`);
-          } catch (e) {
-            console.warn(`⚠️ Visitor pass file ${fieldName} compression failed, using original`);
-            registrationForm.append(key, file);
-          }
-        }
-      }
-
-      // Append flagship benefits files
-      for (const [eventId, benefitFiles] of Object.entries(flagshipBenefitFiles)) {
-        for (const [indexStr, fileMap] of Object.entries(benefitFiles)) {
-          for (const [fieldName, file] of Object.entries(fileMap)) {
-            const key = `flagshipBenefit__${eventId}__${indexStr}__${fieldName}`;
-            try {
-              // Don't compress PDFs
-              if (file.type.startsWith('image/')) {
-                const compressed = await compressImage(file, 500);
-                registrationForm.append(key, compressed);
-                console.log(`✅ Flagship benefit file compressed and attached: ${key}`);
-              } else {
-                registrationForm.append(key, file);
-                console.log(`✅ Flagship benefit PDF attached: ${key}`);
-              }
-            } catch (e) {
-              console.warn(`⚠️ Flagship benefit file compression failed, using original: ${key}`);
-              registrationForm.append(key, file);
-            }
-          }
-        }
-      }
-
-      console.log('📤 Sending registration with full FormData...');
-
-      // Send registration
       const registrationResponse = await retryFetch(createApiUrl('/register'), {
         method: 'POST',
         credentials: 'include',
@@ -1532,37 +1387,39 @@ function CheckoutPageContent() {
           'User-Agent': typeof navigator !== 'undefined' ? navigator.userAgent : 'Sabrang-Frontend'
         },
         body: registrationForm
-      }, 2, 45000); // 45s timeout for large uploads
+      }, 2); // 2 retries for registration
+
 
       if (!registrationResponse.ok) {
-        const errorText = await registrationResponse.text();
-        console.error('Registration failed:', registrationResponse.status, errorText);
-        throw new Error(`Registration failed: ${registrationResponse.status}`);
+        console.log('Registration response not ok:', registrationResponse.status);
       }
 
-      console.log('✅ Registration successful');
-
-      // Create payment order
+      // Create payment order using the new simple backend endpoint
       const orderData = {
         amount: finalPrice.toString(),
         customerName: derivedName,
         customerEmail: derivedEmail,
         customerPhone: flat['contactNo'] || '9999999999',
+        // Include event information for proper processing
         items: selectedEvents.map(e => ({ 
           id: e.id, 
           title: e.title, 
           price: e.price,
-          itemName: e.title,
+          itemName: e.title, // Ensure itemName is set for backend processing
           type: 'event',
           quantity: 1
         })),
+        // Include visitor pass if selected
         visitorPassDays: visitorPassDays,
         visitorPassDetails: visitorPassDetails,
+        // Include form data for user lookup/creation if needed
         formDataBySignature: formDataBySignature,
         teamMembersBySignature: teamMembersBySignature,
         flagshipBenefitsByEvent: flagshipBenefitsByEvent,
+        // Include promo code information
         promoCode: appliedPromo?.code || null,
         appliedDiscount: appliedPromo?.discountAmount || 0,
+        // Add metadata for tracking
         metadata: {
           totalPrice: totalPrice,
           finalPrice: finalPrice,
@@ -1571,9 +1428,9 @@ function CheckoutPageContent() {
         }
       };
 
-      console.log('🚀 Creating payment order...');
+      console.log('🚀 Creating payment order with data:', orderData);
 
-      const orderResponse = await retryFetch(createApiUrl('/api/payments/create-order'), {
+      const response = await retryFetch(createApiUrl('/api/payments/create-order'), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -1582,27 +1439,26 @@ function CheckoutPageContent() {
           'User-Agent': typeof navigator !== 'undefined' ? navigator.userAgent : 'Sabrang-Frontend'
         },
         body: JSON.stringify(orderData)
-      }, 2, 15000);
+      }, 2); // 2 retries for payment order creation
 
-      if (!orderResponse.ok) {
-        const errorText = await orderResponse.text();
-        console.error('Payment order failed:', orderResponse.status, errorText);
-        throw new Error(`Payment order creation failed: ${orderResponse.status}`);
+
+      if (!response.ok) {
+        console.log('Payment order response not ok:', response.status);
       }
 
-      const data = await orderResponse.json();
+      const data = await response.json();
       console.log('✅ Payment order created:', data);
 
       if (!data.success) {
-        throw new Error(data.message || 'Payment order creation not successful');
+        console.log('Payment order creation not successful:', data.message);
       }
 
-      // Store payment session
+      // Store payment session data for the payment component
       setPaymentSession({
         paymentSessionId: data.data.payment_session_id,
         orderId: data.data.order_id,
         amount: data.data.amount,
-        mode: 'production'
+        mode: 'production' // Always use production mode
       });
 
       // Move to payment step
@@ -1610,28 +1466,33 @@ function CheckoutPageContent() {
 
     } catch (error) {
       console.error('❌ Payment initialization failed:', error);
-      setPaymentInitializationState(prev => ({ 
-        ...prev, 
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'Payment initialization failed. Please try again.'
-      }));
+      // Don't throw error, just log it
     }
   };
 
-  // Removed old blocking proceedToPayment in favor of proceedToPayment
-
   // Initialize Cashfree SDK - always production mode
-  let cashfree: any;
+  let cashfree: any = null;
   const initializeSDK = async () => {
-    cashfree = await load({
-      mode: "production"
-    });
-    console.log('✅ Cashfree SDK initialized');
+    if (cashfreeLoadedRef.current && cashfree) {
+      console.log('✅ Cashfree SDK already loaded');
+      return cashfree;
+    }
+    
+    try {
+      cashfree = await load({ mode: "production" });
+      cashfreeLoadedRef.current = true;
+      console.log('✅ Cashfree SDK initialized');
+      return cashfree;
+    } catch (error) {
+      console.error('❌ Cashfree SDK initialization failed:', error);
+      cashfreeLoadedRef.current = false;
+      return null;
+    }
   };
 
   // Initialize SDK when payment session is available
   useEffect(() => {
-    if (paymentSession) {
+    if (paymentSession && !cashfreeLoadedRef.current) {
       initializeSDK();
     }
   }, [paymentSession]);
@@ -1650,15 +1511,27 @@ function CheckoutPageContent() {
     
     console.log('🚀 Starting payment with session ID:', paymentSession.paymentSessionId);
     
-    const checkoutOptions = {
-      paymentSessionId: paymentSession.paymentSessionId,
-      redirectTarget: "_self" as const,
-    };
-    
-    console.log('💳 Launching Cashfree checkout with options:', checkoutOptions);
-    await cashfree.checkout(checkoutOptions);
-    
-    setIsProcessingPayment(false);
+    try {
+      // Ensure Cashfree SDK is initialized
+      const cashfreeInstance = await initializeSDK();
+      if (!cashfreeInstance) {
+        throw new Error('Failed to initialize Cashfree SDK');
+      }
+
+      const checkoutOptions = {
+        paymentSessionId: paymentSession.paymentSessionId,
+        redirectTarget: "_self" as const,
+      };
+      
+      console.log('💳 Launching Cashfree checkout with options:', checkoutOptions);
+      await cashfreeInstance.checkout(checkoutOptions);
+      
+    } catch (error) {
+      console.error('❌ Payment failed:', error);
+      alert('Payment failed. Please try again or use the fallback payment method.');
+    } finally {
+      setIsProcessingPayment(false);
+    }
   };
 
   // Initialize Cashfree payment
@@ -1673,21 +1546,23 @@ function CheckoutPageContent() {
       console.log('🔗 Initializing Cashfree payment...');
       console.log('Payment Session:', paymentSession);
       
-      // Always use production mode
-      const cashfree = await load({ 
-        mode: "production"
-      });
+      // Ensure Cashfree SDK is initialized
+      const cashfreeInstance = await initializeSDK();
+      if (!cashfreeInstance) {
+        throw new Error('Failed to initialize Cashfree SDK');
+      }
       
       const checkoutOptions = {
         paymentSessionId: paymentSession.paymentSessionId,
         redirectTarget: '_self' as const
       };
       
-      console.log('� Launching Cashfree checkout with options:', checkoutOptions);
-      await cashfree.checkout(checkoutOptions);
+      console.log('💳 Launching Cashfree checkout with options:', checkoutOptions);
+      await cashfreeInstance.checkout(checkoutOptions);
       
     } catch (error) {
       console.error('❌ Cashfree payment failed:', error);
+      alert('Payment failed. Please try again or use the fallback payment method.');
     } finally {
       setIsProcessingPayment(false);
     }
@@ -1771,12 +1646,12 @@ function CheckoutPageContent() {
         <div className="absolute inset-0 bg-black/40"></div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-[120px] sm:pt-[150px] pb-4 sm:pb-8 overflow-x-hidden">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 pt-[120px] sm:pt-[150px] pb-6 sm:pb-8">
         {/* Mobile hamburger */}
         <button
           aria-label="Open menu"
           onClick={() => setMobileMenuOpen(true)}
-          className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl bg-black/30 backdrop-blur-sm border border-white/30 active:scale-95 transition-all duration-200 shadow-lg"
+          className="lg:hidden fixed top-3 right-3 z-50 p-2.5 rounded-xl bg-black/20 backdrop-blur-sm border border-white/20 active:scale-95 transition"
         >
           <span className="block h-0.5 bg-white rounded-full w-6 mb-1" />
           <span className="block h-0.5 bg-white/90 rounded-full w-5 mb-1" />
@@ -1786,20 +1661,87 @@ function CheckoutPageContent() {
         {/* Back button beneath hamburger */}
         <button
           onClick={() => router.back()}
-          className="lg:hidden fixed top-16 right-4 z-50 px-4 py-2 text-white text-sm bg-black/30 backdrop-blur-sm border border-white/30 rounded-lg active:scale-95 transition-all duration-200 shadow-lg"
+          className="lg:hidden fixed top-12 right-3 z-50 px-3 py-1.5 text-white text-sm bg-black/20 backdrop-blur-sm border border-white/20 rounded-lg active:scale-95 transition"
           aria-label="Go back"
         >
           <span className="mr-1">&lt;</span> Back
         </button>
+
+        {/* Connection Quality Indicator */}
+        <div className="fixed top-3 left-3 z-50 flex items-center gap-2 px-3 py-2 bg-black/20 backdrop-blur-sm border border-white/20 rounded-lg">
+          {connectionQuality === 'excellent' && (
+            <>
+              <Wifi className="w-4 h-4 text-green-400" />
+              <span className="text-xs text-green-400">Excellent</span>
+            </>
+          )}
+          {connectionQuality === 'good' && (
+            <>
+              <Wifi className="w-4 h-4 text-yellow-400" />
+              <span className="text-xs text-yellow-400">Good</span>
+            </>
+          )}
+          {connectionQuality === 'poor' && (
+            <>
+              <Wifi className="w-4 h-4 text-orange-400" />
+              <span className="text-xs text-orange-400">Poor</span>
+            </>
+          )}
+          {connectionQuality === 'offline' && (
+            <>
+              <WifiOff className="w-4 h-4 text-red-400" />
+              <span className="text-xs text-red-400">Offline</span>
+            </>
+          )}
+        </div>
+
+        {/* Save Progress Button */}
+        <div className="fixed top-3 left-1/2 transform -translate-x-1/2 z-50">
+          <button
+            onClick={saveProgress}
+            disabled={isSaving}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              saveStatus === 'saved' 
+                ? 'bg-green-500/20 text-green-400 border border-green-400/30' 
+                : saveStatus === 'error'
+                ? 'bg-red-500/20 text-red-400 border border-red-400/30'
+                : 'bg-blue-500/20 text-blue-400 border border-blue-400/30 hover:bg-blue-500/30'
+            } backdrop-blur-sm`}
+          >
+            {isSaving ? (
+              <>
+                <Loader className="w-4 h-4 animate-spin" />
+                <span>Saving...</span>
+              </>
+            ) : saveStatus === 'saved' ? (
+              <>
+                <CheckCircle className="w-4 h-4" />
+                <span>Saved!</span>
+              </>
+            ) : saveStatus === 'error' ? (
+              <>
+                <XCircle className="w-4 h-4" />
+                <span>Save Failed</span>
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                <span>Save Progress</span>
+              </>
+            )}
+          </button>
+          {lastSaved && (
+            <div className="text-xs text-white/60 text-center mt-1">
+              Last saved: {lastSaved.toLocaleTimeString()}
+            </div>
+          )}
+        </div>
         
         {/* Header - Mobile Optimized */}
         <div className="mb-6 sm:mb-8 text-center">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold title-chroma title-glow-animation leading-tight">
+          <h1 className="text-2xl sm:text-2xl md:text-3xl font-bold title-chroma title-glow-animation">
               Event Registration
             </h1>
-            <p className="text-sm sm:text-base text-white/70 mt-2 px-4">
-              Complete your registration in a few simple steps
-            </p>
           </div>
 
         {/* Early Bird Promo Code Banner - Mobile Optimized */}
@@ -1809,33 +1751,33 @@ function CheckoutPageContent() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="relative mb-6 sm:mb-8 overflow-hidden"
         >
-          <div className="relative bg-gradient-to-r from-purple-900/40 via-pink-900/40 to-rose-900/40 backdrop-blur-sm border border-purple-400/40 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-[0_0_30px_rgba(168,85,247,0.4)]">
+          <div className="relative bg-gradient-to-r from-purple-900/30 via-pink-900/30 to-rose-900/30 backdrop-blur-sm border border-purple-400/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-[0_0_30px_rgba(168,85,247,0.3)]">
             {/* Animated background pattern */}
             <div className="absolute inset-0 opacity-20">
               <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-rose-500/10 animate-pulse"></div>
-              <div className="absolute top-2 left-2 w-3 h-3 sm:w-4 sm:h-4 bg-purple-400/30 rounded-full animate-bounce"></div>
-              <div className="absolute top-4 right-4 w-2 h-2 sm:w-2 sm:h-2 bg-pink-400/40 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }}></div>
-              <div className="absolute bottom-4 left-4 sm:left-8 w-2 h-2 sm:w-3 sm:h-3 bg-rose-400/30 rounded-full animate-bounce" style={{ animationDelay: '1s' }}></div>
+              <div className="absolute top-2 left-2 w-2 h-2 sm:w-4 sm:h-4 bg-purple-400/30 rounded-full animate-bounce"></div>
+              <div className="absolute top-4 right-4 w-1 h-1 sm:w-2 sm:h-2 bg-pink-400/40 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }}></div>
+              <div className="absolute bottom-4 left-4 sm:left-8 w-1 h-1 sm:w-3 sm:h-3 bg-rose-400/30 rounded-full animate-bounce" style={{ animationDelay: '1s' }}></div>
             </div>
             
             <div className="relative z-10 space-y-4">
               <div className="flex items-center gap-3 sm:gap-4">
-                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex-shrink-0 shadow-lg">
+                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex-shrink-0">
                   <Star className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-base sm:text-lg font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent">
-                    🎉 Special Offer is Live
+                  <h3 className="text-lg sm:text-lg font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent">
+                    🎉 Early Bird
                   </h3>
-                  <p className="text-sm sm:text-base text-white/90 font-medium">
+                  <p className="text-base sm:text-sm text-white/80">
                     Get 25% off on all events
                   </p>
                 </div>
               </div>
               
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                <div className="bg-black/50 border border-purple-400/60 rounded-xl px-4 py-3 backdrop-blur-sm text-center flex-1 sm:flex-none">
-                  <span className="text-purple-300 font-mono text-base sm:text-lg font-bold tracking-wider">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
+                <div className="bg-black/40 border border-purple-400/50 rounded-lg px-4 py-3 backdrop-blur-sm text-center flex-1 sm:flex-none">
+                  <span className="text-purple-300 font-mono text-lg sm:text-lg font-bold tracking-wider">
                     SPECIALOFFER
                   </span>
                 </div>
@@ -1845,7 +1787,7 @@ function CheckoutPageContent() {
                     setShowToast(true);
                     setTimeout(() => setShowToast(false), 3000);
                   }}
-                  className="px-6 py-3 sm:py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-xl text-white font-semibold transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/25 text-sm sm:text-base touch-manipulation w-full sm:w-auto"
+                  className="px-6 py-3 sm:py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-xl sm:rounded-xl text-white font-medium transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/25 text-lg sm:text-base touch-manipulation w-full sm:w-auto min-h-[48px]"
                 >
                   Copy Code
             </button>
@@ -1864,17 +1806,17 @@ function CheckoutPageContent() {
         <main>
           {/* Global payment help banner */}
           {(step === 'review' || step === 'payment') && (
-            <div className="mb-8 rounded-2xl border border-pink-400/50 bg-gradient-to-r from-purple-600/25 via-pink-600/25 to-cyan-600/25 p-6 sm:p-8 shadow-[0_0_30px_rgba(147,51,234,0.4)]">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="text-base sm:text-lg text-pink-100">
-                  <div className="font-bold text-pink-200 mb-2">Payment taking too long or showing an error?</div>
+            <div className="mb-6 rounded-xl border border-pink-400/40 bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-cyan-600/20 p-4 sm:p-5 shadow-[0_0_28px_rgba(147,51,234,0.35)]">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="text-sm text-pink-100">
+                  <div className="font-semibold text-pink-200">Payment taking too long or showing an error?</div>
                   <div className="opacity-90">Use our secure Cashfree form to complete your payment instantly.</div>
                 </div>
                 <a
                   href={CASHFREE_FALLBACK_FORM_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-cyan-400 hover:from-pink-600 hover:via-fuchsia-600 hover:to-cyan-500 text-white font-bold shadow-[0_0_25px_rgba(236,72,153,0.4)] transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-pink-400/70 touch-manipulation"
+                  className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-pink-500 via-fuchsia-500 to-cyan-400 hover:from-pink-600 hover:via-fuchsia-600 hover:to-cyan-500 text-white font-semibold shadow-[0_0_20px_rgba(236,72,153,0.35)] transition-transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-pink-400/70"
                 >
                   Pay via Cashfree Form
                 </a>
@@ -1890,7 +1832,7 @@ function CheckoutPageContent() {
                 exit={reducedMotion ? { opacity: 0 } : { opacity: 0, x: -30 }}
                 transition={{ duration: reducedMotion ? 0.15 : 0.25 }}
               >
-                <div className="grid lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-8 min-w-0">
+                <div className="grid lg:grid-cols-4 gap-6 sm:gap-6 lg:gap-8">
                   <div className="lg:col-span-3">
                     <div className="bg-yellow-500/15 border border-yellow-400/40 rounded-lg p-4 mb-6 shadow-[0_0_20px_rgba(250,204,21,0.2)] hidden">
                       <p className="text-sm text-yellow-200">
@@ -1904,7 +1846,7 @@ function CheckoutPageContent() {
                         </p>
                       </div>
                     )}
-                    <h2 className="text-2xl sm:text-3xl font-bold mb-8 sm:mb-10 title-chroma text-center sm:text-left">Choose Your Events</h2>
+                    <h2 className="text-xl font-semibold mb-6 title-chroma">Choose Your Events</h2>
                     
                     
 
@@ -1924,30 +1866,30 @@ function CheckoutPageContent() {
                        if (!isGroupEvent && !isSoloEvent) return null;
 
                        return (
-                         <div key={event.id} className="mb-10 sm:mb-12">
-                        <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6 text-center sm:text-left">
+                         <div key={event.id} className="mb-8">
+                        <h3 className="text-lg sm:text-lg font-medium text-white mb-3 sm:mb-4">
                              <span className={`bg-gradient-to-r ${isGroupEvent ? 'from-purple-300 via-pink-400 to-rose-400' : 'from-blue-300 via-indigo-400 to-purple-400'} bg-clip-text text-transparent`}>
                                Flagship Benefits - {event.title}
                              </span>
                         </h3>
-                           <div className={`glass rounded-2xl p-6 sm:p-8 border border-white/20 shadow-[0_0_25px_rgba(${isGroupEvent ? '168,85,247' : '59,130,246'},0.25)]`}>
+                           <div className={`glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(${isGroupEvent ? '168,85,247' : '59,130,246'},0.18)]`}>
                              {isGroupEvent && (
                                <>
-                          <div className="mb-6 sm:mb-8">
-                            <h4 className="font-bold text-purple-200 mb-3 text-base sm:text-lg">Support Artists</h4>
-                            <p className="text-sm sm:text-base text-white/80 mb-4 leading-relaxed">
+                          <div className="mb-4 sm:mb-6">
+                            <h4 className="font-semibold text-purple-200 mb-2 text-base sm:text-base">Support Artists</h4>
+                            <p className="text-sm sm:text-sm text-white/70 mb-3">
                               You will get a form 5 days before the event where you can claim up to 3 support artists (makeup, stylist, manager) for your team performance.
                             </p>
                           </div>
                           
-                          <div className="mb-6 sm:mb-8">
-                            <h4 className="font-bold text-purple-200 mb-3 text-base sm:text-lg">Free Visitor Passes</h4>
-                            <p className="text-sm sm:text-base text-white/80 mb-4 leading-relaxed">
+                          <div className="mb-4 sm:mb-6">
+                            <h4 className="font-semibold text-purple-200 mb-2 text-base sm:text-base">Free Visitor Passes</h4>
+                            <p className="text-sm sm:text-sm text-white/70 mb-3">
                               You will get a form 5 days before the event where you can claim up to 3 free visitor passes for your day event.
                             </p>
                           </div>
 
-                          <div className="text-sm text-white/70 space-y-2">
+                          <div className="text-sm text-white/60 space-y-1">
                             <p>• Green room access (time-bound as per slot)</p>
                             <p>• Snacks (tea/coffee) for team + support artists</p>
                             <p>• Support artists must wear provided wristbands/badges</p>
@@ -1957,14 +1899,14 @@ function CheckoutPageContent() {
 
                              {isSoloEvent && (
                                <>
-                          <div className="mb-6 sm:mb-8">
-                            <h4 className="font-bold text-blue-200 mb-3 text-base sm:text-lg">Free Visitor Passes</h4>
-                            <p className="text-sm sm:text-base text-white/80 mb-4 leading-relaxed">
+                          <div className="mb-4 sm:mb-6">
+                            <h4 className="font-semibold text-blue-200 mb-2 text-sm sm:text-base">Free Visitor Passes</h4>
+                            <p className="text-xs sm:text-sm text-white/70 mb-3">
                               You will get a form 5 days before the event where you can claim up to 2 free visitor passes for your day event.
                             </p>
                           </div>
 
-                          <div className="text-sm text-white/70 space-y-2">
+                          <div className="text-xs text-white/60 space-y-1">
                             <p>• Snacks (tea/coffee) during reporting/performance window</p>
                             <p>• 2 complimentary visitor passes included</p>
                           </div>
@@ -1979,13 +1921,13 @@ function CheckoutPageContent() {
                       const displayCategory = category;
                       const isFlagship = category === 'Flagship';
                       return (
-                      <div key={category} className="mb-8 sm:mb-10">
-                        <h3 className={`text-2xl sm:text-3xl font-extrabold text-white mb-6 sm:mb-8 text-center sm:text-left`}>
+                      <div key={category} className="mb-6 sm:mb-8">
+                        <h3 className={`text-xl sm:text-2xl font-extrabold text-white mb-3 sm:mb-4`}>
                           <span className={`bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent`}>
                             {displayCategory}
                           </span>
                         </h3>
-                        <div className="space-y-4 sm:space-y-6">
+                        <div className="space-y-2 sm:space-y-3">
                           {events.map(event => {
                             const isSelected = selectedEventIds.includes(event.id);
                         const hasConflict = hasTimeConflict(event.id);
@@ -1996,14 +1938,13 @@ function CheckoutPageContent() {
                           <motion.div
                             key={event.id}
                                 onMouseDown={() => !isDisabled && handleToggleEvent(event.id)}
-                                whileHover={!isDisabled && reducedMotion ? undefined : { scale: 1.02 }}
-                                whileTap={!isDisabled ? { scale: 0.98 } : undefined}
-                                className={`relative p-5 sm:p-6 rounded-xl sm:rounded-2xl transition-all duration-200 border overflow-hidden touch-manipulation active:scale-95 ${
+                                whileHover={!isDisabled && reducedMotion ? undefined : { scale: 1.01 }}
+                                className={`relative p-4 sm:p-5 rounded-lg sm:rounded-xl transition-colors duration-150 border overflow-hidden touch-manipulation ${
                               isSelected
-                                    ? 'glass border-fuchsia-400/50 shadow-[0_0_25px_rgba(217,70,239,0.4)] cursor-pointer'
+                                    ? 'glass border-fuchsia-400/40 shadow-[0_0_18px_rgba(217,70,239,0.35)] cursor-pointer'
                                 : isDisabled
-                                    ? 'glass border-white/20 cursor-pointer opacity-100'
-                                    : 'glass border-white/20 hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(34,211,238,0.3)] cursor-pointer'
+                                    ? 'glass border-white/10 cursor-pointer opacity-100'
+                                    : 'glass border-white/10 hover:border-cyan-400/40 hover:shadow-[0_0_16px_rgba(34,211,238,0.28)] cursor-pointer'
                                 }`}
                               >
                                 {/* subtle animated shine */}
@@ -2012,26 +1953,26 @@ function CheckoutPageContent() {
                                     <div className="absolute -top-8 -left-10 h-20 w-36 rotate-12 bg-gradient-to-r from-white/10 to-transparent blur-xl"></div>
                             </div>
                                 )}
-                                <div className="flex justify-between items-start sm:items-center gap-3">
+                                <div className="flex justify-between items-start sm:items-center gap-2">
                             <div className="flex-1 min-w-0">
-                                    <h4 className="font-bold text-lg sm:text-xl truncate mb-2">{event.title}</h4>
-                                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
-                                      <p className="text-lg sm:text-xl text-cyan-300 font-semibold">{event.price}</p>
-                                      <div className="flex items-center gap-2 sm:gap-3">
+                                    <h4 className="font-semibold text-base sm:text-lg truncate">{event.title}</h4>
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+                                      <p className="text-sm sm:text-base text-cyan-300">{event.price}</p>
+                                      <div className="flex items-center gap-1 sm:gap-2">
                                       <button
                                         onClick={(e) => { e.stopPropagation(); e.preventDefault(); const ed = eventDataById.get(event.id); if (ed) setInfoEvent(ed); }} // prettier-ignore
-                                          className="text-sm px-3 py-1.5 rounded-full bg-white/15 hover:bg-white/25 text-white/90 cursor-pointer touch-manipulation font-medium transition-all duration-200"
+                                          className="text-[11px] sm:text-xs px-2 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 cursor-pointer touch-manipulation"
                                         aria-label={`View info for ${event.title}`}
                                       >
                                         Info
                                       </button>
-                                        {event.teamSize && <span className="text-sm text-white/70 font-medium">👥 {event.teamSize}</span>}
+                                        {event.teamSize && <span className="text-[11px] sm:text-xs text-white/60">👥 {event.teamSize}</span>}
                                       </div>
                                 </div>
                                     {/* Date/time intentionally hidden on checkout page */}
                                     <div className="flex items-center gap-2 text-xs text-white/70"></div>
                               {isDisabled && conflictMessage && (
-                                      <div className="mt-3 text-sm text-red-400 flex items-center gap-2 font-medium">
+                                      <div className="mt-2 text-xs text-red-400 flex items-center gap-1">
                                         <span>⚠️</span>
                                         <span>{conflictMessage}</span>
                                 </div>
@@ -2052,48 +1993,48 @@ function CheckoutPageContent() {
                     );
                     })}
                     {/* Visitor Pass Section - Moved outside the loop */}
-                    <div className="mb-8 sm:mb-10">
-                      <h3 className="text-2xl sm:text-3xl font-extrabold text-white mb-6 sm:mb-8 text-center sm:text-left">
+                    <div className="mb-6 sm:mb-8">
+                      <h3 className="text-xl sm:text-2xl font-extrabold text-white mb-3 sm:mb-4">
                         <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent">Visitor Pass</span>
                       </h3>
-                      <div className="glass rounded-2xl p-6 sm:p-8 border border-white/20 shadow-[0_0_25px_rgba(255,193,7,0.25)]">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                      <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                           <div className="flex-1">
-                            <h4 className="font-bold text-yellow-200 mb-3 text-lg sm:text-xl">Visitor Pass</h4>
-                            <p className="text-sm sm:text-base text-white/80 mb-4 leading-relaxed">
+                            <h4 className="font-semibold text-yellow-200 mb-2">Visitor Pass</h4>
+                            <p className="text-xs sm:text-sm text-white/70 mb-3">
                               Required for non-participant entry to Sabrang venues. Select number of days for your visitor pass.
                             </p>
-                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-white/70">
-                              <span className="font-medium">Price: ₹69 per day</span>
+                            <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-xs sm:text-sm text-white/60">
+                              <span>Price: ₹69 per day</span>
                               <span>•</span>
                               <span>Non-transferable</span>
                               <span>•</span>
                               <span>Non-refundable</span>
                             </div>
                           </div>
-                          <div className="flex items-center justify-center sm:justify-end gap-4">
+                          <div className="flex items-center justify-center sm:justify-end gap-3">
                             <button
                               onClick={() => setVisitorPassDays(Math.max(0, visitorPassDays - 1))}
                               disabled={visitorPassDays === 0}
-                              className="w-12 h-12 sm:w-10 sm:h-10 rounded-full bg-white/15 border border-white/30 hover:bg-white/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center touch-manipulation font-bold text-lg transition-all duration-200"
+                              className="w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center touch-manipulation"
                             >
                               -
                             </button>
-                            <span className="text-2xl sm:text-xl font-bold min-w-[3rem] sm:min-w-[2.5rem] text-center">{visitorPassDays}</span>
+                            <span className="text-lg sm:text-lg font-semibold min-w-[2.5rem] sm:min-w-[2rem] text-center">{visitorPassDays}</span>
                             <button
                               onClick={() => setVisitorPassDays(Math.min(3, visitorPassDays + 1))}
                               disabled={visitorPassDays >= 3}
-                              className="w-12 h-12 sm:w-10 sm:h-10 rounded-full bg-white/15 border border-white/30 hover:bg-white/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center touch-manipulation font-bold text-lg transition-all duration-200"
+                              className="w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center touch-manipulation"
                             >
                               +
                             </button>
                           </div>
                         </div>
                         {visitorPassDays > 0 && (
-                          <div className="mt-6 pt-6 border-t border-white/20">
-                            <div className="flex justify-between items-center">
-                              <span className="text-white/90 font-medium text-base">Visitor Pass ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</span>
-                              <span className="text-yellow-400 font-bold text-lg">₹{visitorPassDays * 69}</span>
+                          <div className="mt-4 pt-4 border-t border-white/10">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-white/70">Visitor Pass ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</span>
+                              <span className="text-yellow-400 font-medium">₹{visitorPassDays * 69}</span>
                             </div>
                           </div>
                         )}
@@ -2179,13 +2120,13 @@ function CheckoutPageContent() {
                           goNext();
                         }}
                         disabled={selectedEventIds.length === 0 && visitorPassDays === 0}
-                        className={`relative w-full mt-8 inline-flex items-center justify-center gap-3 rounded-2xl px-8 py-4 text-white font-bold text-lg transition-all duration-300 touch-manipulation ${
+                        className={`relative w-full mt-6 inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-white font-semibold transition-all duration-300 ${
                           (selectedEventIds.length === 0 && visitorPassDays === 0)
                             ? 'bg-gray-600 cursor-not-allowed' 
-                            : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:scale-105 active:scale-95 cursor-pointer shadow-xl hover:shadow-purple-500/25'
+                            : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:scale-105 cursor-pointer shadow-lg'
                         }`}
                       >
-                        <>Continue <ArrowRight className="w-5 h-5" /></>
+                        <>Continue <ArrowRight className="w-4 h-4" /></>
                       </button>
                     </div>
                   </div>
@@ -2200,21 +2141,21 @@ function CheckoutPageContent() {
                 exit={reducedMotion ? { opacity: 0 } : { opacity: 0, x: -30 }}
                 transition={{ duration: reducedMotion ? 0.15 : 0.25 }}
               >
-                <div className="grid lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 min-w-0">
+                <div className="grid lg:grid-cols-4 gap-6 sm:gap-6 lg:gap-8">
                   <div className="lg:col-span-3">
                     {/* Important Email Notice - Mobile Optimized */}
-                    <div className="bg-red-500/20 border border-red-400/50 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 shadow-[0_0_25px_rgba(239,68,68,0.3)]">
-                      <div className="flex items-start gap-3">
+                    <div className="bg-red-500/15 border border-red-400/40 rounded-lg p-3 mb-4 sm:mb-6 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+                      <div className="flex items-start gap-2">
                         <div className="flex-shrink-0">
-                          <div className="w-6 h-6 rounded-full bg-red-500/30 flex items-center justify-center">
-                            <span className="text-red-300 text-sm font-bold">!</span>
+                          <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center">
+                            <span className="text-red-400 text-xs font-bold">!</span>
                           </div>
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-red-200 font-bold mb-3 text-base sm:text-lg">⚠️ Important: Email Verification Required</h3>
-                          <p className="text-sm text-red-100 leading-relaxed">
+                          <h3 className="text-red-200 font-semibold mb-2 text-sm">⚠️ Important: Email Verification Required</h3>
+                          <p className="text-xs text-red-100 leading-relaxed">
                             <strong>Make sure you enter the correct email address!</strong> You will receive all OTPs, tokens, and important updates on the email you provide. 
-                            <span className="block mt-2 text-red-200 font-semibold text-sm">
+                            <span className="block mt-1 text-red-200 font-medium text-xs">
                               If you enter a wrong email, your registration will Not be refundable.
                             </span>
                           </p>
@@ -2222,55 +2163,55 @@ function CheckoutPageContent() {
                       </div>
                     </div>
                     
-                    <h2 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 title-chroma text-center sm:text-left">Your Details</h2>
+                    <h2 className="text-2xl sm:text-xl font-semibold mb-6 sm:mb-6 title-chroma text-center sm:text-left">Your Details</h2>
                     {fieldGroups.length === 0 && (
-                      <p className="text-xs sm:text-sm text-gray-400">No events selected. Go back and pick at least one event.</p>
+                      <p className="text-sm sm:text-sm text-gray-400">No events selected. Go back and pick at least one event.</p>
                     )}
-                    <div className="space-y-6 sm:space-y-8">
+                    <div className="space-y-8 sm:space-y-8">
                       {/* Visitor Pass Details Section - Mobile Optimized */}
                       {visitorPassDays > 0 && (
-                        <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
-                          <div className="mb-6 text-center sm:text-left">
-                            <h3 className="font-bold text-yellow-200 text-lg sm:text-xl mb-2">Visitor Pass Details ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</h3>
-                            <p className="text-sm text-gray-300">Fill details for your visitor pass. This pass will be valid for {visitorPassDays} day{visitorPassDays > 1 ? 's' : ''}.</p>
+                        <div className="glass rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
+                          <div className="mb-4 sm:mb-4 text-center sm:text-left">
+                            <h3 className="font-semibold text-yellow-200 text-lg sm:text-base">Visitor Pass Details ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</h3>
+                            <p className="text-sm sm:text-xs text-gray-400">Fill details for your visitor pass. This pass will be valid for {visitorPassDays} day{visitorPassDays > 1 ? 's' : ''}.</p>
                           </div>
-                          <div className="glass rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/10">
-                                <div className="flex justify-between items-center mb-4 sm:mb-6">
-                              <h4 className="text-sm sm:text-base font-semibold text-white">Visitor Pass</h4>
-                              <div className="text-lg sm:text-xl text-yellow-400 font-bold">₹{visitorPassDays * 69}</div>
+                          <div className="glass rounded-lg sm:rounded-xl p-4 sm:p-4 border border-white/10">
+                                <div className="flex justify-between items-center mb-4 sm:mb-4">
+                              <h4 className="text-base sm:text-sm font-medium text-white/90">Visitor Pass</h4>
+                              <div className="text-base sm:text-xs text-yellow-400 font-medium">₹{visitorPassDays * 69}</div>
                                 </div>
-                                <div className="grid grid-cols-1 gap-4 sm:gap-6">
+                                <div className="grid grid-cols-1 gap-4">
                                   {VISITOR_PASS_FIELDS.map(field => {
                                 const error = (formErrors['visitorPasses'] || {})[`visitor_${field.name}`];
                                 const value = visitorPassDetails[field.name] || '';
                                     const inputType = field.type === 'phone' ? 'tel' : (field.type === 'number' ? 'number' : (field.type === 'email' ? 'email' : 'text'));
                                     return (
                                       <div key={field.name} className="flex flex-col">
-                                        <label className="text-sm text-white/90 mb-2 text-left font-medium">
-                                          {field.label}{field.required && <span className="text-pink-400 ml-1">*</span>}
+                                        <label className="text-base sm:text-xs text-white/70 mb-2 text-left">
+                                          {field.label}{field.required && <span className="text-pink-400">*</span>}
                                         </label>
                                         {field.type === 'select' ? (
                                           <select
                                             required={!!field.required}
-                                            className={`bg-black/50 border ${error ? 'border-pink-500' : 'border-white/30'} rounded-xl px-4 h-14 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-base touch-manipulation transition-all duration-200 hover:border-white/40`}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-4 h-14 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-lg sm:text-sm touch-manipulation`}
                                             value={value}
                                             onChange={e => {
                                           setVisitorPassDetails(prev => ({ ...prev, [field.name]: e.target.value }));
                                             }}
                                           >
-                                            <option value="">Select an option</option>
+                                            <option value="">Select</option>
                                             {(field.options || []).map(opt => (
                                               <option key={opt.value} value={opt.value}>{opt.label}</option>
                                             ))}
                                           </select>
                                         ) : field.type === 'file' ? (
                                           <div className="relative">
-                                            <div className="text-xs text-white/70 mb-2 font-medium">Max file size 500 KB</div>
+                                            <div className="text-base sm:text-xs text-white/60 mb-2">Max file size 500 KB</div>
                                             <input
                                               type="file"
                                               accept={field.accept || '*'}
                                               required={!!field.required}
-                                              className={`block max-w-full overflow-hidden bg-black/50 border ${error ? 'border-pink-500' : 'border-white/30'} rounded-xl px-4 py-4 w-full text-base focus:outline-none focus:ring-2 focus:ring-cyan-400 file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-0 file:text-base file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer touch-manipulation transition-all duration-200 hover:border-white/40`}
+                                              className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg sm:rounded-xl px-4 py-4 sm:py-2 w-full text-lg sm:text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 sm:file:px-3 file:rounded-lg file:border-0 file:text-lg sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer touch-manipulation min-h-[48px]`}
                                               onChange={e => {
                                                 const file = e.target.files?.[0] || null;
                                                 if (file && file.size > 500 * 1024) {
@@ -2278,17 +2219,7 @@ function CheckoutPageContent() {
                                                   e.currentTarget.value = '';
                                                   return;
                                                 }
-                                                if (file) {
-                                                  setVisitorPassDetails(prev => ({ ...prev, [field.name]: file.name }));
-                                                  setVisitorPassFiles(prev => ({ ...prev, [field.name]: file }));
-                                                } else {
-                                                  setVisitorPassDetails(prev => ({ ...prev, [field.name]: '' }));
-                                                  setVisitorPassFiles(prev => {
-                                                    const updated = { ...prev };
-                                                    delete updated[field.name];
-                                                    return updated;
-                                                  });
-                                                }
+                                                setVisitorPassDetails(prev => ({ ...prev, [field.name]: file?.name || '' }));
                                               }}
                                             />
                                           </div>
@@ -2297,7 +2228,7 @@ function CheckoutPageContent() {
                                             type={inputType}
                                             inputMode={field.type === 'phone' ? 'tel' : undefined}
                                             required={!!field.required}
-                                            className={`bg-black/50 border ${error ? 'border-pink-500' : 'border-white/30'} rounded-xl px-4 h-14 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/50 text-base touch-manipulation transition-all duration-200 hover:border-white/40`}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-4 h-14 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40 text-lg sm:text-sm touch-manipulation`}
                                             placeholder={field.placeholder || ''}
                                             value={value}
                                             onChange={e => {
@@ -2305,7 +2236,7 @@ function CheckoutPageContent() {
                                             }}
                                           />
                                         )}
-                                        {error && <span className="text-sm text-pink-400 mt-2 font-medium">{error}</span>}
+                                        {error && <span className="text-base sm:text-xs text-pink-400 mt-2">{error}</span>}
                                       </div>
                                     );
                                   })}
@@ -2348,7 +2279,7 @@ function CheckoutPageContent() {
                                               {field.type === 'select' ? (
                                                 <select
                                                   required={!!field.required}
-                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm`}
+                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-400 text-lg sm:text-sm min-h-[48px]`}
                                                   value={value}
                                                   onChange={e => {
                                                     setFlagshipBenefitsByEvent(prev => ({
@@ -2372,29 +2303,17 @@ function CheckoutPageContent() {
                                                   type="file"
                                                   accept={field.accept || '*'}
                                                   required={!!field.required}
-                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
+                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-400 file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-lg sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer min-h-[48px]`}
                                                   onChange={e => {
                                                     const file = e.target.files?.[0];
                                                     if (file) {
-                                                      // Store filename in display data
                                                       setFlagshipBenefitsByEvent(prev => ({
                                                         ...prev,
                                                         [eventId]: {
                                                           ...prev[parseInt(eventId, 10)],
                                                           supportArtistDetails: prev[parseInt(eventId, 10)].supportArtistDetails.map((detail: Record<string, string>, idx: number) => 
-                                                            idx === index ? { ...detail, [field.name]: file.name } : detail
+                                                            idx === index ? { ...detail, [field.name]: file } : detail
                                                           )
-                                                        }
-                                                      }));
-                                                      // Store actual file separately
-                                                      setFlagshipBenefitFiles(prev => ({
-                                                        ...prev,
-                                                        [`supportArtist_${eventId}`]: {
-                                                          ...(prev[`supportArtist_${eventId}`] || {}),
-                                                          [index]: {
-                                                            ...((prev[`supportArtist_${eventId}`] || {})[index] || {}),
-                                                            [field.name]: file
-                                                          }
                                                         }
                                                       }));
                                                     }
@@ -2405,7 +2324,7 @@ function CheckoutPageContent() {
                                                   type={inputType}
                                                   inputMode={field.type === 'phone' ? 'tel' : undefined}
                                                   required={!!field.required}
-                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder:text-white/40 text-sm`}
+                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder:text-white/40 text-lg sm:text-sm min-h-[48px]`}
                                                   placeholder={field.placeholder || ''}
                                                   value={value}
                                                   onChange={e => {
@@ -2459,7 +2378,7 @@ function CheckoutPageContent() {
                                               {field.type === 'select' ? (
                                                 <select
                                                   required={!!field.required}
-                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm`}
+                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg sm:text-sm min-h-[48px]`}
                                                   value={value}
                                                   onChange={e => {
                                                     setFlagshipBenefitsByEvent(prev => ({
@@ -2485,7 +2404,7 @@ function CheckoutPageContent() {
                                                     type="file"
                                                     accept={field.accept || '*'}
                                                     required={!!field.required}
-                                                    className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-base sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
+                                                    className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-lg sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer min-h-[48px]`}
                                                     onChange={e => {
                                                       const file = e.target.files?.[0] || null;
                                                       if (file && file.size > 500 * 1024) {
@@ -2493,27 +2412,15 @@ function CheckoutPageContent() {
                                                         e.currentTarget.value = '';
                                                         return;
                                                       }
-                                                      if (file) {
-                                                        setFlagshipBenefitsByEvent(prev => ({
-                                                          ...prev,
-                                                          [eventId]: {
-                                                            ...prev[parseInt(eventId, 10)],
-                                                            flagshipVisitorPassDetails: prev[parseInt(eventId, 10)].flagshipVisitorPassDetails.map((detail: Record<string, string>, idx: number) => 
-                                                              idx === index ? { ...detail, [field.name]: file.name } : detail
-                                                            )
-                                                          }
-                                                        }));
-                                                        setFlagshipBenefitFiles(prev => ({
-                                                          ...prev,
-                                                          [`flagshipVisitor_${eventId}`]: {
-                                                            ...(prev[`flagshipVisitor_${eventId}`] || {}),
-                                                            [index]: {
-                                                              ...((prev[`flagshipVisitor_${eventId}`] || {})[index] || {}),
-                                                              [field.name]: file
-                                                            }
-                                                          }
-                                                        }));
-                                                      }
+                                                      setFlagshipBenefitsByEvent(prev => ({
+                                                        ...prev,
+                                                        [eventId]: {
+                                                          ...prev[parseInt(eventId, 10)],
+                                                          flagshipVisitorPassDetails: prev[parseInt(eventId, 10)].flagshipVisitorPassDetails.map((detail: Record<string, string>, idx: number) => 
+                                                            idx === index ? { ...detail, [field.name]: file?.name || '' } : detail
+                                                          )
+                                                        }
+                                                      }));
                                                     }}
                                                   />
                                                 </div>
@@ -2522,7 +2429,7 @@ function CheckoutPageContent() {
                                                   type={inputType}
                                                   inputMode={field.type === 'phone' ? 'tel' : undefined}
                                                   required={!!field.required}
-                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-white/40 text-sm`}
+                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-white/40 text-lg sm:text-sm min-h-[48px]`}
                                                   placeholder={field.placeholder || ''}
                                                   value={value}
                                                   onChange={e => {
@@ -2576,7 +2483,7 @@ function CheckoutPageContent() {
                                               {field.type === 'select' ? (
                                                 <select
                                                   required={!!field.required}
-                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 text-sm`}
+                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-400 text-lg sm:text-sm min-h-[48px]`}
                                                   value={value}
                                                   onChange={e => {
                                                     setFlagshipBenefitsByEvent(prev => ({
@@ -2602,7 +2509,7 @@ function CheckoutPageContent() {
                                                     type="file"
                                                     accept={field.accept || '*'}
                                                     required={!!field.required}
-                                                    className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-base sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer`}
+                                                    className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-lg sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer min-h-[48px]`}
                                                     onChange={e => {
                                                       const file = e.target.files?.[0] || null;
                                                       if (file && file.size > 500 * 1024) {
@@ -2610,27 +2517,15 @@ function CheckoutPageContent() {
                                                         e.currentTarget.value = '';
                                                         return;
                                                       }
-                                                      if (file) {
-                                                        setFlagshipBenefitsByEvent(prev => ({
-                                                          ...prev,
-                                                          [eventId]: {
-                                                            ...prev[parseInt(eventId, 10)],
-                                                            flagshipSoloVisitorPassDetails: prev[parseInt(eventId, 10)].flagshipSoloVisitorPassDetails.map((detail: Record<string, string>, idx: number) => 
-                                                              idx === index ? { ...detail, [field.name]: file.name } : detail
-                                                            )
-                                                          }
-                                                        }));
-                                                        setFlagshipBenefitFiles(prev => ({
-                                                          ...prev,
-                                                          [`flagshipSoloVisitor_${eventId}`]: {
-                                                            ...(prev[`flagshipSoloVisitor_${eventId}`] || {}),
-                                                            [index]: {
-                                                              ...((prev[`flagshipSoloVisitor_${eventId}`] || {})[index] || {}),
-                                                              [field.name]: file
-                                                            }
-                                                          }
-                                                        }));
-                                                      }
+                                                      setFlagshipBenefitsByEvent(prev => ({
+                                                        ...prev,
+                                                        [eventId]: {
+                                                          ...prev[parseInt(eventId, 10)],
+                                                          flagshipSoloVisitorPassDetails: prev[parseInt(eventId, 10)].flagshipSoloVisitorPassDetails.map((detail: Record<string, string>, idx: number) => 
+                                                            idx === index ? { ...detail, [field.name]: file?.name || '' } : detail
+                                                          )
+                                                        }
+                                                      }));
                                                     }}
                                                   />
                                                 </div>
@@ -2639,7 +2534,7 @@ function CheckoutPageContent() {
                                                   type={inputType}
                                                   inputMode={field.type === 'phone' ? 'tel' : undefined}
                                                   required={!!field.required}
-                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 placeholder:text-white/40 text-sm`}
+                                                  className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-400 placeholder:text-white/40 text-lg sm:text-sm min-h-[48px]`}
                                                   placeholder={field.placeholder || ''}
                                                   value={value}
                                                   onChange={e => {
@@ -2702,7 +2597,7 @@ function CheckoutPageContent() {
                                       id={inputId}
                                       required={!!field.required}
                                       aria-describedby={error ? errorId : undefined}
-                                      className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-3 h-12 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-base sm:text-sm touch-manipulation`}
+                                      className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-4 h-14 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-lg sm:text-sm touch-manipulation`}
                                       value={value}
                                       onChange={e => handleFieldChange(group.signature, field.name, e.target.value)}
                                     >
@@ -2958,28 +2853,9 @@ function CheckoutPageContent() {
 
 
                     </div>
-                    <ActionRow
-                      connectionQuality={connectionQuality}
-                      onSave={() => {
-                        try {
-                          const toSave = {
-                            selectedEventIds,
-                            visitorPassDays,
-                            visitorPassDetails,
-                            formDataBySignature,
-                            teamMembersBySignature,
-                            flagshipBenefitsByEvent,
-                            promoInput,
-                            appliedPromo,
-                          };
-                          localStorage.setItem('sabrang_checkout_draft_v1', JSON.stringify(toSave));
-                          alert('Progress saved locally.');
-                        } catch {}
-                      }}
-                      onFallback={() => window.open(CASHFREE_FALLBACK_FORM_URL, '_blank')}
-                      onBack={goBack}
-                      onNext={goNext}
-                    />
+                    <div className="flex items-center gap-3 mt-8">
+                      <button onClick={goBack} className="px-6 py-3 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer min-h-[48px] text-lg sm:text-sm">Back</button>
+                    </div>
                   </div>
                   <div>
                     <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)]">
@@ -3052,10 +2928,10 @@ function CheckoutPageContent() {
                       {/* Promo code input */}
                       <div className="mt-6 p-4 rounded-xl bg-white/5 border border-white/10">
                         <h4 className="text-sm font-medium text-white/90 mb-3">Promo Code</h4>
-                        <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                        <div className="flex gap-2 items-start flex-wrap md:flex-nowrap">
                           <input
                             type="text"
-                            className="flex-1 w-full bg-black/50 border border-white/30 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/50 text-base touch-manipulation"
+                            className="min-w-0 flex-1 w-full bg-black/40 border border-white/20 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40 text-lg sm:text-sm min-h-[48px]"
                             placeholder="Enter promo code"
                             value={promoInput}
                             onChange={e => setPromoInput(e.target.value.toUpperCase())}
@@ -3063,7 +2939,7 @@ function CheckoutPageContent() {
                           {appliedPromo ? (
                             <button
                               type="button"
-                              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 font-semibold text-base transition-all duration-200 hover:scale-105 active:scale-95"
+                              className="shrink-0 px-4 py-3 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 text-lg sm:text-sm font-medium whitespace-nowrap min-h-[48px]"
                               onClick={() => { setAppliedPromo(null); setPromoStatus({ loading: false, error: null }); }}
                             >
                               Remove
@@ -3071,7 +2947,7 @@ function CheckoutPageContent() {
                           ) : (
                             <button
                               type="button"
-                              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold text-base transition-all duration-200 hover:scale-105 active:scale-95"
+                              className="shrink-0 px-4 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-lg sm:text-sm font-medium whitespace-nowrap min-h-[48px]"
                               onClick={tryApplyPromo}
                               disabled={promoStatus.loading}
                             >
@@ -3085,15 +2961,28 @@ function CheckoutPageContent() {
                         )}
                       </div>
 
-                      {/* Mobile Continue Button - Only visible on mobile */}
-                      <div className="lg:hidden mt-6">
+                      {/* Continue Button after Promo Code */}
+                      <div className="mt-6 flex justify-center">
                         <button
                           onClick={() => {
-                            goNext();
+                            // Validate forms first
+                            const isValid = validateForms();
+                            if (!isValid) {
+                              // Find the first error field and scroll to it
+                              const firstErrorField = document.querySelector('.border-pink-500');
+                              if (firstErrorField) {
+                                firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                              }
+                              return;
+                            }
+                            // If validation passes, go to review step
+                            setStep('review');
+                            scrollToTop();
                           }}
-                          className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:from-purple-600 hover:via-pink-600 hover:to-cyan-500 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 shadow-xl hover:shadow-purple-500/25 flex items-center justify-center gap-3 text-lg"
+                          className="px-8 py-3 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:from-purple-600 hover:via-pink-600 hover:to-cyan-500 text-white font-medium rounded-xl transition-all flex items-center gap-2 min-h-[48px] shadow-lg hover:shadow-xl"
                         >
-                          Continue to Payment <ArrowRight className="w-5 h-5" />
+                          <ArrowRight className="w-5 h-5" />
+                          Continue
                         </button>
                       </div>
 
@@ -3126,7 +3015,7 @@ function CheckoutPageContent() {
                 exit={reducedMotion ? { opacity: 0 } : { opacity: 0, x: -30 }}
                 transition={{ duration: reducedMotion ? 0.15 : 0.25 }}
               >
-                <div className="grid lg:grid-cols-4 gap-8 min-w-0">
+                <div className="grid lg:grid-cols-4 gap-8">
                   <div className="lg:col-span-3">
                     <h2 className="text-xl font-semibold mb-6 title-chroma">Review</h2>
                     <div className="space-y-8">
@@ -3198,16 +3087,16 @@ function CheckoutPageContent() {
                         </div>
                       ))}
                     </div>
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-8">
-                      <button onClick={goBack} className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer font-medium">Back</button>
-                      <div className="space-y-3 flex-1">
+                    <div className="flex items-center gap-3 mt-8">
+                      <button onClick={goBack} className="px-6 py-3 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer min-h-[48px] text-lg sm:text-sm">Back</button>
+                      <div className="space-y-3">
                         <button 
                           onClick={startPaymentInitialization} 
                           disabled={paymentInitializationState.isLoading}
-                          className={`w-full px-6 py-3 rounded-xl transition cursor-pointer font-semibold text-base ${
+                          className={`px-6 py-3 rounded-full transition cursor-pointer min-h-[48px] text-lg sm:text-sm ${
                             paymentInitializationState.isLoading 
                               ? 'bg-gray-600 cursor-not-allowed' 
-                              : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:shadow-lg hover:scale-105 active:scale-95'
+                              : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:shadow-lg'
                           }`}
                         >
                           {paymentInitializationState.isLoading 
@@ -3275,7 +3164,7 @@ function CheckoutPageContent() {
                 exit={reducedMotion ? { opacity: 0 } : { opacity: 0, x: -30 }}
                 transition={{ duration: reducedMotion ? 0.15 : 0.25 }}
               >
-                <div className="grid lg:grid-cols-4 gap-8 min-w-0">
+                <div className="grid lg:grid-cols-4 gap-8">
                   <div className="lg:col-span-3">
                     <h2 className="text-xl font-semibold mb-6 title-chroma">Complete Payment</h2>
                     
@@ -3318,7 +3207,7 @@ function CheckoutPageContent() {
                             <button
                               onClick={doPayment}
                               disabled={isProcessingPayment}
-                              className="w-full bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-3 text-lg"
+                              className="w-full bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium py-4 px-6 rounded-xl transition-all flex items-center justify-center gap-3 text-lg min-h-[56px]"
                             >
                               {isProcessingPayment ? (
                                 <>
@@ -3332,6 +3221,29 @@ function CheckoutPageContent() {
                                 </>
                               )}
                             </button>
+
+                            {/* Prominent Fallback Payment Button */}
+                            <div className="mt-4 p-4 bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-400/40 rounded-xl">
+                              <div className="flex items-center gap-2 mb-3">
+                                <AlertTriangle className="w-5 h-5 text-orange-400" />
+                                <span className="text-orange-200 font-medium">Having trouble with payment?</span>
+                              </div>
+                              <p className="text-orange-100/90 text-sm mb-3">
+                                If the payment button above doesn't work, try our alternative payment method:
+                              </p>
+                              <a
+                                href={CASHFREE_FALLBACK_FORM_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-medium py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-3 text-base min-h-[48px]"
+                              >
+                                <CreditCard className="w-5 h-5" />
+                                Try Fallback Payment
+                              </a>
+                              <p className="text-orange-200/70 text-xs mt-2 text-center">
+                                Opens in a new tab for secure payment
+                              </p>
+                            </div>
                             
                             {/* Payment error message */}
                             {paymentInitializationState.error && step === 'payment' && (
@@ -3414,8 +3326,8 @@ function CheckoutPageContent() {
                     )}
 
                     {/* Navigation */}
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-8">
-                      <button onClick={goBack} className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer font-medium">Back</button>
+                    <div className="flex items-center gap-3 mt-8">
+                      <button onClick={goBack} className="px-6 py-3 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer min-h-[48px] text-lg sm:text-sm">Back</button>
                     </div>
                   </div>
 
@@ -3460,9 +3372,9 @@ function CheckoutPageContent() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="relative w-full max-w-md text-center"
+              className="relative w-full max-w-sm sm:max-w-md text-center"
             >
-              <div className="glass rounded-2xl p-8 border border-white/10 shadow-[0_0_30px_rgba(147,51,234,0.2)]">
+              <div className="glass rounded-2xl p-6 sm:p-8 border border-white/10 shadow-[0_0_30px_rgba(147,51,234,0.2)]">
                 {isVerifying ? (
                   <>
                     <Loader className="w-16 h-16 text-purple-400 animate-spin mx-auto mb-6" />
@@ -3481,14 +3393,14 @@ function CheckoutPageContent() {
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                       <button
                         onClick={() => router.push('/ticket')}
-                        className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 text-lg shadow-lg hover:scale-105"
+                        className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 text-lg shadow-lg hover:scale-105 min-h-[48px]"
                       >
                         <Ticket className="w-6 h-6" />
                         View My Tickets
                       </button>
                       <button
                         onClick={() => router.push('/')}
-                        className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+                        className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 min-h-[48px]"
                       >
                         <Home className="w-5 h-5" />
                         Go to Homepage
@@ -3507,7 +3419,7 @@ function CheckoutPageContent() {
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                       <button
                         onClick={() => { setPaymentVerificationStatus(null); router.replace('/checkout', { scroll: false }); setStep('review'); }}
-                        className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 text-lg shadow-lg hover:scale-105"
+                        className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 text-lg shadow-lg hover:scale-105 min-h-[48px]"
                       >
                         Try Again
                       </button>
@@ -3589,7 +3501,7 @@ function CheckoutPageContent() {
                 <button
                   key={item.title}
                   onClick={() => { setMobileMenuOpen(false); router.push(item.href); }}
-                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-lg sm:text-base hover:bg-white/15 active:scale-[0.99] transition text-left min-h-[56px]"
                 >
                   <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
                     {item.icon}
@@ -3616,7 +3528,7 @@ function CheckoutPageContent() {
 	                href="https://forms.gle/eth5B3JoQATdy9aRA"
 	                target="_blank"
 	                rel="noopener noreferrer"
-	                className="inline-flex items-center gap-2 mt-3 px-3 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-sm border border-white/10"
+	                className="inline-flex items-center gap-2 mt-3 px-4 py-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-lg sm:text-sm border border-white/10 min-h-[48px]"
 	              >
 	                Report an issue
 	                <ArrowRight className="w-4 h-4" />
@@ -3669,4 +3581,3 @@ export default function CheckoutPage() {
     </Suspense>
   );
 }
-
