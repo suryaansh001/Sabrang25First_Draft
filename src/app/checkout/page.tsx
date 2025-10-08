@@ -1402,22 +1402,31 @@ function CheckoutPageContent() {
         universityName: flat['universityName'],
         address: flat['address'],
         referralCode: flat['referralCode'],
-        // Include team and form data for proper registration
+        // Fix: Backend expects 'formsBySignature' not 'formDataBySignature'
+        formsBySignature: formDataBySignature,
         teamMembersBySignature: teamMembersBySignature,
-        formDataBySignature: formDataBySignature,
+        // Fix: Backend needs 'items' with full event data for proper team member mapping
+        items: selectedEvents.map(e => ({ id: e.id, title: e.title, price: e.price })),
         selectedEventIds: selectedEventIds,
         visitorPassDays: visitorPassDays,
         visitorPassDetails: visitorPassDetails,
         flagshipBenefitsByEvent: flagshipBenefitsByEvent
       } as Record<string, any>;
 
+      // Create FormData for multipart/form-data request as expected by backend
+      const formData = new FormData();
+      Object.entries(basicData).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          formData.append(key, typeof value === 'object' ? JSON.stringify(value) : String(value));
+        }
+      });
+
       const registrationResponse = await retryFetch(
         createApiUrl('/register'),
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify(basicData)
+          body: formData // Send as FormData instead of JSON
         },
         2,
         15000
