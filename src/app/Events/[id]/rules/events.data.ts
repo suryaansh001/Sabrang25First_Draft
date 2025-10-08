@@ -149,7 +149,7 @@ export const events: Event[] = [
             { name: 'Smile Chhabra', roll: '2024BBA084', email: 'smilechhabra@jklu.edu.in', phone: '9571839843' }
         ],
         rules: [
-            'Team Size: Each team must consist of 10 to 21 members (including performers and backstage help).',
+            'Team Size: Each team must consist of 10 to 25 members (including performers and backstage help).',
             'Reporting Time: All teams must report at the venue 2 hours before the event for briefing and sound check.',
             'Multiple Entries: Participants are allowed to be a part of only one team.',
             'Music Submission: Teams must submit their audio file in MP3 format, at least 2 days prior to the event.',

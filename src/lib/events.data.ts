@@ -23,7 +23,7 @@ export const events: Event[] = [
     'Team size: 3 - 8 members'
   ] },
   { id: 3, title: 'DANCE BATTLE', category: 'Flagship', price: 'Team ₹2,499', rules: [
-    'Team size: 10 - 21 members'
+    'Team size: 10 - 25 members'
   ] },
   { id: 4, title: 'STEP UP', category: 'Flagship', price: 'Solo ₹499', rules: [
     'Team size: Solo'
