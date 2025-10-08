@@ -100,6 +100,24 @@ export function clearStorage(): void {
   }
 }
 
+// Retry fetch utility
+export async function retryFetch(url: string, options: RequestInit, maxRetries: number = 2): Promise<Response> {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const response = await fetch(url, options);
+      if (response.ok || i === maxRetries - 1) {
+        return response;
+      }
+      // Wait before retry
+      await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+    } catch (error) {
+      if (i === maxRetries - 1) throw error;
+      await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+    }
+  }
+  throw new Error('Max retries exceeded');
+}
+
 // Validation utilities
 export function validateEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

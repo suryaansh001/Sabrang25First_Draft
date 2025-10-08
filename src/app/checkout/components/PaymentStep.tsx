@@ -4,6 +4,7 @@ import { CheckoutState } from '../types';
 import { CreditCard, Loader, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import createApiUrl from '../../../lib/api';
 import { load } from '@cashfreepayments/cashfree-js';
+import { retryFetch } from '../utils';
 
 interface PaymentStepProps {
   selectedEvents: EventCatalogItem[];
@@ -89,7 +90,7 @@ export function PaymentStep({
       });
 
       // Register user
-      const registerResponse = await fetch(createApiUrl('/register'), {
+      const registerResponse = await retryFetch(createApiUrl('/register'), {
         method: 'POST',
         credentials: 'include',
         body: registrationForm,
@@ -99,38 +100,55 @@ export function PaymentStep({
         throw new Error('Failed to register user');
       }
 
-      // Create payment session
-      const paymentData = {
+      // Create payment order
+      const orderData = {
         amount: finalPrice,
         currency: 'INR',
         customerEmail: userEmail,
         customerName: userName,
-        customerPhone: '', // Add if available
+        customerPhone: firstFormData['contactNo'] || '',
         orderNote: `Sabrang 2025 - ${selectedEvents.map(e => e.title).join(', ')}${state.visitorPassDays > 0 ? ` + ${state.visitorPassDays} day visitor pass` : ''}`,
       };
 
-      const paymentResponse = await fetch(createApiUrl('/payment/create-session'), {
+      console.log('🚀 Creating payment order with data:', orderData);
+
+      const response = await retryFetch(createApiUrl('/api/payments/create-order'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify(paymentData),
+        body: JSON.stringify(orderData),
       });
 
-      if (!paymentResponse.ok) {
-        const errorData = await paymentResponse.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Failed to create payment session');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to create payment order');
       }
 
-      const paymentResult = await paymentResponse.json();
+      const result = await response.json();
+      console.log('✅ Payment order created:', result);
 
-      // Initialize Cashfree payment
+      // Extract session ID from response (it's nested in data object)
+      const paymentData = result.data || result;
+      const sessionId = paymentData.paymentSessionId || paymentData.payment_session_id || paymentData.sessionId || paymentData.session_id;
+      
+      if (!sessionId) {
+        console.error('❌ No session ID in response. Full response:', result);
+        console.error('❌ Payment data:', paymentData);
+        throw new Error('Payment session ID not received from server');
+      }
+
+      console.log('✅ Got payment session ID:', sessionId);
+
+      // Initialize Cashfree SDK
+      console.log('💳 Initializing Cashfree SDK...');
       const cashfree = await load({ mode: 'production' });
       
       const checkoutOptions = {
-        paymentSessionId: paymentResult.paymentSessionId,
+        paymentSessionId: sessionId,
         redirectTarget: '_self' as const,
       };
 
+      console.log('💳 Launching Cashfree checkout with options:', checkoutOptions);
       await cashfree.checkout(checkoutOptions);
       
       setPaymentStatus('success');
