@@ -187,17 +187,17 @@ function formatPrice(price: number): string {
 const Stepper = React.memo(({ currentStep }: { currentStep: Step }) => {
   const currentStepIndex = STEPS.findIndex(s => s.id === currentStep);
   return (
-    <div className="flex items-center justify-center mb-8 sm:mb-10 overflow-x-auto px-4">
-      <div className="flex items-center space-x-2 sm:space-x-4 min-w-0">
+    <div className="flex items-center justify-center mb-6 sm:mb-8 overflow-x-auto px-2">
+      <div className="flex items-center min-w-max">
       {STEPS.map((step, i) => (
         <React.Fragment key={step.id}>
-          <div className={`flex flex-col sm:flex-row items-center ${i <= currentStepIndex ? 'text-purple-300' : 'text-gray-400'}`}>
-              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm sm:text-base font-semibold transition-all duration-300 ${i <= currentStepIndex ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/25' : 'bg-gray-700 text-gray-400'}`}>
+          <div className={`flex items-center ${i <= currentStepIndex ? 'text-purple-300' : 'text-gray-400'}`}>
+              <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold ${i <= currentStepIndex ? 'bg-purple-500 text-white' : 'bg-gray-700 text-gray-400'}`}>
               {i + 1}
             </div>
-              <span className="mt-1 sm:mt-0 sm:ml-2 text-xs sm:text-sm font-medium text-center sm:text-left max-w-[60px] sm:max-w-none truncate">{step.name}</span>
+              <span className="ml-1 sm:ml-2 text-xs sm:text-sm hidden xs:inline">{step.name}</span>
           </div>
-            {i < STEPS.length - 1 && <div className={`w-8 sm:w-16 h-px mx-1 sm:mx-2 ${i < currentStepIndex ? 'bg-gradient-to-r from-purple-400 to-pink-400' : 'bg-gray-700'}`} />}
+            {i < STEPS.length - 1 && <div className={`w-6 sm:w-12 h-px mx-2 sm:mx-4 ${i < currentStepIndex ? 'bg-purple-400' : 'bg-gray-700'}`} />}
         </React.Fragment>
       ))}
       </div>
@@ -280,83 +280,6 @@ function CheckoutPageContent() {
 
   // Fallback Cashfree form URL for manual payment if SDK/init fails or times out
   const CASHFREE_FALLBACK_FORM_URL = 'https://payments.cashfree.com/forms?code=sabrang25';
-
-  // Memoized action row
-  const ActionRow = React.memo(function ActionRow(props: {
-    connectionQuality: 'good' | 'poor' | 'offline';
-    onSave: () => void;
-    onFallback: () => void;
-    onBack: () => void;
-    onNext: () => void;
-  }) {
-    const { connectionQuality, onSave, onFallback, onBack, onNext } = props;
-    return (
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-8">
-        <div className={`text-xs px-3 py-2 rounded-full border text-center sm:text-left ${connectionQuality === 'good' ? 'text-green-300 border-green-400/40 bg-green-500/10' : connectionQuality === 'poor' ? 'text-yellow-300 border-yellow-400/40 bg-yellow-500/10' : 'text-red-300 border-red-400/40 bg-red-500/10'}`}>
-          {connectionQuality === 'good' ? 'Good connection' : connectionQuality === 'poor' ? 'Slow connection' : 'Offline'}
-        </div>
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-1">
-          <button type="button" onClick={onSave} className="w-full sm:w-auto px-4 py-2 rounded-xl bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer text-sm font-medium">
-            Save Progress
-          </button>
-          <button type="button" onClick={onFallback} className="w-full sm:w-auto px-4 py-2 rounded-xl bg-orange-500/20 border border-orange-400/40 hover:bg-orange-500/30 transition cursor-pointer text-sm text-orange-200 font-medium">
-            Try Fallback Payment
-          </button>
-          <button onClick={onBack} className="w-full sm:w-auto px-4 py-2 rounded-xl bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer font-medium">Back</button>
-          <button onClick={onNext} className="hidden sm:block w-full sm:w-auto px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 transition cursor-pointer font-medium hover:scale-105 active:scale-95">Continue</button>
-        </div>
-      </div>
-    );
-  });
-
-
-  // Local draft autosave (persist non-file inputs)
-  const CHECKOUT_DRAFT_KEY = 'sabrang_checkout_draft_v1';
-  // Load draft on mount
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(CHECKOUT_DRAFT_KEY);
-      if (!raw) return;
-      const draft = JSON.parse(raw) as Record<string, any>;
-      if (Array.isArray(draft.selectedEventIds)) setSelectedEventIds(draft.selectedEventIds);
-      if (typeof draft.visitorPassDays === 'number') setVisitorPassDays(draft.visitorPassDays);
-      if (draft.visitorPassDetails && typeof draft.visitorPassDetails === 'object') setVisitorPassDetails(draft.visitorPassDetails);
-      if (draft.formDataBySignature && typeof draft.formDataBySignature === 'object') setFormDataBySignature(draft.formDataBySignature);
-      if (draft.teamMembersBySignature && typeof draft.teamMembersBySignature === 'object') setTeamMembersBySignature(draft.teamMembersBySignature);
-      if (draft.flagshipBenefitsByEvent && typeof draft.flagshipBenefitsByEvent === 'object') setFlagshipBenefitsByEvent(draft.flagshipBenefitsByEvent);
-      if (typeof draft.promoInput === 'string') setPromoInput(draft.promoInput);
-      if (draft.appliedPromo && typeof draft.appliedPromo === 'object') setAppliedPromo(draft.appliedPromo);
-    } catch {}
-  }, []);
-  // Debounced save when key state changes
-  useEffect(() => {
-    const toSave = {
-      selectedEventIds,
-      visitorPassDays,
-      visitorPassDetails,
-      formDataBySignature,
-      teamMembersBySignature,
-      flagshipBenefitsByEvent,
-      promoInput,
-      appliedPromo,
-    };
-    const id = window.setTimeout(() => {
-      try { localStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify(toSave)); } catch {}
-    }, 800);
-    return () => window.clearTimeout(id);
-  }, [
-    selectedEventIds,
-    visitorPassDays,
-    visitorPassDetails,
-    formDataBySignature,
-    teamMembersBySignature,
-    flagshipBenefitsByEvent,
-    promoInput,
-    appliedPromo,
-  ]);
-  const clearDraft = () => {
-    try { localStorage.removeItem(CHECKOUT_DRAFT_KEY); } catch {}
-  };
 
 
   // Force reduced motion for smooth scrolling experience on this page
@@ -515,7 +438,7 @@ function CheckoutPageContent() {
 
       return hasChanged ? updated : prev;
     });
-  }, [selectedEvents]);
+  }, [selectedEvents, flagshipBenefitsByEvent]);
 
   const fieldGroups = useMemo(() => {
     const groups: { signature: string; fields: FieldSet; events: EventCatalogItem[] }[] = [];
@@ -1049,23 +972,20 @@ function CheckoutPageContent() {
     });
   };
 
-  // Immediate field change handler (no debounce) to keep typing responsive
+  // Handle field changes
   const handleFieldChange = (signature: string, fieldName: string, value: string) => {
-    let nextValue = value;
-    if (fieldName === 'referralCode' && typeof nextValue === 'string') {
-      nextValue = nextValue.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    }
     setFormDataBySignature(prev => ({
       ...prev,
       [signature]: {
         ...prev[signature],
-        [fieldName]: nextValue
+        [fieldName]: value
       }
     }));
 
+    // If team size changes, auto-size team members array to match
     if (fieldName === 'numMembers') {
-      const totalMembers = Math.max(0, Math.min(50, parseInt(nextValue || '0', 10) || 0));
-      const additionalMembers = Math.max(0, totalMembers - 1);
+      const totalMembers = Math.max(0, Math.min(50, parseInt(value || '0', 10) || 0));
+      const additionalMembers = Math.max(0, totalMembers - 1); // Leader is in main form
       setTeamMembersBySignature(prev => {
         const existing = prev[signature] || [];
         const next = existing.slice(0, additionalMembers);
@@ -1075,29 +995,30 @@ function CheckoutPageContent() {
         return { ...prev, [signature]: next };
       });
     }
+
+    // For referralCode field, enforce uppercase letters and numbers only
+    if (fieldName === 'referralCode' && typeof value === 'string') {
+      value = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      setFormDataBySignature(prev => ({
+        ...prev,
+        [signature]: {
+          ...prev[signature],
+          [fieldName]: value
+        }
+      }));
+    }
   };
 
   // Handle file uploads
-  const handleFileChange = async (signature: string, fieldName: string, file: File | null) => {
+  const handleFileChange = (signature: string, fieldName: string, file: File | null) => {
     if (file) {
-      try {
-        const compressed = await compressImage(file, 500);
-        setFilesBySignature(prev => ({
-          ...prev,
-          [signature]: {
-            ...prev[signature],
-            [fieldName]: compressed
-          }
-        }));
-      } catch {
-        setFilesBySignature(prev => ({
-          ...prev,
-          [signature]: {
-            ...prev[signature],
-            [fieldName]: file
-          }
-        }));
-      }
+      setFilesBySignature(prev => ({
+        ...prev,
+        [signature]: {
+          ...prev[signature],
+          [fieldName]: file
+        }
+      }));
       // Also store the filename in form data for display purposes
       setFormDataBySignature(prev => ({
         ...prev,
@@ -1204,134 +1125,33 @@ function CheckoutPageContent() {
   };
 
 
-  // Request timeout wrapper
-  const fetchWithTimeout = async (url: string, options: RequestInit, timeout: number = 15000): Promise<Response> => {
-    const controller = new AbortController();
-    const timeoutId = window.setTimeout(() => controller.abort(), timeout);
-    try {
-      const response = await fetch(url, { ...options, signal: controller.signal });
-      window.clearTimeout(timeoutId);
-      return response;
-    } catch (error: any) {
-      window.clearTimeout(timeoutId);
-      if (error?.name === 'AbortError') {
-        throw new Error('Request timeout - please check your internet connection');
-      }
-      throw error;
-    }
-  };
-
-  // Improved retry with exponential backoff
-  const retryFetch = async (
-    url: string,
-    options: RequestInit,
-    maxRetries: number = 2,
-    timeout: number = 15000
-  ): Promise<Response> => {
-    let lastError: Error | null = null;
-    for (let i = 0; i <= maxRetries; i++) {
+  // Helper function for retry logic
+  const retryFetch = async (url: string, options: RequestInit, maxRetries: number = 2): Promise<Response> => {
+    for (let i = 0; i < maxRetries; i++) {
       try {
-        const response = await fetchWithTimeout(url, options, timeout);
-        if (response.ok || (response.status >= 400 && response.status < 500)) {
-          return response;
-        }
-        if (i < maxRetries) {
-          const backoffDelay = Math.min(1000 * Math.pow(2, i), 5000);
-          await new Promise(resolve => setTimeout(resolve, backoffDelay));
-          continue;
-        }
+        const response = await fetch(url, options);
         return response;
       } catch (error) {
-        lastError = error as Error;
-        console.log(`🔄 Retry attempt ${i + 1}/${maxRetries + 1} failed:`, error);
-        if (i < maxRetries) {
-          const backoffDelay = Math.min(1000 * Math.pow(2, i), 5000);
-          await new Promise(resolve => setTimeout(resolve, backoffDelay));
+        console.log(`🔄 Retry attempt ${i + 1}/${maxRetries} failed:`, error);
+        
+        if (i === maxRetries - 1) {
+          // Return a mock response instead of throwing error
+          return new Response(JSON.stringify({ success: false, message: 'Request failed' }), {
+            status: 500,
+            statusText: 'Internal Server Error'
+          });
         }
+        
+        // Simple backoff: wait 1s
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
-    throw lastError || new Error('Request failed after retries');
-  };
-
-  // Image compression before upload
-  const compressImage = async (file: File, maxSizeKB: number = 500): Promise<File> => {
-    return new Promise((resolve, reject) => {
-      if (file.size <= maxSizeKB * 1024) {
-        resolve(file);
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-          const maxDimension = 1200;
-          if (width > height && width > maxDimension) {
-            height = (height * maxDimension) / width;
-            width = maxDimension;
-          } else if (height > maxDimension) {
-            width = (width * maxDimension) / height;
-            height = maxDimension;
-          }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx?.drawImage(img, 0, 0, width, height);
-          let quality = 0.7;
-          const toBlobAtQuality = (q: number) => new Promise<Blob | null>(res => canvas.toBlob(b => res(b), 'image/jpeg', q));
-          toBlobAtQuality(quality).then(async (blob) => {
-            if (!blob) { resolve(file); return; }
-            let compressedBlob = blob;
-            while (compressedBlob.size > maxSizeKB * 1024 && quality > 0.3) {
-              quality -= 0.1;
-              const next = await toBlobAtQuality(quality);
-              if (!next) break;
-              compressedBlob = next;
-            }
-            resolve(new File([compressedBlob], file.name, { type: 'image/jpeg', lastModified: Date.now() }));
-          });
-        };
-        img.onerror = () => reject(new Error('Image load failed'));
-        img.src = e.target?.result as string;
-      };
-      reader.onerror = () => reject(new Error('File read failed'));
-      reader.readAsDataURL(file);
+    // This should never be reached, but just in case
+    return new Response(JSON.stringify({ success: false, message: 'Request failed' }), {
+      status: 500,
+      statusText: 'Internal Server Error'
     });
   };
-
-
-
-  // Connection quality check
-  const checkConnectionQuality = async (): Promise<'good' | 'poor' | 'offline'> => {
-    if (typeof navigator !== 'undefined' && !navigator.onLine) return 'offline';
-    try {
-      const start = Date.now();
-      await fetch('https://www.google.com/favicon.ico', { mode: 'no-cors', cache: 'no-store' });
-      const duration = Date.now() - start;
-      return duration < 1000 ? 'good' : 'poor';
-    } catch {
-      return 'offline';
-    }
-  };
-
-  // Connection quality indicator state and polling
-  const [connectionQuality, setConnectionQuality] = useState<'good' | 'poor' | 'offline'>('good');
-  useEffect(() => {
-    let active = true;
-    const poll = async () => {
-      const q = await checkConnectionQuality();
-      if (active) setConnectionQuality(q);
-    };
-    poll();
-    const id = window.setInterval(() => {
-      if (['forms', 'review', 'payment'].includes(step)) poll();
-    }, 30000);
-    return () => { active = false; window.clearInterval(id); };
-  }, [step]);
-
-
 
   const proceedToPayment = async () => {
     console.log('🚀 proceedToPayment function called');
@@ -1402,7 +1222,7 @@ function CheckoutPageContent() {
       if (flat['universityName']) registrationForm.append('universityName', flat['universityName']);
       if (flat['address']) registrationForm.append('address', flat['address']);
       if (flat['referralCode']) registrationForm.append('referralCode', flat['referralCode']);
-      // Send complex payloads for backend to persist (using correct field names expected by backend)
+      // Send complex payloads for backend to persist
       registrationForm.append('formsBySignature', JSON.stringify(formDataBySignature));
       registrationForm.append('teamMembersBySignature', JSON.stringify(teamMembersBySignature));
       registrationForm.append('flagshipBenefitsByEvent', JSON.stringify(flagshipBenefitsByEvent));
@@ -1512,8 +1332,6 @@ function CheckoutPageContent() {
       // Don't throw error, just log it
     }
   };
-
-  // Removed old blocking proceedToPayment in favor of proceedToPayment
 
   // Initialize Cashfree SDK - always production mode
   let cashfree: any;
@@ -1666,12 +1484,12 @@ function CheckoutPageContent() {
         <div className="absolute inset-0 bg-black/40"></div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-[120px] sm:pt-[150px] pb-4 sm:pb-8 overflow-x-hidden">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-[150px] pb-4 sm:pb-8">
         {/* Mobile hamburger */}
         <button
           aria-label="Open menu"
           onClick={() => setMobileMenuOpen(true)}
-          className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl bg-black/30 backdrop-blur-sm border border-white/30 active:scale-95 transition-all duration-200 shadow-lg"
+          className="lg:hidden fixed top-3 right-3 z-50 p-2.5 rounded-xl bg-black/20 backdrop-blur-sm border border-white/20 active:scale-95 transition"
         >
           <span className="block h-0.5 bg-white rounded-full w-6 mb-1" />
           <span className="block h-0.5 bg-white/90 rounded-full w-5 mb-1" />
@@ -1681,20 +1499,17 @@ function CheckoutPageContent() {
         {/* Back button beneath hamburger */}
         <button
           onClick={() => router.back()}
-          className="lg:hidden fixed top-16 right-4 z-50 px-4 py-2 text-white text-sm bg-black/30 backdrop-blur-sm border border-white/30 rounded-lg active:scale-95 transition-all duration-200 shadow-lg"
+          className="lg:hidden fixed top-12 right-3 z-50 px-3 py-1.5 text-white text-sm bg-black/20 backdrop-blur-sm border border-white/20 rounded-lg active:scale-95 transition"
           aria-label="Go back"
         >
           <span className="mr-1">&lt;</span> Back
         </button>
         
         {/* Header - Mobile Optimized */}
-        <div className="mb-6 sm:mb-8 text-center">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold title-chroma title-glow-animation leading-tight">
+        <div className="mb-4 sm:mb-6 text-center">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold title-chroma title-glow-animation">
               Event Registration
             </h1>
-            <p className="text-sm sm:text-base text-white/70 mt-2 px-4">
-              Complete your registration in a few simple steps
-            </p>
           </div>
 
         {/* Early Bird Promo Code Banner - Mobile Optimized */}
@@ -1702,35 +1517,35 @@ function CheckoutPageContent() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="relative mb-6 sm:mb-8 overflow-hidden"
+          className="relative mb-4 sm:mb-6 overflow-hidden"
         >
-          <div className="relative bg-gradient-to-r from-purple-900/40 via-pink-900/40 to-rose-900/40 backdrop-blur-sm border border-purple-400/40 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-[0_0_30px_rgba(168,85,247,0.4)]">
+          <div className="relative bg-gradient-to-r from-purple-900/30 via-pink-900/30 to-rose-900/30 backdrop-blur-sm border border-purple-400/30 rounded-lg sm:rounded-2xl p-3 sm:p-6 shadow-[0_0_30px_rgba(168,85,247,0.3)]">
             {/* Animated background pattern */}
             <div className="absolute inset-0 opacity-20">
               <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-rose-500/10 animate-pulse"></div>
-              <div className="absolute top-2 left-2 w-3 h-3 sm:w-4 sm:h-4 bg-purple-400/30 rounded-full animate-bounce"></div>
-              <div className="absolute top-4 right-4 w-2 h-2 sm:w-2 sm:h-2 bg-pink-400/40 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }}></div>
-              <div className="absolute bottom-4 left-4 sm:left-8 w-2 h-2 sm:w-3 sm:h-3 bg-rose-400/30 rounded-full animate-bounce" style={{ animationDelay: '1s' }}></div>
+              <div className="absolute top-2 left-2 w-2 h-2 sm:w-4 sm:h-4 bg-purple-400/30 rounded-full animate-bounce"></div>
+              <div className="absolute top-4 right-4 w-1 h-1 sm:w-2 sm:h-2 bg-pink-400/40 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }}></div>
+              <div className="absolute bottom-4 left-4 sm:left-8 w-1 h-1 sm:w-3 sm:h-3 bg-rose-400/30 rounded-full animate-bounce" style={{ animationDelay: '1s' }}></div>
             </div>
             
-            <div className="relative z-10 space-y-4">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex-shrink-0 shadow-lg">
-                  <Star className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <div className="relative z-10 space-y-3">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex-shrink-0">
+                  <Star className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-base sm:text-lg font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent">
-                    🎉 Special Offer is Live
+                  <h3 className="text-sm sm:text-lg font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-rose-300 bg-clip-text text-transparent">
+                    🎉 Early Bird
                   </h3>
-                  <p className="text-sm sm:text-base text-white/90 font-medium">
+                  <p className="text-xs sm:text-sm text-white/80">
                     Get 25% off on all events
                   </p>
                 </div>
               </div>
               
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                <div className="bg-black/50 border border-purple-400/60 rounded-xl px-4 py-3 backdrop-blur-sm text-center flex-1 sm:flex-none">
-                  <span className="text-purple-300 font-mono text-base sm:text-lg font-bold tracking-wider">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+                <div className="bg-black/40 border border-purple-400/50 rounded-lg px-3 py-2 backdrop-blur-sm text-center flex-1 sm:flex-none">
+                  <span className="text-purple-300 font-mono text-sm sm:text-lg font-bold tracking-wider">
                     SPECIALOFFER
                   </span>
                 </div>
@@ -1740,7 +1555,7 @@ function CheckoutPageContent() {
                     setShowToast(true);
                     setTimeout(() => setShowToast(false), 3000);
                   }}
-                  className="px-6 py-3 sm:py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-xl text-white font-semibold transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/25 text-sm sm:text-base touch-manipulation w-full sm:w-auto"
+                  className="px-4 py-2.5 sm:py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg sm:rounded-xl text-white font-medium transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/25 text-sm sm:text-base touch-manipulation w-full sm:w-auto"
                 >
                   Copy Code
             </button>
@@ -1759,17 +1574,17 @@ function CheckoutPageContent() {
         <main>
           {/* Global payment help banner */}
           {(step === 'review' || step === 'payment') && (
-            <div className="mb-8 rounded-2xl border border-pink-400/50 bg-gradient-to-r from-purple-600/25 via-pink-600/25 to-cyan-600/25 p-6 sm:p-8 shadow-[0_0_30px_rgba(147,51,234,0.4)]">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="text-base sm:text-lg text-pink-100">
-                  <div className="font-bold text-pink-200 mb-2">Payment taking too long or showing an error?</div>
+            <div className="mb-6 rounded-xl border border-pink-400/40 bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-cyan-600/20 p-4 sm:p-5 shadow-[0_0_28px_rgba(147,51,234,0.35)]">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="text-sm text-pink-100">
+                  <div className="font-semibold text-pink-200">Payment taking too long or showing an error?</div>
                   <div className="opacity-90">Use our secure Cashfree form to complete your payment instantly.</div>
                 </div>
                 <a
                   href={CASHFREE_FALLBACK_FORM_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-cyan-400 hover:from-pink-600 hover:via-fuchsia-600 hover:to-cyan-500 text-white font-bold shadow-[0_0_25px_rgba(236,72,153,0.4)] transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-pink-400/70 touch-manipulation"
+                  className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-pink-500 via-fuchsia-500 to-cyan-400 hover:from-pink-600 hover:via-fuchsia-600 hover:to-cyan-500 text-white font-semibold shadow-[0_0_20px_rgba(236,72,153,0.35)] transition-transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-pink-400/70"
                 >
                   Pay via Cashfree Form
                 </a>
@@ -1785,7 +1600,7 @@ function CheckoutPageContent() {
                 exit={reducedMotion ? { opacity: 0 } : { opacity: 0, x: -30 }}
                 transition={{ duration: reducedMotion ? 0.15 : 0.25 }}
               >
-                <div className="grid lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-8 min-w-0">
+                <div className="grid lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                   <div className="lg:col-span-3">
                     <div className="bg-yellow-500/15 border border-yellow-400/40 rounded-lg p-4 mb-6 shadow-[0_0_20px_rgba(250,204,21,0.2)] hidden">
                       <p className="text-sm text-yellow-200">
@@ -1799,7 +1614,7 @@ function CheckoutPageContent() {
                         </p>
                       </div>
                     )}
-                    <h2 className="text-2xl sm:text-3xl font-bold mb-8 sm:mb-10 title-chroma text-center sm:text-left">Choose Your Events</h2>
+                    <h2 className="text-xl font-semibold mb-6 title-chroma">Choose Your Events</h2>
                     
                     
 
@@ -1819,30 +1634,30 @@ function CheckoutPageContent() {
                        if (!isGroupEvent && !isSoloEvent) return null;
 
                        return (
-                         <div key={event.id} className="mb-10 sm:mb-12">
-                        <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6 text-center sm:text-left">
+                         <div key={event.id} className="mb-8">
+                        <h3 className="text-base sm:text-lg font-medium text-white mb-3 sm:mb-4">
                              <span className={`bg-gradient-to-r ${isGroupEvent ? 'from-purple-300 via-pink-400 to-rose-400' : 'from-blue-300 via-indigo-400 to-purple-400'} bg-clip-text text-transparent`}>
                                Flagship Benefits - {event.title}
                              </span>
                         </h3>
-                           <div className={`glass rounded-2xl p-6 sm:p-8 border border-white/20 shadow-[0_0_25px_rgba(${isGroupEvent ? '168,85,247' : '59,130,246'},0.25)]`}>
+                           <div className={`glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(${isGroupEvent ? '168,85,247' : '59,130,246'},0.18)]`}>
                              {isGroupEvent && (
                                <>
-                          <div className="mb-6 sm:mb-8">
-                            <h4 className="font-bold text-purple-200 mb-3 text-base sm:text-lg">Support Artists</h4>
-                            <p className="text-sm sm:text-base text-white/80 mb-4 leading-relaxed">
+                          <div className="mb-4 sm:mb-6">
+                            <h4 className="font-semibold text-purple-200 mb-2 text-sm sm:text-base">Support Artists</h4>
+                            <p className="text-xs sm:text-sm text-white/70 mb-3">
                               You will get a form 5 days before the event where you can claim up to 3 support artists (makeup, stylist, manager) for your team performance.
                             </p>
                           </div>
                           
-                          <div className="mb-6 sm:mb-8">
-                            <h4 className="font-bold text-purple-200 mb-3 text-base sm:text-lg">Free Visitor Passes</h4>
-                            <p className="text-sm sm:text-base text-white/80 mb-4 leading-relaxed">
+                          <div className="mb-4 sm:mb-6">
+                            <h4 className="font-semibold text-purple-200 mb-2 text-sm sm:text-base">Free Visitor Passes</h4>
+                            <p className="text-xs sm:text-sm text-white/70 mb-3">
                               You will get a form 5 days before the event where you can claim up to 3 free visitor passes for your day event.
                             </p>
                           </div>
 
-                          <div className="text-sm text-white/70 space-y-2">
+                          <div className="text-xs text-white/60 space-y-1">
                             <p>• Green room access (time-bound as per slot)</p>
                             <p>• Snacks (tea/coffee) for team + support artists</p>
                             <p>• Support artists must wear provided wristbands/badges</p>
@@ -1852,14 +1667,14 @@ function CheckoutPageContent() {
 
                              {isSoloEvent && (
                                <>
-                          <div className="mb-6 sm:mb-8">
-                            <h4 className="font-bold text-blue-200 mb-3 text-base sm:text-lg">Free Visitor Passes</h4>
-                            <p className="text-sm sm:text-base text-white/80 mb-4 leading-relaxed">
+                          <div className="mb-4 sm:mb-6">
+                            <h4 className="font-semibold text-blue-200 mb-2 text-sm sm:text-base">Free Visitor Passes</h4>
+                            <p className="text-xs sm:text-sm text-white/70 mb-3">
                               You will get a form 5 days before the event where you can claim up to 2 free visitor passes for your day event.
                             </p>
                           </div>
 
-                          <div className="text-sm text-white/70 space-y-2">
+                          <div className="text-xs text-white/60 space-y-1">
                             <p>• Snacks (tea/coffee) during reporting/performance window</p>
                             <p>• 2 complimentary visitor passes included</p>
                           </div>
@@ -1874,13 +1689,13 @@ function CheckoutPageContent() {
                       const displayCategory = category;
                       const isFlagship = category === 'Flagship';
                       return (
-                      <div key={category} className="mb-8 sm:mb-10">
-                        <h3 className={`text-2xl sm:text-3xl font-extrabold text-white mb-6 sm:mb-8 text-center sm:text-left`}>
+                      <div key={category} className="mb-6 sm:mb-8">
+                        <h3 className={`text-xl sm:text-2xl font-extrabold text-white mb-3 sm:mb-4`}>
                           <span className={`bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent`}>
                             {displayCategory}
                           </span>
                         </h3>
-                        <div className="space-y-4 sm:space-y-6">
+                        <div className="space-y-2 sm:space-y-3">
                           {events.map(event => {
                             const isSelected = selectedEventIds.includes(event.id);
                         const hasConflict = hasTimeConflict(event.id);
@@ -1891,14 +1706,13 @@ function CheckoutPageContent() {
                           <motion.div
                             key={event.id}
                                 onMouseDown={() => !isDisabled && handleToggleEvent(event.id)}
-                                whileHover={!isDisabled && reducedMotion ? undefined : { scale: 1.02 }}
-                                whileTap={!isDisabled ? { scale: 0.98 } : undefined}
-                                className={`relative p-5 sm:p-6 rounded-xl sm:rounded-2xl transition-all duration-200 border overflow-hidden touch-manipulation active:scale-95 ${
+                                whileHover={!isDisabled && reducedMotion ? undefined : { scale: 1.01 }}
+                                className={`relative p-4 sm:p-5 rounded-lg sm:rounded-xl transition-colors duration-150 border overflow-hidden touch-manipulation ${
                               isSelected
-                                    ? 'glass border-fuchsia-400/50 shadow-[0_0_25px_rgba(217,70,239,0.4)] cursor-pointer'
+                                    ? 'glass border-fuchsia-400/40 shadow-[0_0_18px_rgba(217,70,239,0.35)] cursor-pointer'
                                 : isDisabled
-                                    ? 'glass border-white/20 cursor-pointer opacity-100'
-                                    : 'glass border-white/20 hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(34,211,238,0.3)] cursor-pointer'
+                                    ? 'glass border-white/10 cursor-pointer opacity-100'
+                                    : 'glass border-white/10 hover:border-cyan-400/40 hover:shadow-[0_0_16px_rgba(34,211,238,0.28)] cursor-pointer'
                                 }`}
                               >
                                 {/* subtle animated shine */}
@@ -1907,26 +1721,26 @@ function CheckoutPageContent() {
                                     <div className="absolute -top-8 -left-10 h-20 w-36 rotate-12 bg-gradient-to-r from-white/10 to-transparent blur-xl"></div>
                             </div>
                                 )}
-                                <div className="flex justify-between items-start sm:items-center gap-3">
+                                <div className="flex justify-between items-start sm:items-center gap-2">
                             <div className="flex-1 min-w-0">
-                                    <h4 className="font-bold text-lg sm:text-xl truncate mb-2">{event.title}</h4>
-                                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
-                                      <p className="text-lg sm:text-xl text-cyan-300 font-semibold">{event.price}</p>
-                                      <div className="flex items-center gap-2 sm:gap-3">
+                                    <h4 className="font-semibold text-base sm:text-lg truncate">{event.title}</h4>
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+                                      <p className="text-sm sm:text-base text-cyan-300">{event.price}</p>
+                                      <div className="flex items-center gap-1 sm:gap-2">
                                       <button
                                         onClick={(e) => { e.stopPropagation(); e.preventDefault(); const ed = eventDataById.get(event.id); if (ed) setInfoEvent(ed); }} // prettier-ignore
-                                          className="text-sm px-3 py-1.5 rounded-full bg-white/15 hover:bg-white/25 text-white/90 cursor-pointer touch-manipulation font-medium transition-all duration-200"
+                                          className="text-[11px] sm:text-xs px-2 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 cursor-pointer touch-manipulation"
                                         aria-label={`View info for ${event.title}`}
                                       >
                                         Info
                                       </button>
-                                        {event.teamSize && <span className="text-sm text-white/70 font-medium">👥 {event.teamSize}</span>}
+                                        {event.teamSize && <span className="text-[11px] sm:text-xs text-white/60">👥 {event.teamSize}</span>}
                                       </div>
                                 </div>
                                     {/* Date/time intentionally hidden on checkout page */}
                                     <div className="flex items-center gap-2 text-xs text-white/70"></div>
                               {isDisabled && conflictMessage && (
-                                      <div className="mt-3 text-sm text-red-400 flex items-center gap-2 font-medium">
+                                      <div className="mt-2 text-xs text-red-400 flex items-center gap-1">
                                         <span>⚠️</span>
                                         <span>{conflictMessage}</span>
                                 </div>
@@ -1947,48 +1761,48 @@ function CheckoutPageContent() {
                     );
                     })}
                     {/* Visitor Pass Section - Moved outside the loop */}
-                    <div className="mb-8 sm:mb-10">
-                      <h3 className="text-2xl sm:text-3xl font-extrabold text-white mb-6 sm:mb-8 text-center sm:text-left">
+                    <div className="mb-6 sm:mb-8">
+                      <h3 className="text-xl sm:text-2xl font-extrabold text-white mb-3 sm:mb-4">
                         <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent">Visitor Pass</span>
                       </h3>
-                      <div className="glass rounded-2xl p-6 sm:p-8 border border-white/20 shadow-[0_0_25px_rgba(255,193,7,0.25)]">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                      <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                           <div className="flex-1">
-                            <h4 className="font-bold text-yellow-200 mb-3 text-lg sm:text-xl">Visitor Pass</h4>
-                            <p className="text-sm sm:text-base text-white/80 mb-4 leading-relaxed">
+                            <h4 className="font-semibold text-yellow-200 mb-2">Visitor Pass</h4>
+                            <p className="text-xs sm:text-sm text-white/70 mb-3">
                               Required for non-participant entry to Sabrang venues. Select number of days for your visitor pass.
                             </p>
-                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-white/70">
-                              <span className="font-medium">Price: ₹69 per day</span>
+                            <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-xs sm:text-sm text-white/60">
+                              <span>Price: ₹69 per day</span>
                               <span>•</span>
                               <span>Non-transferable</span>
                               <span>•</span>
                               <span>Non-refundable</span>
                             </div>
                           </div>
-                          <div className="flex items-center justify-center sm:justify-end gap-4">
+                          <div className="flex items-center justify-center sm:justify-end gap-3">
                             <button
                               onClick={() => setVisitorPassDays(Math.max(0, visitorPassDays - 1))}
                               disabled={visitorPassDays === 0}
-                              className="w-12 h-12 sm:w-10 sm:h-10 rounded-full bg-white/15 border border-white/30 hover:bg-white/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center touch-manipulation font-bold text-lg transition-all duration-200"
+                              className="w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center touch-manipulation"
                             >
                               -
                             </button>
-                            <span className="text-2xl sm:text-xl font-bold min-w-[3rem] sm:min-w-[2.5rem] text-center">{visitorPassDays}</span>
+                            <span className="text-lg sm:text-lg font-semibold min-w-[2.5rem] sm:min-w-[2rem] text-center">{visitorPassDays}</span>
                             <button
                               onClick={() => setVisitorPassDays(Math.min(3, visitorPassDays + 1))}
                               disabled={visitorPassDays >= 3}
-                              className="w-12 h-12 sm:w-10 sm:h-10 rounded-full bg-white/15 border border-white/30 hover:bg-white/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center touch-manipulation font-bold text-lg transition-all duration-200"
+                              className="w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center touch-manipulation"
                             >
                               +
                             </button>
                           </div>
                         </div>
                         {visitorPassDays > 0 && (
-                          <div className="mt-6 pt-6 border-t border-white/20">
-                            <div className="flex justify-between items-center">
-                              <span className="text-white/90 font-medium text-base">Visitor Pass ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</span>
-                              <span className="text-yellow-400 font-bold text-lg">₹{visitorPassDays * 69}</span>
+                          <div className="mt-4 pt-4 border-t border-white/10">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-white/70">Visitor Pass ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</span>
+                              <span className="text-yellow-400 font-medium">₹{visitorPassDays * 69}</span>
                             </div>
                           </div>
                         )}
@@ -2074,13 +1888,13 @@ function CheckoutPageContent() {
                           goNext();
                         }}
                         disabled={selectedEventIds.length === 0 && visitorPassDays === 0}
-                        className={`relative w-full mt-8 inline-flex items-center justify-center gap-3 rounded-2xl px-8 py-4 text-white font-bold text-lg transition-all duration-300 touch-manipulation ${
+                        className={`relative w-full mt-6 inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-white font-semibold transition-all duration-300 ${
                           (selectedEventIds.length === 0 && visitorPassDays === 0)
                             ? 'bg-gray-600 cursor-not-allowed' 
-                            : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:scale-105 active:scale-95 cursor-pointer shadow-xl hover:shadow-purple-500/25'
+                            : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:scale-105 cursor-pointer shadow-lg'
                         }`}
                       >
-                        <>Continue <ArrowRight className="w-5 h-5" /></>
+                        <>Continue <ArrowRight className="w-4 h-4" /></>
                       </button>
                     </div>
                   </div>
@@ -2095,21 +1909,21 @@ function CheckoutPageContent() {
                 exit={reducedMotion ? { opacity: 0 } : { opacity: 0, x: -30 }}
                 transition={{ duration: reducedMotion ? 0.15 : 0.25 }}
               >
-                <div className="grid lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 min-w-0">
+                <div className="grid lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                   <div className="lg:col-span-3">
                     {/* Important Email Notice - Mobile Optimized */}
-                    <div className="bg-red-500/20 border border-red-400/50 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 shadow-[0_0_25px_rgba(239,68,68,0.3)]">
-                      <div className="flex items-start gap-3">
+                    <div className="bg-red-500/15 border border-red-400/40 rounded-lg p-3 mb-4 sm:mb-6 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+                      <div className="flex items-start gap-2">
                         <div className="flex-shrink-0">
-                          <div className="w-6 h-6 rounded-full bg-red-500/30 flex items-center justify-center">
-                            <span className="text-red-300 text-sm font-bold">!</span>
+                          <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center">
+                            <span className="text-red-400 text-xs font-bold">!</span>
                           </div>
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-red-200 font-bold mb-3 text-base sm:text-lg">⚠️ Important: Email Verification Required</h3>
-                          <p className="text-sm text-red-100 leading-relaxed">
+                          <h3 className="text-red-200 font-semibold mb-2 text-sm">⚠️ Important: Email Verification Required</h3>
+                          <p className="text-xs text-red-100 leading-relaxed">
                             <strong>Make sure you enter the correct email address!</strong> You will receive all OTPs, tokens, and important updates on the email you provide. 
-                            <span className="block mt-2 text-red-200 font-semibold text-sm">
+                            <span className="block mt-1 text-red-200 font-medium text-xs">
                               If you enter a wrong email, your registration will Not be refundable.
                             </span>
                           </p>
@@ -2117,7 +1931,7 @@ function CheckoutPageContent() {
                       </div>
                     </div>
                     
-                    <h2 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 title-chroma text-center sm:text-left">Your Details</h2>
+                    <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 title-chroma text-center sm:text-left">Your Details</h2>
                     {fieldGroups.length === 0 && (
                       <p className="text-xs sm:text-sm text-gray-400">No events selected. Go back and pick at least one event.</p>
                     )}
@@ -2125,47 +1939,47 @@ function CheckoutPageContent() {
                       {/* Visitor Pass Details Section - Mobile Optimized */}
                       {visitorPassDays > 0 && (
                         <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10 shadow-[0_0_22px_rgba(255,193,7,0.18)]">
-                          <div className="mb-6 text-center sm:text-left">
-                            <h3 className="font-bold text-yellow-200 text-lg sm:text-xl mb-2">Visitor Pass Details ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</h3>
-                            <p className="text-sm text-gray-300">Fill details for your visitor pass. This pass will be valid for {visitorPassDays} day{visitorPassDays > 1 ? 's' : ''}.</p>
+                          <div className="mb-3 sm:mb-4 text-center sm:text-left">
+                            <h3 className="font-semibold text-yellow-200 text-sm sm:text-base">Visitor Pass Details ({visitorPassDays} day{visitorPassDays > 1 ? 's' : ''})</h3>
+                            <p className="text-[10px] sm:text-xs text-gray-400">Fill details for your visitor pass. This pass will be valid for {visitorPassDays} day{visitorPassDays > 1 ? 's' : ''}.</p>
                           </div>
                           <div className="glass rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/10">
-                                <div className="flex justify-between items-center mb-4 sm:mb-6">
-                              <h4 className="text-sm sm:text-base font-semibold text-white">Visitor Pass</h4>
-                              <div className="text-lg sm:text-xl text-yellow-400 font-bold">₹{visitorPassDays * 69}</div>
+                                <div className="flex justify-between items-center mb-3 sm:mb-4">
+                              <h4 className="text-xs sm:text-sm font-medium text-white/90">Visitor Pass</h4>
+                              <div className="text-[10px] sm:text-xs text-yellow-400 font-medium">₹{visitorPassDays * 69}</div>
                                 </div>
-                                <div className="grid grid-cols-1 gap-4 sm:gap-6">
+                                <div className="grid grid-cols-1 gap-3">
                                   {VISITOR_PASS_FIELDS.map(field => {
                                 const error = (formErrors['visitorPasses'] || {})[`visitor_${field.name}`];
                                 const value = visitorPassDetails[field.name] || '';
                                     const inputType = field.type === 'phone' ? 'tel' : (field.type === 'number' ? 'number' : (field.type === 'email' ? 'email' : 'text'));
                                     return (
                                       <div key={field.name} className="flex flex-col">
-                                        <label className="text-sm text-white/90 mb-2 text-left font-medium">
-                                          {field.label}{field.required && <span className="text-pink-400 ml-1">*</span>}
+                                        <label className="text-[10px] sm:text-xs text-white/70 mb-1 text-left">
+                                          {field.label}{field.required && <span className="text-pink-400">*</span>}
                                         </label>
                                         {field.type === 'select' ? (
                                           <select
                                             required={!!field.required}
-                                            className={`bg-black/50 border ${error ? 'border-pink-500' : 'border-white/30'} rounded-xl px-4 h-14 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-base touch-manipulation transition-all duration-200 hover:border-white/40`}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-3 h-12 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-base sm:text-sm touch-manipulation`}
                                             value={value}
                                             onChange={e => {
                                           setVisitorPassDetails(prev => ({ ...prev, [field.name]: e.target.value }));
                                             }}
                                           >
-                                            <option value="">Select an option</option>
+                                            <option value="">Select</option>
                                             {(field.options || []).map(opt => (
                                               <option key={opt.value} value={opt.value}>{opt.label}</option>
                                             ))}
                                           </select>
                                         ) : field.type === 'file' ? (
                                           <div className="relative">
-                                            <div className="text-xs text-white/70 mb-2 font-medium">Max file size 500 KB</div>
+                                            <div className="text-[10px] sm:text-xs text-white/60 mb-1">Max file size 500 KB</div>
                                             <input
                                               type="file"
                                               accept={field.accept || '*'}
                                               required={!!field.required}
-                                              className={`block max-w-full overflow-hidden bg-black/50 border ${error ? 'border-pink-500' : 'border-white/30'} rounded-xl px-4 py-4 w-full text-base focus:outline-none focus:ring-2 focus:ring-cyan-400 file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-0 file:text-base file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer touch-manipulation transition-all duration-200 hover:border-white/40`}
+                                              className={`block max-w-full overflow-hidden bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg sm:rounded-xl px-3 py-2.5 sm:py-2 w-full text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 file:mr-2 sm:file:mr-4 file:py-2 file:px-3 sm:file:px-3 file:rounded-lg file:border-0 file:text-base sm:file:text-sm file:font-medium file:bg-purple-500 file:text-white hover:file:bg-purple-600 file:cursor-pointer cursor-pointer touch-manipulation`}
                                               onChange={e => {
                                                 const file = e.target.files?.[0] || null;
                                                 if (file && file.size > 500 * 1024) {
@@ -2182,7 +1996,7 @@ function CheckoutPageContent() {
                                             type={inputType}
                                             inputMode={field.type === 'phone' ? 'tel' : undefined}
                                             required={!!field.required}
-                                            className={`bg-black/50 border ${error ? 'border-pink-500' : 'border-white/30'} rounded-xl px-4 h-14 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/50 text-base touch-manipulation transition-all duration-200 hover:border-white/40`}
+                                            className={`bg-black/40 border ${error ? 'border-pink-500' : 'border-white/20'} rounded-lg px-3 h-12 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40 text-base sm:text-sm touch-manipulation`}
                                             placeholder={field.placeholder || ''}
                                             value={value}
                                             onChange={e => {
@@ -2190,7 +2004,7 @@ function CheckoutPageContent() {
                                             }}
                                           />
                                         )}
-                                        {error && <span className="text-sm text-pink-400 mt-2 font-medium">{error}</span>}
+                                        {error && <span className="text-[10px] sm:text-xs text-pink-400 mt-1">{error}</span>}
                                       </div>
                                     );
                                   })}
@@ -2807,28 +2621,10 @@ function CheckoutPageContent() {
 
 
                     </div>
-                    <ActionRow
-                      connectionQuality={connectionQuality}
-                      onSave={() => {
-                        try {
-                          const toSave = {
-                            selectedEventIds,
-                            visitorPassDays,
-                            visitorPassDetails,
-                            formDataBySignature,
-                            teamMembersBySignature,
-                            flagshipBenefitsByEvent,
-                            promoInput,
-                            appliedPromo,
-                          };
-                          localStorage.setItem('sabrang_checkout_draft_v1', JSON.stringify(toSave));
-                          alert('Progress saved locally.');
-                        } catch {}
-                      }}
-                      onFallback={() => window.open(CASHFREE_FALLBACK_FORM_URL, '_blank')}
-                      onBack={goBack}
-                      onNext={goNext}
-                    />
+                    <div className="flex items-center gap-3 mt-8">
+                      <button onClick={goBack} className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer">Back</button>
+                      <button onClick={goNext} className="px-5 py-2 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 transition cursor-pointer">Continue</button>
+                    </div>
                   </div>
                   <div>
                     <div className="glass rounded-2xl p-6 border border-white/10 shadow-[0_0_24px_rgba(59,130,246,0.18)]">
@@ -2901,10 +2697,10 @@ function CheckoutPageContent() {
                       {/* Promo code input */}
                       <div className="mt-6 p-4 rounded-xl bg-white/5 border border-white/10">
                         <h4 className="text-sm font-medium text-white/90 mb-3">Promo Code</h4>
-                        <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                        <div className="flex gap-2 items-start flex-wrap md:flex-nowrap">
                           <input
                             type="text"
-                            className="flex-1 w-full bg-black/50 border border-white/30 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/50 text-base touch-manipulation"
+                            className="min-w-0 flex-1 w-full bg-black/40 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder:text-white/40 text-sm"
                             placeholder="Enter promo code"
                             value={promoInput}
                             onChange={e => setPromoInput(e.target.value.toUpperCase())}
@@ -2912,7 +2708,7 @@ function CheckoutPageContent() {
                           {appliedPromo ? (
                             <button
                               type="button"
-                              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 font-semibold text-base transition-all duration-200 hover:scale-105 active:scale-95"
+                              className="shrink-0 px-4 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 text-sm font-medium whitespace-nowrap"
                               onClick={() => { setAppliedPromo(null); setPromoStatus({ loading: false, error: null }); }}
                             >
                               Remove
@@ -2920,7 +2716,7 @@ function CheckoutPageContent() {
                           ) : (
                             <button
                               type="button"
-                              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold text-base transition-all duration-200 hover:scale-105 active:scale-95"
+                              className="shrink-0 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-sm font-medium whitespace-nowrap"
                               onClick={tryApplyPromo}
                               disabled={promoStatus.loading}
                             >
@@ -2932,18 +2728,6 @@ function CheckoutPageContent() {
                         {appliedPromo && (
                           <div className="text-xs text-green-400 mt-2">Applied {appliedPromo.code}: -₹{formatPrice(appliedPromo.discountAmount)}</div>
                         )}
-                      </div>
-
-                      {/* Mobile Continue Button - Only visible on mobile */}
-                      <div className="lg:hidden mt-6">
-                        <button
-                          onClick={() => {
-                            goNext();
-                          }}
-                          className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:from-purple-600 hover:via-pink-600 hover:to-cyan-500 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 shadow-xl hover:shadow-purple-500/25 flex items-center justify-center gap-3 text-lg"
-                        >
-                          Continue to Payment <ArrowRight className="w-5 h-5" />
-                        </button>
                       </div>
 
                       <div className="border-t border-white/20 mt-6 pt-4 space-y-2">
@@ -2975,7 +2759,7 @@ function CheckoutPageContent() {
                 exit={reducedMotion ? { opacity: 0 } : { opacity: 0, x: -30 }}
                 transition={{ duration: reducedMotion ? 0.15 : 0.25 }}
               >
-                <div className="grid lg:grid-cols-4 gap-8 min-w-0">
+                <div className="grid lg:grid-cols-4 gap-8">
                   <div className="lg:col-span-3">
                     <h2 className="text-xl font-semibold mb-6 title-chroma">Review</h2>
                     <div className="space-y-8">
@@ -3047,16 +2831,16 @@ function CheckoutPageContent() {
                         </div>
                       ))}
                     </div>
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-8">
-                      <button onClick={goBack} className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer font-medium">Back</button>
-                      <div className="space-y-3 flex-1">
+                    <div className="flex items-center gap-3 mt-8">
+                      <button onClick={goBack} className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer">Back</button>
+                      <div className="space-y-3">
                         <button 
                           onClick={startPaymentInitialization} 
                           disabled={paymentInitializationState.isLoading}
-                          className={`w-full px-6 py-3 rounded-xl transition cursor-pointer font-semibold text-base ${
+                          className={`px-5 py-2 rounded-full transition cursor-pointer ${
                             paymentInitializationState.isLoading 
                               ? 'bg-gray-600 cursor-not-allowed' 
-                              : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:shadow-lg hover:scale-105 active:scale-95'
+                              : 'bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:shadow-lg'
                           }`}
                         >
                           {paymentInitializationState.isLoading 
@@ -3124,7 +2908,7 @@ function CheckoutPageContent() {
                 exit={reducedMotion ? { opacity: 0 } : { opacity: 0, x: -30 }}
                 transition={{ duration: reducedMotion ? 0.15 : 0.25 }}
               >
-                <div className="grid lg:grid-cols-4 gap-8 min-w-0">
+                <div className="grid lg:grid-cols-4 gap-8">
                   <div className="lg:col-span-3">
                     <h2 className="text-xl font-semibold mb-6 title-chroma">Complete Payment</h2>
                     
@@ -3263,8 +3047,8 @@ function CheckoutPageContent() {
                     )}
 
                     {/* Navigation */}
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-8">
-                      <button onClick={goBack} className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer font-medium">Back</button>
+                    <div className="flex items-center gap-3 mt-8">
+                      <button onClick={goBack} className="px-5 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/15 transition cursor-pointer">Back</button>
                     </div>
                   </div>
 
@@ -3518,4 +3302,3 @@ export default function CheckoutPage() {
     </Suspense>
   );
 }
-
