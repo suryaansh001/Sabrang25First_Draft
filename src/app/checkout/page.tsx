@@ -101,8 +101,7 @@ const TEAM_ESPORTS_FIELDS: FieldSet = [
 
 const TEAM_FIELDS: FieldSet = [
   { name: 'teamName', label: 'Team Name', type: 'text', required: true },
-  ...SOLO_FIELDS,
-  { name: 'numMembers', label: 'Total Members', type: 'number', required: true, placeholder: 'e.g., 6' }
+  ...SOLO_FIELDS
 ];
 
 const SQUAD_ESPORTS_FIELDS: FieldSet = [
@@ -976,50 +975,41 @@ function CheckoutPageContent() {
         let requiredAdditionalMembers = -1; // -1 means not applicable or not determined
         let totalSize = 0;
 
-        const hasNumMembersField = group.fields.some(f => f.name === 'numMembers');
-        
-        if (hasNumMembersField) {
-          totalSize = parseInt((formDataBySignature[group.signature]?.['numMembers'] || '0'), 10) || 0;
-          if (totalSize > 0) {
-            requiredAdditionalMembers = Math.max(0, totalSize - 1);
-          }
-        } else {
-          // For fixed-size teams, get size from team config
-          const event = group.events[0];
-          if (event) {
-            const teamConfig = getTeamSizeConfig(event.title);
-            if (teamConfig) {
-              // Check if this event has flagship benefits that can reduce team size requirement
-              const eventBenefits = flagshipBenefitsByEvent[event.id];
-              let flagshipMembersCount = 0;
-              
-              if (eventBenefits) {
-                // Count support artists and flagship visitors as potential team members
-                flagshipMembersCount += eventBenefits.supportArtistQuantity || 0;
-                flagshipMembersCount += eventBenefits.flagshipVisitorPassQuantity || 0;
-                flagshipMembersCount += eventBenefits.flagshipSoloVisitorPassQuantity || 0;
-              }
-              
-              // Adjust minimum required members by subtracting flagship benefits
-              // but ensure we still need at least 1 actual team member (besides leader)
-              const adjustedMinSize = Math.max(2, teamConfig.min - flagshipMembersCount); // 2 = leader + 1 member minimum
-              totalSize = adjustedMinSize;
-              requiredAdditionalMembers = Math.max(0, adjustedMinSize - 1);
-              
-              console.log(`🎯 Team validation for ${event.title}:`, {
-                originalMin: teamConfig.min,
-                flagshipMembersCount,
-                adjustedMinSize,
-                requiredAdditionalMembers,
-                actualMembers: members.length
-              });
-            } else if (event.teamSize) {
-              // Fallback to event.teamSize if team config not found
-              const match = event.teamSize.match(/\d+/);
-              if (match) {
-                totalSize = parseInt(match[0], 10);
-                requiredAdditionalMembers = Math.max(0, totalSize - 1);
-              }
+        // For teams, get size from team config
+        const event = group.events[0];
+        if (event) {
+          const teamConfig = getTeamSizeConfig(event.title);
+          if (teamConfig) {
+            // Check if this event has flagship benefits that can reduce team size requirement
+            const eventBenefits = flagshipBenefitsByEvent[event.id];
+            let flagshipMembersCount = 0;
+            
+            if (eventBenefits) {
+              // Count support artists and flagship visitors as potential team members
+              flagshipMembersCount += eventBenefits.supportArtistQuantity || 0;
+              flagshipMembersCount += eventBenefits.flagshipVisitorPassQuantity || 0;
+              flagshipMembersCount += eventBenefits.flagshipSoloVisitorPassQuantity || 0;
+            }
+            
+            // Adjust minimum required members by subtracting flagship benefits
+            // but ensure we still need at least 1 actual team member (besides leader)
+            const adjustedMinSize = Math.max(2, teamConfig.min - flagshipMembersCount); // 2 = leader + 1 member minimum
+            totalSize = adjustedMinSize;
+            requiredAdditionalMembers = Math.max(0, adjustedMinSize - 1);
+            
+            console.log(`🎯 Team validation for ${event.title}:`, {
+              originalMin: teamConfig.min,
+              flagshipMembersCount,
+              adjustedMinSize,
+              requiredAdditionalMembers,
+              actualMembers: members.length
+            });
+          } else if (event.teamSize) {
+            // Fallback to event.teamSize if team config not found
+            const match = event.teamSize.match(/\d+/);
+            if (match) {
+              totalSize = parseInt(match[0], 10);
+              requiredAdditionalMembers = Math.max(0, totalSize - 1);
             }
           }
         }
@@ -1121,19 +1111,7 @@ function CheckoutPageContent() {
       }
     }));
 
-    // If team size changes, auto-size team members array to match
-    if (fieldName === 'numMembers') {
-      const totalMembers = Math.max(0, Math.min(50, parseInt(value || '0', 10) || 0));
-      const additionalMembers = Math.max(0, totalMembers - 1); // Leader is in main form
-      setTeamMembersBySignature(prev => {
-        const existing = prev[signature] || [];
-        const next = existing.slice(0, additionalMembers);
-        while (next.length < additionalMembers) {
-          next.push(SOLO_FIELDS.reduce((acc, f) => ({ ...acc, [f.name]: '' }), {}));
-        }
-        return { ...prev, [signature]: next };
-      });
-    }
+
 
     // For referralCode field, enforce uppercase letters and numbers only
     if (fieldName === 'referralCode' && typeof value === 'string') {
@@ -2647,7 +2625,7 @@ function CheckoutPageContent() {
                         })}
                       </div>
                       {(() => {
-                        const isTeamGroup = group.fields.some(f => f.name === 'numMembers' || f.name === 'teamName' || f.name === 'captainName');
+                        const isTeamGroup = group.fields.some(f => f.name === 'teamName' || f.name === 'captainName');
                         if (!isTeamGroup) return null;
                         
                         // Additional check: only show team member forms for events that actually support multiple members
