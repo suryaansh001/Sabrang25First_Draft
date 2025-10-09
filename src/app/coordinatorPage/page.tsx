@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { Search, Users, UserCheck, UserX, RefreshCw, Eye, RotateCcw, AlertTriangle, CheckCircle } from 'lucide-react';
 import createApiUrl from "../../lib/api";
 
