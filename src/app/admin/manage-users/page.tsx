@@ -48,6 +48,7 @@ interface User {
   teamParticipations?: any[];
   purchaseHistory?: any[];
   totalAmountPaid?: number;
+  qrCodeBase64?: string | null;
 }
 
 interface Event {
@@ -83,6 +84,7 @@ const ManageUsersPage = () => {
     emailSentUsers: 0,
     activeUsers: 0
   });
+  const [loadingUserDetails, setLoadingUserDetails] = useState(false);
 
   useEffect(() => {
     fetchEvents();
@@ -146,7 +148,9 @@ const ManageUsersPage = () => {
       if (data.success) {
         console.log('Users data received:', data.users);
         console.log('Sample user with team data:', data.users?.[0]);
-        setUsers(data.users || []);
+        // Filter out users with null qrCodeBase64
+        const filteredUsers = (data.users || []).filter((user: User) => user.qrCodeBase64 !== null && user.qrCodeBase64 !== undefined);
+        setUsers(filteredUsers);
         if (data.pagination) {
           setTotalPages(data.pagination.totalPages || 1);
           setTotalCount(data.pagination.totalCount || 0);
@@ -191,8 +195,10 @@ const ManageUsersPage = () => {
       console.log('Teams API Response:', data);
 
       if (data.success) {
-        setTeams(data.teams || []);
-        console.log('Teams loaded:', data.teams?.length || 0);
+        // Filter out teams with null purchaseId
+        const filteredTeams = (data.teams || []).filter((team: any) => team.purchaseId !== null && team.purchaseId !== undefined);
+        setTeams(filteredTeams);
+        console.log('Teams loaded (after filtering):', filteredTeams?.length || 0);
       } else {
         console.error('Failed to fetch teams:', data.message);
         setTeams([]);
@@ -265,9 +271,9 @@ const ManageUsersPage = () => {
       if (teamParticipations.length === 0) continue;
       
       for (const team of teamParticipations) {
-        // Handle missing or undefined team data
-        if (!team || !team.teamName || !team.eventName) {
-          console.log('Skipping invalid team data:', team);
+        // Handle missing or undefined team data, and filter out teams with null purchaseId
+        if (!team || !team.teamName || !team.eventName || team.purchaseId === null || team.purchaseId === undefined) {
+          console.log('Skipping invalid team data or team with null purchaseId:', team);
           continue;
         }
         
@@ -327,6 +333,26 @@ const ManageUsersPage = () => {
   }, [users]);
 
   const soloUsers = useMemo(() => users.filter(u => !u.teamParticipations || u.teamParticipations.length === 0), [users]);
+
+  // Function to fetch user details by ID
+  const fetchUserDetails = async (userId: string) => {
+    setLoadingUserDetails(true);
+    try {
+      const response = await fetch(`/api/admin/manage-users/${userId}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setSelectedUser(data.user);
+      } else {
+        alert(data.message || 'Failed to fetch user details');
+      }
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+      alert('Error fetching user details');
+    } finally {
+      setLoadingUserDetails(false);
+    }
+  };
 
   const toggleTeam = (key: string) => {
     setExpandedTeams(prev => ({ ...prev, [key]: !prev[key] }));
@@ -390,7 +416,7 @@ const ManageUsersPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 py-6 px-16 sm:px-20 lg:px-32 xl:px-40 2xl:px-48">
+    <div className="min-h-screen bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-gray-800 rounded-lg shadow-xl border border-gray-700 p-6 mb-6">
@@ -802,10 +828,15 @@ const ManageUsersPage = () => {
                                 )}
                               </div>
                               <button 
-                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); /* TODO: Fetch user details */ }} 
-                                className="inline-flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300"
+                                onClick={(e) => { 
+                                  e.preventDefault(); 
+                                  e.stopPropagation(); 
+                                  fetchUserDetails(team.leader._id);
+                                }} 
+                                disabled={loadingUserDetails}
+                                className="inline-flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300 disabled:text-gray-500 disabled:cursor-not-allowed"
                               >
-                                <Eye className="w-4 h-4" /> View
+                                <Eye className="w-4 h-4" /> {loadingUserDetails ? 'Loading...' : 'View'}
                               </button>
                             </div>
                           )}
@@ -823,10 +854,15 @@ const ManageUsersPage = () => {
                                   )}
                                 </div>
                                 <button 
-                                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); /* TODO: Fetch user details */ }} 
-                                  className="inline-flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300"
+                                  onClick={(e) => { 
+                                    e.preventDefault(); 
+                                    e.stopPropagation(); 
+                                    fetchUserDetails(member._id);
+                                  }} 
+                                  disabled={loadingUserDetails}
+                                  className="inline-flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300 disabled:text-gray-500 disabled:cursor-not-allowed"
                                 >
-                                  <Eye className="w-4 h-4" /> View
+                                  <Eye className="w-4 h-4" /> {loadingUserDetails ? 'Loading...' : 'View'}
                                 </button>
                               </div>
                             ))}
