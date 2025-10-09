@@ -29,81 +29,10 @@ interface AnalyticsData {
   totalRevenue: number;
 }
 
-// Subtle 0/1 matrix-style rain background
-function BinaryRain() {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const animationRef = useRef<number | null>(null);
-  const resizeObserverRef = useRef<ResizeObserver | null>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const setSize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    setSize();
-
-    // columns based on font size
-    const fontSize = 14; // px
-    let columns = Math.floor(canvas.width / fontSize);
-    let drops = Array.from({ length: columns }, () => Math.floor(Math.random() * -20));
-
-    const draw = () => {
-      // translucent background for trails
-      ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.font = `${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace`;
-      for (let i = 0; i < drops.length; i++) {
-        const char = Math.random() > 0.5 ? "0" : "1";
-        // cyan/emerald glow
-        ctx.fillStyle = "rgba(34, 211, 238, 0.75)"; // cyan-400
-        const x = i * fontSize;
-        const y = drops[i] * fontSize;
-        ctx.fillText(char, x, y);
-
-        // reset drop to top randomly to vary length
-        if (y > canvas.height && Math.random() > 0.975) {
-          drops[i] = Math.floor(Math.random() * -20);
-        }
-        drops[i] += 1;
-      }
-
-      animationRef.current = requestAnimationFrame(draw);
-    };
-
-    animationRef.current = requestAnimationFrame(draw);
-
-    const onResize = () => {
-      setSize();
-      columns = Math.floor(canvas.width / fontSize);
-      drops = Array.from({ length: columns }, () => Math.floor(Math.random() * -20));
-    };
-
-    window.addEventListener("resize", onResize);
-
-    return () => {
-      window.removeEventListener("resize", onResize);
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
-    };
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="pointer-events-none absolute inset-0 z-[5] opacity-30 mix-blend-screen"
-    />
-  );
-}
 
 function AdminDashboard() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [query, setQuery] = useState("");
 
   useEffect(() => {
     fetchAnalytics();
@@ -210,9 +139,6 @@ function AdminDashboard() {
     }
   ];
 
-  const filteredActions = adminActions.filter(a =>
-    a.title.toLowerCase().includes(query.toLowerCase().trim())
-  );
 
   return (
     <div className="relative min-h-screen w-full text-white font-sans">
@@ -222,37 +148,18 @@ function AdminDashboard() {
         <div className="absolute top-1/3 -right-24 h-72 w-72 rounded-full bg-cyan-600/20 blur-3xl"></div>
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-64 w-[40rem] bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-pink-600/10 blur-3xl" />
       </div>
-      {/* Binary 0/1 rain layer */}
-      <BinaryRain />
 
-      <div className="relative z-10 pt-20 pb-16 px-16 sm:px-20 lg:px-32 xl:px-40 2xl:px-48">
+      <div className="relative z-10 pt-20 pb-16 px-4">
         <div className="mx-auto w-full max-w-7xl">
           {/* Header */}
-          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="mb-8">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-gray-300">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-                System: Stable • v2025.10
-              </div>
-              <h1 className="mt-3 text-4xl md:text-5xl font-extrabold tracking-tight">
+              <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
                 <span className="bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">
                   Admin Console
                 </span>
               </h1>
               <p className="mt-2 text-sm text-gray-300">Manage Sabrang 2025 resources, users, and operations.</p>
-            </div>
-
-            {/* Quick search */}
-            <div className="w-full sm:w-80">
-              <div className="group relative">
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Quick search actions..."
-                  className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 pr-10 text-sm text-white placeholder:text-gray-400 outline-none transition focus:border-cyan-400/40 focus:ring-2 focus:ring-cyan-400/20"
-                />
-                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">/</span>
-              </div>
             </div>
           </div>
 
@@ -296,7 +203,7 @@ function AdminDashboard() {
 
           {/* Action Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {(filteredActions.length ? filteredActions : adminActions).map((action, index) => (
+            {adminActions.map((action, index) => (
               <Link href={action.href} key={index} className="group">
                 <div className="relative rounded-2xl border border-white/10 bg-black/40 p-5 backdrop-blur-md transition-transform duration-200 hover:-translate-y-1 hover:border-white/20">
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/0 via-white/0 to-white/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
