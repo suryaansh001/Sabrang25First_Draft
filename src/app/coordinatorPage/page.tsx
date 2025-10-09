@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Search, Users, UserCheck, UserX, RefreshCw, Eye, RotateCcw, AlertTriangle, CheckCircle } from 'lucide-react';
 import createApiUrl from "../../lib/api";
 
@@ -45,8 +46,6 @@ const CoordinatorPage = () => {
   const [resetConfirm, setResetConfirm] = useState<string | null>(null);
   const [allowingEntry, setAllowingEntry] = useState<string | null>(null);
   const [entryResult, setEntryResult] = useState<{[key: string]: any}>({});
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [authError, setAuthError] = useState<string>('');
   const [stats, setStats] = useState({
     total: 0,
     entered: 0,
@@ -59,18 +58,11 @@ const CoordinatorPage = () => {
     usersPerPage: 100
   });
 
-  // Check authentication on component mount
+  // Fetch events and initial participants on component mount
   useEffect(() => {
-    checkAuthentication();
+    fetchEvents();
+    loadAllParticipants();
   }, []);
-
-  // Fetch events and initial participants only after authentication is verified
-  useEffect(() => {
-    if (isAuthenticated === true) {
-      fetchEvents();
-      loadAllParticipants();
-    }
-  }, [isAuthenticated]);
 
   // Reload participants when event filter changes (not entry filter since it's client-side)
   useEffect(() => {
@@ -81,34 +73,8 @@ const CoordinatorPage = () => {
         loadAllParticipants();
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedEvent]);
-
-  const checkAuthentication = async () => {
-    try {
-      // Try to fetch user data to verify authentication and admin status
-      const response = await fetch(createApiUrl('/api/user'), {
-        credentials: 'include'
-      });
-
-      if (response.ok) {
-        const userData = await response.json();
-        if (userData.isAdmin) {
-          setIsAuthenticated(true);
-          setAuthError('');
-        } else {
-          setIsAuthenticated(false);
-          setAuthError('Admin privileges required to access this page.');
-        }
-      } else {
-        setIsAuthenticated(false);
-        setAuthError('Please log in to access this page.');
-      }
-    } catch (error) {
-      console.error('Authentication check failed:', error);
-      setIsAuthenticated(false);
-      setAuthError('Authentication check failed. Please try again.');
-    }
-  };
 
   const fetchEvents = async () => {
     try {
@@ -139,16 +105,7 @@ const CoordinatorPage = () => {
         sortOrder: 'desc'
       });
 
-      const response = await fetch(createApiUrl(`/admin/users?${params}`), {
-        credentials: 'include'
-      });
-      
-      if (response.status === 401) {
-        setIsAuthenticated(false);
-        setAuthError('Session expired. Please log in again.');
-        return;
-      }
-      
+      const response = await fetch(`/api/admin/users?${params}`);
       const data = await response.json();
       
 
@@ -243,9 +200,7 @@ const CoordinatorPage = () => {
         page: page.toString()
       });
 
-      const response = await fetch(createApiUrl(`/admin/users?${params}`), {
-        credentials: 'include'
-      });
+      const response = await fetch(`/api/admin/users?${params}`);
       const data = await response.json();
 
       if (data.success && Array.isArray(data.users)) {
@@ -309,9 +264,7 @@ const CoordinatorPage = () => {
 
   const viewParticipantDetails = async (participant: Participant) => {
     try {
-      const response = await fetch(createApiUrl(`/admin/coordinator/participant/${participant._id}`), {
-        credentials: 'include'
-      });
+      const response = await fetch(`/api/admin/coordinator/participant/${participant._id}`);
       const data = await response.json();
 
       if (data.success) {
@@ -328,9 +281,8 @@ const CoordinatorPage = () => {
 
   const resetEntryStatus = async (participantId: string, reason: string) => {
     try {
-      const response = await fetch(createApiUrl(`/admin/coordinator/reset-entry/${participantId}`), {
+      const response = await fetch(`/api/admin/coordinator/reset-entry/${participantId}`, {
         method: 'POST',
-        credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -502,47 +454,6 @@ const CoordinatorPage = () => {
       default: return 'Unknown';
     }
   };
-
-  // Show loading state while checking authentication
-  if (isAuthenticated === null) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <RefreshCw className="w-8 h-8 text-blue-400 animate-spin mx-auto mb-4" />
-          <p className="text-white text-lg">Checking authentication...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Show authentication error if not authenticated or not admin
-  if (isAuthenticated === false) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="max-w-md w-full bg-gray-800 rounded-lg shadow-md p-8 border border-gray-700">
-          <div className="text-center">
-            <AlertTriangle className="w-16 h-16 text-red-400 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-white mb-4">Access Denied</h1>
-            <p className="text-gray-300 mb-6">{authError}</p>
-            <div className="space-y-3">
-              <button
-                onClick={() => router.push('/Login')}
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Go to Login
-              </button>
-              <button
-                onClick={checkAuthentication}
-                className="w-full bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-500 transition-colors"
-              >
-                Retry Authentication
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-900 p-6">
@@ -929,7 +840,6 @@ const CoordinatorPage = () => {
                         <span className={`ml-2 px-2 py-1 text-xs rounded-full ${selectedParticipant.isvalidated ? 'bg-green-900/30 text-green-300 border border-green-700' : 'bg-red-900/30 text-red-300 border border-red-700'}`}>
                           {selectedParticipant.isvalidated ? 'Yes' : 'No'}
                         </span>
-                        <span className="ml-2 text-xs text-gray-400">(Info only - doesn't affect entry)</span>
                       </p>
                       <p className="text-gray-300"><span className="font-medium text-white">Entry Status:</span> 
                         <span className={`ml-2 px-2 py-1 text-xs rounded-full ${selectedParticipant.hasEntered ? 'bg-green-900/30 text-green-300 border border-green-700' : 'bg-red-900/30 text-red-300 border border-red-700'}`}>
