@@ -930,6 +930,7 @@ const CoordinatorPage = () => {
                         <span className={`ml-2 px-2 py-1 text-xs rounded-full ${selectedParticipant.isvalidated ? 'bg-green-900/30 text-green-300 border border-green-700' : 'bg-red-900/30 text-red-300 border border-red-700'}`}>
                           {selectedParticipant.isvalidated ? 'Yes' : 'No'}
                         </span>
+                        <span className="ml-2 text-xs text-gray-400">(Info only - doesn't affect entry)</span>
                       </p>
                       <p className="text-gray-300"><span className="font-medium text-white">Entry Status:</span> 
                         <span className={`ml-2 px-2 py-1 text-xs rounded-full ${selectedParticipant.hasEntered ? 'bg-green-900/30 text-green-300 border border-green-700' : 'bg-red-900/30 text-red-300 border border-red-700'}`}>
