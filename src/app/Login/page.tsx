@@ -67,8 +67,8 @@ const Login = () => {
       // Dispatch custom event to notify navbar about login
       window.dispatchEvent(new CustomEvent('userLoggedIn'));
       
-      // Redirect to dashboard or home page
-      router.push('/dashboard');
+      // Redirect to admin panel
+      router.push('/admin');
       
     } catch (error) {
       console.error('Login error:', error);

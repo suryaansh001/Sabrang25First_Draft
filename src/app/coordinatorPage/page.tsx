@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Users, UserCheck, UserX, RefreshCw, Eye, RotateCcw, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Search, Users, UserCheck, UserX, RefreshCw, Eye, RotateCcw, AlertTriangle, CheckCircle, QrCode } from 'lucide-react';
 import createApiUrl from "../../lib/api";
 
 interface Participant {
@@ -78,17 +78,30 @@ const CoordinatorPage = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await fetch('/api/admin/events-public');
+      console.log('🔄 Fetching events...');
+      const response = await fetch(createApiUrl('/admin/events-public'), {
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        console.error('❌ Events API failed:', response.status, response.statusText);
+        setEvents([]);
+        return;
+      }
+      
       const data = await response.json();
+      console.log('📊 Events data:', data);
+      
       // Ensure data is an array
       if (Array.isArray(data)) {
         setEvents(data);
+        console.log('✅ Events loaded:', data.length);
       } else {
-        console.error('Events data is not an array:', data);
+        console.error('❌ Events data is not an array:', data);
         setEvents([]);
       }
     } catch (error) {
-      console.error('Error fetching events:', error);
+      console.error('❌ Error fetching events:', error);
       setEvents([]);
     }
   };
@@ -105,9 +118,23 @@ const CoordinatorPage = () => {
         sortOrder: 'desc'
       });
 
-      const response = await fetch(`/api/admin/users?${params}`);
-      const data = await response.json();
+      console.log('🔄 Fetching participants...');
+      const response = await fetch(createApiUrl(`/admin/users?${params}`), {
+        credentials: 'include'
+      });
       
+      if (!response.ok) {
+        console.error('❌ Participants API failed:', response.status, response.statusText);
+        const errorText = await response.text();
+        console.error('Error details:', errorText);
+        setParticipants([]);
+        setStats({ total: 0, entered: 0, notEntered: 0 });
+        setLoading(false);
+        return;
+      }
+      
+      const data = await response.json();
+      console.log('📊 Participants data:', data);
 
       if (data.success && Array.isArray(data.users)) {
         // Transform the users data to match our Participant interface
@@ -200,8 +227,20 @@ const CoordinatorPage = () => {
         page: page.toString()
       });
 
-      const response = await fetch(`/api/admin/users?${params}`);
+      console.log('🔍 Searching participants...');
+      const response = await fetch(createApiUrl(`/admin/users?${params}`), {
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        console.error('❌ Search API failed:', response.status, response.statusText);
+        alert('Failed to search participants');
+        setLoading(false);
+        return;
+      }
+      
       const data = await response.json();
+      console.log('📊 Search results:', data);
 
       if (data.success && Array.isArray(data.users)) {
         // Transform the users data to match our Participant interface
@@ -264,7 +303,15 @@ const CoordinatorPage = () => {
 
   const viewParticipantDetails = async (participant: Participant) => {
     try {
-      const response = await fetch(`/api/admin/coordinator/participant/${participant._id}`);
+      const response = await fetch(createApiUrl(`/admin/coordinator/participant/${participant._id}`), {
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        alert('Failed to fetch participant details');
+        return;
+      }
+      
       const data = await response.json();
 
       if (data.success) {
@@ -281,8 +328,9 @@ const CoordinatorPage = () => {
 
   const resetEntryStatus = async (participantId: string, reason: string) => {
     try {
-      const response = await fetch(`/api/admin/coordinator/reset-entry/${participantId}`, {
+      const response = await fetch(createApiUrl(`/admin/coordinator/reset-entry/${participantId}`), {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -460,11 +508,29 @@ const CoordinatorPage = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-gray-800 rounded-lg shadow-md p-6 mb-6 border border-gray-700">
-          <h1 className="text-3xl font-bold text-white mb-2">Coordinator Dashboard</h1>
-          <p className="text-gray-300 mb-4">Search and manage event participants with entry control</p>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-white mb-2">Coordinator Dashboard</h1>
+              <p className="text-gray-300">Search and manage event participants with entry control</p>
+            </div>
+            <a
+              href="/admin/scan-qr"
+              className="flex items-center px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+              <QrCode className="w-5 h-5 mr-2" />
+              Scan QR Code
+            </a>
+          </div>
           
           {/* Feature highlights */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+            <div className="flex items-center p-3 bg-purple-900/30 rounded-lg border border-purple-700">
+              <QrCode className="w-5 h-5 text-purple-400 mr-3" />
+              <div>
+                <p className="text-sm font-semibold text-purple-300">QR Scan</p>
+                <p className="text-xs text-purple-400">Quick participant check-in</p>
+              </div>
+            </div>
             <div className="flex items-center p-3 bg-green-900/30 rounded-lg border border-green-700">
               <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
               <div>
