@@ -102,7 +102,9 @@ const CoordinatorPage = () => {
         sortOrder: 'desc'
       });
 
-      const response = await fetch(`/api/admin/users?${params}`);
+      const response = await fetch(createApiUrl(`/admin/users?${params}`), {
+        credentials: 'include'
+      });
       const data = await response.json();
       
 
@@ -197,7 +199,9 @@ const CoordinatorPage = () => {
         page: page.toString()
       });
 
-      const response = await fetch(`/api/admin/users?${params}`);
+      const response = await fetch(createApiUrl(`/admin/users?${params}`), {
+        credentials: 'include'
+      });
       const data = await response.json();
 
       if (data.success && Array.isArray(data.users)) {
@@ -261,7 +265,9 @@ const CoordinatorPage = () => {
 
   const viewParticipantDetails = async (participant: Participant) => {
     try {
-      const response = await fetch(`/api/admin/coordinator/participant/${participant._id}`);
+      const response = await fetch(createApiUrl(`/admin/coordinator/participant/${participant._id}`), {
+        credentials: 'include'
+      });
       const data = await response.json();
 
       if (data.success) {
@@ -278,8 +284,9 @@ const CoordinatorPage = () => {
 
   const resetEntryStatus = async (participantId: string, reason: string) => {
     try {
-      const response = await fetch(`/api/admin/coordinator/reset-entry/${participantId}`, {
+      const response = await fetch(createApiUrl(`/admin/coordinator/reset-entry/${participantId}`), {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
