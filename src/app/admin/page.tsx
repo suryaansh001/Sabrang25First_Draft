@@ -3,16 +3,13 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Search, 
   Users, 
-  Plus, 
   Edit3, 
   Trash2, 
   Eye, 
-  Filter,
   Download,
   RefreshCw,
   UserPlus,
   Mail,
-  XCircle,
   AlertTriangle,
   CheckCircle,
   ChevronDown,
@@ -27,6 +24,43 @@ interface TeamInfo {
   isLeader: boolean;
   totalMembers: number;
   registrationComplete: boolean;
+}
+
+interface TeamMember {
+  _id: string;
+  name: string;
+  email: string;
+  hasEntered?: boolean;
+}
+
+interface Team {
+  _id: string;
+  teamName: string;
+  eventName: string;
+  leader?: TeamMember;
+  members: TeamMember[];
+  totalMembers: number;
+  registrationComplete: boolean;
+  paymentStatus?: string;
+  purchaseId?: string | null;
+  createdAt?: string;
+}
+
+interface TeamParticipation {
+  teamId: string;
+  teamName: string;
+  eventName: string;
+  isLeader: boolean;
+  registrationComplete: boolean;
+  totalMembers: number;
+  purchaseId?: string | null;
+}
+
+interface PurchaseHistory {
+  orderId: string;
+  totalAmount: number;
+  paymentStatus: string;
+  purchaseDate: string;
 }
 
 interface User {
@@ -45,8 +79,8 @@ interface User {
   emailSent: boolean;
   createdAt: string;
   teamInfo?: TeamInfo[];
-  teamParticipations?: any[];
-  purchaseHistory?: any[];
+  teamParticipations?: TeamParticipation[];
+  purchaseHistory?: PurchaseHistory[];
   totalAmountPaid?: number;
   qrCodeBase64?: string | null;
 }
@@ -75,7 +109,7 @@ const ManageUsersPage = () => {
   const [exporting, setExporting] = useState(false);
   const [activeTab, setActiveTab] = useState<'users' | 'teams'>('users');
   const [expandedTeams, setExpandedTeams] = useState<Record<string, boolean>>({});
-  const [teams, setTeams] = useState<any[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [teamsLoading, setTeamsLoading] = useState(false);
   const [stats, setStats] = useState({
     totalUsers: 0,
@@ -137,17 +171,10 @@ const ManageUsersPage = () => {
       const response = await fetch(`/api/admin/manage-users?${params}`);
       const data = await response.json();
 
-      console.log('API Response:', data);
-      console.log('Response structure:', {
-        success: data.success,
-        users: data.users ? 'exists' : 'missing',
-        pagination: data.pagination ? 'exists' : 'missing',
-        stats: data.stats ? 'exists' : 'missing'
-      });
+      // API Response logging removed for production
 
       if (data.success) {
-        console.log('Users data received:', data.users);
-        console.log('Sample user with team data:', data.users?.[0]);
+        // Users data logging removed for production
         // Filter out users with null qrCodeBase64
         const filteredUsers = (data.users || []).filter((user: User) => user.qrCodeBase64 !== null && user.qrCodeBase64 !== undefined);
         setUsers(filteredUsers);
@@ -155,7 +182,7 @@ const ManageUsersPage = () => {
           setTotalPages(data.pagination.totalPages || 1);
           setTotalCount(data.pagination.totalCount || 0);
         } else {
-          console.error('Missing pagination in response');
+          // Missing pagination in response
           setTotalPages(1);
           setTotalCount(0);
         }
@@ -170,7 +197,7 @@ const ManageUsersPage = () => {
         alert(data.message || 'Failed to fetch users');
       }
     } catch (error) {
-      console.error('Error fetching users:', error);
+      // Error fetching users
       alert('Error fetching users');
     } finally {
       setLoading(false);
@@ -188,23 +215,20 @@ const ManageUsersPage = () => {
         limit: '100'
       });
 
-      console.log('Fetching teams with params:', params.toString());
       const response = await fetch(`/api/admin/teams?${params}`);
       const data = await response.json();
 
-      console.log('Teams API Response:', data);
-
       if (data.success) {
         // Filter out teams with null purchaseId
-        const filteredTeams = (data.teams || []).filter((team: any) => team.purchaseId !== null && team.purchaseId !== undefined);
+        const filteredTeams = (data.teams || []).filter((team: Team) => team.purchaseId !== null && team.purchaseId !== undefined);
         setTeams(filteredTeams);
-        console.log('Teams loaded (after filtering):', filteredTeams?.length || 0);
+        // Teams loaded and filtered
       } else {
-        console.error('Failed to fetch teams:', data.message);
+        // Failed to fetch teams
         setTeams([]);
       }
     } catch (error) {
-      console.error('Error fetching teams:', error);
+      // Error fetching teams
       setTeams([]);
     } finally {
       setTeamsLoading(false);
@@ -234,7 +258,7 @@ const ManageUsersPage = () => {
         alert(data.message || 'Failed to delete user');
       }
     } catch (error) {
-      console.error('Error deleting user:', error);
+      // Error deleting user
       alert('Error deleting user');
     }
   };
@@ -261,24 +285,20 @@ const ManageUsersPage = () => {
 
   // Group users by teams (using teamParticipations from backend)
   const groupedTeams = useMemo(() => {
-    console.log('Grouping teams from users:', users.length);
-    const map = new Map<string, { leader: User | null; members: User[]; meta: any }>();
+    const map = new Map<string, { leader: User | null; members: User[]; meta: { teamName: string; eventName: string; teamId: string; registrationComplete: boolean; totalMembers: number } }>();
 
     for (const user of users) {
       const teamParticipations = user.teamParticipations || [];
-      console.log(`User ${user.name} has ${teamParticipations.length} team participations:`, teamParticipations);
       
       if (teamParticipations.length === 0) continue;
       
       for (const team of teamParticipations) {
         // Handle missing or undefined team data, and filter out teams with null purchaseId
         if (!team || !team.teamName || !team.eventName || team.purchaseId === null || team.purchaseId === undefined) {
-          console.log('Skipping invalid team data or team with null purchaseId:', team);
           continue;
         }
         
         const key = `${team.eventName}|${team.teamName}`;
-        console.log(`Processing team: ${key} for user: ${user.name}`);
         
         if (!map.has(key)) {
           map.set(key, { 
@@ -292,7 +312,6 @@ const ManageUsersPage = () => {
               totalMembers: 0 // Will be calculated
             }
           });
-          console.log(`Created new team entry: ${key}`);
         }
         const entry = map.get(key)!;
         
@@ -301,17 +320,14 @@ const ManageUsersPage = () => {
         const isAlreadyMember = entry.members.some(m => m._id === user._id);
         
         if (isAlreadyLeader || isAlreadyMember) {
-          console.log(`User ${user.name} already in team ${key}, skipping`);
           continue;
         }
         
         // For now, treat first user as leader (we can improve this logic later)
         if (!entry.leader) {
           entry.leader = user;
-          console.log(`Set ${user.name} as leader of ${key}`);
         } else {
           entry.members.push(user);
-          console.log(`Added ${user.name} as member of ${key}`);
         }
         
         // Update total members count
@@ -320,15 +336,6 @@ const ManageUsersPage = () => {
     }
 
     const result = Array.from(map.entries()).map(([key, value]) => ({ key, ...value }));
-    console.log('Final grouped teams:', result);
-    console.log('Team summary:', result.map(t => ({
-      key: t.key,
-      teamName: t.meta.teamName,
-      eventName: t.meta.eventName,
-      leaderName: t.leader?.name,
-      memberCount: t.members.length,
-      totalMembers: t.meta.totalMembers
-    })));
     return result;
   }, [users]);
 
@@ -347,7 +354,7 @@ const ManageUsersPage = () => {
         alert(data.message || 'Failed to fetch user details');
       }
     } catch (error) {
-      console.error('Error fetching user details:', error);
+      // Error fetching user details
       alert('Error fetching user details');
     } finally {
       setLoadingUserDetails(false);
@@ -373,14 +380,7 @@ const ManageUsersPage = () => {
         export: 'true' // Flag to get all matching records, not paginated
       });
 
-      console.log('Exporting with filters:', {
-        search: searchQuery,
-        eventFilter,
-        statusFilter,
-        userTypeFilter,
-        sortBy,
-        sortOrder
-      });
+      // Exporting with current filters
 
       const response = await fetch(`/api/admin/manage-users?${params}`);
       
@@ -406,9 +406,9 @@ const ManageUsersPage = () => {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
       
-      console.log('Export completed:', filename);
+      // Export completed
     } catch (error) {
-      console.error('Error exporting users:', error);
+      // Error exporting users
       alert('Error exporting users: ' + (error instanceof Error ? error.message : 'Unknown error'));
     } finally {
       setExporting(false);
@@ -831,7 +831,7 @@ const ManageUsersPage = () => {
                                 onClick={(e) => { 
                                   e.preventDefault(); 
                                   e.stopPropagation(); 
-                                  fetchUserDetails(team.leader._id);
+                                  if (team.leader) fetchUserDetails(team.leader._id);
                                 }} 
                                 disabled={loadingUserDetails}
                                 className="inline-flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300 disabled:text-gray-500 disabled:cursor-not-allowed"
@@ -843,7 +843,7 @@ const ManageUsersPage = () => {
 
                           {/* Team Members */}
                           <div className="divide-y divide-gray-600">
-                            {team.members.map((member: any, index: number) => (
+                            {team.members.map((member: TeamMember, index: number) => (
                               <div key={`${team._id}-member-${member._id}-${index}`} className="flex items-center justify-between py-2">
                                 <div className="flex items-center gap-2">
                                   <span className="px-2 py-0.5 rounded bg-blue-600 text-white text-xs">Member</span>
