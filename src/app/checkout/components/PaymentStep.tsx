@@ -206,11 +206,29 @@ export function PaymentStep({
       )}
 
       {paymentStatus === 'failed' && error && (
-        <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-red-400/40 shadow-lg flex items-center gap-4">
-          <XCircle className="w-6 h-6 text-red-400" />
-          <div>
-            <p className="font-semibold text-red-400">Payment Failed</p>
-            <p className="text-sm text-white/70">{error}</p>
+        <div className="space-y-4">
+          <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-red-400/40 shadow-[0_0_20px_rgba(239,68,68,0.3)]">
+            <div className="flex items-center gap-4 mb-4">
+              <XCircle className="w-6 h-6 text-red-400" />
+              <div>
+                <p className="font-semibold text-red-400">Payment Failed</p>
+                <p className="text-sm text-white/70">{error}</p>
+              </div>
+            </div>
+            <div className="bg-yellow-500/10 border border-yellow-400/40 rounded-lg p-4">
+              <p className="text-sm text-yellow-200 mb-3">
+                <strong>Alternative Payment Option:</strong> You can also pay directly using this link:
+              </p>
+              <a
+                href="https://payments.cashfree.com/forms?code=sabrang25"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold rounded-lg transition-all"
+              >
+                <CreditCard className="w-4 h-4" />
+                Pay via Cashfree Link
+              </a>
+            </div>
           </div>
         </div>
       )}

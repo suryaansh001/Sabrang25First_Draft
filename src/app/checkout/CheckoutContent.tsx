@@ -193,7 +193,7 @@ export function CheckoutContent() {
   return (
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-black to-black text-white relative overflow-hidden">
       {/* Animated background elements - removed for cleaner look */}
-      <div className="container mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 py-8 max-w-7xl relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 py-8 pb-28 max-w-7xl relative z-10">
         {/* Header */}
         <div className="mb-8">
           <button

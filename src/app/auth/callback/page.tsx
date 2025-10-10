@@ -27,8 +27,8 @@ function AuthCallbackContent() {
       // Dispatch custom event to notify navbar about login
       window.dispatchEvent(new CustomEvent('userLoggedIn'));
       
-      // Redirect to dashboard
-      router.push('/dashboard');
+      // Redirect to admin panel
+      router.push('/admin');
     } else {
       // If no token, redirect to login page with error
       router.push('/Login?error=auth_failed');

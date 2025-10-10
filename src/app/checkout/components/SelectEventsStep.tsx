@@ -18,6 +18,13 @@ export function SelectEventsStep({
   visitorPassDays,
   onUpdateState,
 }: SelectEventsStepProps) {
+  const totalSelectedAmount = useMemo(() => {
+    const eventsSum = eventCatalog
+      .filter(e => selectedEventIds.includes(e.id))
+      .reduce((sum, e) => sum + parseFloat(e.price.replace(/[^0-9.]/g, '') || '0'), 0);
+    const visitorSum = visitorPassDays * 69;
+    return (eventsSum + visitorSum).toFixed(2);
+  }, [eventCatalog, selectedEventIds, visitorPassDays]);
   const toggleEvent = (id: number) => {
     // Prevent adding event id 10 (In Conversation With) as registration is closed
     if (id === 10) return;
@@ -58,6 +65,7 @@ export function SelectEventsStep({
   );
 
   return (
+    <>
     <div className="grid lg:grid-cols-4 gap-6 lg:gap-8">
       <div className="lg:col-span-3">
         {/* Cart Loaded Banner */}
@@ -270,5 +278,28 @@ export function SelectEventsStep({
         </div>
       </div>
     </div>
+    {/* Mobile sticky action bar */}
+    {((selectedEventIds.length > 0) || visitorPassDays > 0) && (
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-20">
+        <div className="backdrop-blur-md bg-black/60 border-t border-white/10">
+          <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-3">
+            <div className="flex flex-col">
+              <span className="text-xs text-white/70">Total</span>
+              <span className="text-xl font-bold text-white">₹{totalSelectedAmount}</span>
+            </div>
+            <button
+              onClick={() => {
+                const event = new CustomEvent('proceedToForms');
+                window.dispatchEvent(event);
+              }}
+              className="flex-1 sm:flex-none px-5 py-3 bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-all font-semibold text-white shadow-lg text-center"
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

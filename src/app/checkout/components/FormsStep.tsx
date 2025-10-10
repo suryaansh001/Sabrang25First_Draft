@@ -300,18 +300,6 @@ export function FormsStep({
         <p className="text-gray-400 mb-6">Fill in your information for registration</p>
       </div>
 
-      {/* Error Summary */}
-      {totalErrors > 0 && (
-        <div className="bg-red-500/10 backdrop-blur-sm p-4 rounded-xl border border-red-400/40 shadow-lg">
-          <div className="flex items-start gap-3">
-            <span className="text-2xl">⚠️</span>
-            <div>
-              <p className="font-semibold text-red-400 mb-1">Please fix {totalErrors} error{totalErrors > 1 ? 's' : ''}</p>
-              <p className="text-sm text-white/70">Scroll down to see which fields need attention</p>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Visitor Pass Form */}
       {state.visitorPassDays > 0 && (
