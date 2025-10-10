@@ -74,7 +74,7 @@ export const TEAM_SIZE_CONFIG: Record<string, TeamSizeConfig> = {
   'VERSEVAAD': { min: 1, max: 2 },
   'BANDJAM': { min: 3, max: 8 },
   'VALORANT TOURNAMENT': { min: 5, max: 5 },
-  'FREE FIRE TOURNAMENT': { min: 4, max: 4 },
+  'FREE FIRE TOURNAMENT': { min: 4, max: 5 },
   'BGMI TOURNAMENT': { min: 4, max: 5 }
 };
 
