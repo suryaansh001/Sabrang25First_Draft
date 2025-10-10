@@ -467,14 +467,7 @@ const CoordinatorPage = () => {
   };
 
   // Filter participants based on entry status
-  const filteredParticipants = participants.filter(participant => {
-    if (entryFilter === 'entered') {
-      return Boolean(participant.hasEntered);
-    } else if (entryFilter === 'not-entered') {
-      return !Boolean(participant.hasEntered);
-    }
-    return true; // 'all' - show all participants
-  });
+  const filteredParticipants = participants; // Show all participants always
 
   const handleSearchClick = () => {
     searchParticipants(1); // Reset to page 1 on new search
@@ -507,15 +500,15 @@ const CoordinatorPage = () => {
     <div className="min-h-screen bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-gray-800 rounded-lg shadow-md p-6 mb-6 border border-gray-700">
-          <div className="flex items-center justify-between mb-4">
+        <div className="bg-gray-800 rounded-lg shadow-md p-3 mb-3 border border-gray-700">
+          <div className="flex items-center justify-between mb-2">
             <div>
               <h1 className="text-3xl font-bold text-white mb-2">Coordinator Dashboard</h1>
               <p className="text-gray-300">Search and manage event participants with entry control</p>
             </div>
             <a
               href="/admin/scan-qr"
-              className="flex items-center px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              className="flex items-center px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <QrCode className="w-5 h-5 mr-2" />
               Scan QR Code
@@ -523,7 +516,7 @@ const CoordinatorPage = () => {
           </div>
           
           {/* Feature highlights */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
             <div className="flex items-center p-3 bg-purple-900/30 rounded-lg border border-purple-700">
               <QrCode className="w-5 h-5 text-purple-400 mr-3" />
               <div>
@@ -556,8 +549,8 @@ const CoordinatorPage = () => {
         </div>
 
         {/* Search Section */}
-        <div className="bg-gray-800 rounded-lg shadow-md p-6 mb-6 border border-gray-700">
-          <div className="flex flex-col md:flex-row gap-4 mb-4">
+        <div className="bg-gray-800 rounded-lg shadow-md p-3 mb-3 border border-gray-700">
+          <div className="flex flex-col md:flex-row gap-4 mb-2">
             <div className="flex-1">
               <label className="block text-sm font-medium text-gray-300 mb-2">Search Participants</label>
               <div className="relative">
@@ -604,7 +597,7 @@ const CoordinatorPage = () => {
 
           {/* Stats */}
           {filteredParticipants.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
               <div className="bg-blue-900/30 p-3 rounded-lg border border-blue-700">
                 <div className="flex items-center">
                   <Users className="w-5 h-5 text-blue-400 mr-2" />
@@ -653,19 +646,19 @@ const CoordinatorPage = () => {
               <table className="w-full">
                 <thead className="bg-gray-700">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Participant
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Type
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Events
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Entry Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -673,7 +666,7 @@ const CoordinatorPage = () => {
                 <tbody className="bg-gray-800 divide-y divide-gray-700">
                   {filteredParticipants.map((participant) => (
                     <tr key={participant._id} className="hover:bg-gray-700">
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-2 whitespace-nowrap">
                         <div>
                           <div className="text-sm font-medium text-white">{participant.name}</div>
                           <div className="text-sm text-gray-300">{participant.email}</div>
@@ -683,7 +676,7 @@ const CoordinatorPage = () => {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-2 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getParticipantTypeColor(participant.participantType)}`}>
                           {getParticipantTypeLabel(participant.participantType)}
                         </span>
@@ -693,7 +686,7 @@ const CoordinatorPage = () => {
                           </div>
                         )}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-2">
                         <div className="text-sm text-gray-300">
                           {participant.events.map((event, index) => (
                             <span key={index} className="inline-block bg-gray-600 text-gray-200 text-xs px-2 py-1 rounded mr-1 mb-1">
@@ -702,7 +695,7 @@ const CoordinatorPage = () => {
                           ))}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-2 whitespace-nowrap">
                         <div className="flex flex-col gap-2">
                           {(() => {
                             const result = entryResult[participant._id];
@@ -757,7 +750,7 @@ const CoordinatorPage = () => {
                           })()}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <td className="px-6 py-2 whitespace-nowrap text-sm font-medium">
                         <div className="flex flex-col gap-2">
                           <button
                             onClick={() => viewParticipantDetails(participant)}
@@ -805,7 +798,7 @@ const CoordinatorPage = () => {
             
             {/* Pagination Controls */}
             {pagination.totalPages > 1 && (
-              <div className="px-6 py-4 border-t border-gray-700 flex items-center justify-between">
+              <div className="px-6 py-2 border-t border-gray-700 flex items-center justify-between">
                 <div className="flex items-center text-sm text-gray-300">
                   <span>
                     Page {pagination.currentPage} of {pagination.totalPages} 
@@ -953,14 +946,14 @@ const CoordinatorPage = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-gray-800 rounded-lg max-w-md w-full border border-gray-700">
               <div className="p-6">
-                <div className="flex items-center mb-4">
+                <div className="flex items-center mb-2">
                   <AlertTriangle className="w-6 h-6 text-orange-400 mr-3" />
                   <h3 className="text-lg font-semibold text-white">Reset Entry Status</h3>
                 </div>
-                <p className="text-gray-300 mb-4">
+                <p className="text-gray-300 mb-2">
                   Are you sure you want to reset the entry status for this participant? This action will mark them as "Not Entered" and remove their entry time.
                 </p>
-                <div className="mb-4">
+                <div className="mb-2">
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     Reason for reset (optional)
                   </label>
@@ -996,7 +989,7 @@ const CoordinatorPage = () => {
         {/* Empty State */}
         {filteredParticipants.length === 0 && !loading && (
           <div className="bg-gray-800 rounded-lg shadow-md p-12 text-center border border-gray-700">
-            <Users className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+            <Users className="w-16 h-16 text-gray-500 mx-auto mb-2" />
             <h3 className="text-lg font-medium text-white mb-2">No Participants Found</h3>
             <p className="text-gray-300">
               {searchQuery.trim() 
@@ -1010,7 +1003,7 @@ const CoordinatorPage = () => {
                   setSearchQuery('');
                   loadAllParticipants(1);
                 }}
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 Show All Participants
               </button>

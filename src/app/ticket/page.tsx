@@ -210,20 +210,268 @@ function TicketPage() {
       }
 
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      const fileName = `${memberName.replace(/[^a-zA-Z0-9]/g, '_')}-qr-code.png`;
       
+      // Detect mobile device
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        // Method 1: Try Web Share API (modern mobile browsers)
+        if (navigator.share && navigator.canShare) {
+          try {
+            const file = new File([blob], fileName, { type: 'image/png' });
+            if (navigator.canShare({ files: [file] })) {
+              await navigator.share({
+                title: 'QR Code',
+                text: `QR Code for ${memberName}`,
+                files: [file]
+              });
+              return; // Success with Web Share API
+            }
+          } catch (shareError) {
+            console.log('Web Share API failed, trying fallback:', shareError);
+          }
+        }
+        
+        // Method 2: Open in new window with save instructions (mobile fallback)
+        const url = window.URL.createObjectURL(blob);
+        const newWindow = window.open('', '_blank');
+        
+        if (newWindow) {
+          newWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <title>QR Code - ${memberName}</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <meta charset="UTF-8">
+                <style>
+                  * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                  }
+                  body {
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 20px;
+                    color: white;
+                  }
+                  .container {
+                    background: rgba(255, 255, 255, 0.1);
+                    backdrop-filter: blur(10px);
+                    border-radius: 20px;
+                    padding: 30px;
+                    text-align: center;
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    max-width: 400px;
+                    width: 100%;
+                  }
+                  h1 {
+                    font-size: 24px;
+                    margin-bottom: 20px;
+                    font-weight: 600;
+                  }
+                  .qr-container {
+                    background: white;
+                    padding: 20px;
+                    border-radius: 15px;
+                    margin: 20px 0;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                  }
+                  .qr-image {
+                    width: 100%;
+                    height: auto;
+                    max-width: 250px;
+                    border-radius: 8px;
+                  }
+                  .instructions {
+                    background: rgba(255, 255, 255, 0.1);
+                    padding: 20px;
+                    border-radius: 12px;
+                    margin: 20px 0;
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                  }
+                  .instructions h3 {
+                    font-size: 18px;
+                    margin-bottom: 15px;
+                    color: #ffd700;
+                  }
+                  .instructions ul {
+                    list-style: none;
+                    text-align: left;
+                  }
+                  .instructions li {
+                    margin: 10px 0;
+                    padding-left: 20px;
+                    position: relative;
+                    font-size: 14px;
+                    line-height: 1.4;
+                  }
+                  .instructions li:before {
+                    content: '📱';
+                    position: absolute;
+                    left: 0;
+                  }
+                  .button-group {
+                    display: flex;
+                    gap: 10px;
+                    margin-top: 25px;
+                    flex-wrap: wrap;
+                  }
+                  .btn {
+                    flex: 1;
+                    min-width: 120px;
+                    padding: 12px 20px;
+                    border: none;
+                    border-radius: 25px;
+                    font-size: 16px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    text-decoration: none;
+                    display: inline-block;
+                    text-align: center;
+                  }
+                  .btn-download {
+                    background: linear-gradient(45deg, #4CAF50, #45a049);
+                    color: white;
+                  }
+                  .btn-close {
+                    background: linear-gradient(45deg, #f44336, #da190b);
+                    color: white;
+                  }
+                  .btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+                  }
+                  .btn:active {
+                    transform: translateY(0);
+                  }
+                  @media (max-width: 480px) {
+                    .container {
+                      padding: 20px;
+                      margin: 10px;
+                    }
+                    .button-group {
+                      flex-direction: column;
+                    }
+                    .btn {
+                      width: 100%;
+                    }
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <h1>🎫 QR Code for ${memberName}</h1>
+                  
+                  <div class="qr-container">
+                    <img src="${url}" alt="QR Code for ${memberName}" class="qr-image" />
+                  </div>
+                  
+                  <div class="instructions">
+                    <h3>📥 How to Save:</h3>
+                    <ul>
+                      <li>Long press on the QR code image above</li>
+                      <li>Select "Save Image" or "Download Image"</li>
+                      <li>Or use the download button below</li>
+                      <li>The image will be saved to your device</li>
+                    </ul>
+                  </div>
+                  
+                  <div class="button-group">
+                    <a href="${url}" download="${fileName}" class="btn btn-download">
+                      💾 Download QR Code
+                    </a>
+                    <button onclick="window.close()" class="btn btn-close">
+                      ❌ Close
+                    </button>
+                  </div>
+                </div>
+                
+                <script>
+                  // Auto-focus for better mobile experience
+                  window.addEventListener('load', function() {
+                    // Try to trigger download automatically on some browsers
+                    setTimeout(function() {
+                      var downloadLink = document.querySelector('.btn-download');
+                      if (downloadLink && /Android/i.test(navigator.userAgent)) {
+                        // Auto-click for Android devices
+                        downloadLink.click();
+                      }
+                    }, 1000);
+                  });
+                  
+                  // Prevent accidental navigation
+                  window.addEventListener('beforeunload', function(e) {
+                    e.preventDefault();
+                    return 'Are you sure you want to leave? Make sure you\'ve saved the QR code.';
+                  });
+                </script>
+              </body>
+            </html>
+          `);
+          newWindow.document.close();
+          
+          // Show success message
+          setTimeout(() => {
+            alert('✅ QR code opened in new window. Please save the image by long-pressing it or using the download button.');
+          }, 500);
+          
+          return; // Success with new window method
+        }
+      }
+      
+      // Method 3: Traditional download (desktop and some mobile browsers)
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `${memberName.replace(/[^a-zA-Z0-9]/g, '_')}-qr-code.png`;
-      document.body.appendChild(link);
-      link.click();
+      link.download = fileName;
+      link.style.display = 'none';
       
-      // Cleanup
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      // Add to DOM and trigger download
+      document.body.appendChild(link);
+      
+      // Create and dispatch click event
+      const clickEvent = new MouseEvent('click', {
+        view: window,
+        bubbles: true,
+        cancelable: true
+      });
+      
+      link.dispatchEvent(clickEvent);
+      
+      // Cleanup after a short delay
+      setTimeout(() => {
+        if (document.body.contains(link)) {
+          document.body.removeChild(link);
+        }
+        window.URL.revokeObjectURL(url);
+      }, 100);
+      
+      // Show appropriate message based on device
+      if (isMobile) {
+        alert('📱 Download started! If it doesn\'t work, try long-pressing the QR code image to save it.');
+      }
+      
     } catch (error) {
       console.error('Error downloading QR code:', error);
-      alert('Failed to download QR code. Please try again.');
+      
+      // Enhanced error handling with mobile-specific guidance
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        alert('❌ Download failed. Please try:\n\n1. Take a screenshot of the QR code\n2. Or contact support for assistance\n3. Make sure you have storage permission');
+      } else {
+        alert('❌ Failed to download QR code. Please try again or contact support.');
+      }
     } finally {
       // Remove from downloading set
       setDownloadingIds(prev => {
@@ -500,18 +748,27 @@ function TicketPage() {
                         />
                       )}
                     </div>
-                    <button
-                      onClick={() => downloadQRCode(registration.id, registration.name)}
-                      disabled={downloadingIds.has(registration.id)}
-                      className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-                    >
-                      {downloadingIds.has(registration.id) ? (
-                        <Loader className="animate-spin h-4 w-4" />
-                      ) : (
-                        <Download />
-                      )}
-                      <span>{downloadingIds.has(registration.id) ? 'Downloading...' : 'Download QR'}</span>
-                    </button>
+                    <div className="flex flex-col gap-2">
+                      <button
+                        onClick={() => downloadQRCode(registration.id, registration.name)}
+                        disabled={downloadingIds.has(registration.id)}
+                        className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors w-full justify-center"
+                      >
+                        {downloadingIds.has(registration.id) ? (
+                          <Loader className="animate-spin h-4 w-4" />
+                        ) : (
+                          <Download />
+                        )}
+                        <span>{downloadingIds.has(registration.id) ? 'Downloading...' : 'Download QR'}</span>
+                      </button>
+                      
+                      {/* Mobile-specific tip */}
+                      <div className="md:hidden">
+                        <p className="text-xs text-gray-400 text-center">
+                          📱 Mobile: Long-press QR → Save Image
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -585,18 +842,27 @@ function TicketPage() {
                           />
                         )}
                       </div>
-                      <button
-                        onClick={() => downloadQRCode(registration.id, registration.name)}
-                        disabled={downloadingIds.has(registration.id)}
-                        className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-                      >
-                        {downloadingIds.has(registration.id) ? (
-                          <Loader className="animate-spin h-4 w-4" />
-                        ) : (
-                          <Download />
-                        )}
-                        <span>{downloadingIds.has(registration.id) ? 'Downloading...' : 'Download QR'}</span>
-                      </button>
+                      <div className="flex flex-col gap-2">
+                        <button
+                          onClick={() => downloadQRCode(registration.id, registration.name)}
+                          disabled={downloadingIds.has(registration.id)}
+                          className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors w-full justify-center"
+                        >
+                          {downloadingIds.has(registration.id) ? (
+                            <Loader className="animate-spin h-4 w-4" />
+                          ) : (
+                            <Download />
+                          )}
+                          <span>{downloadingIds.has(registration.id) ? 'Downloading...' : 'Download QR'}</span>
+                        </button>
+                        
+                        {/* Mobile-specific tip */}
+                        <div className="md:hidden">
+                          <p className="text-xs text-gray-400 text-center">
+                            📱 Mobile: Long-press QR → Save Image
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -654,18 +920,27 @@ function TicketPage() {
                                 />
                               )}
                             </div>
-                            <button
-                              onClick={() => downloadQRCode(member.id, member.name)}
-                              disabled={downloadingIds.has(member.id)}
-                              className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-3 py-2 rounded-lg flex items-center space-x-2 transition-colors text-sm"
-                            >
-                              {downloadingIds.has(member.id) ? (
-                                <Loader className="animate-spin h-3 w-3" />
-                              ) : (
-                                <Download />
-                              )}
-                              <span>{downloadingIds.has(member.id) ? 'Downloading...' : 'Download'}</span>
-                            </button>
+                            <div className="flex flex-col gap-1">
+                              <button
+                                onClick={() => downloadQRCode(member.id, member.name)}
+                                disabled={downloadingIds.has(member.id)}
+                                className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-3 py-2 rounded-lg flex items-center space-x-2 transition-colors text-sm w-full justify-center"
+                              >
+                                {downloadingIds.has(member.id) ? (
+                                  <Loader className="animate-spin h-3 w-3" />
+                                ) : (
+                                  <Download className="h-3 w-3" />
+                                )}
+                                <span>{downloadingIds.has(member.id) ? 'Downloading...' : 'Download'}</span>
+                              </button>
+                              
+                              {/* Mobile-specific tip */}
+                              <div className="md:hidden">
+                                <p className="text-xs text-gray-500 text-center">
+                                  📱 Long-press QR
+                                </p>
+                              </div>
+                            </div>
                           </div>
                         </motion.div>
                       ))}
@@ -739,18 +1014,27 @@ function TicketPage() {
                         />
                       )}
                     </div>
-                    <button
-                      onClick={() => downloadQRCode(registration.id, registration.name)}
-                      disabled={downloadingIds.has(registration.id)}
-                      className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-                    >
-                      {downloadingIds.has(registration.id) ? (
-                        <Loader className="animate-spin h-4 w-4" />
-                      ) : (
-                        <Download />
-                      )}
-                      <span>{downloadingIds.has(registration.id) ? 'Downloading...' : 'Download QR'}</span>
-                    </button>
+                    <div className="flex flex-col gap-2">
+                      <button
+                        onClick={() => downloadQRCode(registration.id, registration.name)}
+                        disabled={downloadingIds.has(registration.id)}
+                        className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors w-full justify-center"
+                      >
+                        {downloadingIds.has(registration.id) ? (
+                          <Loader className="animate-spin h-4 w-4" />
+                        ) : (
+                          <Download />
+                        )}
+                        <span>{downloadingIds.has(registration.id) ? 'Downloading...' : 'Download QR'}</span>
+                      </button>
+                      
+                      {/* Mobile-specific tip */}
+                      <div className="md:hidden">
+                        <p className="text-xs text-gray-400 text-center">
+                          📱 Mobile: Long-press QR → Save Image
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
