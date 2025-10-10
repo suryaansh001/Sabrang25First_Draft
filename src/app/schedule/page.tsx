@@ -108,13 +108,13 @@ export default function SchedulePage() {
 		1: [
 			{ time: "9:45 – 10:20", event: "Inauguration", description: "Opening ceremony of Sabrang 2025", location: "Admin Block", category: "Ceremony" },
 			{ time: "10:30 – 11:00", event: "Focus", description: "Concentration and mindfulness session", location: "IET Amphi", category: "Wellness" },
-			{ time: "11:00 – 1:00", event: "Seal the Deal", description: "Business competition and networking", location: "IM Amphi", category: "Competition" },
+			{ time: "11:00 – 1:00", event: "Seal The Deal", description: "Business competition and networking", location: "IM Amphi", category: "Competition" },
 			{ time: "11:00 – 4:00", event: "Valorant", description: "Gaming tournament", location: "Online", category: "Gaming" },
 			{ time: "12:00 – 1:30", event: "Echoes of Noor", description: "Cultural performance", location: "Main Stage", category: "Cultural" },
-			{ time: "2:00 – 4:00", event: "In Convo With", description: "Interactive discussion session", location: "IM Amphi", category: "Discussion" },
+			{ time: "2:00 – 4:00", event: "In Convo. With", description: "Interactive discussion session", location: "IM Amphi", category: "Discussion" },
 			{ time: "4:00 – 5:30", event: "Verse Vaad", description: "Poetry and literary event", location: "Main Stage", category: "Cultural" },
 			{ time: "6:00 – 8:30", event: "Panache", description: "Fashion and style showcase", location: "Main Stage", category: "Fashion" },
-			{ time: "8:30 – 10:00", event: "DJ Night", description: "Music and dance party", location: "Main Stage", category: "Entertainment" },
+			{ time: "8:30 – 10:00", event: "DJ night", description: "Music and dance party", location: "Main Stage", category: "Entertainment" },
 		],
 		2: [
 			{ time: "11:00 – 2:00", event: "Bidding Before Wicket", description: "Cricket auction and bidding event", location: "IET Amphi", category: "Sports" },
@@ -124,16 +124,16 @@ export default function SchedulePage() {
 			{ time: "3:00 – 4:00", event: "Clay Modelling", description: "Art and craft workshop", location: "Tech Lawn", category: "Art" },
 			{ time: "3:30 – 5:00", event: "Band Jam", description: "Musical performance", location: "Main Stage", category: "Music" },
 			{ time: "5:30 – 8:30", event: "Dance Battle", description: "Dance competition finals", location: "Main Stage", category: "Dance" },
-			{ time: "8:30 – 9:30", event: "Judge Performance", description: "Special judge performance", location: "Main Stage", category: "Cultural" },
-			{ time: "9:30 – 10:15", event: "DJ Night", description: "Music and dance party", location: "Main Stage", category: "Entertainment" },
+			{ time: "8:30 – 9:30", event: "Judge performance", description: "Special judge performance", location: "Main Stage", category: "Cultural" },
+			{ time: "9:30 – 10:15", event: "DJ night", description: "Music and dance party", location: "Main Stage", category: "Entertainment" },
 		],
 		3: [
 			{ time: "10:00 – 3:00", event: "BGMI", description: "Mobile gaming tournament", location: "IM 105", category: "Gaming" },
 			{ time: "11:00 – 1:00", event: "Dumb Show", description: "Silent performance art", location: "IM Amphitheatre", category: "Performance" },
 			{ time: "2:00 – 4:00", event: "Art Relay", description: "Collaborative art creation", location: "Tech Lawn", category: "Art" },
 			{ time: "4:00 – 7:00", event: "Valedictory Ceremony", description: "Closing ceremony and awards", location: "Main Stage", category: "Ceremony" },
-			{ time: "7:30 – 9:00", event: "Artist Performance", description: "Special artist performance", location: "Main Stage", category: "Music", isSpecialArtist: true },
-			{ time: "9:00 – 10:00", event: "DJ Night", description: "Final music and dance party", location: "Main Stage", category: "Entertainment" },
+			{ time: "7:30 – 9:00", event: "Artist", description: "Special artist performance", location: "Main stage", category: "Music", isSpecialArtist: true },
+			{ time: "9:00 – 10:00", event: "DJ night", description: "Final music and dance party", location: "Main Stage", category: "Entertainment" },
 		]
 	};
 
