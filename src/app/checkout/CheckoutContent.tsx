@@ -15,7 +15,7 @@ import { StepIndicator } from './components/StepIndicator';
 import { parsePrice, clearCheckoutStorage } from './utils';
 const EVENT_CATALOG = ORIGINAL_EVENT_CATALOG.map(event => {
   switch (event.title) {
-    case 'Pacnache':
+    case 'Panache':
       return { ...event, price: '₹2999' };
     case 'Dance Battle':
       return { ...event, price: '₹2499' };

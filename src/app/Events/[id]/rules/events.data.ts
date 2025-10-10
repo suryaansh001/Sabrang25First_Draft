@@ -48,7 +48,7 @@ export const events: Event[] = [
             { name: 'Pragyansh Mishra', roll: '2024BTech037', email: 'pragyanshmishra@jklu.edu.in', phone: '7597291845' }
         ],
         rules: [
-            'Team size: 10-20 members.',
+            'Team size: 5-20 members.',
             'Participants must arrive at the venue 2 hours before the event commences.',
             'Registration is compulsory for all participants.',
             'Each team must choose a clear theme for their rampwalk.',
