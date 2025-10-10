@@ -68,7 +68,7 @@ export const SQUAD_ESPORTS_FIELDS: FieldSet = [
 ];
 
 export const TEAM_SIZE_CONFIG: Record<string, TeamSizeConfig> = {
-  'RAMPWALK - PANACHE': { min: 7, max: 18 },
+  'RAMPWALK - PANACHE': { min: 5, max: 18 },
   'DANCE BATTLE': { min: 10, max: 25 },
   'ECHOES OF NOOR': { min: 1, max: 2 },
   'VERSEVAAD': { min: 1, max: 2 },

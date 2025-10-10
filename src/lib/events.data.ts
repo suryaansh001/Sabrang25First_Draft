@@ -17,7 +17,7 @@ export interface Event {
 // Add/update items as needed; IDs must stay consistent with references elsewhere.
 export const events: Event[] = [
   { id: 1, title: 'RAMPWALK - PANACHE', category: 'Flagship', price: 'Team ₹2,999', rules: [
-    'Team size: 7 - 18 members'
+    'Team size: 5 - 18 members'
   ] },
   { id: 2, title: 'BANDJAM', category: 'Flagship', price: 'Team ₹1,499', rules: [
     'Team size: 3 - 8 members'

@@ -628,25 +628,17 @@ export default function EventsPage() {
                               {event.title}
                             </h3>
 
-                            {event.id === 10 ? (
-                              <div className="w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs bg-red-900/30 border-red-400/50 text-red-300 cursor-not-allowed">
-                                <span className="uppercase tracking-wider font-semibold">
-                                  Registration Closed
-                                </span>
-                              </div>
-                            ) : (
-                              <button
-                                type="button"
-                                onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }}
-                                className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs ${isMobile ? '' : 'transition-all duration-200'} cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/80 border-purple-400/60 text-white' : `bg-white/10 border-white/30 text-white/90 ${!isMobile ? 'hover:bg-white/15 backdrop-blur-sm' : ''}`}`}
-                                aria-pressed={cartIds.includes(event.id) ? "true" : "false"}
-                              >
-                                <ShoppingCart className="w-3 h-3 md:w-3.5 md:h-3.5" />
-                                <span className="uppercase tracking-wider">
-                                  {cartIds.includes(event.id) ? 'Added' : 'Add to cart'}
-                                </span>
-                              </button>
-                            )}
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }}
+                              className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs ${isMobile ? '' : 'transition-all duration-200'} cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/80 border-purple-400/60 text-white' : `bg-white/10 border-white/30 text-white/90 ${!isMobile ? 'hover:bg-white/15 backdrop-blur-sm' : ''}`}`}
+                              aria-pressed={cartIds.includes(event.id) ? "true" : "false"}
+                            >
+                              <ShoppingCart className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                              <span className="uppercase tracking-wider">
+                                {cartIds.includes(event.id) ? 'Added' : 'Add to cart'}
+                              </span>
+                            </button>
                           </div>
                         </CardWrapper>
                       ) : (
@@ -699,18 +691,10 @@ export default function EventsPage() {
                               {getEventPrizePool(event.id) && (<div className="flex justify-center mb-20"><div className="text-white text-[8px] md:text-xs font-bold"><div className="flex items-center gap-1"><Crown className="w-2 h-2 md:w-3 md:h-3" /><span className="font-extrabold tracking-wide">Prize Pool: {getEventPrizePool(event.id)}</span></div></div></div>)}
                               <div className="flex justify-center mb-1.5"><div className="text-white text-[9px] md:text-[10px] font-medium bg-black/40 px-2 py-0.5 rounded-full border border-white/20">{catalogById.get(event.id)?.price || event.price}</div></div>
                               <div className="px-2 md:px-3 py-2 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
-                                {event.id === 10 ? (
-                                  <div className="w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs bg-red-900/30 border-red-400/50 text-red-300 cursor-not-allowed">
-                                    <span className="uppercase tracking-wider font-semibold" style={{ fontFamily: 'monospace' }}>
-                                      Registration Closed
-                                    </span>
-                                  </div>
-                                ) : (
-                                  <button type="button" onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }} className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs ${isMobile ? '' : 'transition-all duration-200'} cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/30 border-purple-400/60 text-white' : `bg-white/10 border-white/30 text-white/90 ${!isMobile ? 'hover:bg-white/15' : ''}`}`} aria-pressed={cartIds.includes(event.id) ? "true" : "false"}>
-                                    <span className={`inline-block w-3 h-3 md:w-4 md:h-4 rounded-full ring-1 ${cartIds.includes(event.id) ? 'bg-purple-500 ring-purple-300' : 'bg-transparent ring-white/40'}`}></span>
-                                    <span className="uppercase tracking-wider" style={{ fontFamily: 'monospace' }}>{cartIds.includes(event.id) ? 'Added' : 'Add to cart'}</span>
-                                  </button>
-                                )}
+                                <button type="button" onClick={(e) => { e.stopPropagation(); toggleCart(event.id); }} className={`w-full flex items-center justify-center gap-2 rounded-full px-2 py-1.5 md:px-4 md:py-2 border text-[9px] md:text-xs ${isMobile ? '' : 'transition-all duration-200'} cursor-pointer ${cartIds.includes(event.id) ? 'bg-purple-600/30 border-purple-400/60 text-white' : `bg-white/10 border-white/30 text-white/90 ${!isMobile ? 'hover:bg-white/15' : ''}`}`} aria-pressed={cartIds.includes(event.id) ? "true" : "false"}>
+                                  <span className={`inline-block w-3 h-3 md:w-4 md:h-4 rounded-full ring-1 ${cartIds.includes(event.id) ? 'bg-purple-500 ring-purple-300' : 'bg-transparent ring-white/40'}`}></span>
+                                  <span className="uppercase tracking-wider" style={{ fontFamily: 'monospace' }}>{cartIds.includes(event.id) ? 'Added' : 'Add to cart'}</span>
+                                </button>
                               </div>
                             </div>
                             {!isMobile && <div className="absolute inset-0 border border-green-400/30 rounded-lg" />}
