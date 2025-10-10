@@ -134,7 +134,7 @@ const Contact = () => {
       <button
         aria-label="Open menu"
         onClick={() => setMobileMenuOpen(true)}
-        className="lg:hidden fixed top-4 right-4 z-50 p-3"
+        className="lg:hidden fixed top-4 right-4 z-50 p-3 cursor-pointer"
       >
         <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
         <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
@@ -147,7 +147,7 @@ const Contact = () => {
           <div className="absolute top-4 right-4">
             <button
               onClick={() => setMobileMenuOpen(false)}
-              className="p-3 text-white"
+              className="p-3 text-white cursor-pointer"
             >
               <X className="w-6 h-6" />
             </button>
@@ -158,7 +158,7 @@ const Contact = () => {
                 <button
                   key={item.title}
                   onClick={() => { setMobileMenuOpen(false); navigate(item.href); }}
-                  className="flex items-center gap-3 p-3 w-full text-left text-white hover:bg-white/10 rounded-lg"
+                  className="flex items-center gap-3 p-3 w-full text-left text-white hover:bg-white/10 rounded-lg cursor-pointer"
                 >
                   {item.icon}
                   <span>{item.title}</span>
@@ -304,7 +304,7 @@ const Contact = () => {
             </p>
             <button
               onClick={() => setShowForm(true)}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 cursor-pointer"
             >
               <MessageCircle className="w-5 h-5" />
               Send us a Message
@@ -337,7 +337,7 @@ const Contact = () => {
                   </div>
                   <button
                     onClick={() => setShowForm(false)}
-                    className="text-gray-400 hover:text-white p-2 hover:bg-white/10 rounded-full transition-colors"
+                    className="text-gray-400 hover:text-white p-2 hover:bg-white/10 rounded-full transition-colors cursor-pointer"
                   >
                     <X className="w-6 h-6" />
                   </button>
@@ -434,7 +434,7 @@ const Contact = () => {
                   {/* Submit Button */}
                   <div className="flex items-center justify-end">
                     <button
-                      className={`inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition-all duration-300 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
+                      className={`inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition-all duration-300 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 cursor-pointer'}`}
                       type="submit"
                       disabled={isSubmitting}
                     >
@@ -464,7 +464,7 @@ const Contact = () => {
           </p>
           <button 
             onClick={() => navigate('/FAQ')}
-            className="text-blue-400 hover:text-blue-300 underline"
+            className="text-blue-400 hover:text-blue-300 underline cursor-pointer"
           >
             Check out our FAQ section
           </button>

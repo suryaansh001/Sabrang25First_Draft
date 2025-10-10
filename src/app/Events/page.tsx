@@ -352,7 +352,7 @@ export default function EventsPage() {
             <button
               aria-label="Close"
               onClick={handleClose}
-              className="absolute top-4 right-4 z-[10001] w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition"
+              className="absolute top-4 right-4 z-[10001] w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition cursor-pointer"
             >
               <X className="w-5 h-5 mx-auto" />
             </button>
@@ -362,7 +362,7 @@ export default function EventsPage() {
               <button
                 aria-label="Previous event"
                 onClick={handlePreviousEvent}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-[10001] w-12 h-12 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center group"
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-[10001] w-12 h-12 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center group cursor-pointer"
               >
                 <ChevronLeft className="w-6 h-6 group-hover:scale-110 transition-transform" />
               </button>
@@ -372,7 +372,7 @@ export default function EventsPage() {
               <button
                 aria-label="Next event"
                 onClick={handleNextEvent}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-[10001] w-12 h-12 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center group"
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-[10001] w-12 h-12 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center group cursor-pointer"
               >
                 <ChevronRight className="w-6 h-6 group-hover:scale-110 transition-transform" />
               </button>
@@ -384,26 +384,28 @@ export default function EventsPage() {
               {currentEventIndex + 1} / {filteredEvents.length}
             </div>
             <div className="flex flex-col md:grid md:grid-cols-2 h-[85vh] max-h-[90vh]">
-              <div className="relative h-48 sm:h-64 md:h-full aspect-[16/9] md:aspect-auto bg-neutral-900 overflow-hidden flex-shrink-0">
+              <div className="relative h-48 sm:h-64 md:h-full w-full bg-neutral-900 flex items-center justify-center overflow-hidden flex-shrink-0">
                 <Image
-                  src={selectedEvent.modalImage || selectedEvent.image || '/images/backgrounds/eventpage.webp'}
-                  alt={`A unique visual for ${selectedEvent.title}`}
+                  src={selectedEvent.image || '/images/backgrounds/eventpage.webp'}
+                  alt={`${selectedEvent.title} poster`}
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover"
+                  className="object-contain"
                   priority={false}
                   quality={isMobile ? 60 : 75}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = '/images/backgrounds/eventpage.webp';
+                  }}
                 />
-                <div className="absolute inset-0 bg-black/40" />
-                {!isMobile && <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #FFF 1px, transparent 0)', backgroundSize: '25px 25px' }} />}
               </div>
-              <div className="p-6 text-white space-y-4 overflow-y-auto md:p-8 md:space-y-6 md:border-l md:border-white/10 flex-grow">
+              <div className="p-6 text-white space-y-4 overflow-y-auto md:p-8 md:space-y-6 md:border-l md:border-white/10 flex-grow" style={{ WebkitOverflowScrolling: 'touch', scrollBehavior: 'smooth', willChange: 'scroll-position' }}>
                 <div>
                   <div className="flex items-center justify-between gap-2">
                     <h2 className="text-2xl md:text-3xl font-bold mb-2 tracking-tight">{selectedEvent.title}</h2>
                     <button
                       onClick={() => router.push(`/Events/${selectedEvent.id}/rules`)}
-                      className="md:hidden inline-flex items-center gap-2 px-4 py-2 rounded-md border-2 bg-gradient-to-b from-white/15 to-white/5 text-white text-sm hover:from-white/20 hover:to-white/10 border-white/30 transition shadow-[inset_0_1px_0_rgba(255,255,255,0.25),_0_2px_0_rgba(255,255,255,0.12),_0_4px_10px_rgba(0,0,0,0.35)] active:translate-y-[1px]"
+                      className="md:hidden inline-flex items-center gap-2 px-4 py-2 rounded-md border-2 bg-white/10 text-white text-sm hover:bg-white/20 border-white/30 transition cursor-pointer"
                     >
                       <Info className="w-4 h-4" /> Rules
                     </button>
@@ -452,24 +454,14 @@ export default function EventsPage() {
                     </ul>
                   </div>
                 )}
-                <div className="flex flex-wrap items-center gap-3 pt-2">
-                  <div className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-sm">{selectedEvent.genre}</div>
-                  {selectedEvent.isFlagship ? (
-                    <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-yellow-500/20 border border-yellow-400/30 text-sm text-yellow-300">
-                      <Crown className="w-4 h-4" /> Flagship
-                    </div>
-                  ) : (
-                    <div className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-sm">{selectedEvent.category}</div>
-                  )}
-                </div>
                 <div className="flex flex-wrap gap-3 pt-2">
-                  <button onClick={() => router.push(`/Events/${selectedEvent.id}/rules`)} className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-md border-2 bg-gradient-to-b from-white/15 to-white/5 text-white hover:from-white/20 hover:to-white/10 border-white/30 transition shadow-[inset_0_1px_0_rgba(255,255,255,0.25),_0_2px_0_rgba(255,255,255,0.12),_0_4px_10px_rgba(0,0,0,0.35)]">
+                  <button onClick={() => router.push(`/Events/${selectedEvent.id}/rules`)} className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-md border-2 bg-white/10 text-white hover:bg-white/20 border-white/30 transition cursor-pointer">
                     <Info className="w-4 h-4" /> Rules
                   </button>
-                  <button onClick={() => router.push(`/checkout`)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition shadow-lg">
+                  <button onClick={() => router.push(`/checkout`)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition cursor-pointer">
                     Checkout
                   </button>
-                  <button onClick={handleShare} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 transition">
+                  <button onClick={handleShare} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition cursor-pointer">
                     <Share2 className="w-4 h-4" /> Share
                   </button>
                   {showCopyMessage && (
@@ -513,7 +505,7 @@ export default function EventsPage() {
               className="relative px-4 py-2 rounded-2xl bg-black/60 backdrop-blur-md border border-white/20 text-white hover:bg-white/10 transition cursor-pointer"
             >
               <span className="mr-2">Cart</span>
-              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-xs font-semibold">
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-purple-600 text-xs font-semibold">
                 {cartIds.length}
               </span>
             </button>
@@ -542,7 +534,7 @@ export default function EventsPage() {
                     <div className="lg:hidden -mt-2 mb-4">
                      
                     </div>
-                    <div className="h-1 bg-gradient-to-r from-pink-400 to-purple-400 mb-6 lg:mb-8 mx-auto w-[100px]" />
+                    <div className="h-1 bg-purple-500 mb-6 lg:mb-8 mx-auto w-[100px]" />
                     <p className="text-gray-300 text-lg max-w-md mx-auto">
                       Dive into the vibrant spirit of JKLU's Cultural Fest – a celebration of art, music, dance, and creativity.
                     </p>
@@ -573,9 +565,9 @@ export default function EventsPage() {
                          <button
                            key={category.value}
                            onClick={() => setSelectedCategory(category.value)}
-                           className={`filter-button-mobile flex-shrink-0 px-2 lg:px-6 py-1 lg:py-3 rounded-full text-xs lg:text-base font-medium transition-all duration-300 ${
+                           className={`filter-button-mobile flex-shrink-0 px-2 lg:px-6 py-1 lg:py-3 rounded-full text-xs lg:text-base font-medium transition-all duration-300 cursor-pointer ${
                              selectedCategory === category.value
-                               ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                               ? 'bg-purple-600 text-white shadow-lg'
                                : 'bg-white/20 text-white border border-white/30 hover:bg-white/30'
                            }`}
                          >
@@ -750,7 +742,7 @@ export default function EventsPage() {
           <button
             aria-label="Open menu"
             onClick={() => setMobileMenuOpen(true)}
-            className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
+            className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition cursor-pointer"
           >
             <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
             <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
@@ -763,7 +755,7 @@ export default function EventsPage() {
             onClick={() => {
               router.push('/checkout');
             }}
-            className={`lg:hidden fixed top-4 right-[100px] z-50 w-12 h-12 rounded-full flex items-center justify-center text-white active:scale-95 transition shadow-xl ${cartIds.length ? 'bg-gradient-to-r from-purple-600 to-pink-600 ring-2 ring-white/20' : 'bg-black/60 backdrop-blur-md border border-white/20 hover:bg-white/10'}`}
+            className={`lg:hidden fixed top-4 right-[100px] z-50 w-12 h-12 rounded-full flex items-center justify-center text-white active:scale-95 transition shadow-xl cursor-pointer ${cartIds.length ? 'bg-purple-600 ring-2 ring-white/20' : 'bg-black/60 backdrop-blur-md border border-white/20 hover:bg-white/10'}`}
           >
             <div className="relative">
               <ShoppingCart className="w-5 h-5" />
@@ -780,7 +772,7 @@ export default function EventsPage() {
                 <button
                   aria-label="Close menu"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
+                  className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition cursor-pointer"
                 >
                   <X className="w-6 h-6 text-white" />
                 </button>
@@ -791,7 +783,7 @@ export default function EventsPage() {
                     <button
                       key={item.title}
                       onClick={() => { setMobileMenuOpen(false); navigate(item.href); }}
-                      className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                      className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left cursor-pointer"
                     >
                       <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
                         {item.icon}
@@ -814,7 +806,7 @@ export default function EventsPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0 }}
                 onClick={scrollToTop}
-                className="fixed bottom-6 right-6 z-40 w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white shadow-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-110 active:scale-95"
+                className="fixed bottom-6 right-6 z-40 w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-purple-700 transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >

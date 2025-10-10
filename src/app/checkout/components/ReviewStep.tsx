@@ -132,7 +132,7 @@ export function ReviewStep({
             <button
               onClick={handleApplyPromo}
               disabled={promoLoading || !state.promoInput.trim()}
-              className="px-6 py-2.5 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg transition-all flex items-center gap-2 shadow-lg"
+              className="px-6 py-2.5 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg transition-all flex items-center gap-2 shadow-lg cursor-pointer"
             >
               {promoLoading ? (
                 <>
@@ -158,7 +158,7 @@ export function ReviewStep({
             </div>
             <button
               onClick={handleRemovePromo}
-              className="text-sm text-red-400 hover:text-red-300 transition-colors px-3 py-1 rounded hover:bg-red-500/10"
+              className="text-sm text-red-400 hover:text-red-300 transition-colors px-3 py-1 rounded hover:bg-red-500/10 cursor-pointer"
             >
               Remove
             </button>
@@ -207,7 +207,7 @@ export function ReviewStep({
             const event = new CustomEvent('proceedToPayment');
             window.dispatchEvent(event);
           }}
-          className="px-8 py-4 bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-all font-semibold flex items-center gap-2 shadow-lg text-lg"
+          className="px-8 py-4 bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-all font-semibold flex items-center gap-2 shadow-lg text-lg cursor-pointer"
         >
           Proceed to Payment
           <ArrowRight className="w-5 h-5" />

@@ -319,7 +319,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
           <div className="absolute top-4 right-4 z-10">
             <button
               onClick={() => setAssetsLoaded(true)}
-              className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium hover:bg-white/30 transition-all duration-300 border border-white/30 hover:border-white/50 active:scale-95"
+              className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium hover:bg-white/30 transition-all duration-300 border border-white/30 hover:border-white/50 active:scale-95 cursor-pointer"
             >
               Skip
             </button>
@@ -381,7 +381,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
           <button
             aria-label="Open menu"
             onClick={() => setMobileMenuOpen(true)}
-            className="absolute top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition pointer-events-auto"
+            className="absolute top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition pointer-events-auto cursor-pointer"
           >
             <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
             <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
@@ -463,7 +463,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               <button
                 aria-label="Close menu"
                 onClick={() => setMobileMenuOpen(false)}
-                className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
+                className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition cursor-pointer"
               >
                 <X className="w-6 h-6 text-white" />
               </button>
@@ -474,7 +474,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                   <button
                     key={item.title}
                     onClick={() => { setMobileMenuOpen(false); navigate(item.href); }}
-                    className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                    className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left cursor-pointer"
                   >
                     <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
                       {item.icon}
@@ -598,7 +598,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                 </p>
                 <button 
                   onClick={() => navigate('/checkout')}
-                  className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-full transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-purple-500/25 border border-purple-400/50"
+                  className="px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-full transform hover:scale-105 transition-all duration-300 shadow-lg cursor-pointer"
                 >
                   Secure Your Spot - Register Now!
                 </button>
@@ -621,7 +621,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               <img src="/images/artist/day2-artist/WhatsApp Image 2025-10-05 at 21.08.21_d4b9a99a.jpg" alt="Aman's Collective" className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               <div className="absolute bottom-3 left-3 right-3 flex gap-2">
-                <button onClick={() => navigate('/checkout')} className="flex-1 py-2 rounded-full bg-gradient-to-r from-amber-400 to-rose-400 text-black text-sm font-bold">Reserve</button>
+                <button onClick={() => navigate('/checkout')} className="flex-1 py-2 rounded-full bg-amber-500 hover:bg-amber-600 text-black text-sm font-bold cursor-pointer">Reserve</button>
                 <a href="/Events" className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white text-sm">Details</a>
               </div>
             </div>
@@ -642,7 +642,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               <img src="/images/artist/day1%20performance/artist%20photo/IMG_0345.JPG" alt="Dewik live" className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               <div className="absolute bottom-3 left-3 right-3 flex gap-2">
-                <button onClick={() => navigate('/checkout')} className="flex-1 py-2 rounded-full bg-gradient-to-r from-cyan-500 to-fuchsia-500 text-white text-sm font-bold">Register</button>
+                <button onClick={() => navigate('/checkout')} className="flex-1 py-2 rounded-full bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-bold cursor-pointer">Register</button>
                 <a href="/Events" className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white text-sm">Details</a>
               </div>
             </div>
@@ -662,7 +662,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               <EventCardPreview id={2} title="BANDJAM" image="/posters/BANDJAM.webp" category="Flagship" price="₹60" />
             </div>
             <div className="text-center mt-8">
-              <button onClick={() => navigate('/Events')} className="px-6 py-3 bg-white/10 border border-white/20 rounded-full text-white font-semibold hover:bg-white/20 transition">
+              <button onClick={() => navigate('/Events')} className="px-6 py-3 bg-white/10 border border-white/20 rounded-full text-white font-semibold hover:bg-white/20 transition cursor-pointer">
                 View All Events
               </button>
             </div>
@@ -744,7 +744,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                 </p>
                 <button 
                   onClick={() => navigate('/checkout')}
-                  className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-full transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-purple-500/25 border border-purple-400/50"
+                  className="px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-full transform hover:scale-105 transition-all duration-300 shadow-lg cursor-pointer"
                 >
                   Secure Your Spot - Register Now!
                 </button>
@@ -767,7 +767,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
               <img src="/images/gallery_mobile/9.webp" alt="Gallery 3" className="rounded-lg aspect-square object-cover" />
             </div>
              <div className="text-center mt-8">
-              <button onClick={() => navigate('/Gallery')} className="px-6 py-3 bg-white/10 border border-white/20 rounded-full text-white font-semibold hover:bg-white/20 transition">
+              <button onClick={() => navigate('/Gallery')} className="px-6 py-3 bg-white/10 border border-white/20 rounded-full text-white font-semibold hover:bg-white/20 transition cursor-pointer">
                 View Full Gallery
               </button>
             </div>
@@ -1030,7 +1030,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
             <button 
               onClick={() => navigate('/checkout')}
-               className="px-12 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white font-bold rounded-full transform hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-purple-400/25 border border-purple-300/50 text-xl"
+               className="px-12 py-4 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-full transform hover:scale-105 transition-all duration-300 shadow-2xl text-xl cursor-pointer"
             >
               Secure Your Spot - Register Now!
             </button>
@@ -1079,7 +1079,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                   Soulful Hindi pop and indie vibes with powerful vocals, live guitars and a warm, intimate stage feel. A set crafted for sing-alongs and goosebumps.
                 </p>
                 <div className="flex items-center gap-4">
-                  <button onClick={() => navigate('/checkout')} className="px-10 py-4 rounded-full bg-gradient-to-r from-amber-400 to-rose-400 text-black font-bold tracking-wider hover:from-amber-300 hover:to-rose-300 transition-transform duration-300 border border-white/10 shadow-2xl hover:scale-[1.03]">Reserve Your Pass</button>
+                  <button onClick={() => navigate('/checkout')} className="px-10 py-4 rounded-full bg-amber-600 hover:bg-amber-700 text-black font-bold tracking-wider transition-transform duration-300 shadow-2xl hover:scale-[1.03] cursor-pointer">Reserve Your Pass</button>
                   <a href="/Events" className="px-6 py-4 rounded-full bg-white/10 border border-white/20 text-white/90 hover:bg-white/15 transition">Explore Events</a>
                 </div>
               </div>
@@ -1140,7 +1140,7 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => navigate('/checkout')}
-                    className="px-10 py-4 rounded-full bg-gradient-to-r from-cyan-500 to-fuchsia-500 text-white font-bold tracking-wider hover:from-cyan-400 hover:to-fuchsia-400 transition-transform duration-300 border border-white/20 shadow-2xl hover:scale-[1.03]"
+                    className="px-10 py-4 rounded-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold tracking-wider transition-transform duration-300 shadow-2xl hover:scale-[1.03] cursor-pointer"
                   >
                     Register for DJ Night
                   </button>

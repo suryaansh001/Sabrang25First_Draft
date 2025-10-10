@@ -614,7 +614,7 @@ export const events: Event[] = [
         description: 'The Free Fire Tournament is a thrilling eSports event that\'s all about strategy and teamwork. It feels like a life-or-death battle where one smart move can change everything. You\'ll need sharp aim and fast reflexes to revive your friends, take down enemies, and stay inside the safe zones. Survive the map, fight for your team, and grab the ultimate Booyah!',
         coordinators: [
             { name: 'Yash Bansal', roll: '2024BTech128', email: 'yashbansal@jklu.edu.in', phone: '8619011601' },
-            { name: 'Maheem Gupta', roll: '2024BTech278', email: 'mahimgupta@jklu.edu.in', phone: '9521150006' }
+            { name: 'Mahim Gupta', roll: '2024BTech278', email: 'mahimgupta@jklu.edu.in', phone: '9521150006' }
         ],
         rules: [
             'Team Size: 4 members (required) + 1 substitute (optional). Maximum 5 players per team.',

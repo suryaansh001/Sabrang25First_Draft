@@ -391,7 +391,7 @@ export function FormsStep({
                     type="button"
                     onClick={() => addTeamMember(group.signature)}
                     disabled={!canAddMore}
-                    className="px-4 py-2 text-sm bg-white/10 hover:bg-white/15 disabled:bg-gray-700/50 disabled:cursor-not-allowed disabled:text-gray-500 rounded-lg transition-all border border-white/20"
+                    className="px-4 py-2 text-sm bg-white/10 hover:bg-white/15 disabled:bg-gray-700/50 disabled:cursor-not-allowed disabled:text-gray-500 rounded-lg transition-all border border-white/20 cursor-pointer"
                   >
                     + Add Team Member
                   </button>
@@ -429,7 +429,7 @@ export function FormsStep({
                       <button
                         type="button"
                         onClick={() => removeTeamMember(group.signature, idx)}
-                        className="text-sm text-red-400 hover:text-red-300 px-3 py-1 rounded hover:bg-red-500/10 transition-all"
+                        className="text-sm text-red-400 hover:text-red-300 px-3 py-1 rounded hover:bg-red-500/10 transition-all cursor-pointer"
                       >
                         Remove
                       </button>
@@ -504,7 +504,7 @@ export function FormsStep({
       <div className="flex justify-end pt-4">
         <button
           onClick={handleSubmit}
-          className="px-8 py-3 bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-all font-semibold shadow-lg"
+          className="px-8 py-3 bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-all font-semibold shadow-lg cursor-pointer"
         >
           Continue to Review
         </button>

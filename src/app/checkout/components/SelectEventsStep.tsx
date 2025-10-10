@@ -95,7 +95,7 @@ export function SelectEventsStep({
                 navigator.clipboard.writeText('SPECIALOFFER');
                 alert('Coupon code copied! Apply it at checkout.');
               }}
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-sm font-semibold"
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-sm font-semibold cursor-pointer"
             >
               Copy Code
             </button>
@@ -189,7 +189,7 @@ export function SelectEventsStep({
                 <button
                   onClick={() => updateVisitorPassDays(visitorPassDays - 1)}
                   disabled={visitorPassDays === 0}
-                  className="w-10 h-10 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="w-10 h-10 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center"
                 >
                   -
                 </button>
@@ -197,7 +197,7 @@ export function SelectEventsStep({
                 <button
                   onClick={() => updateVisitorPassDays(visitorPassDays + 1)}
                   disabled={visitorPassDays >= 3}
-                  className="w-10 h-10 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="w-10 h-10 rounded-full bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center"
                 >
                   +
                 </button>
@@ -258,7 +258,7 @@ export function SelectEventsStep({
                   const event = new CustomEvent('proceedToForms');
                   window.dispatchEvent(event);
                 }}
-                className="w-full px-6 py-3 bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg font-semibold"
+                className="w-full px-6 py-3 bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg font-semibold cursor-pointer"
               >
                 Continue
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

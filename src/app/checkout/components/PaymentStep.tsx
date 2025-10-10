@@ -235,7 +235,7 @@ export function PaymentStep({
           <button
             onClick={initiatePayment}
             disabled={isProcessing}
-            className="w-full px-8 py-5 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-xl transition-all font-bold text-xl flex items-center justify-center gap-3 shadow-lg"
+            className="w-full px-8 py-5 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-xl transition-all font-bold text-xl flex items-center justify-center gap-3 shadow-lg cursor-pointer"
           >
             {isProcessing ? (
               <>
@@ -256,7 +256,7 @@ export function PaymentStep({
         <button
           onClick={initiatePayment}
           disabled={isProcessing}
-          className="w-full px-8 py-5 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-xl transition-all font-bold text-xl flex items-center justify-center gap-3 shadow-lg"
+          className="w-full px-8 py-5 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-xl transition-all font-bold text-xl flex items-center justify-center gap-3 shadow-lg cursor-pointer"
         >
           <CreditCard className="w-6 h-6" />
           Retry Payment

@@ -161,7 +161,7 @@ const Login = () => {
               type="submit"
               disabled={isLoading}
               className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-neutral-700 hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-500 transition duration-300 ease-in-out ${
-                isLoading ? 'opacity-70 cursor-not-allowed' : ''
+                isLoading ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'
               }`}
             >
               {isLoading ? 'Signing in...' : 'Sign In'}
@@ -180,12 +180,12 @@ const Login = () => {
         <div className="space-y-3">
           <a 
             href={createApiUrl('/auth/google')} 
-            className="w-full flex justify-center items-center py-2 px-4 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-300 ease-in-out"
+            className="w-full flex justify-center items-center py-2 px-4 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-300 ease-in-out cursor-pointer"
           >
             <img src="/images/google-icon.svg" alt="Google" className="mr-2 h-5 w-5" />
             Sign in with Google
           </a>
-          <button className="w-full flex justify-center items-center py-2 px-4 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-300 ease-in-out">
+          <button className="w-full flex justify-center items-center py-2 px-4 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-300 ease-in-out cursor-pointer">
             <img src="/images/facebook-icon.svg" alt="Facebook" className="mr-2 h-5 w-5" />
             Sign in with Facebook
           </button>

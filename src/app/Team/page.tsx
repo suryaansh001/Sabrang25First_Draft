@@ -60,7 +60,7 @@ const TeamPage = () => {
       <button
         aria-label="Open menu"
         onClick={() => setMobileMenuOpen(true)}
-        className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
+        className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition cursor-pointer"
       >
         <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
         <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
@@ -74,7 +74,7 @@ const TeamPage = () => {
             <button
               aria-label="Close menu"
               onClick={() => setMobileMenuOpen(false)}
-              className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
+              className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition cursor-pointer"
             >
               <X className="w-6 h-6 text-white" />
             </button>
@@ -85,7 +85,7 @@ const TeamPage = () => {
                 <button
                   key={item.title}
                   onClick={() => { setMobileMenuOpen(false); navigate(item.href); }}
-                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left cursor-pointer"
                 >
                   <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
                     {item.icon}

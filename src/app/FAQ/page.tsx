@@ -230,7 +230,7 @@ const FAQ = () => {
       <button
         aria-label="Open menu"
         onClick={() => setMobileMenuOpen(true)}
-        className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition"
+        className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition cursor-pointer"
       >
         <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
         <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
@@ -244,7 +244,7 @@ const FAQ = () => {
             <button
               aria-label="Close menu"
               onClick={() => setMobileMenuOpen(false)}
-              className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
+              className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition cursor-pointer"
             >
               <X className="w-6 h-6 text-white" />
             </button>
@@ -255,7 +255,7 @@ const FAQ = () => {
                 <button
                   key={item.title}
                   onClick={() => { setMobileMenuOpen(false); router.push(item.href); }}
-                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left cursor-pointer"
                 >
                   <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
                     {item.icon}
@@ -355,7 +355,7 @@ const FAQ = () => {
                     {/* Question Header */}
                     <button
                       onClick={() => toggle(index)}
-                      className="w-full text-left p-5 sm:p-6 focus:outline-none focus:ring-2 focus:ring-purple-500/40 focus:ring-inset group active:scale-[0.99] transition-transform duration-150 touch-manipulation"
+                      className="w-full text-left p-5 sm:p-6 focus:outline-none focus:ring-2 focus:ring-purple-500/40 focus:ring-inset group active:scale-[0.99] transition-transform duration-150 touch-manipulation cursor-pointer"
                       aria-expanded={openIndex === index}
                       aria-controls={`faq-answer-${index}`}
                     >
@@ -455,13 +455,13 @@ const FAQ = () => {
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                   <button 
                     onClick={() => router.push('/Contact')}
-                    className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl text-white font-semibold transition-all duration-300 transform hover:scale-105 text-sm sm:text-base"
+                    className="px-6 sm:px-8 py-3 sm:py-4 bg-purple-600 hover:bg-purple-700 rounded-xl text-white font-semibold transition-all duration-300 transform hover:scale-105 text-sm sm:text-base cursor-pointer"
                   >
                     Contact Us
                   </button>
                   <button 
                     onClick={() => router.push('/Events')}
-                    className="px-6 sm:px-8 py-3 sm:py-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white font-semibold transition-all duration-300 text-sm sm:text-base"
+                    className="px-6 sm:px-8 py-3 sm:py-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white font-semibold transition-all duration-300 text-sm sm:text-base cursor-pointer"
                   >
                     View All Events
                   </button>
@@ -476,7 +476,7 @@ const FAQ = () => {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 touch-manipulation"
+          className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 w-10 h-10 sm:w-12 sm:h-12 bg-purple-600 hover:bg-purple-700 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 touch-manipulation cursor-pointer"
         >
           <ChevronUp className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </button>

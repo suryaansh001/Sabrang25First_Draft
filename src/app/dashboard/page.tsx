@@ -99,7 +99,7 @@ function Dashboard() {
           <p>{error}</p>
           <button 
             onClick={() => window.location.reload()}
-            className="mt-4 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors"
+            className="mt-4 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors cursor-pointer"
           >
             Try Again
           </button>
@@ -242,7 +242,7 @@ function Dashboard() {
               </a>
               <button
                 onClick={handleShare}
-                className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors text-white text-sm font-semibold"
+                className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors text-white text-sm font-semibold cursor-pointer"
               >
                 Share
               </button>

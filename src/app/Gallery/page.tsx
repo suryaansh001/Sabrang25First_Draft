@@ -165,7 +165,7 @@ const Gallery = () => {
       <button
         aria-label="Open menu"
         onClick={() => setMobileMenuOpen(true)}
-        className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition pointer-events-auto"
+        className="lg:hidden fixed top-4 right-4 z-50 p-3 rounded-xl active:scale-95 transition pointer-events-auto cursor-pointer"
       >
         <span className="block h-0.5 bg-white rounded-full w-8 mb-1" />
         <span className="block h-0.5 bg-white/90 rounded-full w-6 mb-1" />
@@ -179,7 +179,7 @@ const Gallery = () => {
             <button
               aria-label="Close menu"
               onClick={() => setMobileMenuOpen(false)}
-              className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition"
+              className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition cursor-pointer"
             >
               <IconMenu2 className="w-6 h-6 text-white" />
             </button>
@@ -190,7 +190,7 @@ const Gallery = () => {
                 <button
                   key={item.href}
                   onClick={() => handleMobileNavigation(item.href)}
-                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left"
+                  className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-base hover:bg-white/15 active:scale-[0.99] transition text-left cursor-pointer"
                 >
                   <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/15 border border-white/20">
                     {item.icon}
@@ -302,16 +302,14 @@ const Gallery = () => {
           <button
             onClick={goToPrevious}
             disabled={isTransitioning}
-            className={`relative group overflow-hidden bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-500 p-1 rounded-full shadow-2xl transition-all duration-500 transform ${
-              isTransitioning ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-purple-500/50 hover:scale-110 hover:rotate-3 active:scale-95'
+            className={`relative group overflow-hidden bg-purple-600 p-1 rounded-full shadow-2xl transition-all duration-500 transform ${
+              isTransitioning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-purple-700 hover:scale-110 hover:rotate-3 active:scale-95 cursor-pointer'
             }`}
             aria-label="Previous image"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
             <div className="relative bg-black/80 backdrop-blur-md p-2 lg:p-3 rounded-full border border-purple-400/30 hover:border-purple-300/60 transition-all duration-300">
               <IconChevronLeft className="w-4 h-4 lg:w-6 lg:h-6 text-white group-hover:text-purple-200 transition-all duration-300 group-hover:scale-125 group-hover:rotate-12" />
             </div>
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-500 rounded-full blur opacity-0 group-hover:opacity-75 transition-opacity duration-500 -z-10"></div>
           </button>
         </div>
 
@@ -320,16 +318,14 @@ const Gallery = () => {
           <button
             onClick={goToNext}
             disabled={isTransitioning}
-            className={`relative group overflow-hidden bg-gradient-to-r from-cyan-500 via-pink-600 to-purple-600 p-1 rounded-full shadow-2xl transition-all duration-500 transform ${
-              isTransitioning ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-cyan-500/50 hover:scale-110 hover:-rotate-3 active:scale-95'
+            className={`relative group overflow-hidden bg-cyan-600 p-1 rounded-full shadow-2xl transition-all duration-500 transform ${
+              isTransitioning ? 'opacity-50 cursor-not-allowed' : 'hover:bg-cyan-700 hover:scale-110 hover:-rotate-3 active:scale-95 cursor-pointer'
             }`}
             aria-label="Next image"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-pink-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
             <div className="relative bg-black/80 backdrop-blur-md p-2 lg:p-3 rounded-full border border-cyan-400/30 hover:border-cyan-300/60 transition-all duration-300">
               <IconChevronRight className="w-4 h-4 lg:w-6 lg:h-6 text-white group-hover:text-cyan-200 transition-all duration-300 group-hover:scale-125 group-hover:-rotate-12" />
             </div>
-            <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 via-pink-600 to-purple-600 rounded-full blur opacity-0 group-hover:opacity-75 transition-opacity duration-500 -z-10"></div>
           </button>
         </div>
 
@@ -346,7 +342,7 @@ const Gallery = () => {
             <button
               key={index}
               onClick={() => goToImage(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
                 index === currentImageIndex 
                   ? 'bg-white scale-125' 
                   : 'bg-white/40 hover:bg-white/60'
