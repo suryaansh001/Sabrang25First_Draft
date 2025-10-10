@@ -574,6 +574,7 @@ export const events: Event[] = [
             'Team Size: 5 members (required) + 1-2 substitutes (optional). Maximum 7 players per team.',
             'Eligibility: Open to all current students of [College Name]. Participants must have a valid college ID. Teams must register before the deadline (no on-spot entries).',
             'Team Composition: 5v5 (Main players) + 1-2 substitutes (optional). Team names must be appropriate (offensive names will be rejected).',
+            'Substitute Members: For adding or modifying substitute members, teams must email "sabrang@jklu.edu.in" or contact the event coordinator with a formal request detailing the changes required.',
             'Game Settings: Mode: Tournament Mode (Standard Plant/Defuse). Maps: Pre-decided by organizers or picked via veto system. Server: Mumbai (or closest available server).',
             'Cheating & Fair Play: Any form of hacking, scripting, or exploiting bugs will lead to immediate disqualification. Smurfing is not allowed (players must use their main accounts). Teams may be asked to share screens via Discord/Zoom for monitoring.'
         ],
