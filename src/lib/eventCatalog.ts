@@ -55,7 +55,6 @@ const findTeamSizeRule = (rules: string[] | undefined): string | undefined => {
 };
 
 export const EVENT_CATALOG: EventCatalogItem[] = rawEventCatalog
-  .filter(event => event.title !== 'IN CONVERSATION WITH') // Registration closed for this event
   .map(event => {
   const eventData = EVENTS_DATA.find(e => e.id === event.id);
   const teamSizeRule = findTeamSizeRule(eventData?.rules);

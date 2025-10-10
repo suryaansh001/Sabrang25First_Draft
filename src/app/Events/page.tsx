@@ -179,8 +179,6 @@ export default function EventsPage() {
   };
   
   const toggleCart = (eventId: number) => {
-    // Prevent adding event id 10 (In Conversation With) as registration is closed
-    if (eventId === 10) return;
     setCartIds(prev => prev.includes(eventId) ? prev.filter(id => id !== eventId) : [...prev, eventId]);
   };
 
@@ -191,8 +189,7 @@ export default function EventsPage() {
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed)) {
-          // Filter out event id 10 (In Conversation With) as registration is closed
-          const ids = parsed.map(n => parseInt(String(n), 10)).filter(n => !Number.isNaN(n) && n !== 10);
+          const ids = parsed.map(n => parseInt(String(n), 10)).filter(n => !Number.isNaN(n));
           setCartIds(ids);
         }
       }

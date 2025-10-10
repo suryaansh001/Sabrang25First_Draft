@@ -26,9 +26,6 @@ export function SelectEventsStep({
     return (eventsSum + visitorSum).toFixed(2);
   }, [eventCatalog, selectedEventIds, visitorPassDays]);
   const toggleEvent = (id: number) => {
-    // Prevent adding event id 10 (In Conversation With) as registration is closed
-    if (id === 10) return;
-    
     if (selectedEventIds.includes(id)) {
       onUpdateState({ selectedEventIds: selectedEventIds.filter(x => x !== id) });
     } else {
@@ -121,7 +118,7 @@ export function SelectEventsStep({
             <div className="space-y-3">
               {events.map(event => {
                 const isSelected = selectedEventIds.includes(event.id);
-                const isClosed = event.id === 10; // In Conversation With is closed
+                const isClosed = false;
                 return (
                   <motion.div
                     key={event.id}
