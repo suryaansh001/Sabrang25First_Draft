@@ -393,7 +393,17 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
         {!isLoading && (
           <div className="absolute inset-0 z-20 flex items-center justify-center text-center px-6 pointer-events-none">
             <div className="max-w-sm mx-auto">
-                             {/* Main Title */}
+              {/* JK TYRE Logo - Mobile */}
+              <div className="mb-6 flex justify-center">
+                <img
+                  src="/logo_sponser.png"
+                  alt="JK TYRE - TOTAL CONTROL"
+                  className="h-12 w-auto opacity-90 hover:opacity-100 transition-opacity duration-300"
+                  loading="eager"
+                />
+              </div>
+              
+              {/* Main Title */}
                <h1 className="font-black leading-tight mb-6 whitespace-nowrap overflow-visible">
                  <span className="preload inline text-6xl sm:text-8xl md:text-9xl text-orange-50 drop-shadow-lg" style={{ 
                    fontFamily: "'Quivert', sans-serif",
@@ -861,7 +871,17 @@ const LayeredLandingPage = memo(function LayeredLandingPage({ isLoading = false 
             {!isLoading && (
               <div className="relative z-10 flex items-center justify-center h-full">
                 <div className="text-center">
-                                                   <h1 className="text-8xl md:text-7xl lg:text-9xl font-black text-white leading-none">
+                  {/* JK TYRE Logo */}
+                  <div className="mb-8 flex justify-center">
+                    <img
+                      src="/logo_sponser.png"
+                      alt="JK TYRE - TOTAL CONTROL"
+                      className="h-16 w-auto opacity-90 hover:opacity-100 transition-opacity duration-300"
+                      loading="eager"
+                    />
+                  </div>
+                  
+                  <h1 className="text-8xl md:text-7xl lg:text-9xl font-black text-white leading-none">
                     <span className="text-orange-50 drop-shadow-lg text-9xl md:text-11xl lg:text-[11rem]" style={{ 
                       fontFamily: "'Quivert', sans-serif", 
                       letterSpacing: '0.02em',
