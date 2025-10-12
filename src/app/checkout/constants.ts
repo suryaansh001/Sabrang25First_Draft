@@ -15,7 +15,6 @@ export const SOLO_FIELDS: FieldSet = [
   { name: 'age', label: 'Age', type: 'number', required: true, placeholder: 'e.g., 20' },
   { name: 'universityName', label: 'Institution Name', type: 'text', required: true, placeholder: 'Your school/college/university' },
   { name: 'referralCode', label: 'Referral Code', type: 'text', required: false, placeholder: 'Optional' },
-  { name: 'universityCardImage', label: 'Institution Identity Card', type: 'file', required: true, accept: 'image/*' },
   { name: 'address', label: 'Address', type: 'text', required: true, placeholder: 'Enter your full address' },
 ];
 
@@ -30,7 +29,6 @@ export const VISITOR_PASS_FIELDS: FieldSet = [
   ]},
   { name: 'age', label: 'Age', type: 'number', required: true, placeholder: 'e.g., 20' },
   { name: 'universityName', label: 'Institution Name', type: 'text', required: true, placeholder: 'Visitor school/college/university' },
-  { name: 'universityCardImage', label: 'Institution Identity Card', type: 'file', required: true, accept: 'image/*' },
   { name: 'address', label: 'Address', type: 'text', required: true, placeholder: 'Enter visitor full address' },
 ];
 
@@ -39,13 +37,6 @@ export const SUPPORT_ARTIST_FIELDS: FieldSet = [
   { name: 'role', label: 'Role/Profession', type: 'text', required: true, placeholder: 'e.g., Makeup Artist, Stylist, Manager' },
   { name: 'contactNo', label: 'Mobile Number', type: 'phone', required: true, placeholder: '10-digit number' },
   { name: 'email', label: 'Email', type: 'email', required: true, placeholder: 'artist@example.com' },
-  { name: 'idNumber', label: 'Government ID (Upload)', type: 'file', required: true, accept: 'image/*,.pdf' },
-  { name: 'idType', label: 'ID Type', type: 'select', required: true, options: [
-    { value: 'aadhar', label: 'Aadhar Card' },
-    { value: 'passport', label: 'Passport' },
-    { value: 'driving', label: 'Driving License' },
-    { value: 'other', label: 'Other' },
-  ]},
 ];
 
 export const TEAM_ESPORTS_FIELDS: FieldSet = [
